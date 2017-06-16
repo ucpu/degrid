@@ -16,7 +16,7 @@ namespace grid
 
 		const vec3 randomPosition()
 		{
-			return aroundPosition(random(), random(200, 400), player.position);
+			return aroundPosition(cage::random(), cage::random(200, 400), player.position);
 		}
 
 		struct spawnDefinitionStruct
@@ -101,25 +101,25 @@ namespace grid
 			CAGE_ASSERT_RUNTIME(alSiz > 0);
 			uint32 spawnCount = random(spawnCountMin, spawnCountMax + 1);
 			spawned += spawnCount;
-			vec3 color = convertHsvToRgb(vec3(random(), sqrt(random()) * 0.5 + 0.5, sqrt(random()) * 0.5 + 0.5));
+			vec3 color = convertHsvToRgb(vec3(cage::random(), sqrt(cage::random()) * 0.5 + 0.5, sqrt(cage::random()) * 0.5 + 0.5));
 			switch (placingPolicy)
 			{
 			case ppRandom:
 			{
 				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[random(0, alSiz)], randomPosition(), color);
+					spawnGeneral(allowed[cage::random(0, alSiz)], randomPosition(), color);
 			} break;
 			case ppAround:
 			{
-				real angularOffset = random();
-				real radius = random(120, 140);
+				real angularOffset = cage::random();
+				real radius = cage::random(120, 140);
 				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[random(0, alSiz)], aroundPosition(angularOffset + (random() * 0.3 + i) / (real)spawnCount, radius, player.position), color);
+					spawnGeneral(allowed[cage::random(0, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, player.position), color);
 			} break;
 			case ppGrouped:
 			{
-				real radius = random(spawnCount / 2, spawnCount);
-				vec3 center = aroundPosition(random(), random(200, 250), player.position);
+				real radius = cage::random(spawnCount / 2, spawnCount);
+				vec3 center = aroundPosition(cage::random(), cage::random(200, 250), player.position);
 				for (uint32 i = 0; i < spawnCount; i++)
 					spawnGeneral(allowed[random(0, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
 			} break;
@@ -165,7 +165,7 @@ namespace grid
 		// jokes
 		///////////////////////////////////////////////////////////////////////////
 
-		if (random() < 0.0001)
+		if (cage::random() < 0.0001)
 		{
 			CAGE_LOG(severityEnum::Info, "joke", "JOKE: snakes only");
 			spawnDefinitionStruct d("snakes only");
@@ -175,7 +175,7 @@ namespace grid
 			return;
 		}
 
-		if (random() < 0.0001)
+		if (cage::random() < 0.0001)
 		{
 			CAGE_LOG(severityEnum::Info, "joke", "JOKE: shielders only");
 			spawnDefinitionStruct d("shielders only");
@@ -262,8 +262,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtCircle);
 			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
 			d.priorityCurrent = 700;
-			d.priorityChange = random(200, 300);
-			d.priorityAdditive = random(1, 10);
+			d.priorityChange = cage::random(200, 300);
+			d.priorityAdditive = cage::random(1, 10);
 			definitions.push_back(d);
 		}
 
@@ -274,8 +274,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtLargeTriangle);
 			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
 			d.priorityCurrent = 1500;
-			d.priorityChange = random(200, 300);
-			d.priorityAdditive = random(1, 10);
+			d.priorityChange = cage::random(200, 300);
+			d.priorityAdditive = cage::random(1, 10);
 			definitions.push_back(d);
 		}
 
@@ -286,8 +286,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtLargeCube);
 			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
 			d.priorityCurrent = 1500;
-			d.priorityChange = random(200, 300);
-			d.priorityAdditive = random(1, 10);
+			d.priorityChange = cage::random(200, 300);
+			d.priorityAdditive = cage::random(1, 10);
 			definitions.push_back(d);
 		}
 
@@ -298,8 +298,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtPinWheel);
 			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
 			d.priorityCurrent = 2500;
-			d.priorityChange = random(200, 300);
-			d.priorityAdditive = random(5, 15);
+			d.priorityChange = cage::random(200, 300);
+			d.priorityAdditive = cage::random(5, 15);
 			definitions.push_back(d);
 		}
 
@@ -310,8 +310,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtDiamond);
 			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
 			d.priorityCurrent = 3000;
-			d.priorityChange = random(200, 300);
-			d.priorityAdditive = random(5, 15);
+			d.priorityChange = cage::random(200, 300);
+			d.priorityAdditive = cage::random(5, 15);
 			definitions.push_back(d);
 		}
 
@@ -326,8 +326,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtLargeTriangle | mtLargeCube | mtDiamond);
 			d.placingPolicy = spawnDefinitionStruct::ppAround;
 			d.priorityCurrent = 5000;
-			d.priorityChange = random(200, 300);
-			d.priorityAdditive = random(5, 15);
+			d.priorityChange = cage::random(200, 300);
+			d.priorityAdditive = cage::random(5, 15);
 			d.priorityMultiplier = 0.98;
 			definitions.push_back(d);
 		}
@@ -339,8 +339,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtCircle | mtLargeTriangle | mtLargeCube | mtPinWheel | mtShielder);
 			d.placingPolicy = spawnDefinitionStruct::ppAround;
 			d.priorityCurrent = 5000;
-			d.priorityChange = random(300, 400);
-			d.priorityAdditive = random(10, 20);
+			d.priorityChange = cage::random(300, 400);
+			d.priorityAdditive = cage::random(10, 20);
 			d.priorityMultiplier = 0.98;
 			definitions.push_back(d);
 		}
@@ -352,8 +352,8 @@ namespace grid
 			d.spawnTypes = (monsterTypeFlags)(mtWormhole);
 			d.placingPolicy = spawnDefinitionStruct::ppAround;
 			d.priorityCurrent = 7000;
-			d.priorityChange = random(6000, 8000);
-			d.priorityAdditive = random(300, 500);
+			d.priorityChange = cage::random(6000, 8000);
+			d.priorityAdditive = cage::random(300, 500);
 			d.priorityMultiplier = 0.98;
 			definitions.push_back(d);
 		}
@@ -385,7 +385,7 @@ namespace grid
 		//probability = pow(pow(sin(rads::Full * statistics.updateIterationPaused / 30 / 60) * 0.5 + 0.5, 50), probability);
 		//CAGE_LOG(severityEnum::Info, "spawning", probability);
 
-		if (random() > probability)
+		if (cage::random() > probability)
 			return;
 
 		definitions[0].perform();

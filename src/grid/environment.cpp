@@ -146,13 +146,13 @@ namespace grid
 				if (!e->hasComponent(gridStruct::component))
 					return;
 				ENGINE_GET_COMPONENT(transform, ot, e);
-				ENGINE_GET_COMPONENT(render, or , e);
+				ENGINE_GET_COMPONENT(render, orc, e);
 				GRID_GET_COMPONENT(grid, og, e);
 				vec3 toOther = ot.position - position;
 				vec3 change = toOther.normalize() * (size / max(2, toOther.squaredLength())) * 2;
 				og.speed += change;
 				ot.position += change * 2;
-				or .color = interpolate(color, or .color, toOther.length() / size);
+				orc.color = interpolate(color, orc.color, toOther.length() / size);
 			}
 		};
 	}
