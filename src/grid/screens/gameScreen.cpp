@@ -39,7 +39,7 @@ namespace
 		if (!grid::player.paused)
 			grid::keyRelease(key, modifiers);
 
-		if (key == 27) // esc
+		if (key == 256) // esc
 			grid::player.paused = !grid::player.paused;
 
 		return true;

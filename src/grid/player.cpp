@@ -7,7 +7,7 @@ namespace grid
 {
 	namespace
 	{
-		bool keyMap[256];
+		bool keyMap[512];
 		mouseButtonsFlags buttonMap;
 
 		void setMousePosition()
@@ -150,13 +150,13 @@ namespace grid
 			}
 
 			{
-				if (keyMap[87] || keyMap[38]) // w, up
+				if (keyMap[87] || keyMap[265]) // w, up
 					player.arrowsDirection += vec3(0, 0, -1);
-				if (keyMap[83] || keyMap[40]) // s, down
+				if (keyMap[83] || keyMap[264]) // s, down
 					player.arrowsDirection += vec3(0, 0, 1);
-				if (keyMap[65] || keyMap[37]) // a, left
+				if (keyMap[65] || keyMap[263]) // a, left
 					player.arrowsDirection += vec3(-1, 0, 0);
-				if (keyMap[68] || keyMap[39]) // d, right
+				if (keyMap[68] || keyMap[262]) // d, right
 					player.arrowsDirection += vec3(1, 0, 0);
 			}
 
@@ -603,7 +603,7 @@ namespace grid
 
 	void playerInit()
 	{
-		for (uint32 i = 0; i < 256; i++)
+		for (uint32 i = 0; i < sizeof(keyMap); i++)
 			keyMap[i] = false;
 		buttonMap = (mouseButtonsFlags)0;
 
@@ -674,13 +674,13 @@ namespace grid
 	void keyPress(uint32 key, modifiersFlags modifiers)
 	{
 		statistics.keyPressed++;
-		if (key < 256)
+		if (key < sizeof(keyMap))
 			keyMap[key] = true;
 	}
 
 	void keyRelease(uint32 key, modifiersFlags modifiers)
 	{
-		if (key < 256)
+		if (key < sizeof(keyMap))
 			keyMap[key] = false;
 
 		switch (key)
