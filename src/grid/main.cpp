@@ -59,10 +59,10 @@ namespace
 
 		switch (key)
 		{
-		case 120: // F9
+		case 298: // F9
 			secondaryCamera = !(bool)secondaryCamera;
 			return true;
-		case 122: // F11
+		case 300: // F11
 			setWindowMode(!window()->isFullscreen());
 			return true;
 		}
@@ -178,9 +178,9 @@ int main(int argc, const char *args[])
 		assets()->add(hashString("grid/grid.pack"));
 
 		holder<engineProfilingClass> engineProfiling = newEngineProfiling();
-		engineProfiling->visible = false;
+		engineProfiling->profilingMode = profilingModeEnum::None;
 		engineProfiling->keyToggleFullscreen = 0;
-		engineProfiling->position = vec2(0.5, 0.5);
+		engineProfiling->screenPosition = vec2(0.5, 0.5);
 
 		engineStart();
 
