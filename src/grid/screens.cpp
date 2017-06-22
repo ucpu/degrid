@@ -21,7 +21,6 @@ void eraseGui()
 	guii->setFocus(0);
 	guii->entities()->getAllEntities()->destroyAllEntities();
 	guii->genericEvent.detach();
-	winEvtLists = windowEventListeners();
 	winEvtLists.attachAll(window());
 }
 
