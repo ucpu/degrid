@@ -5,9 +5,9 @@ windowEventListeners winEvtLists;
 
 namespace
 {
-	eventListener<void(uint32)> guiListener;
+	eventListener<bool(uint32)> guiListener;
 
-	const bool buttonBack(uint32 en)
+	bool buttonBack(uint32 en)
 	{
 		if (en != 501) return false;
 		setScreenMainmenu();

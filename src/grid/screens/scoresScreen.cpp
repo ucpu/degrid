@@ -33,9 +33,9 @@ namespace
 
 	void buildGui(int mode);
 
-	eventListener<void(uint32)> guiEvent;
+	eventListener<bool(uint32)> guiEvent;
 
-	const bool guiFunction(uint32 en)
+	bool guiFunction(uint32 en)
 	{
 		switch (en)
 		{

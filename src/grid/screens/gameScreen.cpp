@@ -6,35 +6,35 @@ namespace
 {
 	void makeTheGui();
 
-	const bool mousePress(windowClass *, mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
+	bool mousePress(windowClass *, mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
 	{
 		if (!grid::player.paused)
 			grid::mousePress(buttons, modifiers, point);
 		return true;
 	}
 
-	const bool mouseRelease(windowClass *, mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
+	bool mouseRelease(windowClass *, mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
 	{
 		if (!grid::player.paused)
 			grid::mouseRelease(buttons, modifiers, point);
 		return true;
 	}
 
-	const bool mouseMove(windowClass *, mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
+	bool mouseMove(windowClass *, mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
 	{
 		if (!grid::player.paused)
 			grid::mouseMove(buttons, modifiers, point);
 		return true;
 	}
 
-	const bool keyPress(windowClass *, uint32 key, uint32, modifiersFlags modifiers)
+	bool keyPress(windowClass *, uint32 key, uint32, modifiersFlags modifiers)
 	{
 		if (!grid::player.paused)
 			grid::keyPress(key, modifiers);
 		return true;
 	}
 
-	const bool keyRelease(windowClass *, uint32 key, uint32, modifiersFlags modifiers)
+	bool keyRelease(windowClass *, uint32 key, uint32, modifiersFlags modifiers)
 	{
 		if (!grid::player.paused)
 			grid::keyRelease(key, modifiers);
@@ -45,9 +45,9 @@ namespace
 		return true;
 	}
 
-	eventListener<void(uint32)> guiEvent;
+	eventListener<bool(uint32)> guiEvent;
 
-	const bool guiFunction(uint32 en)
+	bool guiFunction(uint32 en)
 	{
 		switch (en)
 		{

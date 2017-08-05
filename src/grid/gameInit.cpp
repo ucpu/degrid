@@ -41,7 +41,7 @@ namespace grid
 
 	namespace
 	{
-		const bool shielderEliminated(entityClass *e)
+		bool shielderEliminated(entityClass *e)
 		{
 			GRID_GET_COMPONENT(shielder, sh, e);
 			if (entities()->hasEntity(sh.shieldEntity))
@@ -49,7 +49,7 @@ namespace grid
 			return false;
 		}
 
-		eventListener<void(entityClass*)> shielderEliminatedListener;
+		eventListener<bool(entityClass*)> shielderEliminatedListener;
 	}
 
 	void controlInitialize()

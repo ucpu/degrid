@@ -14,13 +14,13 @@ namespace
 	uint32 loadedLanguageHash;
 	uint32 currentLanguageHash;
 
-	const bool applicationQuit()
+	bool applicationQuit()
 	{
 		engineStop();
 		return true;
 	}
 
-	const bool windowClose(windowClass *)
+	bool windowClose(windowClass *)
 	{
 		engineStop();
 		return true;
@@ -51,7 +51,7 @@ namespace
 		}
 	}
 
-	const bool keyRelease(windowClass *, uint32 key, uint32, modifiersFlags modifiers)
+	bool keyRelease(windowClass *, uint32 key, uint32, modifiersFlags modifiers)
 	{
 		static configBool secondaryCamera("grid.secondary-camera.enabled", false);
 
@@ -69,7 +69,7 @@ namespace
 		return false;
 	}
 
-	const bool update(uint64 time)
+	bool update(uint64 time)
 	{
 		grid::controlUpdate(time);
 		if (!grid::player.gameOver && !grid::player.cinematic)
@@ -77,13 +77,13 @@ namespace
 		return false;
 	}
 
-	const bool frame(uint64)
+	bool frame(uint64)
 	{
 		grid::statistics.frameIteration++;
 		return false;
 	}
 
-	const bool assetsUpdate()
+	bool assetsUpdate()
 	{
 		if (currentLanguageHash != loadedLanguageHash)
 		{
@@ -96,19 +96,19 @@ namespace
 		return false;
 	}
 
-	const bool soundInitialize()
+	bool soundInitialize()
 	{
 		grid::soundsInit();
 		return false;
 	}
 
-	const bool soundFinalize()
+	bool soundFinalize()
 	{
 		grid::soundsDone();
 		return false;
 	}
 
-	const bool soundUpdate(uint64 time)
+	bool soundUpdate(uint64 time)
 	{
 		grid::soundUpdate(time);
 		return false;
@@ -140,15 +140,15 @@ int main(int argc, const char *args[])
 
 		engineInitialize(engineCreateConfig());
 
-		eventListener<void> applicationQuitListener;
-		eventListener<void(windowClass*)> windowCloseListener;
-		eventListener<void(windowClass *, uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
-		eventListener<void(uint64)> updateListener;
-		eventListener<void(uint64)> frameListener;
-		eventListener<void> assetsUpdateListener;
-		eventListener<void> soundInitializeListener;
-		eventListener<void> soundFinalizeListener;
-		eventListener<void(uint64)> soundUpdateListener;
+		eventListener<bool()> applicationQuitListener;
+		eventListener<bool(windowClass*)> windowCloseListener;
+		eventListener<bool(windowClass *, uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
+		eventListener<bool(uint64)> updateListener;
+		eventListener<bool(uint64)> frameListener;
+		eventListener<bool()> assetsUpdateListener;
+		eventListener<bool()> soundInitializeListener;
+		eventListener<bool()> soundFinalizeListener;
+		eventListener<bool(uint64)> soundUpdateListener;
 
 		updateListener.bind<&update>();
 		frameListener.bind<&frame>();

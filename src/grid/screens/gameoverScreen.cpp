@@ -7,9 +7,9 @@ namespace
 	uint32 scoreValue;
 	uint32 nameEntity;
 
-	eventListener<void(uint32)> guiEvent;
+	eventListener<bool(uint32)> guiEvent;
 
-	const bool buttonSave(uint32 en)
+	bool buttonSave(uint32 en)
 	{
 		if (en != 12) return false;
 

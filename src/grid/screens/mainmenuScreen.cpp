@@ -6,9 +6,9 @@ extern configUint32 confLanguage;
 
 namespace
 {
-	eventListener<void(uint32)> guiEvent;
+	eventListener<bool(uint32)> guiEvent;
 
-	const bool guiFunction(uint32 en)
+	bool guiFunction(uint32 en)
 	{
 		switch (en)
 		{
