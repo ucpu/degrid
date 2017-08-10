@@ -65,7 +65,7 @@ namespace grid
 
 	void soundsInit()
 	{
-		data = detail::systemArena.createObject<soundDataStruct>();
+		data = detail::systemArena().createObject<soundDataStruct>();
 #define GCHL_GENERATE(NAME) \
 		data->CAGE_JOIN(NAME, Bus) = newBus(sound()); \
 		data->CAGE_JOIN(NAME, Bus)->addOutput(musicMixer()); \
@@ -88,7 +88,7 @@ namespace grid
 
 	void soundsDone()
 	{
-		detail::systemArena.destroy<soundDataStruct>(data);
+		detail::systemArena().destroy<soundDataStruct>(data);
 	}
 
 	void soundUpdate(uint64 time)
