@@ -7,6 +7,6 @@ namespace grid
 	{
 		vec3 m = movementB - movementA;
 		real distance = m.length();
-		return testRaySphereAnySide(positionA, radiusA + radiusB, positionB, m.normalize(), distance);
+		return testRaySphere(positionA, radiusA + radiusB, positionB, m.normalize(), distance);
 	}
 }
