@@ -91,7 +91,7 @@ namespace grid
 		detail::systemArena().destroy<soundDataStruct>(data);
 	}
 
-	void soundUpdate(uint64 time)
+	void soundUpdate()
 	{
 		data->musicVolume->volume = (float)confVolumeMusic;
 		data->effectsVolume->volume = (float)confVolumeEffects;
@@ -110,7 +110,7 @@ namespace grid
 			if (s)
 			{
 				uint64 d = s->getDuration();
-				if (data->speechStart + d + 100000 < time)
+				if (data->speechStart + d + 100000 < getApplicationTime())
 				{
 					data->speechBus->clear();
 					data->speechName = 0;

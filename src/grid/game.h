@@ -23,7 +23,7 @@ namespace grid
 	void gameGuiUpdate();
 	void soundsInit();
 	void soundsDone();
-	void soundUpdate(uint64 time);
+	void soundUpdate();
 	void soundEffect(uint32 sound, const vec3 &position);
 	void soundSpeech(uint32 sound);
 	void soundSpeech(uint32 *sounds);
