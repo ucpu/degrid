@@ -18,6 +18,8 @@ namespace grid
 				ENGINE_GET_COMPONENT(voice, s, e);
 				if (s.sound == hashString("grid/player/shield.ogg"))
 					continue;
+				if (!assets()->ready(s.sound))
+					continue;
 				sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(s.sound);
 				if (src && s.soundStart + src->getDuration() + 100000 < time)
 					e->addGroup(entitiesToDestroy);
@@ -132,7 +134,7 @@ namespace grid
 			explosionStruct(const vec3 &position, const vec3 &color, real size) :
 				position(position), color(color), size(size)
 			{
-				spatialQuery->sphere(position, size);
+				spatialQuery->intersection(sphere(position, size));
 				const uint32 *res = spatialQuery->resultArray();
 				for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
 					test(res[i]);

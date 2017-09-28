@@ -14,7 +14,7 @@ namespace grid
 				tr(e->value<transformStruct>(transformStruct::component)),
 				myName(e->getName())
 			{
-				spatialQuery->sphere(tr.position, tr.scale + 1);
+				spatialQuery->intersection(sphere(tr.position, tr.scale + 1));
 				const uint32 *res = spatialQuery->resultArray();
 				for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
 					test(res[i]);

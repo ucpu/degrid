@@ -405,7 +405,7 @@ namespace grid
 					return;
 				}
 
-				spatialQuery->sphere(tr.position, sh.speed.length() + tr.scale + (sh.homing ? 20 : 10));
+				spatialQuery->intersection(sphere(tr.position, sh.speed.length() + tr.scale + (sh.homing ? 20 : 10)));
 				const uint32 *res = spatialQuery->resultArray();
 				for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
 					test(res[i]);
@@ -592,7 +592,7 @@ namespace grid
 			static const real distMin = 25;
 			static const real distMax = 35;
 			closestMonsterToPlayer = real::PositiveInfinity;
-			spatialQuery->sphere(player.position, distMax);
+			spatialQuery->intersection(sphere(player.position, distMax));
 			const uint32 *res = spatialQuery->resultArray();
 			for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
 				closestMonsterTestEntity(res[i]);

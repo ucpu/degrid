@@ -74,7 +74,7 @@ namespace grid
 		shielderStruct::component->getComponentEntities()->entityRemoved.add(shielderEliminatedListener);
 		entitiesToDestroy = entities()->defineGroup();
 		skyboxOrientation = randomDirectionQuat();
-		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 2e-4);
+		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
 		gameStart(true);
 	}
 

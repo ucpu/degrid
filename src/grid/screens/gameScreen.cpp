@@ -266,7 +266,7 @@ namespace grid
 
 	void gameGuiUpdate()
 	{
-		if (!assets()->ready(hashString("grid/languages/internationalized.textpack"), false))
+		if (!assets()->ready(hashString("grid/languages/internationalized.textpack")))
 			return;
 
 		if (player.paused != previousPaused)

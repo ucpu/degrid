@@ -27,7 +27,7 @@ namespace grid
 					return;
 				}
 
-				spatialQuery->sphere(tr.position + tr.orientation * vec3(0, 0, -1) * (tr.scale + 3), 5);
+				spatialQuery->intersection(sphere(tr.position + tr.orientation * vec3(0, 0, -1) * (tr.scale + 3), 5));
 				const uint32 *res = spatialQuery->resultArray();
 				for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
 					test(res[i]);
