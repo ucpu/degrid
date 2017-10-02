@@ -282,8 +282,8 @@ namespace grid
 			}
 			else
 			{
-				player.shieldEntity->removeComponent(renderStruct::component);
-				player.shieldEntity->removeComponent(voiceStruct::component);
+				player.shieldEntity->removeComponent(renderComponent::component);
+				player.shieldEntity->removeComponent(voiceComponent::component);
 			}
 		}
 
@@ -383,7 +383,7 @@ namespace grid
 
 		struct shotUpdateStruct
 		{
-			transformStruct &tr;
+			transformComponent &tr;
 			shotStruct &sh;
 			uint32 closestMonster;
 			real closestDistance;
@@ -392,7 +392,7 @@ namespace grid
 			uint32 myName;
 
 			shotUpdateStruct(entityClass *e) :
-				tr(e->value<transformStruct>(transformStruct::component)),
+				tr(e->value<transformComponent>(transformComponent::component)),
 				sh(e->value<shotStruct>(shotStruct::component)),
 				closestMonster(0), closestDistance(real::PositiveInfinity),
 				homingMonster(0), homingDistance(real::PositiveInfinity),

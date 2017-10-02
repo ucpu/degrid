@@ -8,12 +8,12 @@ namespace grid
 		{ // destroy outdated sound effects
 			statistics.soundEffectsCurrent = 0;
 			uint64 time = getApplicationTime() - 2000000;
-			uint32 count = transformStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *effects = transformStruct::component->getComponentEntities()->entitiesArray();
+			uint32 count = transformComponent::component->getComponentEntities()->entitiesCount();
+			entityClass *const *effects = transformComponent::component->getComponentEntities()->entitiesArray();
 			for (uint32 i = 0; i < count; i++)
 			{
 				entityClass *e = effects[i];
-				if (!e->hasComponent(voiceStruct::component))
+				if (!e->hasComponent(voiceComponent::component))
 					continue;
 				ENGINE_GET_COMPONENT(voice, s, e);
 				if (s.sound == hashString("grid/player/shield.ogg"))
@@ -98,8 +98,8 @@ namespace grid
 			}
 			else
 			{
-				player.skyboxSecondaryCameraEntity->removeComponent(cameraStruct::component);
-				player.secondaryCameraEntity->removeComponent(cameraStruct::component);
+				player.skyboxSecondaryCameraEntity->removeComponent(cameraComponent::component);
+				player.secondaryCameraEntity->removeComponent(cameraComponent::component);
 			}
 		}
 

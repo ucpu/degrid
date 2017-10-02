@@ -6,7 +6,7 @@ namespace grid
 	{
 		struct monsterUpdateStruct
 		{
-			transformStruct &tr;
+			transformComponent &tr;
 			monsterStruct &ms;
 			simpleMonsterStruct &sm;
 			uint32 closestShot;
@@ -14,7 +14,7 @@ namespace grid
 			uint32 myName;
 
 			monsterUpdateStruct(entityClass *e) :
-				tr(e->value<transformStruct>(transformStruct::component)),
+				tr(e->value<transformComponent>(transformComponent::component)),
 				ms(e->value<monsterStruct>(monsterStruct::component)),
 				sm(e->value<simpleMonsterStruct>(simpleMonsterStruct::component)),
 				closestShot(0), closestDistance(real::PositiveInfinity), myName(e->getName())

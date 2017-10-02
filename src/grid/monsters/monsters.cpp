@@ -6,12 +6,12 @@ namespace grid
 	{
 		struct monsterUpdateStruct
 		{
-			transformStruct &tr;
+			transformComponent &tr;
 			vec3 dispersion;
 			uint32 myName;
 
 			monsterUpdateStruct(entityClass *e) :
-				tr(e->value<transformStruct>(transformStruct::component)),
+				tr(e->value<transformComponent>(transformComponent::component)),
 				myName(e->getName())
 			{
 				spatialQuery->intersection(sphere(tr.position, tr.scale + 1));

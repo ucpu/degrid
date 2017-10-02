@@ -6,13 +6,13 @@ namespace grid
 	{
 		struct shieldUpdateStruct
 		{
-			transformStruct &tr;
+			transformComponent &tr;
 			shieldStruct &sh;
 			uint32 myName;
 			vec3 forward;
 
 			shieldUpdateStruct(entityClass *e) :
-				tr(e->value<transformStruct>(transformStruct::component)),
+				tr(e->value<transformComponent>(transformComponent::component)),
 				sh(e->value<shieldStruct>(shieldStruct::component)),
 				myName(e->getName()), forward(tr.orientation * vec3(0, 0, -1))
 			{
@@ -23,7 +23,7 @@ namespace grid
 				}
 				else
 				{
-					e->removeComponent(renderStruct::component);
+					e->removeComponent(renderComponent::component);
 					return;
 				}
 

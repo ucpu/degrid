@@ -6,15 +6,15 @@ namespace grid
 	{
 		struct wormholeUpdateStruct
 		{
-			transformStruct &tr;
-			renderStruct &rnd;
+			transformComponent &tr;
+			renderComponent &rnd;
 			monsterStruct &mo;
 			wormholeStruct &wh;
 			const uint32 myName;
 
 			wormholeUpdateStruct(entityClass *e) :
-				tr(e->value<transformStruct>(transformStruct::component)),
-				rnd(e->value<renderStruct>(renderStruct::component)),
+				tr(e->value<transformComponent>(transformComponent::component)),
+				rnd(e->value<renderComponent>(renderComponent::component)),
 				mo(e->value<monsterStruct>(monsterStruct::component)),
 				wh(e->value<wormholeStruct>(wormholeStruct::component)),
 				myName(e->getName())
@@ -75,7 +75,7 @@ namespace grid
 						rads angle = randomAngle();
 						vec3 dir = vec3(cos(angle), 0, sin(angle));
 						tre.position = player.position + dir * random(200, 250);
-						transformStruct &treh = e->value<transformStruct>(transformStruct::componentHistory);
+						transformComponent &treh = e->value<transformComponent>(transformComponent::componentHistory);
 						ENGINE_GET_COMPONENT(render, r, e);
 						environmentExplosion(treh.position, tre.position - treh.position, r.color, 1, tre.scale); // make an explosion in direction in which it was teleported
 						treh.position = tre.position;

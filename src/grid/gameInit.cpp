@@ -169,7 +169,7 @@ namespace grid
 			{
 				entityClass *e = ents[i];
 				uint32 n = e->getName();
-				if (n && e->hasComponent(transformStruct::component))
+				if (n && e->hasComponent(transformComponent::component))
 				{
 					ENGINE_GET_COMPONENT(transform, tr, e);
 					spatialData->update(n, aabb(tr.position - tr.scale, tr.position + tr.scale));
