@@ -31,6 +31,7 @@ void setScreenCredits()
 
 	static const uint32 textNames[] = {
 #define GCHL_GENERATE(N) hashString("gui/credits/" CAGE_STRINGIZE(N)),
+		GCHL_GENERATE(0)
 		CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
 #undef GCHL_GENERATE
 	};

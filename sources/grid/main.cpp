@@ -4,6 +4,7 @@
 #include "screens.h"
 #include "game.h"
 #include <cage-client/utility/engineProfiling.h>
+#include <cage-client/utility/highPerformanceGpuHint.h>
 
 configUint32 confLanguage("grid.language.language", 0);
 
@@ -13,12 +14,6 @@ namespace
 {
 	uint32 loadedLanguageHash;
 	uint32 currentLanguageHash;
-
-	bool applicationQuit()
-	{
-		engineStop();
-		return true;
-	}
 
 	bool windowClose(windowClass *)
 	{
@@ -140,7 +135,6 @@ int main(int argc, const char *args[])
 
 		engineInitialize(engineCreateConfig());
 
-		eventListener<bool()> applicationQuitListener;
 		eventListener<bool(windowClass*)> windowCloseListener;
 		eventListener<bool(windowClass *, uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
 		eventListener<bool(uint64)> updateListener;
@@ -156,7 +150,6 @@ int main(int argc, const char *args[])
 		soundInitializeListener.bind<&soundInitialize>();
 		soundFinalizeListener.bind<&soundFinalize>();
 		soundUpdateListener.bind<&soundUpdate>();
-		applicationQuitListener.bind<&applicationQuit>();
 		windowCloseListener.bind<&windowClose>();
 		keyReleaseListener.bind<&keyRelease>();
 
@@ -166,7 +159,6 @@ int main(int argc, const char *args[])
 		soundInitializeListener.attach(soundThread::initialize);
 		soundFinalizeListener.attach(soundThread::finalize);
 		soundUpdateListener.attach(soundThread::sound);
-		window()->events.applicationQuit.add(applicationQuitListener);
 		window()->events.windowClose.add(windowCloseListener);
 		window()->events.keyRelease.add(keyReleaseListener);
 
