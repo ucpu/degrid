@@ -71,7 +71,7 @@ namespace grid
 		turretStruct::component = entities()->defineComponent(turretStruct(), true);
 		decoyStruct::component = entities()->defineComponent(decoyStruct(), true);
 		shielderEliminatedListener.bind<&shielderEliminated>();
-		shielderStruct::component->getComponentEntities()->entityRemoved.add(shielderEliminatedListener);
+		shielderStruct::component->getComponentEntities()->entityRemoved.attach(shielderEliminatedListener);
 		entitiesToDestroy = entities()->defineGroup();
 		skyboxOrientation = randomDirectionQuat();
 		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);

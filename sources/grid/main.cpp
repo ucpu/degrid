@@ -159,8 +159,8 @@ int main(int argc, const char *args[])
 		soundInitializeListener.attach(soundThread::initialize);
 		soundFinalizeListener.attach(soundThread::finalize);
 		soundUpdateListener.attach(soundThread::sound);
-		window()->events.windowClose.add(windowCloseListener);
-		window()->events.keyRelease.add(keyReleaseListener);
+		window()->events.windowClose.attach(windowCloseListener);
+		window()->events.keyRelease.attach(keyReleaseListener);
 
 		window()->title("Grid");
 		setWindowMode(configGetBool("grid.fullscreen.enabled"));

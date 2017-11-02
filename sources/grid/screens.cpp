@@ -60,6 +60,6 @@ void generateButtonBack()
 	position.anchorY = 1.0;
 	GUI_GET_COMPONENT(format, format, but);
 	format.align = textAlignEnum::Center;
-	gui()->genericEvent.add(guiListener);
+	gui()->genericEvent.attach(guiListener);
 	guiListener.bind<&buttonBack>();
 }
