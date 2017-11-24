@@ -232,13 +232,13 @@ namespace grid
 				{
 					entityClass *spark = entities()->newEntity();
 					ENGINE_GET_COMPONENT(transform, transform, spark);
-					transform.scale = random() * 0.2 + 0.3;
+					transform.scale = cage::random() * 0.2 + 0.3;
 					transform.position = player.position + tr.orientation * vec3((sint32)(statistics.updateIterationNoPause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
 					transform.orientation = randomDirectionQuat();
 					ENGINE_GET_COMPONENT(render, render, spark);
 					render.object = hashString("grid/environment/spark.object");
 					GRID_GET_COMPONENT(effect, ef, spark);
-					ef.speed = (change + randomDirection3() * 0.05) * random() * -5;
+					ef.speed = (change + randomDirection3() * 0.05) * cage::random() * -5;
 					ef.ttl = random(10, 15);
 					ENGINE_GET_COMPONENT(animatedTexture, at, spark);
 					at.animationStart = player.updateTime;
@@ -433,7 +433,7 @@ namespace grid
 						}
 						else
 						{
-							real r = random();
+							real r = cage::random();
 							if (r < player.powerupSpawnChance)
 							{
 								player.powerupSpawnChance -= 1;
@@ -623,7 +623,7 @@ namespace grid
 			aniTex.animationSpeed = 0.05;
 		}
 
-		player.shotsColor = player.cinematic ? convertHsvToRgb(vec3(random(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
+		player.shotsColor = player.cinematic ? convertHsvToRgb(vec3(cage::random(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
 	}
 
 	void playerUpdate()
