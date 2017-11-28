@@ -51,8 +51,8 @@ namespace grid
 
 		spawnDefinitionStruct::spawnDefinitionStruct(const string &name) :
 			spawnTypes((monsterTypeFlags)0),
-			placingPolicy(ppRandom),
 			spawnCountMin(1), spawnCountMax(1),
+            placingPolicy(ppRandom),
 			priorityCurrent(0), priorityChange(0), priorityAdditive(0), priorityMultiplier(1),
 			iteration(0), spawned(0), name(name)
 		{}

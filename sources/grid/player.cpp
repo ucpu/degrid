@@ -619,6 +619,7 @@ namespace grid
 		{
 			player.shieldEntity = entities()->newEntity(entities()->generateUniqueName());
 			ENGINE_GET_COMPONENT(transform, transform, player.shieldEntity);
+            (void)transform;
 			ENGINE_GET_COMPONENT(animatedTexture, aniTex, player.shieldEntity);
 			aniTex.animationSpeed = 0.05;
 		}

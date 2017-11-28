@@ -38,6 +38,7 @@ namespace grid
 					if (toMonster.squaredLength() < d*d)
 					{
 						GRID_GET_COMPONENT(monster, om, e);
+                        (void)om;
 						dispersion += toMonster.normalize() / toMonster.length();
 					}
 				}
@@ -72,6 +73,7 @@ namespace grid
 					ENGINE_GET_COMPONENT(transform, t, e);
 					GRID_GET_COMPONENT(monster, m, e);
 					ENGINE_GET_COMPONENT(render, r, e);
+                    (void)r;
 					if (m.dispersion > 0)
 					{
 						monsterUpdateStruct mu(e);

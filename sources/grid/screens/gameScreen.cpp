@@ -104,6 +104,7 @@ namespace
 			GUI_GET_COMPONENT(control, control, lifeLabel);
 			control.controlType = controlTypeEnum::Empty;
 			GUI_GET_COMPONENT(text, text, lifeLabel);
+            (void)text;
 			GUI_GET_COMPONENT(format, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
@@ -122,6 +123,7 @@ namespace
 			GUI_GET_COMPONENT(control, control, lifeLabel);
 			control.controlType = controlTypeEnum::Empty;
 			GUI_GET_COMPONENT(text, text, lifeLabel);
+            (void)text;
 			GUI_GET_COMPONENT(format, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
@@ -140,6 +142,7 @@ namespace
 			GUI_GET_COMPONENT(control, control, lifeLabel);
 			control.controlType = controlTypeEnum::Empty;
 			GUI_GET_COMPONENT(text, text, lifeLabel);
+            (void)text;
 			GUI_GET_COMPONENT(format, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
@@ -213,6 +216,7 @@ namespace
 					format.color = vec3(1, 1, 1);
 				}
 				GUI_GET_COMPONENT(text, text, label);
+                (void)text;
 			}
 		}
 

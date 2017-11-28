@@ -42,6 +42,7 @@ namespace grid
 					return;
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				GRID_GET_COMPONENT(shot, os, e);
+                (void)os;
 				vec3 toShot = ot.position - tr.position;
 				real lenShot = toShot.length();
 				if (lenShot < tr.scale + 1 || lenShot > tr.scale + 5)
