@@ -21,7 +21,7 @@ namespace
 		return true;
 	}
 
-	void setWindowMode(bool fullscreen)
+	void setWindowFullscreen(bool fullscreen)
 	{
 		static configUint32 ww("grid.window.width", 1280);
 		static configUint32 wh("grid.window.height", 720);
@@ -36,7 +36,7 @@ namespace
 			}
 			catch (...)
 			{
-				setWindowMode(false);
+				setWindowFullscreen(false);
 			}
 		}
 		else
@@ -58,7 +58,7 @@ namespace
 			secondaryCamera = !(bool)secondaryCamera;
 			return true;
 		case 300: // F11
-			setWindowMode(!window()->isFullscreen());
+			setWindowFullscreen(!window()->isFullscreen());
 			return true;
 		}
 		return false;
@@ -163,7 +163,7 @@ int main(int argc, const char *args[])
 		window()->events.keyRelease.attach(keyReleaseListener);
 
 		window()->title("Grid");
-		setWindowMode(configGetBool("grid.fullscreen.enabled"));
+		setWindowFullscreen(configGetBool("grid.fullscreen.enabled"));
 		reloadLanguage(confLanguage);
 		grid::controlInitialize();
 		setScreenMainmenu();
