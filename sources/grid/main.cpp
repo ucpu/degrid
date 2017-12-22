@@ -64,8 +64,9 @@ namespace
 		return false;
 	}
 
-	bool update(uint64 time)
+	bool update()
 	{
+		uint64 time = currentControlTime();
 		grid::controlUpdate(time);
 		if (!grid::player.gameOver && !grid::player.cinematic)
 			grid::gameGuiUpdate();
@@ -131,13 +132,13 @@ int main(int argc, const char *args[])
 
 		//configSetBool("cage-client.debug.shaderIntrospection", true);
 		configSetBool("cage-client.debug.engineRenderMissingMeshes", true);
-		controlThread::tickTime = 1000000 / 30;
+		controlThread::timePerTick = 1000000 / 30;
 
 		engineInitialize(engineCreateConfig());
 
 		eventListener<bool(windowClass*)> windowCloseListener;
 		eventListener<bool(windowClass *, uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
-		eventListener<bool(uint64)> updateListener;
+		eventListener<bool()> updateListener;
 		eventListener<bool()> frameListener;
 		eventListener<bool()> assetsUpdateListener;
 		eventListener<bool()> soundInitializeListener;
