@@ -20,7 +20,7 @@ void eraseGui()
 	guiClass *guii = gui();
 	guii->setFocus(0);
 	guii->entities()->getAllEntities()->destroyAllEntities();
-	guii->genericEvent.detach();
+	guii->widgetEvent.detach();
 	winEvtLists.attachAll(window());
 }
 
@@ -28,38 +28,35 @@ void generateLogo()
 {
 	entityManagerClass *ents = gui()->entities();
 	entityClass *logo = ents->newEntity(ents->generateUniqueName());
-	GUI_GET_COMPONENT(control, control, logo);
-	control.controlType = controlTypeEnum::Empty;
+	GUI_GET_COMPONENT(label, label, logo);
 	GUI_GET_COMPONENT(image, image, logo);
 	image.textureName = hashString("grid/logo.gif");
 	GUI_GET_COMPONENT(position, position, logo);
-	position.x = 1.0;
-	position.y = 0.0;
-	position.w = 753.f / 2000.f;
-	position.h = 201.f / 2000.f;
-	position.xUnit = unitsModeEnum::ScreenWidth;
-	position.yUnit = position.wUnit = position.hUnit = unitsModeEnum::ScreenHeight;
-	position.anchorX = 1.0;
+	position.anchor = vec2(1, 0);
+	position.position.values[0] = 1;
+	position.position.units[0] = unitEnum::ScreenWidth;
+	position.position.values[1] = 0;
+	position.position.units[1] = unitEnum::ScreenHeight;
+	position.size.values[0] = 753.f / 2000.f;
+	position.size.units[0] = unitEnum::Points;
+	position.size.values[1] = 201.f / 2000.f;
+	position.size.units[1] = unitEnum::Points;
 }
 
 void generateButtonBack()
 {
 	entityManagerClass *ents = gui()->entities();
 	entityClass *but = ents->newEntity(501);
-	GUI_GET_COMPONENT(control, control, but);
-	control.controlType = controlTypeEnum::Button;
+	GUI_GET_COMPONENT(button, button, but);
 	GUI_GET_COMPONENT(text, txt, but);
 	txt.assetName = hashString("grid/languages/internationalized.textpack");
 	txt.textName = hashString("gui/mainmenu/back");
 	GUI_GET_COMPONENT(position, position, but);
-	position.x = 1.0;
-	position.y = 1.0;
-	position.xUnit = unitsModeEnum::ScreenWidth;
-	position.yUnit = unitsModeEnum::ScreenHeight;
-	position.anchorX = 1.0;
-	position.anchorY = 1.0;
-	GUI_GET_COMPONENT(format, format, but);
-	format.align = textAlignEnum::Center;
-	gui()->genericEvent.attach(guiListener);
+	position.anchor = vec2(1, 1);
+	position.position.values[0] = 1;
+	position.position.units[0] = unitEnum::ScreenWidth;
+	position.position.values[1] = 1;
+	position.position.units[1] = unitEnum::ScreenHeight;
+	gui()->widgetEvent.attach(guiListener);
 	guiListener.bind<&buttonBack>();
 }

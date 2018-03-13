@@ -10,23 +10,19 @@ void setScreenCredits()
 
 	entityClass *panel = ents->newEntity(ents->generateUniqueName());
 	{
-		GUI_GET_COMPONENT(control, control, panel);
-		control.controlType = controlTypeEnum::Panel;
+		GUI_GET_COMPONENT(groupBox, groupBox, panel);
+		groupBox.type = groupBoxTypeEnum::Panel;
 		GUI_GET_COMPONENT(position, position, panel);
-		position.x = 0.005;
-		position.y = 0.005;
-		position.h = 0.99;
-		position.xUnit = unitsModeEnum::ScreenHeight;
-		position.yUnit = unitsModeEnum::ScreenHeight;
-		position.hUnit = unitsModeEnum::ScreenHeight;
-	}
-
-	entityClass *column = ents->newEntity(ents->generateUniqueName());
-	{
-		GUI_GET_COMPONENT(parent, parent, column);
-		parent.parent = panel->getName();
-		GUI_GET_COMPONENT(layout, layout, column);
-		layout.layoutMode = layoutModeEnum::Column;
+		//position.position.values[0] = 0;
+		//position.position.units[0] = unitEnum::ScreenWidth;
+		//position.position.values[1] = 0;
+		//position.position.units[1] = unitEnum::ScreenHeight;
+		//position.size.values[0] = 1;
+		//position.size.units[0] = unitEnum::ScreenWidth;
+		position.size.values[1] = 1;
+		position.size.units[1] = unitEnum::ScreenHeight;
+		GUI_GET_COMPONENT(layoutLine, layout, panel);
+		layout.vertical = true;
 	}
 
 	static const uint32 textNames[] = {
@@ -36,16 +32,17 @@ void setScreenCredits()
 #undef GCHL_GENERATE
 	};
 
-	for (uint32 i = 0; i < sizeof(textNames) / sizeof(textNames[0]); i++)
+	uint32 idx = 0;
+	for (auto it : textNames)
 	{
-		entityClass *label = gui()->entities()->newEntity(i + 1);
+		entityClass *label = gui()->entities()->newEntity(idx + 1);
 		GUI_GET_COMPONENT(parent, parent, label);
-		parent.parent = column->getName();
-		parent.ordering = i;
-		GUI_GET_COMPONENT(control, control, label);
-		control.controlType = controlTypeEnum::Empty;
+		parent.parent = panel->getName();
+		parent.order = idx;
+		GUI_GET_COMPONENT(label, lab, label);
 		GUI_GET_COMPONENT(text, txt, label);
 		txt.assetName = hashString("grid/languages/internationalized.textpack");
-		txt.textName = textNames[i];
+		txt.textName = textNames[idx];
+		idx++;
 	}
 }

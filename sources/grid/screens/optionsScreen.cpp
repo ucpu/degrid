@@ -11,7 +11,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = 0;
+			parent.order = 0;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/arrowsAbsolute");
@@ -20,7 +20,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = 1;
+			parent.order = 1;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/arrowsRelative");
@@ -29,7 +29,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = 2;
+			parent.order = 2;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/lmb");
@@ -38,7 +38,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = 3;
+			parent.order = 3;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/rmb");
@@ -47,7 +47,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = 4;
+			parent.order = 4;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/cursor");
@@ -61,7 +61,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = -4;
+			parent.order = -4;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/lmb");
@@ -70,7 +70,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = -3;
+			parent.order = -3;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/mmb");
@@ -79,7 +79,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = -2;
+			parent.order = -2;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/rmb");
@@ -88,7 +88,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = -1;
+			parent.order = -1;
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/space");
@@ -98,7 +98,7 @@ namespace
 			entityClass *opt = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.ordering = grid::letters[i];
+			parent.order = grid::letters[i];
 			GUI_GET_COMPONENT(text, txt, opt);
 			txt.value = string(&grid::letters[i], 1);
 		}
@@ -108,6 +108,7 @@ namespace
 
 	bool guiFunction(uint32 en)
 	{
+		/*
 		GUI_GET_COMPONENT(control, control, gui()->entities()->getEntity(en));
 		switch (en)
 		{
@@ -137,6 +138,8 @@ namespace
 			return true;
 		}
 		return false;
+		*/
+		return false;
 	}
 }
 
@@ -147,9 +150,9 @@ void setScreenOptions()
 	generateButtonBack();
 	entityManagerClass *ents = gui()->entities();
 	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(gui()->genericEvent);
-	real txtSize = gui()->elements[(int)elementTypeEnum::ButtonNormal].defaultSize[0];
+	guiEvent.attach(gui()->widgetEvent);
 
+	/*
 	entityClass *tabs = ents->newEntity(ents->generateUniqueName());
 	{
 		GUI_GET_COMPONENT(layout, layout, tabs);
@@ -182,7 +185,7 @@ void setScreenOptions()
 			entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, lbl);
 			parent.parent = column->getName();
-			parent.ordering = 0;
+			parent.order = 0;
 			GUI_GET_COMPONENT(control, control, lbl);
 			control.controlType = controlTypeEnum::Empty;
 			GUI_GET_COMPONENT(position, pos, lbl);
@@ -198,7 +201,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -207,7 +210,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -222,7 +225,7 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(31);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Combobox;
 				control.ival = grid::confControlMovement;
@@ -236,7 +239,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 2;
+				parent.order = 2;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -245,7 +248,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -260,7 +263,7 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(32);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Combobox;
 				control.ival = grid::confControlFiring;
@@ -274,7 +277,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 3;
+				parent.order = 3;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -283,7 +286,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -298,7 +301,7 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(33);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Combobox;
 				control.ival = grid::confControlBomb;
@@ -312,7 +315,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 4;
+				parent.order = 4;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -321,7 +324,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -336,7 +339,7 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(34);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Combobox;
 				control.ival = grid::confControlTurret;
@@ -350,7 +353,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 5;
+				parent.order = 5;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -359,7 +362,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -374,7 +377,7 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(35);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Combobox;
 				control.ival = grid::confControlDecoy;
@@ -387,7 +390,7 @@ void setScreenOptions()
 			entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 			GUI_GET_COMPONENT(parent, parent, lbl);
 			parent.parent = column->getName();
-			parent.ordering = 10;
+			parent.order = 10;
 			GUI_GET_COMPONENT(control, control, lbl);
 			control.controlType = controlTypeEnum::Empty;
 			GUI_GET_COMPONENT(position, pos, lbl);
@@ -403,7 +406,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 11;
+				parent.order = 11;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -412,7 +415,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -427,7 +430,7 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(36);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Slider;
 				control.fval = grid::confVolumeMusic;
@@ -439,7 +442,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 12;
+				parent.order = 12;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -448,7 +451,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -463,7 +466,7 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(37);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Slider;
 				control.fval = grid::confVolumeEffects;
@@ -475,7 +478,7 @@ void setScreenOptions()
 			{
 				GUI_GET_COMPONENT(parent, parent, row);
 				parent.parent = column->getName();
-				parent.ordering = 13;
+				parent.order = 13;
 				GUI_GET_COMPONENT(layout, layout, row);
 				layout.layoutMode = layoutModeEnum::Row;
 			}
@@ -484,7 +487,7 @@ void setScreenOptions()
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = row->getName();
-				parent.ordering = 0;
+				parent.order = 0;
 				GUI_GET_COMPONENT(control, control, lbl);
 				control.controlType = controlTypeEnum::Empty;
 				GUI_GET_COMPONENT(position, pos, lbl);
@@ -499,11 +502,12 @@ void setScreenOptions()
 				entityClass *ctr = ents->newEntity(38);
 				GUI_GET_COMPONENT(parent, parent, ctr);
 				parent.parent = row->getName();
-				parent.ordering = 1;
+				parent.order = 1;
 				GUI_GET_COMPONENT(control, control, ctr);
 				control.controlType = controlTypeEnum::Slider;
 				control.fval = grid::confVolumeSpeech;
 			}
 		}
 	}
+	*/
 }

@@ -30,8 +30,7 @@ namespace
 		}
 		if (en >= 100 && en < 150)
 		{
-			GUI_GET_COMPONENT(control, c, gui()->entities()->getEntity(en));
-			reloadLanguage(confLanguage = c.ival);
+			reloadLanguage(confLanguage = en - 100);
 			return true;
 		}
 		return false;
@@ -44,39 +43,29 @@ void setScreenMainmenu()
 	generateLogo();
 	entityManagerClass *ents = gui()->entities();
 	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(gui()->genericEvent);
+	guiEvent.attach(gui()->widgetEvent);
 
 	{ // main menu
 		entityClass *panel = ents->newEntity(ents->generateUniqueName());
 		{
-			GUI_GET_COMPONENT(control, control, panel);
-			control.controlType = controlTypeEnum::Panel;
+			GUI_GET_COMPONENT(groupBox, groupBox, panel);
+			groupBox.type = groupBoxTypeEnum::Panel;
 			GUI_GET_COMPONENT(position, position, panel);
-			position.x = 0.8;
-			position.y = 0.6;
-			position.xUnit = unitsModeEnum::ScreenWidth;
-			position.yUnit = unitsModeEnum::ScreenHeight;
-			position.anchorX = 0.5;
-			position.anchorY = 0.5;
-		}
-
-		entityClass *column = ents->newEntity(ents->generateUniqueName());
-		{
-			GUI_GET_COMPONENT(parent, parent, column);
-			parent.parent = panel->getName();
-			GUI_GET_COMPONENT(layout, layout, column);
-			layout.layoutMode = layoutModeEnum::Column;
-			GUI_GET_COMPONENT(format, format, column);
-			format.align = textAlignEnum::Center;
+			position.anchor = vec2(0.5, 0.5);
+			position.position.values[0] = 0.8;
+			position.position.units[0] = unitEnum::ScreenWidth;
+			position.position.values[1] = 0.6;
+			position.position.units[1] = unitEnum::ScreenHeight;
+			GUI_GET_COMPONENT(layoutLine, layout, panel);
+			layout.vertical = true;
 		}
 
 		{
 			entityClass *butNewGame = ents->newEntity(13);
 			GUI_GET_COMPONENT(parent, parent, butNewGame);
-			parent.parent = column->getName();
-			parent.ordering = 1;
-			GUI_GET_COMPONENT(control, control, butNewGame);
-			control.controlType = controlTypeEnum::Button;
+			parent.parent = panel->getName();
+			parent.order = 1;
+			GUI_GET_COMPONENT(button, control, butNewGame);
 			GUI_GET_COMPONENT(text, txt, butNewGame);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/newgame");
@@ -85,10 +74,9 @@ void setScreenMainmenu()
 		{
 			entityClass *butOptions = ents->newEntity(14);
 			GUI_GET_COMPONENT(parent, parent, butOptions);
-			parent.parent = column->getName();
-			parent.ordering = 2;
-			GUI_GET_COMPONENT(control, control, butOptions);
-			control.controlType = controlTypeEnum::Button;
+			parent.parent = panel->getName();
+			parent.order = 2;
+			GUI_GET_COMPONENT(button, control, butOptions);
 			GUI_GET_COMPONENT(text, txt, butOptions);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/options");
@@ -97,10 +85,9 @@ void setScreenMainmenu()
 		{
 			entityClass *butScores = ents->newEntity(15);
 			GUI_GET_COMPONENT(parent, parent, butScores);
-			parent.parent = column->getName();
-			parent.ordering = 3;
-			GUI_GET_COMPONENT(control, control, butScores);
-			control.controlType = controlTypeEnum::Button;
+			parent.parent = panel->getName();
+			parent.order = 3;
+			GUI_GET_COMPONENT(button, control, butScores);
 			GUI_GET_COMPONENT(text, txt, butScores);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/scores");
@@ -109,10 +96,9 @@ void setScreenMainmenu()
 		{
 			entityClass *butCredits = ents->newEntity(16);
 			GUI_GET_COMPONENT(parent, parent, butCredits);
-			parent.parent = column->getName();
-			parent.ordering = 4;
-			GUI_GET_COMPONENT(control, control, butCredits);
-			control.controlType = controlTypeEnum::Button;
+			parent.parent = panel->getName();
+			parent.order = 4;
+			GUI_GET_COMPONENT(button, control, butCredits);
 			GUI_GET_COMPONENT(text, txt, butCredits);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/credits");
@@ -121,10 +107,9 @@ void setScreenMainmenu()
 		{
 			entityClass *butQuit = ents->newEntity(17);
 			GUI_GET_COMPONENT(parent, parent, butQuit);
-			parent.parent = column->getName();
-			parent.ordering = 5;
-			GUI_GET_COMPONENT(control, control, butQuit);
-			control.controlType = controlTypeEnum::Button;
+			parent.parent = panel->getName();
+			parent.order = 5;
+			GUI_GET_COMPONENT(button, control, butQuit);
 			GUI_GET_COMPONENT(text, txt, butQuit);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/quit");
@@ -134,8 +119,8 @@ void setScreenMainmenu()
 	{ // languages
 		entityClass *column = ents->newEntity(ents->generateUniqueName());
 		{
-			GUI_GET_COMPONENT(layout, layout, column);
-			layout.layoutMode = layoutModeEnum::Column;
+			GUI_GET_COMPONENT(layoutLine, layout, column);
+			layout.vertical = true;
 		}
 
 		static const uint32 flags[] = {
@@ -148,16 +133,16 @@ void setScreenMainmenu()
 			entityClass *but = ents->newEntity(100 + i);
 			GUI_GET_COMPONENT(parent, parent, but);
 			parent.parent = column->getName();
-			parent.ordering = i;
-			GUI_GET_COMPONENT(control, control, but);
-			control.controlType = controlTypeEnum::Button;
-			control.ival = i;
+			parent.order = i;
+			GUI_GET_COMPONENT(button, control, but);
 			GUI_GET_COMPONENT(image, img, but);
 			img.textureName = flags[i];
 			GUI_GET_COMPONENT(position, position, but);
-			position.w = 0.1;
-			position.h = 0.05;
-			position.wUnit = position.hUnit = unitsModeEnum::ScreenHeight;
+			position.anchor = vec2(0, 0);
+			position.size.values[0] = 0.1;
+			position.size.units[0] = unitEnum::ScreenHeight;
+			position.size.values[1] = 0.05;
+			position.size.units[1] = unitEnum::ScreenHeight;
 		}
 	}
 }

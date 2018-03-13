@@ -1,5 +1,5 @@
 
-Grid version Beta 36
+Grid version Beta 40
 
 This is a testing version of the game.
 That means the game is expected to be further developed and, possibly, changed substantially.

@@ -15,7 +15,7 @@ namespace
 	uint32 loadedLanguageHash;
 	uint32 currentLanguageHash;
 
-	bool windowClose(windowClass *)
+	bool windowClose()
 	{
 		engineStop();
 		return true;
@@ -46,7 +46,7 @@ namespace
 		}
 	}
 
-	bool keyRelease(windowClass *, uint32 key, uint32, modifiersFlags modifiers)
+	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
 	{
 		static configBool secondaryCamera("grid.secondary-camera.enabled", false);
 
@@ -136,8 +136,8 @@ int main(int argc, const char *args[])
 
 		engineInitialize(engineCreateConfig());
 
-		eventListener<bool(windowClass*)> windowCloseListener;
-		eventListener<bool(windowClass *, uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
+		eventListener<bool()> windowCloseListener;
+		eventListener<bool(uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
 		eventListener<bool()> updateListener;
 		eventListener<bool()> frameListener;
 		eventListener<bool()> assetsUpdateListener;
