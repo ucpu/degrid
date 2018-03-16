@@ -1,4 +1,4 @@
-#define GRID_TESTING
+//#define GRID_TESTING
 
 namespace grid
 {

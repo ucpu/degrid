@@ -108,37 +108,57 @@ namespace
 
 	bool guiFunction(uint32 en)
 	{
-		/*
-		GUI_GET_COMPONENT(control, control, gui()->entities()->getEntity(en));
 		switch (en)
 		{
 		case 31:
-			grid::confControlMovement = control.ival;
-			return true;
-		case 32:
-			grid::confControlFiring = control.ival;
-			return true;
-		case 33:
-			grid::confControlBomb = control.ival;
-			return true;
-		case 34:
-			grid::confControlTurret = control.ival;
-			return true;
-		case 35:
-			grid::confControlDecoy = control.ival;
-			return true;
-		case 36:
-			grid::confVolumeMusic = control.fval;
-			return true;
-		case 37:
-			grid::confVolumeEffects = control.fval;
-			return true;
-		case 38:
-			grid::confVolumeSpeech = control.fval;
+		{
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			grid::confControlMovement = control.selected;
 			return true;
 		}
-		return false;
-		*/
+		case 32:
+		{
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			grid::confControlFiring = control.selected;
+			return true;
+		}
+		case 33:
+		{
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			grid::confControlBomb = control.selected;
+			return true;
+		}
+		case 34:
+		{
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			grid::confControlTurret = control.selected;
+			return true;
+		}
+		case 35:
+		{
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			grid::confControlDecoy = control.selected;
+			return true;
+		}
+		case 36:
+		{
+			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
+			grid::confVolumeMusic = control.value.value;
+			return true;
+		}
+		case 37:
+		{
+			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
+			grid::confVolumeEffects = control.value.value;
+			return true;
+		}
+		case 38:
+		{
+			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
+			grid::confVolumeSpeech = control.value.value;
+			return true;
+		}
+		}
 		return false;
 	}
 }
@@ -152,70 +172,38 @@ void setScreenOptions()
 	guiEvent.bind<&guiFunction>();
 	guiEvent.attach(gui()->widgetEvent);
 
-	/*
 	entityClass *tabs = ents->newEntity(ents->generateUniqueName());
 	{
-		GUI_GET_COMPONENT(layout, layout, tabs);
-		layout.layoutMode = layoutModeEnum::Column;
 		GUI_GET_COMPONENT(position, position, tabs);
-		position.x = 0.005;
-		position.y = 0.005;
-		position.xUnit = unitsModeEnum::ScreenHeight;
-		position.yUnit = unitsModeEnum::ScreenHeight;
+		position.size.values[1] = 1;
+		position.size.units[1] = unitEnum::ScreenHeight;
+		GUI_GET_COMPONENT(layoutLine, layout, tabs);
+		layout.vertical = true;
+		layout.expandToSameWidth = true;
 	}
 
 	{ // controls
 		entityClass *panel = ents->newEntity(ents->generateUniqueName());
 		{
-			GUI_GET_COMPONENT(control, control, panel);
-			control.controlType = controlTypeEnum::Panel;
+			GUI_GET_COMPONENT(groupBox, control, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
 			parent.parent = tabs->getName();
-		}
-
-		entityClass *column = ents->newEntity(ents->generateUniqueName());
-		{
-			GUI_GET_COMPONENT(parent, parent, column);
-			parent.parent = panel->getName();
-			GUI_GET_COMPONENT(layout, layout, column);
-			layout.layoutMode = layoutModeEnum::Column;
-		}
-
-		{ // controls label
-			entityClass *lbl = ents->newEntity(ents->generateUniqueName());
-			GUI_GET_COMPONENT(parent, parent, lbl);
-			parent.parent = column->getName();
-			parent.order = 0;
-			GUI_GET_COMPONENT(control, control, lbl);
-			control.controlType = controlTypeEnum::Empty;
-			GUI_GET_COMPONENT(position, pos, lbl);
-			pos.w = txtSize;
-			pos.wUnit = unitsModeEnum::Pixels;
-			GUI_GET_COMPONENT(text, txt, lbl);
+			parent.order = 1;
+			GUI_GET_COMPONENT(layoutTable, layout, panel);
+			layout.sections = 2;
+			GUI_GET_COMPONENT(text, txt, panel);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/controls");
 		}
+		uint32 index = 0;
 
 		{ // movement
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/movement");
@@ -224,36 +212,21 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(31);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Combobox;
-				control.ival = grid::confControlMovement;
-
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(comboBox, control, ctr);
+				control.selected = grid::confControlMovement;
 				addOptionsMovementFiring(ctr->getName());
 			}
 		}
 
 		{ // firing
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 2;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/firing");
@@ -262,36 +235,21 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(32);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Combobox;
-				control.ival = grid::confControlFiring;
-
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(comboBox, control, ctr);
+				control.selected = grid::confControlFiring;
 				addOptionsMovementFiring(ctr->getName());
 			}
 		}
 
 		{ // bomb
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 3;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/bomb");
@@ -300,36 +258,21 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(33);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Combobox;
-				control.ival = grid::confControlBomb;
-
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(comboBox, control, ctr);
+				control.selected = grid::confControlBomb;
 				addOptionsPowers(ctr->getName());
 			}
 		}
 
 		{ // turret
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 4;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/turret");
@@ -338,36 +281,21 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(34);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Combobox;
-				control.ival = grid::confControlTurret;
-
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(comboBox, control, ctr);
+				control.selected = grid::confControlTurret;
 				addOptionsPowers(ctr->getName());
 			}
 		}
 
 		{ // decoy
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 5;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/decoy");
@@ -376,51 +304,37 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(35);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Combobox;
-				control.ival = grid::confControlDecoy;
-
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(comboBox, control, ctr);
+				control.selected = grid::confControlDecoy;
 				addOptionsPowers(ctr->getName());
 			}
 		}
+	}
 
-		{ // sound label
-			entityClass *lbl = ents->newEntity(ents->generateUniqueName());
-			GUI_GET_COMPONENT(parent, parent, lbl);
-			parent.parent = column->getName();
-			parent.order = 10;
-			GUI_GET_COMPONENT(control, control, lbl);
-			control.controlType = controlTypeEnum::Empty;
-			GUI_GET_COMPONENT(position, pos, lbl);
-			pos.w = txtSize;
-			pos.wUnit = unitsModeEnum::Pixels;
-			GUI_GET_COMPONENT(text, txt, lbl);
+	{
+		entityClass *panel = ents->newEntity(ents->generateUniqueName());
+		{
+			GUI_GET_COMPONENT(groupBox, control, panel);
+			GUI_GET_COMPONENT(parent, parent, panel);
+			parent.parent = tabs->getName();
+			parent.order = 2;
+			GUI_GET_COMPONENT(layoutTable, layout, panel);
+			layout.sections = 2;
+			GUI_GET_COMPONENT(text, txt, panel);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/sounds");
 		}
+		uint32 index = 0;
 
 		{ // music volume
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 11;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/musicVolume");
@@ -429,34 +343,20 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(36);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Slider;
-				control.fval = grid::confVolumeMusic;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(sliderBar, control, ctr);
+				control.value = real(grid::confVolumeMusic);
 			}
 		}
 
 		{ // effects volume
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 12;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/effectsVolume");
@@ -465,34 +365,20 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(37);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Slider;
-				control.fval = grid::confVolumeEffects;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(sliderBar, control, ctr);
+				control.value = real(grid::confVolumeEffects);
 			}
 		}
 
 		{ // speech volume
-			entityClass *row = ents->newEntity(ents->generateUniqueName());
-			{
-				GUI_GET_COMPONENT(parent, parent, row);
-				parent.parent = column->getName();
-				parent.order = 13;
-				GUI_GET_COMPONENT(layout, layout, row);
-				layout.layoutMode = layoutModeEnum::Row;
-			}
-
 			{
 				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = row->getName();
-				parent.order = 0;
-				GUI_GET_COMPONENT(control, control, lbl);
-				control.controlType = controlTypeEnum::Empty;
-				GUI_GET_COMPONENT(position, pos, lbl);
-				pos.w = txtSize;
-				pos.wUnit = unitsModeEnum::Pixels;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/speechVolume");
@@ -501,13 +387,12 @@ void setScreenOptions()
 			{
 				entityClass *ctr = ents->newEntity(38);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = row->getName();
-				parent.order = 1;
-				GUI_GET_COMPONENT(control, control, ctr);
-				control.controlType = controlTypeEnum::Slider;
-				control.fval = grid::confVolumeSpeech;
+				parent.parent = panel->getName();
+				parent.order = index++;
+				GUI_GET_COMPONENT(sliderBar, control, ctr);
+				control.value = real(grid::confVolumeSpeech);
 			}
 		}
 	}
-	*/
 }
+

@@ -37,10 +37,6 @@ void generateLogo()
 	position.position.units[0] = unitEnum::ScreenWidth;
 	position.position.values[1] = 0;
 	position.position.units[1] = unitEnum::ScreenHeight;
-	position.size.values[0] = 753.f / 2000.f;
-	position.size.units[0] = unitEnum::Points;
-	position.size.values[1] = 201.f / 2000.f;
-	position.size.units[1] = unitEnum::Points;
 }
 
 void generateButtonBack()

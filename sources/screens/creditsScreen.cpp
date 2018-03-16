@@ -13,12 +13,6 @@ void setScreenCredits()
 		GUI_GET_COMPONENT(groupBox, groupBox, panel);
 		groupBox.type = groupBoxTypeEnum::Panel;
 		GUI_GET_COMPONENT(position, position, panel);
-		//position.position.values[0] = 0;
-		//position.position.units[0] = unitEnum::ScreenWidth;
-		//position.position.values[1] = 0;
-		//position.position.units[1] = unitEnum::ScreenHeight;
-		//position.size.values[0] = 1;
-		//position.size.units[0] = unitEnum::ScreenWidth;
 		position.size.values[1] = 1;
 		position.size.units[1] = unitEnum::ScreenHeight;
 		GUI_GET_COMPONENT(layoutLine, layout, panel);
