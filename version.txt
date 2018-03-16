@@ -1,6 +1,0 @@
-
-Grid version Beta 40
-
-This is a testing version of the game.
-That means the game is expected to be further developed and, possibly, changed substantially.
-It is meaningless to compare a score achieved in this version of the game with scores achieved in any other version.
