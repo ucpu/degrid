@@ -9,7 +9,8 @@ namespace
 
 	bool buttonBack(uint32 en)
 	{
-		if (en != 501) return false;
+		if (en != 501)
+			return false;
 		setScreenMainmenu();
 		return true;
 	}

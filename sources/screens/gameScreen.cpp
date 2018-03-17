@@ -326,4 +326,6 @@ void setScreenGame()
 {
 	grid::previousPaused = true;
 	grid::gameStart(false);
+
+	gui()->controlUpdate(); // regenerate gui cache
 }

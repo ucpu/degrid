@@ -39,4 +39,6 @@ void setScreenCredits()
 		txt.textName = textNames[idx];
 		idx++;
 	}
+
+	gui()->controlUpdate(); // regenerate gui cache
 }

@@ -145,4 +145,6 @@ void setScreenMainmenu()
 			position.size.units[1] = unitEnum::ScreenHeight;
 		}
 	}
+
+	gui()->controlUpdate(); // regenerate gui cache
 }

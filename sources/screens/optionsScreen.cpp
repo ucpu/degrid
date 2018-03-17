@@ -394,5 +394,7 @@ void setScreenOptions()
 			}
 		}
 	}
+
+	gui()->controlUpdate(); // regenerate gui cache
 }
 
