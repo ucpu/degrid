@@ -105,7 +105,7 @@ namespace grid
 	{
 		uint32 special = 0;
 		entityClass *shielder = initializeMonster(spawnPosition, color, 3, hashString("grid/monster/shielder.object"), hashString("grid/monster/bum-shielder.ogg"), 5, 3 + spawnSpecial(special));
-		entityClass *shield = entities()->newEntity(entities()->generateUniqueName());
+		entityClass *shield = entities()->newUniqueEntity();
 		{
 			GRID_GET_COMPONENT(shielder, sh, shielder);
 			sh.shieldEntity = shield->getName();

@@ -8,7 +8,7 @@ namespace
 	{
 		entityManagerClass *ents = gui()->entities();
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 0;
@@ -17,7 +17,7 @@ namespace
 			txt.textName = hashString("gui/options/arrowsAbsolute");
 		}
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 1;
@@ -26,7 +26,7 @@ namespace
 			txt.textName = hashString("gui/options/arrowsRelative");
 		}
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 2;
@@ -35,7 +35,7 @@ namespace
 			txt.textName = hashString("gui/options/lmb");
 		}
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 3;
@@ -44,7 +44,7 @@ namespace
 			txt.textName = hashString("gui/options/rmb");
 		}
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 4;
@@ -58,7 +58,7 @@ namespace
 	{
 		entityManagerClass *ents = gui()->entities();
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -4;
@@ -67,7 +67,7 @@ namespace
 			txt.textName = hashString("gui/options/lmb");
 		}
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -3;
@@ -76,7 +76,7 @@ namespace
 			txt.textName = hashString("gui/options/mmb");
 		}
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -2;
@@ -85,7 +85,7 @@ namespace
 			txt.textName = hashString("gui/options/rmb");
 		}
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -1;
@@ -95,7 +95,7 @@ namespace
 		}
 		for (sint32 i = 0; i < sizeof(grid::letters); i++)
 		{
-			entityClass *opt = ents->newEntity(ents->generateUniqueName());
+			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = grid::letters[i];
@@ -172,7 +172,7 @@ void setScreenOptions()
 	guiEvent.bind<&guiFunction>();
 	guiEvent.attach(gui()->widgetEvent);
 
-	entityClass *tabs = ents->newEntity(ents->generateUniqueName());
+	entityClass *tabs = ents->newUniqueEntity();
 	{
 		GUI_GET_COMPONENT(position, position, tabs);
 		position.size.values[1] = 1;
@@ -183,7 +183,7 @@ void setScreenOptions()
 	}
 
 	{ // controls
-		entityClass *panel = ents->newEntity(ents->generateUniqueName());
+		entityClass *panel = ents->newUniqueEntity();
 		{
 			GUI_GET_COMPONENT(groupBox, control, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
@@ -199,7 +199,7 @@ void setScreenOptions()
 
 		{ // movement
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -222,7 +222,7 @@ void setScreenOptions()
 
 		{ // firing
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -245,7 +245,7 @@ void setScreenOptions()
 
 		{ // bomb
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -268,7 +268,7 @@ void setScreenOptions()
 
 		{ // turret
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -291,7 +291,7 @@ void setScreenOptions()
 
 		{ // decoy
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -314,7 +314,7 @@ void setScreenOptions()
 	}
 
 	{
-		entityClass *panel = ents->newEntity(ents->generateUniqueName());
+		entityClass *panel = ents->newUniqueEntity();
 		{
 			GUI_GET_COMPONENT(groupBox, control, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
@@ -330,7 +330,7 @@ void setScreenOptions()
 
 		{ // music volume
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -352,7 +352,7 @@ void setScreenOptions()
 
 		{ // effects volume
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -374,7 +374,7 @@ void setScreenOptions()
 
 		{ // speech volume
 			{
-				entityClass *lbl = ents->newEntity(ents->generateUniqueName());
+				entityClass *lbl = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, lbl);
 				parent.parent = panel->getName();
 				parent.order = index++;

@@ -57,7 +57,7 @@ namespace
 		guiEvent.bind<&guiFunction>();
 		guiEvent.attach(gui()->widgetEvent);
 
-		entityClass *panel = ents->newEntity(ents->generateUniqueName());
+		entityClass *panel = ents->newUniqueEntity();
 		{
 			GUI_GET_COMPONENT(groupBox, groupBox, panel);
 			groupBox.type = groupBoxTypeEnum::Panel;
@@ -108,7 +108,7 @@ namespace
 		for (auto it = scores.begin(), et = scores.end(); it != et; it++)
 		{
 			{
-				entityClass *txtScore = ents->newEntity(ents->generateUniqueName());
+				entityClass *txtScore = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, txtScore);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -120,7 +120,7 @@ namespace
 			}
 
 			{
-				entityClass *txtDate = ents->newEntity(ents->generateUniqueName());
+				entityClass *txtDate = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, txtDate);
 				parent.parent = panel->getName();
 				parent.order = index++;
@@ -132,7 +132,7 @@ namespace
 			}
 
 			{
-				entityClass *txtName = ents->newEntity(ents->generateUniqueName());
+				entityClass *txtName = ents->newUniqueEntity();
 				GUI_GET_COMPONENT(parent, parent, txtName);
 				parent.parent = panel->getName();
 				parent.order = index++;

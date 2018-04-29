@@ -170,7 +170,7 @@ namespace grid
 	entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
 	{
 		statistics.monstersSpawned++;
-		entityClass *m = entities()->newEntity(entities()->generateUniqueName());
+		entityClass *m = entities()->newUniqueEntity();
 		ENGINE_GET_COMPONENT(transform, transform, m);
 		ENGINE_GET_COMPONENT(render, render, m);
 		GRID_GET_COMPONENT(monster, monster, m);

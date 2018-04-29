@@ -44,7 +44,7 @@ void setScreenGameover(uint32 score)
 	guiEvent.bind<&buttonSave>();
 	guiEvent.attach(gui()->widgetEvent);
 
-	entityClass *panel = ents->newEntity(ents->generateUniqueName());
+	entityClass *panel = ents->newUniqueEntity();
 	{
 		GUI_GET_COMPONENT(groupBox, groupBox, panel);
 		groupBox.type = groupBoxTypeEnum::Panel;
@@ -60,7 +60,7 @@ void setScreenGameover(uint32 score)
 	}
 
 	{
-		entityClass *empOver = ents->newEntity(ents->generateUniqueName());
+		entityClass *empOver = ents->newUniqueEntity();
 		GUI_GET_COMPONENT(parent, parent, empOver);
 		parent.parent = panel->getName();
 		parent.order = 1;
@@ -75,7 +75,7 @@ void setScreenGameover(uint32 score)
 	}
 
 	{
-		entityClass *empScore = ents->newEntity(ents->generateUniqueName());
+		entityClass *empScore = ents->newUniqueEntity();
 		GUI_GET_COMPONENT(parent, parent, empScore);
 		parent.parent = panel->getName();
 		parent.order = 2;
@@ -89,7 +89,7 @@ void setScreenGameover(uint32 score)
 	}
 
 	{
-		entityClass *txtName = ents->newEntity(ents->generateUniqueName());
+		entityClass *txtName = ents->newUniqueEntity();
 		GUI_GET_COMPONENT(parent, parent, txtName);
 		parent.parent = panel->getName();
 		parent.order = 3;

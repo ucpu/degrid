@@ -28,7 +28,7 @@ void eraseGui()
 void generateLogo()
 {
 	entityManagerClass *ents = gui()->entities();
-	entityClass *logo = ents->newEntity(ents->generateUniqueName());
+	entityClass *logo = ents->newUniqueEntity();
 	GUI_GET_COMPONENT(label, label, logo);
 	GUI_GET_COMPONENT(image, image, logo);
 	image.textureName = hashString("grid/logo.gif");

@@ -111,7 +111,7 @@ namespace grid
 	void powerupSpawn(const vec3 &position)
 	{
 		statistics.powerupsSpawned++;
-		entityClass *e = entities()->newEntity(entities()->generateUniqueName());
+		entityClass *e = entities()->newUniqueEntity();
 		ENGINE_GET_COMPONENT(transform, transform, e);
 		transform.position = position * vec3(1, 0, 1);
 		transform.orientation = quat(randomAngle(), randomAngle(), randomAngle());

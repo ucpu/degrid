@@ -165,7 +165,7 @@ namespace
 			pos.position.units[1] = unitEnum::ScreenHeight;
 		}
 
-		entityClass *column = ents->newEntity(ents->generateUniqueName());
+		entityClass *column = ents->newUniqueEntity();
 		{
 			GUI_GET_COMPONENT(layoutLine, layout, column);
 			layout.vertical = true;
@@ -231,7 +231,7 @@ namespace
 		}
 
 		{ // paused
-			entityClass *panel = ents->newEntity(ents->generateUniqueName());
+			entityClass *panel = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(groupBox, groupBox, panel);
 			groupBox.type = groupBoxTypeEnum::Panel;
 			GUI_GET_COMPONENT(position, position, panel);
@@ -241,7 +241,7 @@ namespace
 			position.position.values[1] = 0.2;
 			position.position.units[1] = unitEnum::ScreenHeight;
 
-			entityClass *label = ents->newEntity(ents->generateUniqueName());
+			entityClass *label = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, label);
 			parent.parent = panel->getName();
 			GUI_GET_COMPONENT(label, controlL, label);

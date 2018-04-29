@@ -166,7 +166,7 @@ namespace grid
 		uint32 cnt = numeric_cast<uint32>(clamp(size, 2, 20));
 		for (uint32 i = 0; i < cnt; i++)
 		{
-			entityClass *e = entities()->newEntity();
+			entityClass *e = entities()->newAnonymousEntity();
 			GRID_GET_COMPONENT(effect, effect, e);
 			effect.ttl = numeric_cast<uint32>(random() * 5 + 10);
 			effect.speed = randomDirection3();
@@ -202,7 +202,7 @@ namespace grid
 	void environmentInit()
 	{
 		{
-			entityClass *light = entities()->newEntity(entities()->generateUniqueName());
+			entityClass *light = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, t, light);
 			t.orientation = quat(degs(), degs(45), degs());
 			ENGINE_GET_COMPONENT(light, l, light);
@@ -211,7 +211,7 @@ namespace grid
 		}
 
 		{
-			player.skyboxRenderEntity = entities()->newEntity(entities()->generateUniqueName());
+			player.skyboxRenderEntity = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(render, r, player.skyboxRenderEntity);
 			r.object = hashString("grid/environment/skybox.object");
 			r.renderMask = 2;
@@ -220,7 +220,7 @@ namespace grid
 		}
 
 		{
-			player.skyboxPrimaryCameraEntity = entities()->newEntity(entities()->generateUniqueName());
+			player.skyboxPrimaryCameraEntity = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, player.skyboxPrimaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
 			ENGINE_GET_COMPONENT(camera, c, player.skyboxPrimaryCameraEntity);
@@ -232,7 +232,7 @@ namespace grid
 		}
 
 		{
-			player.primaryCameraEntity = entities()->newEntity(entities()->generateUniqueName());
+			player.primaryCameraEntity = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, player.primaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
 			transform.position = vec3(0, 140, 0);
@@ -250,8 +250,8 @@ namespace grid
 		}
 
 		{
-			player.skyboxSecondaryCameraEntity = entities()->newEntity(entities()->generateUniqueName());
-			player.secondaryCameraEntity = entities()->newEntity(entities()->generateUniqueName());
+			player.skyboxSecondaryCameraEntity = entities()->newUniqueEntity();
+			player.secondaryCameraEntity = entities()->newUniqueEntity();
 		}
 
 #ifdef CAGE_DEBUG
@@ -267,7 +267,7 @@ namespace grid
 				const real d = vec3(x, 0, y).length();
 				if (d > radius)
 					continue;
-				entityClass *e = entities()->newEntity(entities()->generateUniqueName());
+				entityClass *e = entities()->newUniqueEntity();
 				GRID_GET_COMPONENT(grid, grid, e);
 				grid.place = vec3(x, -2, y) + vec3(random(), random() * 0.1, random()) * 2 - 1;
 				grid.speed = randomDirection3();
@@ -286,7 +286,7 @@ namespace grid
 
 		for (rads ang = degs(0); ang < degs(360); ang += degs(1))
 		{
-			entityClass *e = entities()->newEntity(entities()->generateUniqueName());
+			entityClass *e = entities()->newUniqueEntity();
 			GRID_GET_COMPONENT(grid, grid, e);
 			ENGINE_GET_COMPONENT(transform, transform, e);
 			transform.position = grid.place = vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);

@@ -8,7 +8,7 @@ void setScreenCredits()
 	generateButtonBack();
 	entityManagerClass *ents = gui()->entities();
 
-	entityClass *panel = ents->newEntity(ents->generateUniqueName());
+	entityClass *panel = ents->newUniqueEntity();
 	{
 		GUI_GET_COMPONENT(groupBox, groupBox, panel);
 		groupBox.type = groupBoxTypeEnum::Panel;

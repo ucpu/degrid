@@ -84,7 +84,7 @@ namespace grid
 				return;
 			player.powerups[puTurret]--;
 			statistics.turretsPlaced++;
-			entityClass *turret = entities()->newEntity(entities()->generateUniqueName());
+			entityClass *turret = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, turret);
 			transform.position = player.position;
 			transform.position[1] = 0;
@@ -109,7 +109,7 @@ namespace grid
 				return;
 			player.powerups[puDecoy]--;
 			statistics.decoysUsed++;
-			entityClass *decoy = entities()->newEntity(entities()->generateUniqueName());
+			entityClass *decoy = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
 			ENGINE_GET_COMPONENT(transform, transform, decoy);
 			transform = playerTransform;
@@ -230,7 +230,7 @@ namespace grid
 					player.speed = player.speed.normalize() * maxSpeed;
 				if (change.squaredLength() > 0.01)
 				{
-					entityClass *spark = entities()->newEntity();
+					entityClass *spark = entities()->newAnonymousEntity();
 					ENGINE_GET_COMPONENT(transform, transform, spark);
 					transform.scale = cage::random() * 0.2 + 0.3;
 					transform.position = player.position + tr.orientation * vec3((sint32)(statistics.updateIterationNoPause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
@@ -302,7 +302,7 @@ namespace grid
 			for (real i = player.powerups[puMultishot] * -0.5; i < player.powerups[puMultishot] * 0.5 + 1e-5; i += 1)
 			{
 				statistics.shotsFired++;
-				entityClass *shot = entities()->newEntity(entities()->generateUniqueName());
+				entityClass *shot = entities()->newUniqueEntity();
 				ENGINE_GET_COMPONENT(transform, transform, shot);
 				rads dir = aTan2(-player.fireDirection[2], -player.fireDirection[0]);
 				dir += degs(i * 10);
@@ -344,7 +344,7 @@ namespace grid
 				for (uint32 i = 0; i < 6; i++)
 				{
 					statistics.shotsTurret++;
-					entityClass *shot = entities()->newEntity(entities()->generateUniqueName());
+					entityClass *shot = entities()->newUniqueEntity();
 					ENGINE_GET_COMPONENT(transform, transform, shot);
 					transform.orientation = quat(degs(), degs(i * 60), degs()) * tr.orientation;
 					transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
@@ -608,7 +608,7 @@ namespace grid
 		buttonMap = (mouseButtonsFlags)0;
 
 		{
-			player.playerEntity = entities()->newEntity(entities()->generateUniqueName());
+			player.playerEntity = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, player.playerEntity);
 			transform.scale = player.scale;
 			ENGINE_GET_COMPONENT(render, render, player.playerEntity);
@@ -617,7 +617,7 @@ namespace grid
 		}
 
 		{
-			player.shieldEntity = entities()->newEntity(entities()->generateUniqueName());
+			player.shieldEntity = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, player.shieldEntity);
             (void)transform;
 			ENGINE_GET_COMPONENT(animatedTexture, aniTex, player.shieldEntity);

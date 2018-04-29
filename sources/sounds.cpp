@@ -141,7 +141,7 @@ namespace grid
 
 	void soundEffect(uint32 sound, const vec3 &position)
 	{
-		entityClass *e = entities()->newEntity(entities()->generateUniqueName());
+		entityClass *e = entities()->newUniqueEntity();
 		ENGINE_GET_COMPONENT(transform, t, e);
 		t.position = position;
 		ENGINE_GET_COMPONENT(voice, s, e);

@@ -46,7 +46,7 @@ void setScreenMainmenu()
 	guiEvent.attach(gui()->widgetEvent);
 
 	{ // main menu
-		entityClass *panel = ents->newEntity(ents->generateUniqueName());
+		entityClass *panel = ents->newUniqueEntity();
 		{
 			GUI_GET_COMPONENT(groupBox, groupBox, panel);
 			groupBox.type = groupBoxTypeEnum::Panel;
@@ -117,7 +117,7 @@ void setScreenMainmenu()
 	}
 
 	{ // languages
-		entityClass *column = ents->newEntity(ents->generateUniqueName());
+		entityClass *column = ents->newUniqueEntity();
 		{
 			GUI_GET_COMPONENT(layoutLine, layout, column);
 			layout.vertical = true;
