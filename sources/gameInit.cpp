@@ -184,7 +184,7 @@ namespace grid
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = entities()->getAllEntities()->entitiesCount();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
-		statistics.timeRenderCurrent = engineProfiling::getTime(engineProfiling::profilingTimeFlags::FrameTime, false);
+		statistics.timeRenderCurrent = engineProfiling::getProfilingValue(engineProfiling::profilingFlags::FrameTime, false);
 		if (statistics.updateIterationNoPause > 1000)
 		{
 			statistics.timeRenderMin = min(statistics.timeRenderMin, statistics.timeRenderCurrent);
