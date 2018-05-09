@@ -155,7 +155,7 @@ int main(int argc, const char *args[])
 		keyReleaseListener.bind<&keyRelease>();
 
 		updateListener.attach(controlThread::update);
-		frameListener.attach(graphicPrepareThread::prepare);
+		frameListener.attach(graphicsPrepareThread::prepare);
 		assetsUpdateListener.attach(controlThread::assets);
 		soundInitializeListener.attach(soundThread::initialize);
 		soundFinalizeListener.attach(soundThread::finalize);
