@@ -8,11 +8,8 @@ namespace grid
 		{ // destroy outdated sound effects
 			statistics.soundEffectsCurrent = 0;
 			uint64 time = getApplicationTime() - 2000000;
-			uint32 count = transformComponent::component->getComponentEntities()->entitiesCount();
-			entityClass *const *effects = transformComponent::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : transformComponent::component->getComponentEntities()->entities())
 			{
-				entityClass *e = effects[i];
 				if (!e->hasComponent(voiceComponent::component))
 					continue;
 				ENGINE_GET_COMPONENT(voice, s, e);
@@ -29,11 +26,8 @@ namespace grid
 		}
 
 		{ // update effects
-			uint32 count = effectStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *effects = effectStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : effectStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = effects[i];
 				GRID_GET_COMPONENT(effect, g, e);
 				if (g.ttl-- == 0)
 				{
@@ -107,11 +101,8 @@ namespace grid
 			return;
 
 		{ // update grid markers
-			uint32 count = gridStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *grids = gridStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : gridStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = grids[i];
 				ENGINE_GET_COMPONENT(transform, t, e);
 				ENGINE_GET_COMPONENT(render, r, e);
 				GRID_GET_COMPONENT(grid, g, e);

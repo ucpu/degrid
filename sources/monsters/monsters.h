@@ -3,18 +3,19 @@
 
 namespace grid
 {
-	enum monsterTypeFlags
+	enum class monsterTypeFlags
 	{
-		mtCircle = 1 << 0,
-		mtSmallTriangle = 1 << 1,
-		mtSmallCube = 1 << 2,
-		mtLargeTriangle = 1 << 3,
-		mtLargeCube = 1 << 4,
-		mtPinWheel = 1 << 5,
-		mtDiamond = 1 << 6,
-		mtShielder = 1 << 7,
-		mtSnake = 1 << 8,
-		mtWormhole = 1 << 9,
+		None = 0,
+		Circle = 1 << 0,
+		SmallTriangle = 1 << 1,
+		SmallCube = 1 << 2,
+		LargeTriangle = 1 << 3,
+		LargeCube = 1 << 4,
+		PinWheel = 1 << 5,
+		Diamond = 1 << 6,
+		Shielder = 1 << 7,
+		Snake = 1 << 8,
+		Wormhole = 1 << 9,
 	};
 
 	void spawnUpdate();
@@ -36,4 +37,9 @@ namespace grid
 
 	const uint32 spawnSpecial(uint32 &special);
 	entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life);
+}
+
+namespace cage
+{
+	GCHL_ENUM_BITS(grid::monsterTypeFlags);
 }

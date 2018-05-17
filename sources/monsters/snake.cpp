@@ -5,11 +5,8 @@ namespace grid
 	void updateSnake()
 	{
 		{ // snake heads
-			uint32 count = snakeHeadStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *monsters = snakeHeadStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : snakeHeadStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = monsters[i];
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				GRID_GET_COMPONENT(monster, m, e);
 				GRID_GET_COMPONENT(snakeHead, snake, e);
@@ -27,11 +24,8 @@ namespace grid
 			}
 		}
 		{ // snake tails
-			uint32 count = snakeTailStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *monsters = snakeTailStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : snakeTailStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = monsters[i];
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				GRID_GET_COMPONENT(monster, m, e);
 				GRID_GET_COMPONENT(snakeTail, snake, e);

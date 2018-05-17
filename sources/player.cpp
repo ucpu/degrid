@@ -322,11 +322,8 @@ namespace grid
 
 		void turretsUpdate()
 		{
-			uint32 count = turretStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *turrets = turretStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : turretStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = turrets[i];
 				GRID_GET_COMPONENT(turret, tu, e);
 				if (tu.timeout-- == 0)
 				{
@@ -361,11 +358,8 @@ namespace grid
 
 		void decoysUpdate()
 		{
-			uint32 count = decoyStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *decoys = decoyStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : decoyStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = decoys[i];
 				GRID_GET_COMPONENT(decoy, dec, e);
 				if (dec.timeout-- == 0)
 				{
@@ -513,13 +507,8 @@ namespace grid
 
 		void shotsUpdate()
 		{
-			uint32 count = shotStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *shots = shotStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
-			{
-				entityClass *e = shots[i];
+			for (entityClass *e : shotStruct::component->getComponentEntities()->entities())
 				shotUpdateStruct u(e);
-			}
 		}
 
 		void scoreUpdate()

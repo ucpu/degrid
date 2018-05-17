@@ -20,9 +20,7 @@ namespace grid
 				closestShot(0), closestDistance(real::PositiveInfinity), myName(e->getName())
 			{
 				if (ms.speed.squaredLength() > sm.maxSpeed * sm.maxSpeed + 0.0001)
-				{
 					ms.speed = ms.speed.normalize() * max(sm.maxSpeed, ms.speed.length() - sm.acceleration);
-				}
 				else
 				{
 					spatialQuery->intersection(sphere(tr.position, 15));
@@ -84,7 +82,7 @@ namespace grid
 			ENGINE_GET_COMPONENT(transform, t, e);
 			ENGINE_GET_COMPONENT(render, r, e);
 			for (uint32 i = 0; i < 2; i++)
-				spawnSimple(mtSmallCube, t.position + vec3(random() - 0.5, 0, random() - 0.5), r.color);
+				spawnSimple(monsterTypeFlags::SmallCube, t.position + vec3(random() - 0.5, 0, random() - 0.5), r.color);
 		}
 
 		void spawnSmallTriangle(uint32 originalEntity)
@@ -93,7 +91,7 @@ namespace grid
 			ENGINE_GET_COMPONENT(transform, t, e);
 			ENGINE_GET_COMPONENT(render, r, e);
 			for (uint32 i = 0; i < 2; i++)
-				spawnSimple(mtSmallTriangle, t.position + vec3(random() - 0.5, 0, random() - 0.5), r.color);
+				spawnSimple(monsterTypeFlags::SmallTriangle, t.position + vec3(random() - 0.5, 0, random() - 0.5), r.color);
 		}
 
 		entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, const quat &animation)
@@ -118,33 +116,33 @@ namespace grid
 		uint32 special = 0;
 		switch (type)
 		{
-		case mtCircle:
+		case monsterTypeFlags::Circle:
 			e = initializeSimple(spawnPosition, color, 2, hashString("grid/monster/smallCircle.object"), hashString("grid/monster/bum-circle.ogg"), 2, 1 + spawnSpecial(special), 0.3 + 0.1 * spawnSpecial(special), 2, 0, 1, quat());
 			break;
-		case mtSmallTriangle:
+		case monsterTypeFlags::SmallTriangle:
 			e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 3, 1 + spawnSpecial(special), 0.4 + 0.1 * spawnSpecial(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
 			break;
-		case mtSmallCube:
+		case monsterTypeFlags::SmallCube:
 			e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallCube.object"), hashString("grid/monster/bum-cube.ogg"), 3, 1 + spawnSpecial(special), 0.3 + 0.1 * spawnSpecial(special), 3, 1, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
 			break;
-		case mtLargeTriangle:
+		case monsterTypeFlags::LargeTriangle:
 			e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 4, 1 + spawnSpecial(special), 0.4 + 0.1 * spawnSpecial(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
 			{
 				GRID_GET_COMPONENT(monster, m, e);
 				m.shotDownCallback.bind<&spawnSmallTriangle>();
 			}
 			break;
-		case mtLargeCube:
+		case monsterTypeFlags::LargeCube:
 			e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeCube.object"), hashString("grid/monster/bum-cube.ogg"), 4, 1 + spawnSpecial(special), 0.3 + 0.1 * spawnSpecial(special), 3, 1, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
 			{
 				GRID_GET_COMPONENT(monster, m, e);
 				m.shotDownCallback.bind<&spawnSmallCube>();
 			}
 			break;
-		case mtPinWheel:
+		case monsterTypeFlags::PinWheel:
 			e = initializeSimple(spawnPosition, color, 3.5, hashString("grid/monster/pinWheel.object"), hashString("grid/monster/bum-pinwheel.ogg"), 4, 1 + spawnSpecial(special), 2 + 0.4 * spawnSpecial(special), 50, 0, 0, quat(degs(), degs(20), degs()));
 			break;
-		case mtDiamond:
+		case monsterTypeFlags::Diamond:
 			e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeDiamond.object"), hashString("grid/monster/bum-diamond.ogg"), 4, 1 + spawnSpecial(special), 0.7 + 0.15 * spawnSpecial(special), 1, 0.9, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
 			break;
 		default: CAGE_THROW_CRITICAL(exception, "invalid monster type");
@@ -159,12 +157,7 @@ namespace grid
 
 	void updateSimple()
 	{
-		uint32 count = simpleMonsterStruct::component->getComponentEntities()->entitiesCount();
-		entityClass *const *monsters = simpleMonsterStruct::component->getComponentEntities()->entitiesArray();
-		for (uint32 i = 0; i < count; i++)
-		{
-			entityClass *e = monsters[i];
+		for (entityClass *e : simpleMonsterStruct::component->getComponentEntities()->entities())
 			monsterUpdateStruct u(e);
-		}
 	}
 }

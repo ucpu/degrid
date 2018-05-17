@@ -17,11 +17,8 @@ namespace grid
 		}
 
 		{ // update entities
-			uint32 count = powerupStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *powerups = powerupStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : powerupStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = powerups[i];
 				GRID_GET_COMPONENT(powerup, p, e);
 				CAGE_ASSERT_RUNTIME(p.type < puTotal, p.type);
 				if (p.timeout-- == 0)

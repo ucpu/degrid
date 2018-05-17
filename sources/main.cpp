@@ -127,8 +127,8 @@ int main(int argc, const char *args[])
 {
 	try
 	{
-		if (newFilesystem()->exists("options.ini"))
-			configLoadIni("options.ini", "grid");
+		if (newFilesystem()->exists("grid.ini"))
+			configLoadIni("grid.ini", "grid");
 
 		//configSetBool("cage-client.debug.shaderIntrospection", true);
 		configSetBool("cage-client.debug.engineRenderMissingMeshes", true);
@@ -188,7 +188,7 @@ int main(int argc, const char *args[])
 
 		try
 		{
-			configSaveIni("options.ini", "grid");
+			configSaveIni("grid.ini", "grid");
 		}
 		catch (...)
 		{

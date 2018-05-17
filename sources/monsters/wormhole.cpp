@@ -112,13 +112,8 @@ namespace grid
 
 	void updateWormhole()
 	{
-		uint32 count = wormholeStruct::component->getComponentEntities()->entitiesCount();
-		entityClass *const *monsters = wormholeStruct::component->getComponentEntities()->entitiesArray();
-		for (uint32 i = 0; i < count; i++)
-		{
-			entityClass *e = monsters[i];
+		for (entityClass *e : wormholeStruct::component->getComponentEntities()->entities())
 			wormholeUpdateStruct u(e);
-		}
 	}
 
 	void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)

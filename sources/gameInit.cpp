@@ -55,7 +55,7 @@ namespace grid
 	void controlInitialize()
 	{
 #ifdef GRID_TESTING
-		CAGE_LOG(severityEnum::Info, "grid", string() + "testing game build");
+		CAGE_LOG(severityEnum::Info, "grid", string() + "TESTING GAME BUILD");
 #endif // GRID_TESTING
 		gridStruct::component = entities()->defineComponent(gridStruct(), true);
 		effectStruct::component = entities()->defineComponent(effectStruct(), true);
@@ -162,12 +162,9 @@ namespace grid
 			return;
 
 		{ // update spatial
-			uint32 count = entities()->getAllEntities()->entitiesCount();
-			entityClass *const *ents = entities()->getAllEntities()->entitiesArray();
 			spatialData->clear();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : entities()->getAllEntities()->entities())
 			{
-				entityClass *e = ents[i];
 				uint32 n = e->getName();
 				if (n && e->hasComponent(transformComponent::component))
 				{

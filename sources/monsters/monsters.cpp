@@ -38,7 +38,7 @@ namespace grid
 					if (toMonster.squaredLength() < d*d)
 					{
 						GRID_GET_COMPONENT(monster, om, e);
-                        (void)om;
+						(void)om;
 						dispersion += toMonster.normalize() / toMonster.length();
 					}
 				}
@@ -48,11 +48,8 @@ namespace grid
 		void updateGeneralMonsters()
 		{
 			{ // flickering
-				uint32 count = monsterStruct::component->getComponentEntities()->entitiesCount();
-				entityClass *const *monsters = monsterStruct::component->getComponentEntities()->entitiesArray();
-				for (uint32 i = 0; i < count; i++)
+				for (entityClass *e : monsterStruct::component->getComponentEntities()->entities())
 				{
-					entityClass *e = monsters[i];
 					GRID_GET_COMPONENT(monster, m, e);
 					if (m.flickeringSpeed == 0)
 						continue;
@@ -65,19 +62,14 @@ namespace grid
 
 			if (!player.paused)
 			{
-				uint32 count = monsterStruct::component->getComponentEntities()->entitiesCount();
-				entityClass *const *monsters = monsterStruct::component->getComponentEntities()->entitiesArray();
-				for (uint32 i = 0; i < count; i++)
+				for (entityClass *e : monsterStruct::component->getComponentEntities()->entities())
 				{
-					entityClass *e = monsters[i];
 					ENGINE_GET_COMPONENT(transform, t, e);
 					GRID_GET_COMPONENT(monster, m, e);
 					ENGINE_GET_COMPONENT(render, r, e);
-                    (void)r;
+					(void)r;
 					if (m.dispersion > 0)
-					{
 						monsterUpdateStruct mu(e);
-					}
 					if (collisionTest(player.position, player.scale, player.speed, t.position, t.scale, m.speed))
 					{
 						if (player.powerups[puShield] > 0 && m.damage < real::PositiveInfinity)
@@ -161,7 +153,8 @@ namespace grid
 		real off = (real)player.score / (real)treshold - mul;
 		real prob = pow(off, 3) * 0.5;
 		uint32 res = mul * (random() < prob ? 1 : 0);
-		if (res) res = numeric_cast<uint32>(sqrt(res));
+		if (res)
+			res = numeric_cast<uint32>(sqrt(res));
 		special = max(special, res);
 		//CAGE_LOG(severityEnum::Info, "special", string() + "score:\t" + player.score + ", mul:\t" + mul + ", off:\t" + off + ", prob:\t" + prob + ", res:\t" + res);
 		return res;

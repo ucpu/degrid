@@ -19,17 +19,19 @@ namespace grid
 			return aroundPosition(cage::random(), cage::random(200, 400), player.position);
 		}
 
+		enum class placingPolicyEnum
+		{
+			Random,
+			Around,
+			Grouped,
+		};
+
 		struct spawnDefinitionStruct
 		{
 			// spawned monsters
-			monsterTypeFlags spawnTypes;
 			uint32 spawnCountMin, spawnCountMax;
-			enum placingPolicyEnum
-			{
-				ppRandom,
-				ppAround,
-				ppGrouped,
-			} placingPolicy;
+			monsterTypeFlags spawnTypes;
+			placingPolicyEnum placingPolicy;
 
 			// priority
 			real priorityCurrent;
@@ -52,7 +54,7 @@ namespace grid
 		spawnDefinitionStruct::spawnDefinitionStruct(const string &name) :
 			spawnTypes((monsterTypeFlags)0),
 			spawnCountMin(1), spawnCountMax(1),
-            placingPolicy(ppRandom),
+			placingPolicy(placingPolicyEnum::Random),
 			priorityCurrent(0), priorityChange(0), priorityAdditive(0), priorityMultiplier(1),
 			iteration(0), spawned(0), name(name)
 		{}
@@ -92,7 +94,7 @@ namespace grid
 				uint32 bit = 1;
 				for (uint32 i = 0; i < 16; i++)
 				{
-					if (spawnTypes & bit)
+					if ((spawnTypes & (monsterTypeFlags)bit) == (monsterTypeFlags)bit)
 						allowed.push_back((monsterTypeFlags)bit);
 					bit <<= 1;
 				}
@@ -104,19 +106,19 @@ namespace grid
 			vec3 color = convertHsvToRgb(vec3(cage::random(), sqrt(cage::random()) * 0.5 + 0.5, sqrt(cage::random()) * 0.5 + 0.5));
 			switch (placingPolicy)
 			{
-			case ppRandom:
+			case placingPolicyEnum::Random:
 			{
 				for (uint32 i = 0; i < spawnCount; i++)
 					spawnGeneral(allowed[cage::random(0, alSiz)], randomPosition(), color);
 			} break;
-			case ppAround:
+			case placingPolicyEnum::Around:
 			{
 				real angularOffset = cage::random();
 				real radius = cage::random(120, 140);
 				for (uint32 i = 0; i < spawnCount; i++)
 					spawnGeneral(allowed[cage::random(0, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, player.position), color);
 			} break;
-			case ppGrouped:
+			case placingPolicyEnum::Grouped:
 			{
 				real radius = cage::random(spawnCount / 2, spawnCount);
 				vec3 center = aroundPosition(cage::random(), cage::random(200, 250), player.position);
@@ -132,9 +134,9 @@ namespace grid
 	{
 		switch (type)
 		{
-		case mtShielder: return spawnShielder(spawnPosition, color);
-		case mtSnake: return spawnSnake(spawnPosition, color);
-		case mtWormhole: return spawnWormhole(spawnPosition, color);
+		case monsterTypeFlags::Shielder: return spawnShielder(spawnPosition, color);
+		case monsterTypeFlags::Snake: return spawnSnake(spawnPosition, color);
+		case monsterTypeFlags::Wormhole: return spawnWormhole(spawnPosition, color);
 		default: return spawnSimple(type, spawnPosition, color);
 		}
 	}
@@ -142,7 +144,7 @@ namespace grid
 	void monstersSpawnInitial()
 	{
 		spawnDefinitionStruct d("initial");
-		d.spawnTypes = (monsterTypeFlags)(mtCircle);
+		d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
 		d.spawnCountMin = monstersLimit() - 5;
 		d.spawnCountMax = d.spawnCountMin + 25;
 		d.spawn();
@@ -156,7 +158,7 @@ namespace grid
 		if (player.cinematic)
 		{ // cinematic spawns
 			spawnDefinitionStruct d("cinematic");
-			d.spawnTypes = (monsterTypeFlags)(mtCircle | mtSmallTriangle | mtSmallCube | mtLargeTriangle | mtLargeCube);
+			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle | monsterTypeFlags::SmallTriangle | monsterTypeFlags::SmallCube | monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube);
 			definitions.push_back(d);
 			return;
 		}
@@ -169,7 +171,7 @@ namespace grid
 		{
 			CAGE_LOG(severityEnum::Info, "joke", "JOKE: snakes only");
 			spawnDefinitionStruct d("snakes only");
-			d.spawnTypes = (monsterTypeFlags)(mtSnake);
+			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Snake);
 			d.priorityCurrent = 0;
 			definitions.push_back(d);
 			return;
@@ -179,7 +181,7 @@ namespace grid
 		{
 			CAGE_LOG(severityEnum::Info, "joke", "JOKE: shielders only");
 			spawnDefinitionStruct d("shielders only");
-			d.spawnTypes = (monsterTypeFlags)(mtShielder);
+			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Shielder);
 			d.priorityCurrent = 0;
 			definitions.push_back(d);
 			return;
@@ -193,7 +195,7 @@ namespace grid
 
 		{ // small monsters individually
 			spawnDefinitionStruct d("individual small monsters");
-			d.spawnTypes = (monsterTypeFlags)(mtCircle | mtSmallTriangle | mtSmallCube);
+			d.spawnTypes = (monsterTypeFlags::Circle | monsterTypeFlags::SmallTriangle | monsterTypeFlags::SmallCube);
 			d.priorityCurrent = 0;
 			d.priorityChange = 1;
 			d.priorityAdditive = 0.001;
@@ -203,7 +205,7 @@ namespace grid
 
 		{ // large monsters individually
 			spawnDefinitionStruct d("individual large monsters");
-			d.spawnTypes = (monsterTypeFlags)(mtLargeTriangle | mtLargeCube);
+			d.spawnTypes = (monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube);
 			d.priorityCurrent = 50;
 			d.priorityChange = 1;
 			d.priorityAdditive = 0.001;
@@ -213,7 +215,7 @@ namespace grid
 
 		{ // pin wheels individually
 			spawnDefinitionStruct d("individual pinwheels");
-			d.spawnTypes = (monsterTypeFlags)(mtPinWheel);
+			d.spawnTypes = (monsterTypeFlags::PinWheel);
 			d.priorityCurrent = 300;
 			d.priorityChange = 23;
 			d.priorityAdditive = 0.01;
@@ -223,7 +225,7 @@ namespace grid
 
 		{ // diamonds individually
 			spawnDefinitionStruct d("individual diamonds");
-			d.spawnTypes = (monsterTypeFlags)(mtDiamond);
+			d.spawnTypes = (monsterTypeFlags::Diamond);
 			d.priorityCurrent = 500;
 			d.priorityChange = 37;
 			d.priorityAdditive = 0.1;
@@ -233,7 +235,7 @@ namespace grid
 
 		{ // shielders individually
 			spawnDefinitionStruct d("individual shielders");
-			d.spawnTypes = (monsterTypeFlags)(mtShielder);
+			d.spawnTypes = (monsterTypeFlags::Shielder);
 			d.priorityCurrent = 2000;
 			d.priorityChange = 71;
 			d.priorityAdditive = 0.5;
@@ -243,7 +245,7 @@ namespace grid
 
 		{ // snakes individually
 			spawnDefinitionStruct d("individual snakes");
-			d.spawnTypes = (monsterTypeFlags)(mtSnake);
+			d.spawnTypes = (monsterTypeFlags::Snake);
 			d.priorityCurrent = 3000;
 			d.priorityChange = 133;
 			d.priorityAdditive = 1;
@@ -259,8 +261,8 @@ namespace grid
 			spawnDefinitionStruct d("circle groups");
 			d.spawnCountMin = 10;
 			d.spawnCountMax = 20;
-			d.spawnTypes = (monsterTypeFlags)(mtCircle);
-			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
+			d.spawnTypes = (monsterTypeFlags::Circle);
+			d.placingPolicy = placingPolicyEnum::Grouped;
 			d.priorityCurrent = 700;
 			d.priorityChange = cage::random(200, 300);
 			d.priorityAdditive = cage::random(1, 10);
@@ -271,8 +273,8 @@ namespace grid
 			spawnDefinitionStruct d("large triangle groups");
 			d.spawnCountMin = 5;
 			d.spawnCountMax = 15;
-			d.spawnTypes = (monsterTypeFlags)(mtLargeTriangle);
-			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
+			d.spawnTypes = (monsterTypeFlags::LargeTriangle);
+			d.placingPolicy = placingPolicyEnum::Grouped;
 			d.priorityCurrent = 1500;
 			d.priorityChange = cage::random(200, 300);
 			d.priorityAdditive = cage::random(1, 10);
@@ -283,8 +285,8 @@ namespace grid
 			spawnDefinitionStruct d("large cube groups");
 			d.spawnCountMin = 5;
 			d.spawnCountMax = 15;
-			d.spawnTypes = (monsterTypeFlags)(mtLargeCube);
-			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
+			d.spawnTypes = (monsterTypeFlags::LargeCube);
+			d.placingPolicy = placingPolicyEnum::Grouped;
 			d.priorityCurrent = 1500;
 			d.priorityChange = cage::random(200, 300);
 			d.priorityAdditive = cage::random(1, 10);
@@ -295,8 +297,8 @@ namespace grid
 			spawnDefinitionStruct d("pinwheel groups");
 			d.spawnCountMin = 2;
 			d.spawnCountMax = 3;
-			d.spawnTypes = (monsterTypeFlags)(mtPinWheel);
-			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
+			d.spawnTypes = (monsterTypeFlags::PinWheel);
+			d.placingPolicy = placingPolicyEnum::Grouped;
 			d.priorityCurrent = 2500;
 			d.priorityChange = cage::random(200, 300);
 			d.priorityAdditive = cage::random(5, 15);
@@ -307,8 +309,8 @@ namespace grid
 			spawnDefinitionStruct d("diamond groups");
 			d.spawnCountMin = 3;
 			d.spawnCountMax = 7;
-			d.spawnTypes = (monsterTypeFlags)(mtDiamond);
-			d.placingPolicy = spawnDefinitionStruct::ppGrouped;
+			d.spawnTypes = (monsterTypeFlags::Diamond);
+			d.placingPolicy = placingPolicyEnum::Grouped;
 			d.priorityCurrent = 3000;
 			d.priorityChange = cage::random(200, 300);
 			d.priorityAdditive = cage::random(5, 15);
@@ -323,8 +325,8 @@ namespace grid
 			spawnDefinitionStruct d("finals 1");
 			d.spawnCountMin = 20;
 			d.spawnCountMax = 25;
-			d.spawnTypes = (monsterTypeFlags)(mtLargeTriangle | mtLargeCube | mtDiamond);
-			d.placingPolicy = spawnDefinitionStruct::ppAround;
+			d.spawnTypes = (monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube | monsterTypeFlags::Diamond);
+			d.placingPolicy = placingPolicyEnum::Around;
 			d.priorityCurrent = 5000;
 			d.priorityChange = cage::random(200, 300);
 			d.priorityAdditive = cage::random(5, 15);
@@ -336,8 +338,8 @@ namespace grid
 			spawnDefinitionStruct d("finals 2");
 			d.spawnCountMin = 10;
 			d.spawnCountMax = 20;
-			d.spawnTypes = (monsterTypeFlags)(mtCircle | mtLargeTriangle | mtLargeCube | mtPinWheel | mtShielder);
-			d.placingPolicy = spawnDefinitionStruct::ppAround;
+			d.spawnTypes = (monsterTypeFlags::Circle | monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube | monsterTypeFlags::PinWheel | monsterTypeFlags::Shielder);
+			d.placingPolicy = placingPolicyEnum::Around;
 			d.priorityCurrent = 5000;
 			d.priorityChange = cage::random(300, 400);
 			d.priorityAdditive = cage::random(10, 20);
@@ -349,8 +351,8 @@ namespace grid
 			spawnDefinitionStruct d("wormholes");
 			d.spawnCountMin = 1;
 			d.spawnCountMax = 2;
-			d.spawnTypes = (monsterTypeFlags)(mtWormhole);
-			d.placingPolicy = spawnDefinitionStruct::ppAround;
+			d.spawnTypes = (monsterTypeFlags::Wormhole);
+			d.placingPolicy = placingPolicyEnum::Around;
 			d.priorityCurrent = 7000;
 			d.priorityChange = cage::random(6000, 8000);
 			d.priorityAdditive = cage::random(300, 500);
@@ -395,9 +397,8 @@ namespace grid
 	void spawnDone()
 	{
 #ifdef GRID_TESTING
-		for (auto it = definitions.begin(), et = definitions.end(); it != et; it++)
+		for (auto &d : definitions)
 		{
-			spawnDefinitionStruct &d = *it;
 			if (d.iteration > 0)
 				CAGE_LOG(severityEnum::Info, "statistics", string() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
 		}

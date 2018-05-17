@@ -42,7 +42,7 @@ namespace grid
 					return;
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				GRID_GET_COMPONENT(shot, os, e);
-                (void)os;
+				(void)os;
 				vec3 toShot = ot.position - tr.position;
 				real lenShot = toShot.length();
 				if (lenShot < tr.scale + 1 || lenShot > tr.scale + 5)
@@ -60,11 +60,8 @@ namespace grid
 	void updateShielder()
 	{
 		{ // update shielders
-			uint32 count = shielderStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *monsters = shielderStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : shielderStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = monsters[i];
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				GRID_GET_COMPONENT(monster, ms, e);
 				GRID_GET_COMPONENT(shielder, sh, e);
@@ -91,13 +88,8 @@ namespace grid
 			}
 		}
 		{ // update shields
-			uint32 count = shieldStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *monsters = shieldStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
-			{
-				entityClass *e = monsters[i];
+			for (entityClass *e : shieldStruct::component->getComponentEntities()->entities())
 				shieldUpdateStruct u(e);
-			}
 		}
 	}
 
