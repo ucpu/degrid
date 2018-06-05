@@ -109,21 +109,21 @@ namespace grid
 			case placingPolicyEnum::Random:
 			{
 				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[cage::random(0, alSiz)], randomPosition(), color);
+					spawnGeneral(allowed[cage::random(0u, alSiz)], randomPosition(), color);
 			} break;
 			case placingPolicyEnum::Around:
 			{
 				real angularOffset = cage::random();
 				real radius = cage::random(120, 140);
 				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[cage::random(0, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, player.position), color);
+					spawnGeneral(allowed[cage::random(0u, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, player.position), color);
 			} break;
 			case placingPolicyEnum::Grouped:
 			{
 				real radius = cage::random(spawnCount / 2, spawnCount);
 				vec3 center = aroundPosition(cage::random(), cage::random(200, 250), player.position);
 				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[random(0, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
+					spawnGeneral(allowed[random(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
 			} break;
 			default: CAGE_THROW_CRITICAL(exception, "invalid placing policy");
 			}

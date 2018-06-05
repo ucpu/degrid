@@ -162,6 +162,6 @@ namespace grid
 		uint32 *p = sounds;
 		uint32 count = 0;
 		while (*p++) count++;
-		soundSpeech(sounds[random(0, count)]);
+		soundSpeech(sounds[random(0u, count)]);
 	}
 }
