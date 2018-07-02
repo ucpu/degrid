@@ -381,12 +381,7 @@ namespace grid
 		if (probability <= 0)
 			return;
 
-		//probability = pow(probability, statistics.updateIterationPaused % (30 * 40) > 30 ? 20 : 0.05);
-		//probability = pow(probability, 0.3);
 		probability = pow(100, probability - 1);
-		//probability = pow(pow(sin(rads::Full * statistics.updateIterationPaused / 30 / 60) * 0.5 + 0.5, 50), probability);
-		//CAGE_LOG(severityEnum::Info, "spawning", probability);
-
 		if (cage::random() > probability)
 			return;
 

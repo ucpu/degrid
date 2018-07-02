@@ -247,7 +247,9 @@ namespace grid
 		static componentClass *component;
 		uint32 shieldEntity;
 		real movementSpeed;
-		rads turningSpeed;
+		uint32 chargingSteps;
+		uint32 turningSteps;
+		uint32 stepsLeft;
 	};
 
 	struct shieldStruct

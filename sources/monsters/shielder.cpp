@@ -69,21 +69,38 @@ namespace grid
 				ENGINE_GET_COMPONENT(transform, tre, se);
 				GRID_GET_COMPONENT(shield, sse, se);
 
-				vec3 t = normalize(player.monstersTarget - tr.position);
-				vec3 f = tr.orientation * vec3(0, 0, -1);
-				real df = dot(t, f);
-				if (df > 0.97)
-				{
-					ms.speed = f * sh.movementSpeed;
+				if (sse.active)
+				{ // charging
+					if (sh.stepsLeft)
+					{
+						vec3 t = normalize(player.monstersTarget - tr.position);
+						tr.orientation = interpolate(tr.orientation, quat(t, vec3(0, 1, 0)), 0.02);
+						vec3 f = tr.orientation * vec3(0, 0, -1);
+						ms.speed = f * sh.movementSpeed;
+					}
+					else
+					{
+						sse.active = false;
+						sh.stepsLeft = sh.turningSteps;
+					}
 				}
 				else
-				{
+				{ // turning
 					ms.speed = vec3();
-					vec3 s = tr.orientation * vec3(1, 0, 0);
-					tr.orientation = tr.orientation * quat(degs(), sh.turningSpeed * -sign(dot(t, s)), degs());
+					if (sh.stepsLeft)
+					{
+						vec3 t = normalize(player.monstersTarget - tr.position);
+						tr.orientation = interpolate(tr.orientation, quat(t, vec3(0, 1, 0)), 0.95 / sh.stepsLeft);
+					}
+					else
+					{
+						sse.active = true;
+						sh.stepsLeft = sh.chargingSteps;
+					}
 				}
 
-				sse.active = df > 0.92;
+				CAGE_ASSERT_RUNTIME(sh.stepsLeft > 0);
+				sh.stepsLeft--;
 				tre = tr;
 			}
 		}
@@ -101,16 +118,18 @@ namespace grid
 		{
 			GRID_GET_COMPONENT(shielder, sh, shielder);
 			sh.shieldEntity = shield->getName();
-			sh.turningSpeed = degs(0.5 + 0.3 * spawnSpecial(special));
-			sh.movementSpeed = 0.6 + 0.15 * spawnSpecial(special);
+			sh.movementSpeed = 0.8 + 0.2 * spawnSpecial(special);
+			sh.turningSteps = random(20u, 30u);
+			sh.chargingSteps = random(60u, 180u);
+			sh.stepsLeft = sh.turningSteps;
+			GRID_GET_COMPONENT(monster, m, shielder);
+			m.dispersion = 0.2;
 			if (special > 0)
 			{
 				ENGINE_GET_COMPONENT(transform, transform, shielder);
 				transform.scale *= 1.2;
 				statistics.monstersSpecial++;
 			}
-			GRID_GET_COMPONENT(monster, m, shielder);
-			m.dispersion = 0.2;
 		}
 		{
 			ENGINE_GET_COMPONENT(transform, transform, shield);

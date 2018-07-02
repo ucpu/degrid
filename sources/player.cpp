@@ -39,10 +39,8 @@ namespace grid
 			player.powerups[puBomb]--;
 			uint32 kills = 0;
 			uint32 count = monsterStruct::component->getComponentEntities()->entitiesCount();
-			entityClass *const *monsters = monsterStruct::component->getComponentEntities()->entitiesArray();
-			for (uint32 i = 0; i < count; i++)
+			for (entityClass *e : monsterStruct::component->getComponentEntities()->entities())
 			{
-				entityClass *e = monsters[i];
 				GRID_GET_COMPONENT(monster, m, e);
 				m.life -= 10;
 				if (m.life <= 1e-5)
@@ -50,9 +48,9 @@ namespace grid
 					kills++;
 					e->addGroup(entitiesToDestroy);
 					monsterExplosion(e);
+					player.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
 				}
 			}
-			player.score += kills;
 			statistics.bombsHitTotal += count;
 			statistics.bombsKillTotal += kills;
 			statistics.bombsHitMax = max(statistics.bombsHitMax, count);
@@ -400,9 +398,8 @@ namespace grid
 				}
 
 				spatialQuery->intersection(sphere(tr.position, sh.speed.length() + tr.scale + (sh.homing ? 20 : 10)));
-				const uint32 *res = spatialQuery->resultArray();
-				for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
-					test(res[i]);
+				for (uint32 n : spatialQuery->result())
+					test(n);
 
 				if (closestMonster)
 				{
@@ -435,7 +432,7 @@ namespace grid
 							}
 							player.powerupSpawnChance += interpolate(1.0 / 50, 1.0 / 400, clamp((statistics.powerupsSpawned + 5) / 30.f, 0.f, 1.f));
 						}
-						player.score += max(numeric_cast<uint32>(min(om.damage, 200)), 1u);
+						player.score += numeric_cast<uint32>(clamp(om.damage, 1, 200));
 					}
 					if (sh.damage <= 1e-5)
 					{

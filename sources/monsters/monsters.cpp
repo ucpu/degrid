@@ -79,6 +79,7 @@ namespace grid
 							vec3 shieldDirection = (t.position - player.position).normalize();
 							vec3 shieldPosition = player.position + shieldDirection * (player.scale * 1.1);
 							environmentExplosion(shieldPosition, shieldDirection * 0.5, vec3(1, 1, 1), min(m.damage, 5) * 2 + 2, 3); // shield sparks
+							player.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
 						}
 						else
 						{
