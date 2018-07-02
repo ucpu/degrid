@@ -3,6 +3,8 @@
 #include "includes.h"
 #include "game.h"
 
+#include <cage-core/utility/hashTable.h> // hash function
+
 namespace grid
 {
 	namespace
@@ -34,9 +36,9 @@ namespace grid
 
 		void eventBomb()
 		{
-			if (player.powerups[puBomb] == 0)
+			if (player.powerups[(uint32)powerupTypeEnum::Bomb] == 0)
 				return;
-			player.powerups[puBomb]--;
+			player.powerups[(uint32)powerupTypeEnum::Bomb]--;
 			uint32 kills = 0;
 			uint32 count = monsterStruct::component->getComponentEntities()->entitiesCount();
 			for (entityClass *e : monsterStruct::component->getComponentEntities()->entities())
@@ -78,9 +80,9 @@ namespace grid
 
 		void eventTurret()
 		{
-			if (player.powerups[puTurret] == 0)
+			if (player.powerups[(uint32)powerupTypeEnum::Turret] == 0)
 				return;
-			player.powerups[puTurret]--;
+			player.powerups[(uint32)powerupTypeEnum::Turret]--;
 			statistics.turretsPlaced++;
 			entityClass *turret = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, turret);
@@ -103,9 +105,9 @@ namespace grid
 
 		void eventDecoy()
 		{
-			if (player.powerups[puDecoy] == 0)
+			if (player.powerups[(uint32)powerupTypeEnum::Decoy] == 0)
 				return;
-			player.powerups[puDecoy]--;
+			player.powerups[(uint32)powerupTypeEnum::Decoy]--;
 			statistics.decoysUsed++;
 			entityClass *decoy = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
@@ -218,8 +220,8 @@ namespace grid
 
 			if (player.moveDirection != vec3())
 			{
-				real maxSpeed = player.powerups[puMaxSpeed] * 0.3 + 0.8;
-				vec3 change = player.moveDirection.normalize() * (player.powerups[puAcceleration] + 1) * 0.1;
+				real maxSpeed = player.powerups[(uint32)powerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
+				vec3 change = player.moveDirection.normalize() * (player.powerups[(uint32)powerupTypeEnum::Acceleration] + 1) * 0.1;
 				if (confControlMovement == 1 && ((tr.orientation * vec3(0, 0, -1)).dot(normalize(player.speed + change)) < 1e-5))
 					player.speed = vec3();
 				else
@@ -270,7 +272,7 @@ namespace grid
 			ENGINE_GET_COMPONENT(transform, trs, player.shieldEntity);
 			trs.position = tr.position;
 			trs.scale = tr.scale;
-			if (player.powerups[puShield] > 0)
+			if (player.powerups[(uint32)powerupTypeEnum::Shield] > 0)
 			{
 				ENGINE_GET_COMPONENT(render, render, player.shieldEntity);
 				render.object = hashString("grid/player/shield.object");
@@ -295,9 +297,9 @@ namespace grid
 			if (player.fireDirection == vec3())
 				return;
 
-			player.shootingCooldown += real(4) * real(1.3).pow(player.powerups[puMultishot]) * real(0.7).pow(player.powerups[puFiringSpeed]);
+			player.shootingCooldown += real(4) * real(1.3).pow(player.powerups[(uint32)powerupTypeEnum::Multishot]) * real(0.7).pow(player.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
 
-			for (real i = player.powerups[puMultishot] * -0.5; i < player.powerups[puMultishot] * 0.5 + 1e-5; i += 1)
+			for (real i = player.powerups[(uint32)powerupTypeEnum::Multishot] * -0.5; i < player.powerups[(uint32)powerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 			{
 				statistics.shotsFired++;
 				entityClass *shot = entities()->newUniqueEntity();
@@ -305,15 +307,15 @@ namespace grid
 				rads dir = aTan2(-player.fireDirection[2], -player.fireDirection[0]);
 				dir += degs(i * 10);
 				transform.orientation = quat(degs(), dir, degs());
-				if (player.powerups[puSuperDamage] > 0)
+				if (player.powerups[(uint32)powerupTypeEnum::SuperDamage] > 0)
 					transform.scale *= 1.2;
 				ENGINE_GET_COMPONENT(render, render, shot);
 				render.object = hashString("grid/player/shot.object");
 				render.color = player.shotsColor;
 				GRID_GET_COMPONENT(shot, sh, shot);
-				sh.speed = vec3(-sin(dir), 0, -cos(dir)) * (player.powerups[puShotsSpeed] + 1.5) + player.speed * 0.3;
-				sh.damage = player.powerups[puShotsDamage] + (player.powerups[puSuperDamage] ? 4 : 1);
-				sh.homing = player.powerups[puHomingShots] > 0;
+				sh.speed = vec3(-sin(dir), 0, -cos(dir)) * (player.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + player.speed * 0.3;
+				sh.damage = player.powerups[(uint32)powerupTypeEnum::ShotsDamage] + (player.powerups[(uint32)powerupTypeEnum::SuperDamage] ? 4 : 1);
+				sh.homing = player.powerups[(uint32)powerupTypeEnum::HomingShots] > 0;
 				transform.position = player.position + sh.speed.normalize() * player.scale;
 			}
 		}
@@ -457,7 +459,7 @@ namespace grid
 					else
 					{
 						// homing missiles are shivering
-						tr.position += sh.speed.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full * (statistics.updateIterationPaused + myName * 5) / 30 * 2) * 0.5;
+						tr.position += sh.speed.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full * statistics.updateIterationPaused / 10 + degs(detail::hash(myName) % 360)) * (sh.speed.length() * 0.3);
 					}
 				}
 

@@ -9,7 +9,7 @@ namespace grid
 			return;
 
 		{ // decrease timed power ups
-			for (uint32 i = 0; i < puTotal; i++)
+			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			{
 				if (powerupMode[i] == 1 && player.powerups[i] > 0)
 					player.powerups[i]--;
@@ -20,7 +20,7 @@ namespace grid
 			for (entityClass *e : powerupStruct::component->getComponentEntities()->entities())
 			{
 				GRID_GET_COMPONENT(powerup, p, e);
-				CAGE_ASSERT_RUNTIME(p.type < puTotal, p.type);
+				CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);
 				if (p.timeout-- == 0)
 				{
 					statistics.powerupsTimedout++;
@@ -40,17 +40,17 @@ namespace grid
 
 				statistics.powerupsPicked++;
 				e->addGroup(entitiesToDestroy);
-				switch (powerupMode[p.type])
+				switch (powerupMode[(uint32)p.type])
 				{
 				case 0: // collectible
-					if (player.powerups[p.type] < 3)
+					if (player.powerups[(uint32)p.type] < 3)
 					{
-						player.powerups[p.type]++;
+						player.powerups[(uint32)p.type]++;
 						switch (p.type)
 						{
-						case puBomb: soundSpeech(hashString("grid/speech/pickup/a-bomb.wav")); break;
-						case puDecoy: soundSpeech(hashString("grid/speech/pickup/a-decoy.wav")); break;
-						case puTurret: soundSpeech(hashString("grid/speech/pickup/a-turret.wav")); break;
+						case powerupTypeEnum::Bomb: soundSpeech(hashString("grid/speech/pickup/a-bomb.wav")); break;
+						case powerupTypeEnum::Decoy: soundSpeech(hashString("grid/speech/pickup/a-decoy.wav")); break;
+						case powerupTypeEnum::Turret: soundSpeech(hashString("grid/speech/pickup/a-turret.wav")); break;
 						default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 						}
 					}
@@ -63,31 +63,31 @@ namespace grid
 					break;
 				case 1: // timed
 				{
-					player.powerups[p.type] += 30 * 30;
+					player.powerups[(uint32)p.type] += 30 * 30;
 					switch (p.type)
 					{
-					case puShield: soundSpeech(hashString("grid/speech/pickup/shield-engaged.wav")); break;
-					case puHomingShots: soundSpeech(hashString("grid/speech/pickup/homing-missiles.wav")); break;
-					case puSuperDamage: soundSpeech(hashString("grid/speech/pickup/super-damage.wav")); break;
+					case powerupTypeEnum::Shield: soundSpeech(hashString("grid/speech/pickup/shield-engaged.wav")); break;
+					case powerupTypeEnum::HomingShots: soundSpeech(hashString("grid/speech/pickup/homing-missiles.wav")); break;
+					case powerupTypeEnum::SuperDamage: soundSpeech(hashString("grid/speech/pickup/super-damage.wav")); break;
 					default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 					}
 				} break;
 				case 2: // permanent
 				{
 					uint32 sum = 0;
-					for (uint32 i = puMaxSpeed; i < puTotal; i++)
+					for (uint32 i = (uint32)powerupTypeEnum::MaxSpeed; i < (uint32)powerupTypeEnum::Total; i++)
 						sum += player.powerups[i];
 					if (sum < 5)
 					{
-						player.powerups[p.type]++;
+						player.powerups[(uint32)p.type]++;
 						switch (p.type)
 						{
-						case puAcceleration: soundSpeech(hashString("grid/speech/pickup/acceleration-improved.wav")); break;
-						case puMaxSpeed: soundSpeech(hashString("grid/speech/pickup/movement-speed-improved.wav")); break;
-						case puMultishot: soundSpeech(hashString("grid/speech/pickup/additional-cannon.wav")); break;
-						case puShotsSpeed: soundSpeech(hashString("grid/speech/pickup/missiles-speed-improved.wav")); break;
-						case puShotsDamage: soundSpeech(hashString("grid/speech/pickup/missiles-damage-improved.wav")); break;
-						case puFiringSpeed: soundSpeech(hashString("grid/speech/pickup/firing-speed-improved.wav")); break;
+						case powerupTypeEnum::Acceleration: soundSpeech(hashString("grid/speech/pickup/acceleration-improved.wav")); break;
+						case powerupTypeEnum::MaxSpeed: soundSpeech(hashString("grid/speech/pickup/movement-speed-improved.wav")); break;
+						case powerupTypeEnum::Multishot: soundSpeech(hashString("grid/speech/pickup/additional-cannon.wav")); break;
+						case powerupTypeEnum::ShotsSpeed: soundSpeech(hashString("grid/speech/pickup/missiles-speed-improved.wav")); break;
+						case powerupTypeEnum::ShotsDamage: soundSpeech(hashString("grid/speech/pickup/missiles-damage-improved.wav")); break;
+						case powerupTypeEnum::FiringSpeed: soundSpeech(hashString("grid/speech/pickup/firing-speed-improved.wav")); break;
 						default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 						}
 					}
@@ -116,14 +116,14 @@ namespace grid
 		GRID_GET_COMPONENT(powerup, p, e);
 		p.animation = quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100);
 		p.timeout = 120 * 30;
-		p.type = (powerupTypeEnum)random(0, puTotal);
+		p.type = (powerupTypeEnum)random(0u, (uint32)powerupTypeEnum::Total);
 		ENGINE_GET_COMPONENT(render, render, e);
 		static const uint32 objectName[3] = {
 			hashString("grid/player/powerupCollectible.object"),
 			hashString("grid/player/powerupOnetime.object"),
 			hashString("grid/player/powerupPermanent.object")
 		};
-		render.object = objectName[powerupMode[p.type]];
+		render.object = objectName[powerupMode[(uint32)p.type]];
 		render.color = convertHsvToRgb(vec3(random(), 1, 1));
 		soundEffect(hashString("grid/player/powerup.ogg"), transform.position);
 	}

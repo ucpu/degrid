@@ -56,7 +56,7 @@ namespace
 			grid::player.paused = false;
 			return true;
 		}
-		if (en <= grid::puTotal)
+		if (en <= (uint32)grid::powerupTypeEnum::Total)
 		{
 			grid::player.powerups[en - 1]--;
 			makeTheGui();
@@ -177,7 +177,7 @@ namespace
 			position.position.units[1] = unitEnum::ScreenHeight;
 		}
 
-		for (uint32 i = 0; i < grid::puTotal; i++)
+		for (uint32 i = 0; i < (uint32)grid::powerupTypeEnum::Total; i++)
 		{
 			switch (grid::powerupMode[i])
 			{
@@ -281,7 +281,7 @@ namespace grid
 			txt.value = texts->get(hashString("gui/game/score")) + "\n" + player.score;
 		}
 
-		static const uint32 textNames[puTotal] = {
+		static const uint32 textNames[(uint32)powerupTypeEnum::Total] = {
 			hashString("gui/game/puBomb"),
 			hashString("gui/game/puTurret"),
 			hashString("gui/game/puDecoy"),
@@ -296,7 +296,7 @@ namespace grid
 			hashString("gui/game/puMultishot")
 		};
 
-		for (uint32 i = 0; i < puTotal; i++)
+		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 		{
 			if (!gui()->entities()->hasEntity(i + 1))
 				continue;

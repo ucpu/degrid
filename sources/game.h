@@ -37,28 +37,28 @@ namespace grid
 
 	bool collisionTest(const vec3 &positionA, real radiusA, const vec3 movementA, const vec3 &positionB, real radiusB, const vec3 movementB);
 
-	enum powerupTypeEnum
+	enum class powerupTypeEnum
 	{
 		// collectibles
-		puBomb,
-		puTurret,
-		puDecoy,
+		Bomb,
+		Turret,
+		Decoy,
 		// one-time
-		puHomingShots,
-		puSuperDamage,
-		puShield,
+		HomingShots,
+		SuperDamage,
+		Shield,
 		// permanents
-		puMaxSpeed,
-		puAcceleration,
-		puShotsDamage,
-		puShotsSpeed,
-		puFiringSpeed,
-		puMultishot,
+		MaxSpeed,
+		Acceleration,
+		ShotsDamage,
+		ShotsSpeed,
+		FiringSpeed,
+		Multishot,
 		// total
-		puTotal
+		Total
 	};
 
-	static const uint32 powerupMode[puTotal] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
+	static const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
 	static const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 
 	extern groupClass *entitiesToDestroy;
@@ -94,7 +94,7 @@ namespace grid
 		vec3 shotsColor;
 		uint32 score;
 		uint32 scorePrevious;
-		uint32 powerups[puTotal];
+		uint32 powerups[(uint32)powerupTypeEnum::Total];
 		vec3 deathColor;
 		real powerupSpawnChance;
 

@@ -72,7 +72,7 @@ namespace grid
 						monsterUpdateStruct mu(e);
 					if (collisionTest(player.position, player.scale, player.speed, t.position, t.scale, m.speed))
 					{
-						if (player.powerups[puShield] > 0 && m.damage < real::PositiveInfinity)
+						if (player.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::PositiveInfinity)
 						{
 							statistics.shieldStoppedMonsters++;
 							statistics.shieldAbsorbedDamage += m.damage;

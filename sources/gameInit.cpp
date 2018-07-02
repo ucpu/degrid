@@ -100,7 +100,7 @@ namespace grid
 		playerDone();
 		monstersDone();
 
-		static const string powerupName[puTotal] = {
+		static const string powerupName[(uint32)powerupTypeEnum::Total] = {
 			"Bomb",
 			"Turret",
 			"Decoy",
@@ -114,7 +114,7 @@ namespace grid
 			"Shooting",
 			"Multishot"
 		};
-		for (uint32 i = 0; i < puTotal; i++)
+		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			if (player.powerups[i] > 0)
 				CAGE_LOG(severityEnum::Info, "statistics", string() + "powerup '" + powerupName[i] + "': " + player.powerups[i]);
 
@@ -217,13 +217,13 @@ namespace grid
 		{
 			player.life = 1000000;
 			/*
-			for (uint32 i = 0; i < 30; i++)
+			for (uint32 i = 0; i < 100; i++)
 			{
 				rads ang = randomAngle();
 				powerupSpawn(vec3(sin(ang), 0, cos(ang)) * 30);
 			}
 			*/
-			for (uint32 i = 0; i < puTotal; i++)
+			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			{
 				switch (powerupMode[i])
 				{
