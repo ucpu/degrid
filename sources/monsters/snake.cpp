@@ -101,8 +101,8 @@ namespace grid
 			snake.follow = prev;
 			prev = tail->getName();
 			ENGINE_GET_COMPONENT(animatedTexture, aniTex, tail);
-			aniTex.animationStart = player.updateTime + aniInitOff + i * 1000000;
-			aniTex.animationSpeed = 0.4;
+			aniTex.startTime = player.updateTime + aniInitOff + i * 1000000;
+			aniTex.speed = 0.4;
 			GRID_GET_COMPONENT(monster, monster, tail);
 			ENGINE_GET_COMPONENT(transform, transform, tail);
 			transform.position[1] = monster.groundLevel = groundLevel;

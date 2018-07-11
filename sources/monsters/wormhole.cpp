@@ -27,8 +27,8 @@ namespace grid
 				mo.speed += normalize(player.monstersTarget - tr.position) * wh.acceleration;
 				mo.speed = mo.speed.normalize() * min(mo.speed.length(), wh.maxSpeed);
 				ENGINE_GET_COMPONENT(animatedTexture, at, e);
-				at.animationSpeed = 0;
-				at.animationOffset = 1000000 * (19.f / 20) * (1 - mo.life / wh.maxLife);
+				at.speed = 0;
+				at.offset = 1000000 * (19.f / 20) * (1 - mo.life / wh.maxLife);
 			}
 
 			const real distance(entityClass *e)
@@ -128,7 +128,7 @@ namespace grid
 		wh.acceleration = 0.001;
 		wh.maxLife = m.life;
 		ENGINE_GET_COMPONENT(animatedTexture, at, wormhole);
-		at.animationSpeed = 0;
+		at.speed = 0;
 		ENGINE_GET_COMPONENT(transform, transform, wormhole);
 		transform.orientation = randomDirectionQuat();
 		if (special > 0)

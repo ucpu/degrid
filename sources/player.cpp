@@ -241,8 +241,8 @@ namespace grid
 					ef.speed = (change + randomDirection3() * 0.05) * cage::random() * -5;
 					ef.ttl = random(10, 15);
 					ENGINE_GET_COMPONENT(animatedTexture, at, spark);
-					at.animationStart = player.updateTime;
-					at.animationSpeed = 30.f / ef.ttl;
+					at.startTime = player.updateTime;
+					at.speed = 30.f / ef.ttl;
 				}
 			}
 			else
@@ -277,8 +277,8 @@ namespace grid
 				ENGINE_GET_COMPONENT(render, render, player.shieldEntity);
 				render.object = hashString("grid/player/shield.object");
 				ENGINE_GET_COMPONENT(voice, sound, player.shieldEntity);
-				sound.sound = hashString("grid/player/shield.ogg");
-				sound.soundStart = -1;
+				sound.name = hashString("grid/player/shield.ogg");
+				sound.startTime = -1;
 			}
 			else
 			{
@@ -609,7 +609,7 @@ namespace grid
 			ENGINE_GET_COMPONENT(transform, transform, player.shieldEntity);
             (void)transform;
 			ENGINE_GET_COMPONENT(animatedTexture, aniTex, player.shieldEntity);
-			aniTex.animationSpeed = 0.05;
+			aniTex.speed = 0.05;
 		}
 
 		player.shotsColor = player.cinematic ? convertHsvToRgb(vec3(cage::random(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);

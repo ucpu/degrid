@@ -145,8 +145,8 @@ namespace grid
 		ENGINE_GET_COMPONENT(transform, t, e);
 		t.position = position;
 		ENGINE_GET_COMPONENT(voice, s, e);
-		s.sound = sound;
-		s.soundStart = getApplicationTime();
+		s.name = sound;
+		s.startTime = getApplicationTime();
 	}
 
 	void soundSpeech(uint32 sound)

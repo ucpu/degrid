@@ -13,12 +13,12 @@ namespace grid
 				if (!e->hasComponent(voiceComponent::component))
 					continue;
 				ENGINE_GET_COMPONENT(voice, s, e);
-				if (s.sound == hashString("grid/player/shield.ogg"))
+				if (s.name == hashString("grid/player/shield.ogg"))
 					continue;
-				if (!assets()->ready(s.sound))
+				if (!assets()->ready(s.name))
 					continue;
-				sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(s.sound);
-				if (src && s.soundStart + src->getDuration() + 100000 < time)
+				sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(s.name);
+				if (src && s.startTime + src->getDuration() + 100000 < time)
 					e->addGroup(entitiesToDestroy);
 				statistics.soundEffectsCurrent++;
 			}
@@ -50,7 +50,7 @@ namespace grid
 			t.orientation = skyboxOrientation;
 			ENGINE_GET_COMPONENT(animatedTexture, a, player.skyboxRenderEntity);
 			real playerHit = player.cinematic || statistics.monstersFirstHit == 0 ? 0 : clamp(real(statistics.updateIterationNoPause - statistics.monstersLastHit) / 5, 0, 1) * 1000000;
-			a.animationOffset = playerHit;
+			a.offset = playerHit;
 		}
 
 		if (player.gameOver)
@@ -207,7 +207,7 @@ namespace grid
 			r.object = hashString("grid/environment/skybox.object");
 			r.renderMask = 2;
 			ENGINE_GET_COMPONENT(animatedTexture, a, player.skyboxRenderEntity);
-			a.animationSpeed = 0;
+			a.speed = 0;
 		}
 
 		{
