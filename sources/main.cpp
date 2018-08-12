@@ -127,11 +127,8 @@ int main(int argc, const char *args[])
 {
 	try
 	{
-		if (newFilesystem()->exists("grid.ini"))
-			configLoadIni("grid.ini", "grid");
-
 		//configSetBool("cage-client.debug.shaderIntrospection", true);
-		configSetBool("cage-client.debug.engineRenderMissingMeshes", true);
+		//configSetBool("cage-client.debug.engineRenderMissingMeshes", true);
 		controlThread::timePerTick = 1000000 / 30;
 
 		engineInitialize(engineCreateConfig());
