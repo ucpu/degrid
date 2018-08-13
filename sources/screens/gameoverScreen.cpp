@@ -21,8 +21,8 @@ namespace
 			f->writeLine("[]");
 			{
 				uint32 y, m, d, h, mm, s;
-				getSystemDateTime(y, m, d, h, mm, s);
-				f->writeLine(string() + "date = " + formatDateTime(y, m, d, h, mm, s));
+				detail::getSystemDateTime(y, m, d, h, mm, s);
+				f->writeLine(string() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
 			}
 			f->writeLine(string() + "name = " + txt.value);
 			f->writeLine(string() + "score = " + scoreValue);
