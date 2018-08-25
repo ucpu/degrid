@@ -129,7 +129,7 @@ int main(int argc, const char *args[])
 	{
 		//configSetBool("cage-client.debug.shaderIntrospection", true);
 		//configSetBool("cage-client.debug.engineRenderMissingMeshes", true);
-		controlThread::timePerTick = 1000000 / 30;
+		controlThread().timePerTick = 1000000 / 30;
 
 		engineInitialize(engineCreateConfig());
 
@@ -151,12 +151,12 @@ int main(int argc, const char *args[])
 		windowCloseListener.bind<&windowClose>();
 		keyReleaseListener.bind<&keyRelease>();
 
-		updateListener.attach(controlThread::update);
-		frameListener.attach(graphicsPrepareThread::prepare);
-		assetsUpdateListener.attach(controlThread::assets);
-		soundInitializeListener.attach(soundThread::initialize);
-		soundFinalizeListener.attach(soundThread::finalize);
-		soundUpdateListener.attach(soundThread::sound);
+		updateListener.attach(controlThread().update);
+		frameListener.attach(graphicsPrepareThread().prepare);
+		assetsUpdateListener.attach(controlThread().assets);
+		soundInitializeListener.attach(soundThread().initialize);
+		soundFinalizeListener.attach(soundThread().finalize);
+		soundUpdateListener.attach(soundThread().sound);
 		window()->events.windowClose.attach(windowCloseListener);
 		window()->events.keyRelease.attach(keyReleaseListener);
 

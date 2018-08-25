@@ -43,7 +43,7 @@ namespace grid
 
 		void alterVolume(real &current, real target)
 		{
-			const real change = 0.7f / (1000000 / soundThread::timePerTick);
+			const real change = 0.7f / (1000000 / soundThread().timePerTick);
 			if (current > target + change)
 			{
 				current -= change;
