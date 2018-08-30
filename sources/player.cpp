@@ -118,7 +118,7 @@ namespace grid
 			render.object = hashString("grid/player/player.object");
 			GRID_GET_COMPONENT(decoy, dec, decoy);
 			dec.speed = -player.speed;
-			dec.timeout = 10 * 30;
+			dec.timeout = 60 * 30;
 			dec.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
 			uint32 sounds[] = {

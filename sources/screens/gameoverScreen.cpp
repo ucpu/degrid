@@ -71,7 +71,7 @@ void setScreenGameover(uint32 score)
 		GUI_GET_COMPONENT(textFormat, format, empOver);
 		format.align = textAlignEnum::Center;
 		format.color = vec3(1, 0, 0);
-		format.fontName = hashString("cage/font/roboto.ttf?30");
+		format.size = 30;
 	}
 
 	{
@@ -85,7 +85,7 @@ void setScreenGameover(uint32 score)
 		GUI_GET_COMPONENT(textFormat, format, empScore);
 		format.align = textAlignEnum::Center;
 		format.color = vec3(0, 1, 0);
-		format.fontName = hashString("cage/font/roboto.ttf?50");
+		format.size = 50;
 	}
 
 	{

@@ -88,7 +88,7 @@ namespace
 			GUI_GET_COMPONENT(textFormat, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 0, 0);
-			format.fontName = hashString("cage/font/roboto.ttf?20");
+			format.size = 20;
 			GUI_GET_COMPONENT(position, pos, lifeLabel);
 			pos.anchor = vec2(0.5, 0);
 			pos.position.values[0] = 1.0 / 6.0;
@@ -105,7 +105,7 @@ namespace
 			GUI_GET_COMPONENT(textFormat, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
-			format.fontName = hashString("cage/font/roboto.ttf?20");
+			format.size = 20;
 			GUI_GET_COMPONENT(position, pos, lifeLabel);
 			pos.anchor = vec2(0.5, 0);
 			pos.position.values[0] = 2.0 / 6.0;
@@ -122,7 +122,7 @@ namespace
 			GUI_GET_COMPONENT(textFormat, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
-			format.fontName = hashString("cage/font/roboto.ttf?20");
+			format.size = 20;
 			GUI_GET_COMPONENT(position, pos, lifeLabel);
 			pos.anchor = vec2(0.5, 0);
 			pos.position.values[0] = 3.0 / 6.0;
@@ -139,7 +139,7 @@ namespace
 			GUI_GET_COMPONENT(textFormat, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
-			format.fontName = hashString("cage/font/roboto.ttf?20");
+			format.size = 20;
 			GUI_GET_COMPONENT(position, pos, lifeLabel);
 			pos.anchor = vec2(0.5, 0);
 			pos.position.values[0] = 4.0 / 6.0;
@@ -156,7 +156,7 @@ namespace
 			GUI_GET_COMPONENT(textFormat, format, scoreLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(0, 1, 0);
-			format.fontName = hashString("cage/font/roboto.ttf?20");
+			format.size = 20;
 			GUI_GET_COMPONENT(position, pos, scoreLabel);
 			pos.anchor = vec2(0.5, 0);
 			pos.position.values[0] = 5.0 / 6.0;
@@ -249,7 +249,7 @@ namespace
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/game/pause");
 			GUI_GET_COMPONENT(textFormat, format, label);
-			format.fontName = hashString("cage/font/roboto.ttf?50");
+			format.size = 50;
 		}
 	}
 }

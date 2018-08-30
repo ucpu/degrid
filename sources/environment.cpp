@@ -270,7 +270,7 @@ namespace grid
 				render.object = hashString("grid/environment/grid.object");
 				real ang = real(aTan2(x, y)) / real::TwoPi + 0.5;
 				real dst = d / radius;
-				render.color = convertHsvToRgb(vec3(ang, 1, interpolate(real(1), real(0.2), sqr(dst))));
+				render.color = convertHsvToRgb(vec3(ang, 1, interpolate(real(0.5), real(0.2), sqr(dst))));
 				grid.originalColor = render.color;
 			}
 		}
