@@ -1,0 +1,65 @@
+
+[gui/game]
+pause = Paused
+end = End game
+life = Life:
+score = Score:
+puBomb = Bombs:
+puTurret = Turrets:
+puDecoy = Decoys:
+puHomingShots = Homming Shots:
+puSuperDamage = Super Damage:
+puShield = Shield:
+puMaxSpeed = Speed:
+puAcceleration = Acceleration:
+puShotsDamage = Shots Damage:
+puShotsSpeed = Shots Speed:
+puShooting = Firing Speed:
+puMultishot = Multiple Shots:
+
+[gui/gameover]
+over = Game Over
+save = Save
+
+[gui/mainmenu]
+newgame = New Game
+options = Options
+scores = Scores
+credits = About
+quit = Quit
+back = Back
+
+[gui/options]
+controls = Controls
+movement = Movement:
+firing = Firing:
+bomb = Bomb:
+turret = Turret:
+decoy = Decoy:
+sounds = Sound
+musicVolume = Music volume:
+effectsVolume = Effects volume:
+speechVolume = Speech volume:
+arrowsAbsolute = Arrows (absolute)
+arrowsRelative = Arrows (relative)
+lmb = Left mouse button
+mmb = Middle mouse button
+rmb = Right mouse button
+cursor = Cursor position
+space = Spacebar
+
+[gui/scores]
+score = Score
+date = Date
+name = Name
+
+[gui/credits]
+=
+The game is free and open-source.
+The game is provided as-is, without warranty of any kind.
+See https://github.com/ucpu/grid for more information.
+=
+The game was made by Tomáš Malý (malytomas at ucpu.cz), 2018.
+The game Grid Wars 2 was a great inspiration for this game.
+=
+The game is powered by Cage.

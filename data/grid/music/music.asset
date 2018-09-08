@@ -1,0 +1,13 @@
+
+[]
+scheme = pack
+music.pack
+
+[]
+scheme = sound
+type = stream
+before = repeat
+after = repeat
+fear-and-horror.ogg
+chaotic-filth.ogg
+sad-song.ogg

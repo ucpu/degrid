@@ -1,0 +1,11 @@
+
+[0] # packs
+monster/monster.pack
+player/player.pack
+environment/environment.pack
+languages/languages.pack
+music/music.pack
+speech/speech.pack
+
+[2] # texture
+logo.gif

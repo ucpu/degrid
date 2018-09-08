@@ -1,0 +1,7 @@
+
+[base]
+roughness = 0.5
+metalness = 0.01
+
+[textures]
+albedo = blackhole/baked$$$$.png

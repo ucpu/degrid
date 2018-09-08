@@ -1,0 +1,65 @@
+
+[gui/game]
+pause = Pozastaveno
+end = Ukončit hru
+life = Životy:
+score = Skóre:
+puBomb = Bomby:
+puTurret = Střílny:
+puDecoy = Návnady:
+puHomingShots = Naváděné střely:
+puSuperDamage = Super poškození:
+puShield = Štít:
+puMaxSpeed = Rychlost:
+puAcceleration = Zrychlení:
+puShotsDamage = Poškození střel:
+puShotsSpeed = Rychlost střel:
+puShooting = Rychlost střílení:
+puMultishot = Více střel:
+
+[gui/gameover]
+over = Hra skončila
+save = Uložit
+
+[gui/mainmenu]
+newgame = Nová hra
+options = Nastavení
+scores = Skóre
+credits = O hře
+quit = Konec
+back = Zpátky
+
+[gui/options]
+controls = Ovládání
+movement = Pohyb:
+firing = Střelba:
+bomb = Bomba:
+turret = Střílna:
+decoy = Návnada:
+sounds = Zvuky
+musicVolume = Hlasitost hudby:
+effectsVolume = Hlasitost efektů:
+speechVolume = Hlasitost hlasů:
+arrowsAbsolute = Šipky (absolutní)
+arrowsRelative = Šipky (relativní)
+lmb = Levé tlačítko myši
+mmb = Prostřední tlačítko myši
+rmb = Pravé tlačítko myši
+cursor = Pozice kurzoru
+space = Mezerník
+
+[gui/scores]
+score = Skóre
+date = Datum
+name = Jméno
+
+[gui/credits]
+=
+Hra je k dispozici zdarma a má otevřený zdrojový kód.
+Hra je poskytována tak, jak je, bez žádných záruk.
+Více informací na https://github.com/ucpu/grid.
+=
+Hru vytvořil Tomáš Malý (malytomas zavináč ucpu.cz), 2018.
+Inspirací byla hra Grid Wars 2.
+=
+Hra funguje na herním enginu Cage.

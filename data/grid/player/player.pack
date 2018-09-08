@@ -1,0 +1,13 @@
+
+[]
+player.object
+shot.object
+powerupOnetime.object
+powerupCollectible.object
+powerupPermanent.object
+turret.object
+shield.object
+
+[]
+powerup.ogg
+shield.ogg

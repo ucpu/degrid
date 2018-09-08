@@ -4,7 +4,7 @@ project(grid CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cage/cmake")
 include(cage_all)
 cage_default_init()
-cage_directory_link("${CMAKE_CURRENT_SOURCE_DIR}/externals/data/grid" "${CMAKE_BINARY_DIR}/result/data/grid")
+cage_directory_link("${CMAKE_CURRENT_SOURCE_DIR}/data/grid" "${CMAKE_BINARY_DIR}/result/data/grid")
 
 add_subdirectory(externals/cage)
 

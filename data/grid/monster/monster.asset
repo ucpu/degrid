@@ -1,0 +1,55 @@
+
+[]
+scheme = pack
+monster.pack
+
+[]
+scheme = texture
+target = GL_TEXTURE_2D_ARRAY
+snakeTail/_$$.png
+blackhole/baked$$$$.png
+
+[]
+scheme = mesh
+monster.obj?largeCube
+monster.obj?largeDiamond
+monster.obj?largeTriangle
+monster.obj?pinWheel
+monster.obj?smallCircle
+monster.obj?smallCube
+monster.obj?smallTriangle
+monster.obj?snakeHead
+monster.obj?snakeTail
+monster.obj?shielder
+monster.obj?shield
+monster.obj?wormhole
+
+[]
+scheme = object
+largeCube.object
+largeDiamond.object
+largeTriangle.object
+pinWheel.object
+smallCircle.object
+smallCube.object
+smallTriangle.object
+snakeHead.object
+snakeTail.object
+shielder.object
+shield.object
+wormhole.object
+
+[]
+scheme = sound
+before = discard
+after = discard
+bum-circle.ogg
+bum-triangle.ogg
+bum-cube.ogg
+bum-pinwheel.ogg
+bum-diamond.ogg
+bum-shielder.ogg
+bum-snake-head.ogg
+bum-snake-tail.ogg
+bum-wormhole.ogg
+wormhole.ogg

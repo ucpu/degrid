@@ -1,0 +1,46 @@
+
+[]
+scheme = pack
+player.pack
+
+[]
+scheme = texture
+player.png
+turret.png
+
+[]
+scheme = texture
+target = GL_TEXTURE_2D_ARRAY
+shield/baked$$$$.png
+
+[]
+scheme = mesh
+player.obj?player
+player.obj?shot
+player.obj?powerupOnetime
+player.obj?powerupCollectible
+player.obj?powerupPermanent
+player.obj?turret
+player.obj?shield
+
+[]
+scheme = object
+player.object
+shot.object
+powerupOnetime.object
+powerupCollectible.object
+powerupPermanent.object
+turret.object
+shield.object
+
+[]
+scheme = sound
+before = discard
+after = discard
+powerup.ogg
+
+[]
+scheme = sound
+before = repeat
+after = repeat
+shield.ogg

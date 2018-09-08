@@ -1,0 +1,9 @@
+
+[textures]
+albedo = skybox_$.png
+
+[flags]
+no-depth-test
+no-depth-write
+no-lighting
+no-shadow-cast

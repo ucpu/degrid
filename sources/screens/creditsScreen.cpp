@@ -40,5 +40,5 @@ void setScreenCredits()
 		idx++;
 	}
 
-	gui()->controlUpdate(); // regenerate gui cache
+	gui()->skipAllEventsUntilNextUpdate();
 }

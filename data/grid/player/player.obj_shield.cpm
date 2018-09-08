@@ -1,0 +1,11 @@
+
+[base]
+roughness = 0.5
+metalness = 0.01
+
+[textures]
+albedo = shield/baked$$$$.png
+
+[flags]
+opacity-texture
+translucency

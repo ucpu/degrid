@@ -236,8 +236,8 @@ namespace grid
 			c.clear = (cameraClearFlags)0;
 			ENGINE_GET_COMPONENT(listener, l, player.primaryCameraEntity);
 			static const float halfVolumeDistance = 30;
-			l.volumeAttenuationByDistance[1] = 2.0 / halfVolumeDistance;
-			l.volumeAttenuationByDistance[0] = l.volumeAttenuationByDistance[1] * transform.position[1] * -1;
+			l.attenuation[1] = 2.0 / halfVolumeDistance;
+			l.attenuation[0] = l.attenuation[1] * transform.position[1] * -1;
 		}
 
 		{

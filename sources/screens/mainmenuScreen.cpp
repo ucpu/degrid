@@ -146,5 +146,5 @@ void setScreenMainmenu()
 		}
 	}
 
-	gui()->controlUpdate(); // regenerate gui cache
+	gui()->skipAllEventsUntilNextUpdate();
 }

@@ -113,5 +113,5 @@ void setScreenGameover(uint32 score)
 		position.position.units[1] = unitEnum::ScreenHeight;
 	}
 
-	gui()->controlUpdate(); // regenerate gui cache
+	gui()->skipAllEventsUntilNextUpdate();
 }

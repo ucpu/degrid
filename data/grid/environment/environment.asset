@@ -1,0 +1,29 @@
+
+[]
+scheme = pack
+environment.pack
+
+[]
+scheme = mesh
+environment.obj?grid
+environment.obj?spark
+environment.obj?explosion
+skybox.obj
+
+[]
+scheme = object
+grid.object
+spark.object
+explosion.object
+skybox.object
+
+[]
+scheme = texture
+target = GL_TEXTURE_2D_ARRAY
+skybox_$.png
+
+[]
+scheme = texture
+target = GL_TEXTURE_2D_ARRAY
+animation_loop = false
+spark_$.png

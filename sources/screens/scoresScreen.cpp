@@ -164,5 +164,5 @@ void setScreenScores()
 	}
 
 	guiFunction(51);
-	gui()->controlUpdate(); // regenerate gui cache
+	gui()->skipAllEventsUntilNextUpdate();
 }
