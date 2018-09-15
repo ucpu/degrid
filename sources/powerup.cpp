@@ -27,23 +27,25 @@ namespace grid
 		}
 
 		{ // update entities
+			vec3 playerPosition;
+			vec3 playerVelocity;
+			{
+				ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+				GRID_GET_COMPONENT(velocity, v, player.playerEntity);
+				playerPosition = p.position;
+				playerVelocity = v.velocity;
+			}
 			for (entityClass *e : powerupComponent::component->getComponentEntities()->entities())
 			{
 				GRID_GET_COMPONENT(powerup, p, e);
 				CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);
-				if (p.timeout-- == 0)
-				{
-					statistics.powerupsTimedout++;
-					e->addGroup(entitiesToDestroy);
-					continue;
-				}
 
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				tr.orientation = p.animation * tr.orientation;
-				if (!collisionTest(player.position, player.scale, player.speed, tr.position, tr.scale, vec3()))
+				if (!collisionTest(playerPosition, playerScale, playerVelocity, tr.position, tr.scale, vec3()))
 				{
-					vec3 toPlayer = player.position - tr.position;
-					real dist = max(toPlayer.length() - player.scale - tr.scale, 1);
+					vec3 toPlayer = playerPosition - tr.position;
+					real dist = max(toPlayer.length() - playerScale - tr.scale, 1);
 					tr.position += normalize(toPlayer) * (2 / dist);
 					continue;
 				}
@@ -123,9 +125,10 @@ namespace grid
 		transform.position = position * vec3(1, 0, 1);
 		transform.orientation = quat(randomAngle(), randomAngle(), randomAngle());
 		transform.scale = 2.5;
+		GRID_GET_COMPONENT(timeout, ttl, e);
+		ttl.ttl = 120 * 30;
 		GRID_GET_COMPONENT(powerup, p, e);
 		p.animation = quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100);
-		p.timeout = 120 * 30;
 		p.type = (powerupTypeEnum)random(0u, (uint32)powerupTypeEnum::Total);
 		ENGINE_GET_COMPONENT(render, render, e);
 		static const uint32 objectName[3] = {

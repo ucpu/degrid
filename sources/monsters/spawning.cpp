@@ -9,6 +9,8 @@ namespace grid
 {
 	namespace
 	{
+		vec3 playerPosition;
+
 		const vec3 aroundPosition(real index, real radius, vec3 center)
 		{
 			rads angle = index * rads::Full;
@@ -18,7 +20,7 @@ namespace grid
 
 		const vec3 randomPosition()
 		{
-			return aroundPosition(cage::random(), cage::random(200, 400), player.position);
+			return aroundPosition(cage::random(), cage::random(200, 400), playerPosition);
 		}
 
 		enum class placingPolicyEnum
@@ -89,6 +91,11 @@ namespace grid
 
 		void spawnDefinitionStruct::spawn()
 		{
+			{ // update player position
+				ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+				playerPosition = p.position;
+			}
+
 			CAGE_ASSERT_RUNTIME(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
 			std::vector<monsterTypeFlags> allowed;
 			allowed.reserve(16);
@@ -118,12 +125,12 @@ namespace grid
 				real angularOffset = cage::random();
 				real radius = cage::random(120, 140);
 				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[cage::random(0u, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, player.position), color);
+					spawnGeneral(allowed[cage::random(0u, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, playerPosition), color);
 			} break;
 			case placingPolicyEnum::Grouped:
 			{
 				real radius = cage::random(spawnCount / 2, spawnCount);
-				vec3 center = aroundPosition(cage::random(), cage::random(200, 250), player.position);
+				vec3 center = aroundPosition(cage::random(), cage::random(200, 250), playerPosition);
 				for (uint32 i = 0; i < spawnCount; i++)
 					spawnGeneral(allowed[random(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
 			} break;

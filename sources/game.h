@@ -10,6 +10,8 @@ namespace grid
 	void playerInit();
 	void playerDone();
 	void playerUpdate();
+	void physicsUpdate();
+	bool collisionTest(const vec3 &positionA, real radiusA, const vec3 velocityA, const vec3 &positionB, real radiusB, const vec3 velocityB);
 	void powerupUpdate();
 	void powerupSpawn(const vec3 &position);
 	void monstersInit();
@@ -17,7 +19,7 @@ namespace grid
 	void monstersUpdate();
 	void monstersSpawnInitial();
 	void environmentInit();
-	void environmentExplosion(const vec3 &position, const vec3 &speed, const vec3 &color, real size, real scale);
+	void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale);
 	void environmentUpdate();
 	void monsterExplosion(entityClass *e);
 	void shotExplosion(entityClass *e);
@@ -36,8 +38,6 @@ namespace grid
 	void mouseMove(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point);
 	void keyPress(uint32 key, modifiersFlags modifiers);
 	void keyRelease(uint32 key, modifiersFlags modifiers);
-
-	bool collisionTest(const vec3 &positionA, real radiusA, const vec3 movementA, const vec3 &positionB, real radiusB, const vec3 movementB);
 
 	enum class powerupTypeEnum
 	{
@@ -60,14 +60,17 @@ namespace grid
 		Total
 	};
 
-	static const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
-	static const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
+	const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
+	const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 
 	extern groupClass *entitiesToDestroy;
 	extern holder<spatialDataClass> spatialData;
 	extern holder<spatialQueryClass> spatialQuery;
 	extern quat skyboxOrientation;
 	extern quat skyboxRotation;
+
+	const real playerScale = 3;
+	const real mapNoPullRadius = 200;
 
 	struct globalPlayerStruct
 	{
@@ -84,14 +87,10 @@ namespace grid
 		bool cinematic;
 		bool paused;
 		bool gameOver;
-		real mapNoPullRadius;
 		vec3 monstersTarget;
 
 		// player
-		vec3 position;
-		vec3 speed;
 		real life;
-		real scale;
 		real shootingCooldown;
 		vec3 shotsColor;
 		uint32 score;
@@ -136,7 +135,6 @@ namespace grid
 		uint32 shielderStoppedShots; // the number of shots eliminated by shielder
 		uint32 wormholesSpawned;
 		uint32 powerupsSpawned;
-		uint32 powerupsTimedout; // powerups that dissipated due to their time out
 		uint32 powerupsPicked; // powerups picked up by the player
 		uint32 powerupsWasted; // picked up powerups, that were over a limit (and converted into score)
 		uint32 bombsUsed;
@@ -181,34 +179,67 @@ namespace grid
 	extern configFloat confVolumeEffects;
 	extern configFloat confVolumeSpeech;
 
+	// general components
+
+	struct velocityComponent
+	{
+		static componentClass *component;
+		vec3 velocity;
+	};
+
+	struct timeoutComponent
+	{
+		static componentClass *component;
+		uint32 ttl; // game updates (does not tick when paused)
+		timeoutComponent() : ttl(0) {}
+	};
+
+	// environment
+
 	struct gridComponent
 	{
 		static componentClass *component;
-		vec3 speed;
 		vec3 place;
 		vec3 originalColor;
 	};
 
-	struct effectComponent
-	{
-		static componentClass *component;
-		uint32 ttl;
-		vec3 speed;
-	};
+	// player components
 
 	struct shotComponent
 	{
 		static componentClass *component;
-		vec3 speed;
 		real damage;
 		bool homing;
+		shotComponent() : homing(false) {}
 	};
+
+	struct powerupComponent
+	{
+		static componentClass *component;
+		quat animation;
+		powerupTypeEnum type;
+		powerupComponent() : type(powerupTypeEnum::Total) {}
+	};
+
+	struct turretComponent
+	{
+		static componentClass *component;
+		uint32 shooting;
+		turretComponent() : shooting(0) {}
+	};
+
+	struct decoyComponent
+	{
+		static componentClass *component;
+		quat rotation;
+	};
+
+	// monsters components
 
 	struct monsterComponent
 	{
 		static componentClass *component;
 		vec3 baseColorHsv;
-		vec3 speed;
 		real life;
 		real damage;
 		real flickeringSpeed;
@@ -233,6 +264,7 @@ namespace grid
 	{
 		static componentClass *component;
 		uint32 follow;
+		snakeTailComponent() : follow(0) {}
 	};
 
 	struct snakeHeadComponent
@@ -249,12 +281,14 @@ namespace grid
 		uint32 chargingSteps;
 		uint32 turningSteps;
 		uint32 stepsLeft;
+		shielderComponent() : chargingSteps(0), turningSteps(0), stepsLeft(0) {}
 	};
 
 	struct shieldComponent
 	{
 		static componentClass *component;
 		bool active;
+		shieldComponent() : active(false) {}
 	};
 
 	struct wormholeComponent
@@ -263,29 +297,6 @@ namespace grid
 		real maxSpeed;
 		real acceleration;
 		real maxLife;
-	};
-
-	struct powerupComponent
-	{
-		static componentClass *component;
-		quat animation;
-		uint32 timeout;
-		powerupTypeEnum type;
-	};
-
-	struct turretComponent
-	{
-		static componentClass *component;
-		uint32 timeout;
-		uint32 shooting;
-	};
-
-	struct decoyComponent
-	{
-		static componentClass *component;
-		quat rotation;
-		vec3 speed;
-		uint32 timeout;
 	};
 }
 

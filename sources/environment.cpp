@@ -38,26 +38,6 @@ namespace grid
 			statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
 		}
 
-		{ // update effects
-			for (entityClass *e : effectComponent::component->getComponentEntities()->entities())
-			{
-				GRID_GET_COMPONENT(effect, g, e);
-				if (g.ttl-- == 0)
-				{
-					e->addGroup(entitiesToDestroy);
-					continue;
-				}
-				ENGINE_GET_COMPONENT(transform, t, e);
-				t.position += g.speed;
-			}
-		}
-
-		{ // camera
-			ENGINE_GET_COMPONENT(transform, tr, player.primaryCameraEntity);
-			tr.position[0] = player.position[0];
-			tr.position[2] = player.position[2];
-		}
-
 		{ // update skybox
 			ENGINE_GET_COMPONENT(transform, t, player.skyboxRenderEntity);
 			t.orientation = skyboxOrientation;
@@ -68,6 +48,13 @@ namespace grid
 
 		if (player.gameOver)
 			return;
+
+		{ // camera
+			ENGINE_GET_COMPONENT(transform, tr, player.primaryCameraEntity);
+			ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+			tr.position[0] = p.position[0];
+			tr.position[2] = p.position[2];
+		}
 
 		{ // secondaryCamera
 			static configBool secondaryCamera("grid.secondary-camera.enabled", false);
@@ -118,10 +105,10 @@ namespace grid
 			{
 				ENGINE_GET_COMPONENT(transform, t, e);
 				ENGINE_GET_COMPONENT(render, r, e);
+				GRID_GET_COMPONENT(velocity, v, e);
 				GRID_GET_COMPONENT(grid, g, e);
-				g.speed *= 0.95;
-				g.speed += (g.place - t.position) * 0.005;
-				t.position += g.speed;
+				v.velocity *= 0.95;
+				v.velocity += (g.place - t.position) * 0.005;
 				r.color = interpolate(r.color, g.originalColor, 0.002);
 			}
 		}
@@ -135,35 +122,30 @@ namespace grid
 			vec3 color;
 			real size;
 
-			colorizeNerbyGridsStruct(const vec3 &position, const vec3 &color, real size) :
-				position(position), color(color), size(size)
+			colorizeNerbyGridsStruct(const vec3 &position, const vec3 &color, real size) : position(position), color(color), size(size)
 			{
 				spatialQuery->intersection(sphere(position, size));
-				const uint32 *res = spatialQuery->resultArray();
-				for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
-					test(res[i]);
-			}
-
-			void test(uint32 otherName)
-			{
-				if (!entities()->hasEntity(otherName))
-					return;
-				entityClass *e = entities()->getEntity(otherName);
-				if (!e->hasComponent(gridComponent::component))
-					return;
-				ENGINE_GET_COMPONENT(transform, ot, e);
-				ENGINE_GET_COMPONENT(render, orc, e);
-				GRID_GET_COMPONENT(grid, og, e);
-				vec3 toOther = ot.position - position;
-				vec3 change = toOther.normalize() * (size / max(2, toOther.squaredLength())) * 2;
-				og.speed += change;
-				ot.position += change * 2;
-				orc.color = interpolate(color, orc.color, toOther.length() / size);
+				for (uint32 otherName : spatialQuery->result())
+				{
+					if (!entities()->hasEntity(otherName))
+						return;
+					entityClass *e = entities()->getEntity(otherName);
+					if (!e->hasComponent(gridComponent::component))
+						return;
+					ENGINE_GET_COMPONENT(transform, ot, e);
+					ENGINE_GET_COMPONENT(render, orc, e);
+					GRID_GET_COMPONENT(velocity, og, e);
+					vec3 toOther = ot.position - position;
+					vec3 change = toOther.normalize() * (size / max(2, toOther.squaredLength())) * 2;
+					og.velocity += change;
+					ot.position += change * 2;
+					orc.color = interpolate(color, orc.color, toOther.length() / size);
+				}
 			}
 		};
 	}
 
-	void environmentExplosion(const vec3 &position, const vec3 &speed, const vec3 &color, real size, real scale)
+	void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale)
 	{
 		statistics.environmentExplosions++;
 		colorizeNerbyGridsStruct explosion(position, color, size);
@@ -171,12 +153,13 @@ namespace grid
 		for (uint32 i = 0; i < cnt; i++)
 		{
 			entityClass *e = entities()->newAnonymousEntity();
-			GRID_GET_COMPONENT(effect, effect, e);
-			effect.ttl = numeric_cast<uint32>(random() * 5 + 10);
-			effect.speed = randomDirection3();
-			if (speed.squaredLength() > 0)
-				effect.speed = normalize(effect.speed + speed.normalize() * speed.length().sqrt());
-			effect.speed *= random() + 0.5;
+			GRID_GET_COMPONENT(timeout, timeout, e);
+			timeout.ttl = numeric_cast<uint32>(random() * 5 + 10);
+			GRID_GET_COMPONENT(velocity, vel, e);
+			vel.velocity = randomDirection3();
+			if (velocity.squaredLength() > 0)
+				vel.velocity = normalize(vel.velocity + velocity.normalize() * velocity.length().sqrt());
+			vel.velocity *= random() + 0.5;
 			ENGINE_GET_COMPONENT(transform, transform, e);
 			transform.scale = scale * (random() * 0.4 + 0.8) * 0.4;
 			transform.position = position + vec3(random() * 2 - 1, 0, random() * 2 - 1);
@@ -191,16 +174,17 @@ namespace grid
 	{
 		ENGINE_GET_COMPONENT(transform, t, e);
 		ENGINE_GET_COMPONENT(render, r, e);
+		GRID_GET_COMPONENT(velocity, v, e);
 		GRID_GET_COMPONENT(monster, m, e);
-		environmentExplosion(t.position, m.speed, r.color, min(m.damage, 10) + 2, t.scale);
+		environmentExplosion(t.position, v.velocity, r.color, min(m.damage, 10) + 2, t.scale);
 	}
 
 	void shotExplosion(entityClass *e)
 	{
 		ENGINE_GET_COMPONENT(transform, t, e);
 		ENGINE_GET_COMPONENT(render, r, e);
-		GRID_GET_COMPONENT(shot, s, e);
-		environmentExplosion(t.position, s.speed, r.color, 5, t.scale * 2);
+		GRID_GET_COMPONENT(velocity, v, e);
+		environmentExplosion(t.position, v.velocity, r.color, 5, t.scale * 2);
 	}
 
 	void environmentInit()
@@ -262,7 +246,7 @@ namespace grid
 		return;
 #endif
 
-		const real radius = player.mapNoPullRadius * 1.5;
+		const real radius = mapNoPullRadius * 1.5;
 		const real step = 10;
 		for (real y = -radius; y < radius + 1e-3; y += step)
 		{
@@ -272,10 +256,10 @@ namespace grid
 				if (d > radius)
 					continue;
 				entityClass *e = entities()->newUniqueEntity();
+				GRID_GET_COMPONENT(velocity, velocity, e);
+				velocity.velocity = randomDirection3();
 				GRID_GET_COMPONENT(grid, grid, e);
 				grid.place = vec3(x, -2, y) + vec3(random(), random() * 0.1, random()) * 2 - 1;
-				grid.speed = randomDirection3();
-				grid.speed[1] *= 0.01;
 				ENGINE_GET_COMPONENT(transform, transform, e);
 				transform.scale = 0.6;
 				transform.position = grid.place + randomDirection3() * vec3(10, 0.1, 10);

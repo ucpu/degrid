@@ -7,7 +7,7 @@ namespace grid
 		struct monsterUpdateStruct
 		{
 			transformComponent &tr;
-			monsterComponent &ms;
+			velocityComponent &mv;
 			simpleMonsterComponent &sm;
 			uint32 closestShot;
 			real closestDistance;
@@ -15,18 +15,41 @@ namespace grid
 
 			monsterUpdateStruct(entityClass *e) :
 				tr(e->value<transformComponent>(transformComponent::component)),
-				ms(e->value<monsterComponent>(monsterComponent::component)),
+				mv(e->value<velocityComponent>(velocityComponent::component)),
 				sm(e->value<simpleMonsterComponent>(simpleMonsterComponent::component)),
 				closestShot(0), closestDistance(real::PositiveInfinity), myName(e->getName())
 			{
-				if (ms.speed.squaredLength() > sm.maxSpeed * sm.maxSpeed + 0.0001)
-					ms.speed = ms.speed.normalize() * max(sm.maxSpeed, ms.speed.length() - sm.acceleration);
+				if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed + 0.0001)
+					mv.velocity = mv.velocity.normalize() * max(sm.maxSpeed, mv.velocity.length() - sm.acceleration);
 				else
 				{
 					spatialQuery->intersection(sphere(tr.position, 15));
-					const uint32 *res = spatialQuery->resultArray();
-					for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
-						test(res[i]);
+					for (uint32 otherName : spatialQuery->result())
+					{
+						if (otherName == myName || !entities()->hasEntity(otherName))
+							continue;
+
+						entityClass *e = entities()->getEntity(otherName);
+
+						if (!e->hasComponent(shotComponent::component))
+							continue;
+
+						ENGINE_GET_COMPONENT(transform, ot, e);
+						vec3 toMonster = tr.position - ot.position;
+
+						// test whether other is closer
+						if (toMonster.squaredLength() >= closestDistance * closestDistance)
+							continue;
+
+						GRID_GET_COMPONENT(velocity, ov, e);
+
+						// test its direction
+						if (dot(toMonster.normalize(), ov.velocity.normalize()) < 0)
+							continue;
+
+						closestShot = otherName;
+						closestDistance = toMonster.length();
+					}
 
 					vec3 will = normalize(player.monstersTarget - tr.position);
 
@@ -34,45 +57,19 @@ namespace grid
 					{
 						entityClass *s = entities()->getEntity(closestShot);
 						ENGINE_GET_COMPONENT(transform, ot, s);
-						GRID_GET_COMPONENT(shot, os, s);
+						GRID_GET_COMPONENT(velocity, ov, s);
 						vec3 a = tr.position - ot.position;
-						vec3 b = os.speed.normalize();
+						vec3 b = ov.velocity.normalize();
 						vec3 avoid = normalize(a - dot(a, b) * b);
 						will = interpolate(will, avoid, sm.avoidance);
 					}
 
-					ms.speed += will * sm.acceleration;
-					if (ms.speed.squaredLength() > sm.maxSpeed * sm.maxSpeed)
-						ms.speed = ms.speed.normalize() * sm.maxSpeed;
+					mv.velocity += will * sm.acceleration;
+					if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed)
+						mv.velocity = mv.velocity.normalize() * sm.maxSpeed;
 				}
 
 				tr.orientation = sm.animation * tr.orientation;
-			}
-
-			void test(uint32 otherName)
-			{
-				if (otherName == myName || !entities()->hasEntity(otherName))
-					return;
-
-				entityClass *e = entities()->getEntity(otherName);
-				ENGINE_GET_COMPONENT(transform, ot, e);
-				vec3 toMonster = tr.position - ot.position;
-
-				if (!e->hasComponent(shotComponent::component))
-					return;
-
-				// test whether other is closer
-				if (toMonster.squaredLength() >= closestDistance * closestDistance)
-					return;
-
-				GRID_GET_COMPONENT(shot, os, e);
-
-				// test its direction
-				if (dot(toMonster.normalize(), os.speed.normalize()) < 0)
-					return;
-
-				closestShot = otherName;
-				closestDistance = toMonster.length();
 			}
 		};
 
@@ -97,10 +94,11 @@ namespace grid
 		entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, const quat &animation)
 		{
 			entityClass *e = initializeMonster(spawnPosition, color, scale, objectName, deadSound, damage, life);
+			GRID_GET_COMPONENT(velocity, v, e);
 			GRID_GET_COMPONENT(monster, m, e);
 			GRID_GET_COMPONENT(simpleMonster, s, e);
-			m.speed = randomDirection3();
-			m.speed[1] = 0;
+			v.velocity = randomDirection3();
+			v.velocity[1] = 0;
 			m.dispersion = dispersion;
 			s.avoidance = avoidance;
 			s.animation = animation;

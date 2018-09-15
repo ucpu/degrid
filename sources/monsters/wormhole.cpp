@@ -9,6 +9,7 @@ namespace grid
 			transformComponent &tr;
 			renderComponent &rnd;
 			monsterComponent &mo;
+			velocityComponent &vl;
 			wormholeComponent &wh;
 			const uint32 myName;
 
@@ -16,6 +17,7 @@ namespace grid
 				tr(e->value<transformComponent>(transformComponent::component)),
 				rnd(e->value<renderComponent>(renderComponent::component)),
 				mo(e->value<monsterComponent>(monsterComponent::component)),
+				vl(e->value<velocityComponent>(velocityComponent::component)),
 				wh(e->value<wormholeComponent>(wormholeComponent::component)),
 				myName(e->getName())
 			{
@@ -24,8 +26,8 @@ namespace grid
 				for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
 					test(res[i]);
 				tr.scale += 0.001;
-				mo.speed += normalize(player.monstersTarget - tr.position) * wh.acceleration;
-				mo.speed = mo.speed.normalize() * min(mo.speed.length(), wh.maxSpeed);
+				vl.velocity += normalize(player.monstersTarget - tr.position) * wh.acceleration;
+				vl.velocity = vl.velocity.normalize() * min(vl.velocity.length(), wh.maxSpeed);
 				ENGINE_GET_COMPONENT(animatedTexture, at, e);
 				at.speed = 0;
 				at.offset = 1000000 * (19.f / 20) * (1 - mo.life / wh.maxLife);
@@ -74,7 +76,8 @@ namespace grid
 						}
 						rads angle = randomAngle();
 						vec3 dir = vec3(cos(angle), 0, sin(angle));
-						tre.position = player.position + dir * random(200, 250);
+						ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+						tre.position = playerTransform.position + dir * random(200, 250);
 						transformComponent &treh = e->value<transformComponent>(transformComponent::componentHistory);
 						ENGINE_GET_COMPONENT(render, r, e);
 						environmentExplosion(treh.position, tre.position - treh.position, r.color, 1, tre.scale); // make an explosion in direction in which it was teleported
@@ -93,8 +96,8 @@ namespace grid
 					return;
 				}
 
-				if (e->hasComponent(effectComponent::component) || e->hasComponent(shotComponent::component) || e == player.playerEntity)
-				{ // player, effects and shots are pulled, but are not destroyed by the blackhole
+				if (e->hasComponent(shotComponent::component) || e == player.playerEntity)
+				{ // player and shots are pulled, but are not destroyed by the blackhole
 					pull(e);
 					return;
 				}

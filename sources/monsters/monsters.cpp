@@ -23,7 +23,8 @@ namespace grid
 				if (dispersion != vec3())
 				{
 					GRID_GET_COMPONENT(monster, m, e);
-					m.speed += dispersion.normalize() * m.dispersion;
+					GRID_GET_COMPONENT(velocity, v, e);
+					v.velocity += dispersion.normalize() * m.dispersion;
 				}
 			}
 
@@ -38,11 +39,7 @@ namespace grid
 				{
 					real d = ot.scale + tr.scale;
 					if (toMonster.squaredLength() < d*d)
-					{
-						GRID_GET_COMPONENT(monster, om, e);
-						(void)om;
 						dispersion += toMonster.normalize() / toMonster.length();
-					}
 				}
 			}
 		};
@@ -64,28 +61,29 @@ namespace grid
 
 			if (!player.paused)
 			{
+				ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+				GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
 				for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
 				{
 					ENGINE_GET_COMPONENT(transform, t, e);
+					GRID_GET_COMPONENT(velocity, v, e);
 					GRID_GET_COMPONENT(monster, m, e);
-					ENGINE_GET_COMPONENT(render, r, e);
-					(void)r;
 					if (m.dispersion > 0)
 						monsterUpdateStruct mu(e);
-					if (collisionTest(player.position, player.scale, player.speed, t.position, t.scale, m.speed))
+					if (collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
 					{
 						if (player.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::PositiveInfinity)
 						{
 							statistics.shieldStoppedMonsters++;
 							statistics.shieldAbsorbedDamage += m.damage;
-							vec3 shieldDirection = (t.position - player.position).normalize();
-							vec3 shieldPosition = player.position + shieldDirection * (player.scale * 1.1);
+							vec3 shieldDirection = (t.position - playerTransform.position).normalize();
+							vec3 shieldPosition = playerTransform.position + shieldDirection * (playerScale * 1.1);
 							environmentExplosion(shieldPosition, shieldDirection * 0.5, vec3(1, 1, 1), min(m.damage, 5) * 2 + 2, 3); // shield sparks
 							player.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
 						}
 						else
 						{
-							environmentExplosion(interpolate(t.position, player.position, 0.5), interpolate(player.speed, m.speed, 0.5), player.deathColor, min(m.damage, 5) * 2 + 2, 3); // hull sparks
+							environmentExplosion(interpolate(t.position, playerTransform.position, 0.5), interpolate(playerVelocity.velocity, v.velocity, 0.5), player.deathColor, min(m.damage, 5) * 2 + 2, 3); // hull sparks
 							statistics.monstersSucceded++;
 							player.life -= m.damage;
 							if (statistics.monstersFirstHit == 0)
@@ -116,8 +114,7 @@ namespace grid
 							soundEffect(m.destroyedSound, t.position);
 						continue;
 					}
-					m.speed[1] = 0;
-					t.position += m.speed;
+					v.velocity[1] = 0;
 					t.position[1] = m.groundLevel;
 				}
 			}

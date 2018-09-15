@@ -63,6 +63,7 @@ namespace grid
 			for (entityClass *e : shielderComponent::component->getComponentEntities()->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, tr, e);
+				GRID_GET_COMPONENT(velocity, mv, e);
 				GRID_GET_COMPONENT(monster, ms, e);
 				GRID_GET_COMPONENT(shielder, sh, e);
 				entityClass *se = entities()->getEntity(sh.shieldEntity);
@@ -76,7 +77,7 @@ namespace grid
 						vec3 t = normalize(player.monstersTarget - tr.position);
 						tr.orientation = interpolate(tr.orientation, quat(t, vec3(0, 1, 0)), 0.02);
 						vec3 f = tr.orientation * vec3(0, 0, -1);
-						ms.speed = f * sh.movementSpeed;
+						mv.velocity = f * sh.movementSpeed;
 					}
 					else
 					{
@@ -86,7 +87,7 @@ namespace grid
 				}
 				else
 				{ // turning
-					ms.speed = vec3();
+					mv.velocity = vec3();
 					if (sh.stepsLeft)
 					{
 						vec3 t = normalize(player.monstersTarget - tr.position);

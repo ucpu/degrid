@@ -17,9 +17,13 @@
 
 namespace grid
 {
+	componentClass *velocityComponent::component;
+	componentClass *timeoutComponent::component;
 	componentClass *gridComponent::component;
-	componentClass *effectComponent::component;
 	componentClass *shotComponent::component;
+	componentClass *powerupComponent::component;
+	componentClass *turretComponent::component;
+	componentClass *decoyComponent::component;
 	componentClass *monsterComponent::component;
 	componentClass *simpleMonsterComponent::component;
 	componentClass *snakeHeadComponent::component;
@@ -27,9 +31,6 @@ namespace grid
 	componentClass *shielderComponent::component;
 	componentClass *shieldComponent::component;
 	componentClass *wormholeComponent::component;
-	componentClass *powerupComponent::component;
-	componentClass *turretComponent::component;
-	componentClass *decoyComponent::component;
 
 	groupClass *entitiesToDestroy;
 	holder<spatialDataClass> spatialData;
@@ -70,9 +71,13 @@ namespace grid
 #ifdef GRID_TESTING
 		CAGE_LOG(severityEnum::Info, "grid", string() + "TESTING GAME BUILD");
 #endif // GRID_TESTING
+		velocityComponent::component = entities()->defineComponent(velocityComponent(), true);
+		timeoutComponent::component = entities()->defineComponent(timeoutComponent(), true);
 		gridComponent::component = entities()->defineComponent(gridComponent(), true);
-		effectComponent::component = entities()->defineComponent(effectComponent(), true);
 		shotComponent::component = entities()->defineComponent(shotComponent(), true);
+		powerupComponent::component = entities()->defineComponent(powerupComponent(), true);
+		turretComponent::component = entities()->defineComponent(turretComponent(), true);
+		decoyComponent::component = entities()->defineComponent(decoyComponent(), true);
 		monsterComponent::component = entities()->defineComponent(monsterComponent(), true);
 		simpleMonsterComponent::component = entities()->defineComponent(simpleMonsterComponent(), true);
 		snakeTailComponent::component = entities()->defineComponent(snakeTailComponent(), true);
@@ -80,9 +85,6 @@ namespace grid
 		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
 		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
 		wormholeComponent::component = entities()->defineComponent(wormholeComponent(), true);
-		powerupComponent::component = entities()->defineComponent(powerupComponent(), true);
-		turretComponent::component = entities()->defineComponent(turretComponent(), true);
-		decoyComponent::component = entities()->defineComponent(decoyComponent(), true);
 		shielderEliminatedListener.bind<&shielderEliminated>();
 		shielderComponent::component->getComponentEntities()->entityRemoved.attach(shielderEliminatedListener);
 		entitiesToDestroy = entities()->defineGroup();
@@ -137,7 +139,7 @@ namespace grid
 			shotsFired, shotsTurret, shotsDissipated, shotsHit, shotsKill, shotsCurrent, shotsMax, \
 			monstersSpawned, monstersSpecial, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersFirstHit, shielderStoppedShots, \
 			wormholesSpawned, \
-			powerupsSpawned, powerupsTimedout, powerupsPicked, powerupsWasted, \
+			powerupsSpawned, powerupsPicked, powerupsWasted, \
 			bombsUsed, bombsHitTotal, bombsKillTotal, bombsHitMax, bombsKillMax, \
 			shieldStoppedMonsters, shieldAbsorbedDamage, turretsPlaced, decoysUsed, \
 			entitiesCurrent, entitiesMax, \
@@ -167,6 +169,7 @@ namespace grid
 		playerUpdate();
 		monstersUpdate();
 		environmentUpdate();
+		physicsUpdate();
 
 		entitiesToDestroy->destroyAllEntities();
 
@@ -218,8 +221,6 @@ namespace grid
 		statistics.timeRenderMin = -1;
 		player.paused = player.gameOver = false;
 		player.cinematic = cinematicParam;
-		player.mapNoPullRadius = 200;
-		player.scale = 3;
 		player.life = 100;
 		player.deathColor = vec3(0.68, 0.578, 0.252);
 		player.powerupSpawnChance = 0.3;

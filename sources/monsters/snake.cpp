@@ -8,25 +8,21 @@ namespace grid
 			for (entityClass *e : snakeHeadComponent::component->getComponentEntities()->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, tr, e);
-				GRID_GET_COMPONENT(monster, m, e);
+				GRID_GET_COMPONENT(velocity, v, e);
 				GRID_GET_COMPONENT(snakeHead, snake, e);
-				if (tr.position.distance(player.position) > 250)
-					m.speed = (player.monstersTarget - tr.position).normalize() * (snake.speedMin + snake.speedMax) * 0.5;
-				else
-				{
-					m.speed += randomDirection3() * vec3(1, 0, 1) * 0.03;
-					real s = m.speed.length();
-					if (s < snake.speedMin || s > snake.speedMax)
-						m.speed = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
-				}
-				m.speed[1] = 0;
-				tr.orientation = quat(degs(), aTan2(-m.speed[2], -m.speed[0]), degs());
+				v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
+				real s = v.velocity.length();
+				if (s < snake.speedMin || s > snake.speedMax)
+					v.velocity = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
+				v.velocity[1] = 0;
+				tr.orientation = quat(degs(), aTan2(-v.velocity[2], -v.velocity[0]), degs());
 			}
 		}
 		{ // snake tails
 			for (entityClass *e : snakeTailComponent::component->getComponentEntities()->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, tr, e);
+				GRID_GET_COMPONENT(velocity, v, e);
 				GRID_GET_COMPONENT(monster, m, e);
 				GRID_GET_COMPONENT(snakeTail, snake, e);
 
@@ -38,17 +34,17 @@ namespace grid
 					real r = trp.scale + tr.scale;
 					if (toPrev.squaredLength() > r * r + 0.01)
 					{
-						m.speed = toPrev.normalize() * (toPrev.length() - r);
-						tr.orientation = quat(degs(), aTan2(-m.speed[2], -m.speed[0]), degs());
+						v.velocity = toPrev.normalize() * (toPrev.length() - r);
+						tr.orientation = quat(degs(), aTan2(-v.velocity[2], -v.velocity[0]), degs());
 					}
 					else
-						m.speed = vec3();
+						v.velocity = vec3();
 				}
 				else
 				{
 					if (m.life > 1e5)
 					{
-						m.speed = vec3();
+						v.velocity = vec3();
 						m.life = 10;
 					}
 					else

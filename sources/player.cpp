@@ -72,13 +72,15 @@ namespace grid
 			statistics.bombsKillMax = max(statistics.bombsKillMax, kills);
 			statistics.bombsUsed++;
 			{
-				uint32 count = gridComponent::component->getComponentEntities()->entitiesCount();
-				entityClass *const *grids = gridComponent::component->getComponentEntities()->entitiesArray();
-				for (uint32 i = 0; i < count; i++)
+				vec3 playerPosition;
 				{
-					entityClass *e = grids[i];
+					ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+					playerPosition = p.position;
+				}
+				for (entityClass *e : gridComponent::component->getComponentEntities()->entities())
+				{
 					ENGINE_GET_COMPONENT(transform, t, e);
-					t.position = player.position + randomDirection3() * vec3(100, 1, 100);
+					t.position = playerPosition + randomDirection3() * vec3(100, 1, 100);
 				}
 			}
 			monstersSpawnInitial();
@@ -98,16 +100,18 @@ namespace grid
 			player.powerups[(uint32)powerupTypeEnum::Turret]--;
 			statistics.turretsPlaced++;
 			entityClass *turret = entities()->newUniqueEntity();
+			ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
 			ENGINE_GET_COMPONENT(transform, transform, turret);
-			transform.position = player.position;
+			transform.position = playerTransform.position;
 			transform.position[1] = 0;
 			transform.orientation = quat(degs(), randomAngle(), degs());
 			transform.scale = 3;
 			ENGINE_GET_COMPONENT(render, render, turret);
 			render.object = hashString("grid/player/turret.object");
 			GRID_GET_COMPONENT(turret, tr, turret);
-			tr.timeout = 60 * 30;
 			tr.shooting = 2;
+			GRID_GET_COMPONENT(timeout, ttl, turret);
+			ttl.ttl = 60 * 30;
 
 			uint32 sounds[] = {
 				hashString("grid/speech/use/engaging-a-turret.wav"),
@@ -129,9 +133,12 @@ namespace grid
 			transform.scale *= 2;
 			ENGINE_GET_COMPONENT(render, render, decoy);
 			render.object = hashString("grid/player/player.object");
+			GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+			GRID_GET_COMPONENT(velocity, vel, decoy);
+			vel.velocity = -playerVelocity.velocity;
+			GRID_GET_COMPONENT(timeout, ttl, decoy);
+			ttl.ttl = 60 * 30;
 			GRID_GET_COMPONENT(decoy, dec, decoy);
-			dec.speed = -player.speed;
-			dec.timeout = 60 * 30;
 			dec.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
 			uint32 sounds[] = {
@@ -173,6 +180,8 @@ namespace grid
 					player.arrowsDirection += vec3(1, 0, 0);
 			}
 
+			ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+
 			switch (confControlMovement)
 			{
 			case 0: // arrows (absolute)
@@ -184,17 +193,17 @@ namespace grid
 				player.moveDirection = tr.orientation * player.arrowsDirection;
 			} break;
 			case 2: // lmb
-				player.moveDirection = player.mouseLeftPosition - player.position;
+				player.moveDirection = player.mouseLeftPosition - playerTransform.position;
 				if (player.moveDirection.squaredLength() < 100)
 					player.moveDirection = vec3();
 				break;
 			case 3: // rmb
-				player.moveDirection = player.mouseRightPosition - player.position;
+				player.moveDirection = player.mouseRightPosition - playerTransform.position;
 				if (player.moveDirection.squaredLength() < 100)
 					player.moveDirection = vec3();
 				break;
 			case 4: // cursor position
-				player.moveDirection = player.mouseCurrentPosition - player.position;
+				player.moveDirection = player.mouseCurrentPosition - playerTransform.position;
 				if (player.moveDirection.squaredLength() < 100)
 					player.moveDirection = vec3();
 				break;
@@ -211,13 +220,13 @@ namespace grid
 				player.fireDirection = tr.orientation * player.arrowsDirection;
 			} break;
 			case 2: // lmb
-				player.fireDirection = player.mouseLeftPosition - player.position;
+				player.fireDirection = player.mouseLeftPosition - playerTransform.position;
 				break;
 			case 3: // rmb
-				player.fireDirection = player.mouseRightPosition - player.position;
+				player.fireDirection = player.mouseRightPosition - playerTransform.position;
 				break;
 			case 4: // cursor position
-				player.fireDirection = player.mouseCurrentPosition - player.position;
+				player.fireDirection = player.mouseCurrentPosition - playerTransform.position;
 				break;
 			}
 		}
@@ -228,53 +237,51 @@ namespace grid
 				return;
 
 			ENGINE_GET_COMPONENT(transform, tr, player.playerEntity);
-			player.position = tr.position;
-			player.scale = tr.scale;
+			GRID_GET_COMPONENT(velocity, vl, player.playerEntity);
 
 			if (player.moveDirection != vec3())
 			{
 				real maxSpeed = player.powerups[(uint32)powerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
 				vec3 change = player.moveDirection.normalize() * (player.powerups[(uint32)powerupTypeEnum::Acceleration] + 1) * 0.1;
-				if (confControlMovement == 1 && ((tr.orientation * vec3(0, 0, -1)).dot(normalize(player.speed + change)) < 1e-5))
-					player.speed = vec3();
+				if (confControlMovement == 1 && ((tr.orientation * vec3(0, 0, -1)).dot(normalize(vl.velocity + change)) < 1e-5))
+					vl.velocity = vec3();
 				else
-					player.speed += change;
-				if (player.speed.squaredLength() > maxSpeed * maxSpeed)
-					player.speed = player.speed.normalize() * maxSpeed;
+					vl.velocity += change;
+				if (vl.velocity.squaredLength() > maxSpeed * maxSpeed)
+					vl.velocity = vl.velocity.normalize() * maxSpeed;
 				if (change.squaredLength() > 0.01)
 				{
 					entityClass *spark = entities()->newAnonymousEntity();
 					ENGINE_GET_COMPONENT(transform, transform, spark);
 					transform.scale = cage::random() * 0.2 + 0.3;
-					transform.position = player.position + tr.orientation * vec3((sint32)(statistics.updateIterationNoPause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
+					transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationNoPause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
 					transform.orientation = randomDirectionQuat();
 					ENGINE_GET_COMPONENT(render, render, spark);
 					render.object = hashString("grid/environment/spark.object");
-					GRID_GET_COMPONENT(effect, ef, spark);
-					ef.speed = (change + randomDirection3() * 0.05) * cage::random() * -5;
-					ef.ttl = random(10, 15);
+					GRID_GET_COMPONENT(velocity, vel, spark);
+					vel.velocity = (change + randomDirection3() * 0.05) * cage::random() * -5;
+					GRID_GET_COMPONENT(timeout, ttl, spark);
+					ttl.ttl = random(10, 15);
 					ENGINE_GET_COMPONENT(animatedTexture, at, spark);
 					at.startTime = currentControlTime();
-					at.speed = 30.f / ef.ttl;
+					at.speed = 30.f / ttl.ttl;
 				}
 			}
 			else
-				player.speed *= 0.97;
+				vl.velocity *= 0.97;
 
-			if (player.position.length() > player.mapNoPullRadius)
+			// pull to center
+			if (tr.position.length() > mapNoPullRadius)
 			{
-				vec3 pullToCenter = -player.position.normalize() * pow((player.position.length() - player.mapNoPullRadius) / player.mapNoPullRadius, 2);
-				player.speed += pullToCenter;
+				vec3 pullToCenter = -tr.position.normalize() * pow((tr.position.length() - mapNoPullRadius) / mapNoPullRadius, 2);
+				vl.velocity += pullToCenter;
 			}
 
-			player.speed[1] = 0;
-			player.position += player.speed;
-			player.position[1] = 0.5;
-			tr.position = player.position;
-			player.monstersTarget = tr.position + player.speed * 3;
-			tr.scale = player.scale;
-			if (player.speed.squaredLength() > 1e-5)
-				tr.orientation = quat(degs(), aTan2(-player.speed[2], -player.speed[0]), degs());
+			vl.velocity[1] = 0;
+			tr.position[1] = 0.5;
+			player.monstersTarget = tr.position + vl.velocity * 3;
+			if (vl.velocity.squaredLength() > 1e-5)
+				tr.orientation = quat(degs(), aTan2(-vl.velocity[2], -vl.velocity[0]), degs());
 		}
 
 		void shipShield()
@@ -312,6 +319,9 @@ namespace grid
 
 			player.shootingCooldown += real(4) * real(1.3).pow(player.powerups[(uint32)powerupTypeEnum::Multishot]) * real(0.7).pow(player.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
 
+			ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+			GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+
 			for (real i = player.powerups[(uint32)powerupTypeEnum::Multishot] * -0.5; i < player.powerups[(uint32)powerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 			{
 				statistics.shotsFired++;
@@ -325,11 +335,12 @@ namespace grid
 				ENGINE_GET_COMPONENT(render, render, shot);
 				render.object = hashString("grid/player/shot.object");
 				render.color = player.shotsColor;
+				GRID_GET_COMPONENT(velocity, vel, shot);
+				vel.velocity = vec3(-sin(dir), 0, -cos(dir)) * (player.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
 				GRID_GET_COMPONENT(shot, sh, shot);
-				sh.speed = vec3(-sin(dir), 0, -cos(dir)) * (player.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + player.speed * 0.3;
 				sh.damage = player.powerups[(uint32)powerupTypeEnum::ShotsDamage] + (player.powerups[(uint32)powerupTypeEnum::SuperDamage] ? 4 : 1);
 				sh.homing = player.powerups[(uint32)powerupTypeEnum::HomingShots] > 0;
-				transform.position = player.position + sh.speed.normalize() * player.scale;
+				transform.position = playerTransform.position + vel.velocity.normalize() * playerTransform.scale;
 			}
 		}
 
@@ -337,14 +348,9 @@ namespace grid
 		{
 			for (entityClass *e : turretComponent::component->getComponentEntities()->entities())
 			{
-				GRID_GET_COMPONENT(turret, tu, e);
-				if (tu.timeout-- == 0)
-				{
-					e->addGroup(entitiesToDestroy);
-					continue;
-				}
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				tr.orientation = quat(degs(), degs(1), degs()) * tr.orientation;
+				GRID_GET_COMPONENT(turret, tu, e);
 				if (tu.shooting > 0)
 				{
 					tu.shooting--;
@@ -361,8 +367,9 @@ namespace grid
 					ENGINE_GET_COMPONENT(render, render, shot);
 					render.object = hashString("grid/player/shot.object");
 					render.color = player.shotsColor;
+					GRID_GET_COMPONENT(velocity, vel, shot);
+					vel.velocity = transform.orientation * vec3(0, 0, -1) * 2.5;
 					GRID_GET_COMPONENT(shot, sh, shot);
-					sh.speed = transform.orientation * vec3(0, 0, -1) * 2.5;
 					sh.damage = 1;
 					sh.homing = false;
 				}
@@ -373,17 +380,12 @@ namespace grid
 		{
 			for (entityClass *e : decoyComponent::component->getComponentEntities()->entities())
 			{
-				GRID_GET_COMPONENT(decoy, dec, e);
-				if (dec.timeout-- == 0)
-				{
-					e->addGroup(entitiesToDestroy);
-					continue;
-				}
 				ENGINE_GET_COMPONENT(transform, tr, e);
+				GRID_GET_COMPONENT(velocity, vel, e);
+				GRID_GET_COMPONENT(decoy, dec, e);
 				tr.orientation = dec.rotation * tr.orientation;
-				tr.position += dec.speed;
 				tr.position[1] = 0;
-				dec.speed *= 0.97;
+				vel.velocity *= 0.97;
 				player.monstersTarget = tr.position;
 			}
 		}
@@ -392,6 +394,7 @@ namespace grid
 		{
 			transformComponent &tr;
 			shotComponent &sh;
+			velocityComponent &vl;
 			uint32 closestMonster;
 			real closestDistance;
 			uint32 homingMonster;
@@ -401,20 +404,55 @@ namespace grid
 			shotUpdateStruct(entityClass *e) :
 				tr(e->value<transformComponent>(transformComponent::component)),
 				sh(e->value<shotComponent>(shotComponent::component)),
+				vl(e->value<velocityComponent>(velocityComponent::component)),
 				closestMonster(0), closestDistance(real::PositiveInfinity),
 				homingMonster(0), homingDistance(real::PositiveInfinity),
 				myName(e->getName())
 			{
-				if (tr.position.squaredDistance(player.position) > 500 * 500)
+				ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+				if (tr.position.squaredDistance(playerTransform.position) > 500 * 500)
 				{
 					e->addGroup(entitiesToDestroy); // destroy itself
 					statistics.shotsDissipated++;
 					return;
 				}
 
-				spatialQuery->intersection(sphere(tr.position, sh.speed.length() + tr.scale + (sh.homing ? 20 : 10)));
-				for (uint32 n : spatialQuery->result())
-					test(n);
+				spatialQuery->intersection(sphere(tr.position, vl.velocity.length() + tr.scale + (sh.homing ? 20 : 10)));
+				for (uint32 otherName : spatialQuery->result())
+				{
+					if (otherName == myName || !entities()->hasEntity(otherName))
+						continue;
+
+					entityClass *e = entities()->getEntity(otherName);
+					ENGINE_GET_COMPONENT(transform, ot, e);
+					vec3 toOther = ot.position - tr.position;
+					if (e->hasComponent(gridComponent::component))
+					{
+						GRID_GET_COMPONENT(velocity, og, e);
+						og.velocity += vl.velocity.normalize() * (0.2f / max(1, toOther.length()));
+						continue;
+					}
+					if (!e->hasComponent(monsterComponent::component))
+						continue;
+					GRID_GET_COMPONENT(monster, om, e);
+					if (om.life <= 0)
+						continue;
+					real dist = toOther.length();
+					if (dist < closestDistance)
+					{
+						GRID_GET_COMPONENT(velocity, ov, e);
+						if (collisionTest(tr.position, tr.scale, vl.velocity, ot.position, ot.scale, ov.velocity))
+						{
+							closestMonster = otherName;
+							closestDistance = dist;
+						}
+					}
+					if (dist < homingDistance)
+					{
+						homingMonster = otherName;
+						homingDistance = dist;
+					}
+				}
 
 				if (closestMonster)
 				{
@@ -455,7 +493,7 @@ namespace grid
 						e->addGroup(entitiesToDestroy); // destroy the shot
 						return;
 					}
-					sh.speed += randomDirection3() * 0.5;
+					vl.velocity += randomDirection3() * 0.5;
 					sh.homing = false;
 				}
 				else if (sh.homing)
@@ -465,55 +503,19 @@ namespace grid
 						entityClass *m = entities()->getEntity(homingMonster);
 						ENGINE_GET_COMPONENT(transform, mtr, m);
 						vec3 toOther = normalize(mtr.position - tr.position);
-						real spd = sh.speed.length();
-						sh.speed = toOther * spd;
+						real spd = vl.velocity.length();
+						vl.velocity = toOther * spd;
 						tr.orientation = quat(degs(), aTan2(-toOther[2], -toOther[0]), degs());
 					}
 					else
 					{
 						// homing missiles are shivering
-						tr.position += sh.speed.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full * statistics.updateIterationPaused / 10 + degs(detail::hash(myName) % 360)) * (sh.speed.length() * 0.3);
+						tr.position += vl.velocity.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full * statistics.updateIterationPaused / 10 + degs(detail::hash(myName) % 360)) * (vl.velocity.length() * 0.3);
 					}
 				}
 
-				sh.speed[1] = 0;
-				tr.position += sh.speed;
+				vl.velocity[1] = 0;
 				tr.position[1] = 0;
-			}
-
-			void test(uint32 otherName)
-			{
-				if (otherName == myName || !entities()->hasEntity(otherName))
-					return;
-
-				entityClass *e = entities()->getEntity(otherName);
-				ENGINE_GET_COMPONENT(transform, ot, e);
-				vec3 toOther = ot.position - tr.position;
-				if (e->hasComponent(gridComponent::component))
-				{
-					GRID_GET_COMPONENT(grid, og, e);
-					og.speed += sh.speed.normalize() * (0.2f / max(1, toOther.length()));
-					return;
-				}
-				if (!e->hasComponent(monsterComponent::component))
-					return;
-				GRID_GET_COMPONENT(monster, om, e);
-				if (om.life <= 0)
-					return;
-				real dist = toOther.length();
-				if (dist < closestDistance)
-				{
-					if (collisionTest(tr.position, tr.scale, sh.speed, ot.position, ot.scale, om.speed))
-					{
-						closestMonster = otherName;
-						closestDistance = dist;
-					}
-				}
-				if (dist < homingDistance)
-				{
-					homingMonster = otherName;
-					homingDistance = dist;
-				}
 			}
 		};
 
@@ -563,20 +565,6 @@ namespace grid
 					eventAction(o + 4);
 		}
 
-		real closestMonsterToPlayer;
-		void closestMonsterTestEntity(uint32 otherName)
-		{
-			if (!entities()->hasEntity(otherName))
-				return;
-			entityClass *e = entities()->getEntity(otherName);
-			if (e->hasComponent(monsterComponent::component))
-			{
-				ENGINE_GET_COMPONENT(transform, p, e);
-				real d = p.position.distance(player.position);
-				closestMonsterToPlayer = min(closestMonsterToPlayer, d);
-			}
-		}
-
 		void musicUpdate()
 		{
 			if (player.cinematic)
@@ -592,11 +580,21 @@ namespace grid
 
 			static const real distMin = 25;
 			static const real distMax = 35;
-			closestMonsterToPlayer = real::PositiveInfinity;
-			spatialQuery->intersection(sphere(player.position, distMax));
-			const uint32 *res = spatialQuery->resultArray();
-			for (uint32 i = 0, e = spatialQuery->resultCount(); i != e; i++)
-				closestMonsterTestEntity(res[i]);
+			ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+			real closestMonsterToPlayer = real::PositiveInfinity;
+			spatialQuery->intersection(sphere(playerTransform.position, distMax));
+			for (uint32 otherName : spatialQuery->result())
+			{
+				if (!entities()->hasEntity(otherName))
+					continue;
+				entityClass *e = entities()->getEntity(otherName);
+				if (e->hasComponent(monsterComponent::component))
+				{
+					ENGINE_GET_COMPONENT(transform, p, e);
+					real d = p.position.distance(playerTransform.position);
+					closestMonsterToPlayer = min(closestMonsterToPlayer, d);
+				}
+			}
 			closestMonsterToPlayer = clamp(closestMonsterToPlayer, distMin, distMax);
 			sounds.suspense = (closestMonsterToPlayer - distMin) / (distMax - distMin);
 		}
@@ -611,16 +609,16 @@ namespace grid
 		{
 			player.playerEntity = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, player.playerEntity);
-			transform.scale = player.scale;
+			transform.scale = playerScale;
 			ENGINE_GET_COMPONENT(render, render, player.playerEntity);
 			render.object = hashString("grid/player/player.object");
-			player.monstersTarget = player.position = vec3();
+			player.monstersTarget = vec3();
 		}
 
 		{
 			player.shieldEntity = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, player.shieldEntity);
-            (void)transform;
+			(void)transform;
 			ENGINE_GET_COMPONENT(animatedTexture, aniTex, player.shieldEntity);
 			aniTex.speed = 0.05;
 		}
@@ -646,11 +644,13 @@ namespace grid
 
 	void playerDone()
 	{
+		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+		GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+		environmentExplosion(playerTransform.position, playerVelocity.velocity, player.deathColor, 20, playerScale);
+		for (uint32 i = 0; i < 10; i++)
+			environmentExplosion(playerTransform.position, randomDirection3() * vec3(1, 0.1, 1), player.deathColor, 5, playerScale);
 		player.playerEntity->addGroup(entitiesToDestroy);
 		player.playerEntity = nullptr;
-		environmentExplosion(player.position, player.speed, player.deathColor, 20, player.scale);
-		for (uint32 i = 0; i < 10; i++)
-			environmentExplosion(player.position, randomDirection3() * vec3(1, 0.1, 1), player.deathColor, 5, player.scale);
 	}
 
 	void mousePress(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
