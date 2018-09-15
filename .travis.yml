@@ -35,6 +35,5 @@ script:
   - mkdir build && cd build
   - cmake -DCMAKE_BUILD_TYPE=$CONFIG ..
   - cmake --build .
-  - result/$CONFIG/cage-test-core
   - result/$CONFIG/cage-asset-database
 

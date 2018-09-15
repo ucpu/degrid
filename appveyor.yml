@@ -30,6 +30,5 @@ build:
   project: c:\project\build\grid.sln
 
 test_script:
-  - c:\project\build\result\%CONFIGURATION%\cage-test-core.exe
   - c:\project\build\result\%CONFIGURATION%\cage-asset-database.exe
 

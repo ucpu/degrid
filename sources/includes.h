@@ -18,5 +18,6 @@
 #include <cage-client/sound.h>
 #include <cage-client/gui.h>
 #include <cage-client/engine.h>
+#include <cage-client/utility/engineProfiling.h>
 
 using namespace cage;
