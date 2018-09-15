@@ -1,4 +1,17 @@
-#include "includes.h"
+#include <cage-core/core.h>
+#include <cage-core/math.h>
+#include <cage-core/geometry.h>
+#include <cage-core/entities.h>
+#include <cage-core/assets.h>
+#include <cage-core/config.h>
+#include <cage-core/utility/spatial.h>
+#include <cage-core/utility/hashString.h>
+#include <cage-core/utility/color.h>
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+#include <cage-client/sound.h>
+
 #include "game.h"
 
 namespace grid
@@ -7,7 +20,7 @@ namespace grid
 	{
 		{ // destroy outdated sound effects
 			statistics.soundEffectsCurrent = 0;
-			uint64 time = getApplicationTime() - 2000000;
+			uint64 time = currentControlTime() - 2000000;
 			for (entityClass *e : transformComponent::component->getComponentEntities()->entities())
 			{
 				if (!e->hasComponent(voiceComponent::component))
@@ -26,7 +39,7 @@ namespace grid
 		}
 
 		{ // update effects
-			for (entityClass *e : effectStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : effectComponent::component->getComponentEntities()->entities())
 			{
 				GRID_GET_COMPONENT(effect, g, e);
 				if (g.ttl-- == 0)
@@ -101,7 +114,7 @@ namespace grid
 			return;
 
 		{ // update grid markers
-			for (entityClass *e : gridStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : gridComponent::component->getComponentEntities()->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, t, e);
 				ENGINE_GET_COMPONENT(render, r, e);
@@ -116,13 +129,13 @@ namespace grid
 
 	namespace
 	{
-		struct explosionStruct
+		struct colorizeNerbyGridsStruct
 		{
 			vec3 position;
 			vec3 color;
 			real size;
 
-			explosionStruct(const vec3 &position, const vec3 &color, real size) :
+			colorizeNerbyGridsStruct(const vec3 &position, const vec3 &color, real size) :
 				position(position), color(color), size(size)
 			{
 				spatialQuery->intersection(sphere(position, size));
@@ -136,7 +149,7 @@ namespace grid
 				if (!entities()->hasEntity(otherName))
 					return;
 				entityClass *e = entities()->getEntity(otherName);
-				if (!e->hasComponent(gridStruct::component))
+				if (!e->hasComponent(gridComponent::component))
 					return;
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				ENGINE_GET_COMPONENT(render, orc, e);
@@ -153,7 +166,7 @@ namespace grid
 	void environmentExplosion(const vec3 &position, const vec3 &speed, const vec3 &color, real size, real scale)
 	{
 		statistics.environmentExplosions++;
-		explosionStruct explosion(position, color, size);
+		colorizeNerbyGridsStruct explosion(position, color, size);
 		uint32 cnt = numeric_cast<uint32>(clamp(size, 2, 20));
 		for (uint32 i = 0; i < cnt; i++)
 		{
@@ -287,12 +300,14 @@ namespace grid
 			grid.originalColor = render.color = vec3(1, 1, 1);
 		}
 
-		statistics.environmentGridMarkers = gridStruct::component->getComponentEntities()->entitiesCount();
+		statistics.environmentGridMarkers = gridComponent::component->getComponentEntities()->entitiesCount();
 	}
 
-	const vec3 colorVariation(const vec3 &color)
+	vec3 colorVariation(const vec3 &color)
 	{
-		vec3 r = color + vec3(random(), random(), random()) * 0.1 - 0.05;
-		return min(max(r, vec3(0, 0, 0)), vec3(1, 1, 1));
+		vec3 dev = vec3(random(), random(), random()) * 0.1 - 0.05;
+		vec3 hsv = convertRgbToHsv(color) + dev;
+		hsv[0] = (hsv[0] + 1) % 1;
+		return convertHsvToRgb(clamp(hsv, vec3(0, 0, 0), vec3(1, 1, 1)));
 	}
 }

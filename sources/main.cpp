@@ -1,10 +1,20 @@
 #include <exception>
 
-#include "includes.h"
-#include "screens.h"
-#include "game.h"
+#include <cage-core/core.h>
+#include <cage-core/log.h>
+#include <cage-core/math.h>
+#include <cage-core/config.h>
+#include <cage-core/assets.h>
+#include <cage-core/utility/hashString.h>
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+#include <cage-client/window.h>
 #include <cage-client/utility/engineProfiling.h>
 #include <cage-client/utility/highPerformanceGpuHint.h>
+
+#include "game.h"
+#include "screens.h"
 
 configUint32 confLanguage("grid.language.language", 0);
 
@@ -66,8 +76,7 @@ namespace
 
 	bool update()
 	{
-		uint64 time = currentControlTime();
-		grid::controlUpdate(time);
+		grid::controlUpdate();
 		if (!grid::player.gameOver && !grid::player.cinematic)
 			grid::gameGuiUpdate();
 		return false;
@@ -127,8 +136,6 @@ int main(int argc, const char *args[])
 {
 	try
 	{
-		//configSetBool("cage-client.debug.shaderIntrospection", true);
-		//configSetBool("cage-client.debug.engineRenderMissingMeshes", true);
 		controlThread().timePerTick = 1000000 / 30;
 
 		engineInitialize(engineCreateConfig());

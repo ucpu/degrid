@@ -8,15 +8,15 @@ namespace grid
 		{
 			transformComponent &tr;
 			renderComponent &rnd;
-			monsterStruct &mo;
-			wormholeStruct &wh;
+			monsterComponent &mo;
+			wormholeComponent &wh;
 			const uint32 myName;
 
 			wormholeUpdateStruct(entityClass *e) :
 				tr(e->value<transformComponent>(transformComponent::component)),
 				rnd(e->value<renderComponent>(renderComponent::component)),
-				mo(e->value<monsterStruct>(monsterStruct::component)),
-				wh(e->value<wormholeStruct>(wormholeStruct::component)),
+				mo(e->value<monsterComponent>(monsterComponent::component)),
+				wh(e->value<wormholeComponent>(wormholeComponent::component)),
 				myName(e->getName())
 			{
 				spatialQuery->intersection(sphere(tr.position, tr.scale * 30));
@@ -41,7 +41,7 @@ namespace grid
 			{
 				ENGINE_GET_COMPONENT(transform, tre, e);
 				vec3 dir = normalize(tr.position - tre.position);
-				if (e->hasComponent(wormholeStruct::component))
+				if (e->hasComponent(wormholeComponent::component))
 					dir = dir * quat(degs(), degs(80), degs());
 				real force = tr.scale / tre.scale / sqrt(max(distance(e), 1));
 				tre.position += dir * force;
@@ -53,13 +53,13 @@ namespace grid
 					return;
 				entityClass *e = entities()->getEntity(otherName);
 
-				if (e->hasComponent(monsterStruct::component) || e->hasComponent(gridStruct::component))
+				if (e->hasComponent(monsterComponent::component) || e->hasComponent(gridComponent::component))
 				{ // monsters and grids are pulled and teleported
 					pull(e);
-					if (distance(e) < 1 && !e->hasComponent(snakeTailStruct::component))
+					if (distance(e) < 1 && !e->hasComponent(snakeTailComponent::component))
 					{
 						ENGINE_GET_COMPONENT(transform, tre, e);
-						if (e->hasComponent(wormholeStruct::component))
+						if (e->hasComponent(wormholeComponent::component))
 						{
 							if (tre.scale < tr.scale || (tre.scale == tr.scale && e->getName() < myName))
 							{ // absorb smaller wormhole
@@ -79,7 +79,7 @@ namespace grid
 						ENGINE_GET_COMPONENT(render, r, e);
 						environmentExplosion(treh.position, tre.position - treh.position, r.color, 1, tre.scale); // make an explosion in direction in which it was teleported
 						treh.position = tre.position;
-						if (e->hasComponent(monsterStruct::component))
+						if (e->hasComponent(monsterComponent::component))
 						{
 							GRID_GET_COMPONENT(monster, moe, e);
 							if (moe.damage < 100)
@@ -93,13 +93,13 @@ namespace grid
 					return;
 				}
 
-				if (e->hasComponent(effectStruct::component) || e->hasComponent(shotStruct::component) || e == player.playerEntity)
+				if (e->hasComponent(effectComponent::component) || e->hasComponent(shotComponent::component) || e == player.playerEntity)
 				{ // player, effects and shots are pulled, but are not destroyed by the blackhole
 					pull(e);
 					return;
 				}
 
-				if (e->hasComponent(turretStruct::component) || e->hasComponent(decoyStruct::component) || e->hasComponent(powerupStruct::component))
+				if (e->hasComponent(turretComponent::component) || e->hasComponent(decoyComponent::component) || e->hasComponent(powerupComponent::component))
 				{ // powerups are pulled and eventually destroyed
 					pull(e);
 					if (distance(e) < 1)
@@ -112,7 +112,7 @@ namespace grid
 
 	void updateWormhole()
 	{
-		for (entityClass *e : wormholeStruct::component->getComponentEntities()->entities())
+		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
 			wormholeUpdateStruct u(e);
 	}
 

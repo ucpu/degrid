@@ -7,13 +7,13 @@ namespace grid
 		struct shieldUpdateStruct
 		{
 			transformComponent &tr;
-			shieldStruct &sh;
+			shieldComponent &sh;
 			uint32 myName;
 			vec3 forward;
 
 			shieldUpdateStruct(entityClass *e) :
 				tr(e->value<transformComponent>(transformComponent::component)),
-				sh(e->value<shieldStruct>(shieldStruct::component)),
+				sh(e->value<shieldComponent>(shieldComponent::component)),
 				myName(e->getName()), forward(tr.orientation * vec3(0, 0, -1))
 			{
 				if (sh.active)
@@ -38,7 +38,7 @@ namespace grid
 				if (otherName == myName || !entities()->hasEntity(otherName))
 					return;
 				entityClass *e = entities()->getEntity(otherName);
-				if (!e->hasComponent(shotStruct::component))
+				if (!e->hasComponent(shotComponent::component))
 					return;
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				GRID_GET_COMPONENT(shot, os, e);
@@ -60,7 +60,7 @@ namespace grid
 	void updateShielder()
 	{
 		{ // update shielders
-			for (entityClass *e : shielderStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : shielderComponent::component->getComponentEntities()->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				GRID_GET_COMPONENT(monster, ms, e);
@@ -105,7 +105,7 @@ namespace grid
 			}
 		}
 		{ // update shields
-			for (entityClass *e : shieldStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : shieldComponent::component->getComponentEntities()->entities())
 				shieldUpdateStruct u(e);
 		}
 	}

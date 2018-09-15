@@ -1,4 +1,14 @@
-#include "includes.h"
+#include <cage-core/core.h>
+#include <cage-core/math.h>
+#include <cage-core/entities.h>
+#include <cage-core/config.h>
+#include <cage-core/assets.h>
+#include <cage-core/utility/hashString.h>
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+#include <cage-client/sound.h>
+
 #include "game.h"
 
 namespace grid
@@ -110,7 +120,7 @@ namespace grid
 			if (s)
 			{
 				uint64 d = s->getDuration();
-				if (data->speechStart + d + 100000 < getApplicationTime())
+				if (data->speechStart + d + 100000 < currentControlTime())
 				{
 					data->speechBus->clear();
 					data->speechName = 0;
@@ -146,7 +156,7 @@ namespace grid
 		t.position = position;
 		ENGINE_GET_COMPONENT(voice, s, e);
 		s.name = sound;
-		s.startTime = getApplicationTime();
+		s.startTime = currentControlTime();
 	}
 
 	void soundSpeech(uint32 sound)
@@ -154,7 +164,7 @@ namespace grid
 		if (data->speechName)
 			return;
 		data->speechName = sound;
-		data->speechStart = getApplicationTime() + 10000;
+		data->speechStart = currentControlTime() + 10000;
 	}
 
 	void soundSpeech(uint32 *sounds)

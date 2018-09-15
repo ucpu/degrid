@@ -7,16 +7,16 @@ namespace grid
 		struct monsterUpdateStruct
 		{
 			transformComponent &tr;
-			monsterStruct &ms;
-			simpleMonsterStruct &sm;
+			monsterComponent &ms;
+			simpleMonsterComponent &sm;
 			uint32 closestShot;
 			real closestDistance;
 			uint32 myName;
 
 			monsterUpdateStruct(entityClass *e) :
 				tr(e->value<transformComponent>(transformComponent::component)),
-				ms(e->value<monsterStruct>(monsterStruct::component)),
-				sm(e->value<simpleMonsterStruct>(simpleMonsterStruct::component)),
+				ms(e->value<monsterComponent>(monsterComponent::component)),
+				sm(e->value<simpleMonsterComponent>(simpleMonsterComponent::component)),
 				closestShot(0), closestDistance(real::PositiveInfinity), myName(e->getName())
 			{
 				if (ms.speed.squaredLength() > sm.maxSpeed * sm.maxSpeed + 0.0001)
@@ -58,7 +58,7 @@ namespace grid
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				vec3 toMonster = tr.position - ot.position;
 
-				if (!e->hasComponent(shotStruct::component))
+				if (!e->hasComponent(shotComponent::component))
 					return;
 
 				// test whether other is closer
@@ -157,7 +157,7 @@ namespace grid
 
 	void updateSimple()
 	{
-		for (entityClass *e : simpleMonsterStruct::component->getComponentEntities()->entities())
+		for (entityClass *e : simpleMonsterComponent::component->getComponentEntities()->entities())
 			monsterUpdateStruct u(e);
 	}
 }

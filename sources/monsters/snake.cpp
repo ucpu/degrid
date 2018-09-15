@@ -5,7 +5,7 @@ namespace grid
 	void updateSnake()
 	{
 		{ // snake heads
-			for (entityClass *e : snakeHeadStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : snakeHeadComponent::component->getComponentEntities()->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				GRID_GET_COMPONENT(monster, m, e);
@@ -24,7 +24,7 @@ namespace grid
 			}
 		}
 		{ // snake tails
-			for (entityClass *e : snakeTailStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : snakeTailComponent::component->getComponentEntities()->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, tr, e);
 				GRID_GET_COMPONENT(monster, m, e);
@@ -101,7 +101,7 @@ namespace grid
 			snake.follow = prev;
 			prev = tail->getName();
 			ENGINE_GET_COMPONENT(animatedTexture, aniTex, tail);
-			aniTex.startTime = player.updateTime + aniInitOff + i * 1000000;
+			aniTex.startTime = currentControlTime() + aniInitOff + i * 1000000;
 			aniTex.speed = 0.4;
 			GRID_GET_COMPONENT(monster, monster, tail);
 			ENGINE_GET_COMPONENT(transform, transform, tail);

@@ -3,6 +3,8 @@
 
 #include "monsters.h"
 
+#include <cage-core/utility/color.h>
+
 namespace grid
 {
 	namespace

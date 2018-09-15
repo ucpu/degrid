@@ -1,4 +1,16 @@
-#include "../includes.h"
+#include <cage-core/core.h>
+#include <cage-core/math.h>
+#include <cage-core/entities.h>
+#include <cage-core/config.h>
+#include <cage-core/filesystem.h>
+#include <cage-core/utility/hashString.h>
+#include <cage-core/utility/timer.h>
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+#include <cage-client/window.h>
+#include <cage-client/gui.h>
+
 #include "../screens.h"
 #include "../game.h"
 

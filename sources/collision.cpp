@@ -1,4 +1,10 @@
-#include "includes.h"
+#include <cage-core/core.h>
+#include <cage-core/math.h>
+#include <cage-core/geometry.h>
+#include <cage-core/config.h>
+
+#include <cage-client/core.h>
+
 #include "game.h"
 
 namespace grid

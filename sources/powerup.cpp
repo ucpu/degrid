@@ -1,4 +1,14 @@
-#include "includes.h"
+#include <cage-core/core.h>
+#include <cage-core/log.h>
+#include <cage-core/math.h>
+#include <cage-core/entities.h>
+#include <cage-core/config.h>
+#include <cage-core/utility/color.h>
+#include <cage-core/utility/hashString.h>
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+
 #include "game.h"
 
 namespace grid
@@ -17,7 +27,7 @@ namespace grid
 		}
 
 		{ // update entities
-			for (entityClass *e : powerupStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : powerupComponent::component->getComponentEntities()->entities())
 			{
 				GRID_GET_COMPONENT(powerup, p, e);
 				CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);

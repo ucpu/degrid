@@ -1,3 +1,5 @@
+using namespace cage;
+
 extern windowEventListeners winEvtLists;
 
 void eraseGui();

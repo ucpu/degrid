@@ -1,10 +1,12 @@
 //#define GRID_TESTING
 
+using namespace cage;
+
 namespace grid
 {
 	void controlInitialize();
 	void controlFinalize();
-	void controlUpdate(uint64 uTime);
+	void controlUpdate();
 	void playerInit();
 	void playerDone();
 	void playerUpdate();
@@ -27,7 +29,7 @@ namespace grid
 	void soundEffect(uint32 sound, const vec3 &position);
 	void soundSpeech(uint32 sound);
 	void soundSpeech(uint32 *sounds);
-	const vec3 colorVariation(const vec3 &color);
+	vec3 colorVariation(const vec3 &color);
 
 	void mousePress(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point);
 	void mouseRelease(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point);
@@ -107,9 +109,6 @@ namespace grid
 		// ship controls (options dependent)
 		vec3 moveDirection;
 		vec3 fireDirection;
-
-		// other
-		uint64 updateTime;
 	};
 	extern globalPlayerStruct player;
 
@@ -182,7 +181,7 @@ namespace grid
 	extern configFloat confVolumeEffects;
 	extern configFloat confVolumeSpeech;
 
-	struct gridStruct
+	struct gridComponent
 	{
 		static componentClass *component;
 		vec3 speed;
@@ -190,14 +189,14 @@ namespace grid
 		vec3 originalColor;
 	};
 
-	struct effectStruct
+	struct effectComponent
 	{
 		static componentClass *component;
 		uint32 ttl;
 		vec3 speed;
 	};
 
-	struct shotStruct
+	struct shotComponent
 	{
 		static componentClass *component;
 		vec3 speed;
@@ -205,7 +204,7 @@ namespace grid
 		bool homing;
 	};
 
-	struct monsterStruct
+	struct monsterComponent
 	{
 		static componentClass *component;
 		vec3 baseColorHsv;
@@ -218,10 +217,10 @@ namespace grid
 		real dispersion;
 		uint32 destroyedSound;
 		delegate<void(uint32)> shotDownCallback;
-		monsterStruct() : destroyedSound(0) {}
+		monsterComponent() : destroyedSound(0) {}
 	};
 
-	struct simpleMonsterStruct
+	struct simpleMonsterComponent
 	{
 		static componentClass *component;
 		quat animation;
@@ -230,19 +229,19 @@ namespace grid
 		real avoidance;
 	};
 
-	struct snakeTailStruct
+	struct snakeTailComponent
 	{
 		static componentClass *component;
 		uint32 follow;
 	};
 
-	struct snakeHeadStruct
+	struct snakeHeadComponent
 	{
 		static componentClass *component;
 		real speedMin, speedMax;
 	};
 
-	struct shielderStruct
+	struct shielderComponent
 	{
 		static componentClass *component;
 		uint32 shieldEntity;
@@ -252,13 +251,13 @@ namespace grid
 		uint32 stepsLeft;
 	};
 
-	struct shieldStruct
+	struct shieldComponent
 	{
 		static componentClass *component;
 		bool active;
 	};
 
-	struct wormholeStruct
+	struct wormholeComponent
 	{
 		static componentClass *component;
 		real maxSpeed;
@@ -266,7 +265,7 @@ namespace grid
 		real maxLife;
 	};
 
-	struct powerupStruct
+	struct powerupComponent
 	{
 		static componentClass *component;
 		quat animation;
@@ -274,14 +273,14 @@ namespace grid
 		powerupTypeEnum type;
 	};
 
-	struct turretStruct
+	struct turretComponent
 	{
 		static componentClass *component;
 		uint32 timeout;
 		uint32 shooting;
 	};
 
-	struct decoyStruct
+	struct decoyComponent
 	{
 		static componentClass *component;
 		quat rotation;
@@ -290,4 +289,4 @@ namespace grid
 	};
 }
 
-#define GRID_GET_COMPONENT(T, C, E) ::grid::CAGE_JOIN(T, Struct) &C = E->value<::grid::CAGE_JOIN(T, Struct)>(::grid::CAGE_JOIN(T, Struct)::component);
+#define GRID_GET_COMPONENT(T, C, E) ::grid::CAGE_JOIN(T, Component) &C = E->value<::grid::CAGE_JOIN(T, Component)>(::grid::CAGE_JOIN(T, Component)::component);

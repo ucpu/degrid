@@ -1,5 +1,7 @@
 #include "monsters.h"
 
+#include <cage-core/utility/color.h>
+
 namespace grid
 {
 	namespace
@@ -32,7 +34,7 @@ namespace grid
 				entityClass *e = entities()->getEntity(otherName);
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				vec3 toMonster = tr.position - ot.position;
-				if (e->hasComponent(monsterStruct::component))
+				if (e->hasComponent(monsterComponent::component))
 				{
 					real d = ot.scale + tr.scale;
 					if (toMonster.squaredLength() < d*d)
@@ -48,13 +50,13 @@ namespace grid
 		void updateGeneralMonsters()
 		{
 			{ // flickering
-				for (entityClass *e : monsterStruct::component->getComponentEntities()->entities())
+				for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
 				{
 					GRID_GET_COMPONENT(monster, m, e);
 					if (m.flickeringSpeed == 0)
 						continue;
 					ENGINE_GET_COMPONENT(render, r, e);
-					real l = (real)player.updateTime * m.flickeringSpeed + m.flickeringOffset;
+					real l = (real)currentControlTime() * m.flickeringSpeed + m.flickeringOffset;
 					real s = sin(rads::Full * l) * 0.5 + 0.5;
 					r.color = convertHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
 				}
@@ -62,7 +64,7 @@ namespace grid
 
 			if (!player.paused)
 			{
-				for (entityClass *e : monsterStruct::component->getComponentEntities()->entities())
+				for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
 				{
 					ENGINE_GET_COMPONENT(transform, t, e);
 					GRID_GET_COMPONENT(monster, m, e);
@@ -145,7 +147,7 @@ namespace grid
 		spawnDone();
 	}
 
-	const uint32 spawnSpecial(uint32 &special)
+	uint32 spawnSpecial(uint32 &special)
 	{
 		if (player.cinematic)
 			return 0;

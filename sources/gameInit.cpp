@@ -1,22 +1,35 @@
-#include "includes.h"
-#include "screens.h"
+#include <cage-core/core.h>
+#include <cage-core/log.h>
+#include <cage-core/math.h>
+#include <cage-core/geometry.h>
+#include <cage-core/entities.h>
+#include <cage-core/config.h>
+#include <cage-core/utility/spatial.h>
+#include <cage-core/utility/hashString.h>
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+#include <cage-client/window.h>
+#include <cage-client/utility/engineProfiling.h>
+
 #include "game.h"
+#include "screens.h"
 
 namespace grid
 {
-	componentClass *gridStruct::component;
-	componentClass *effectStruct::component;
-	componentClass *shotStruct::component;
-	componentClass *monsterStruct::component;
-	componentClass *simpleMonsterStruct::component;
-	componentClass *snakeHeadStruct::component;
-	componentClass *snakeTailStruct::component;
-	componentClass *shielderStruct::component;
-	componentClass *shieldStruct::component;
-	componentClass *wormholeStruct::component;
-	componentClass *powerupStruct::component;
-	componentClass *turretStruct::component;
-	componentClass *decoyStruct::component;
+	componentClass *gridComponent::component;
+	componentClass *effectComponent::component;
+	componentClass *shotComponent::component;
+	componentClass *monsterComponent::component;
+	componentClass *simpleMonsterComponent::component;
+	componentClass *snakeHeadComponent::component;
+	componentClass *snakeTailComponent::component;
+	componentClass *shielderComponent::component;
+	componentClass *shieldComponent::component;
+	componentClass *wormholeComponent::component;
+	componentClass *powerupComponent::component;
+	componentClass *turretComponent::component;
+	componentClass *decoyComponent::component;
 
 	groupClass *entitiesToDestroy;
 	holder<spatialDataClass> spatialData;
@@ -57,21 +70,21 @@ namespace grid
 #ifdef GRID_TESTING
 		CAGE_LOG(severityEnum::Info, "grid", string() + "TESTING GAME BUILD");
 #endif // GRID_TESTING
-		gridStruct::component = entities()->defineComponent(gridStruct(), true);
-		effectStruct::component = entities()->defineComponent(effectStruct(), true);
-		shotStruct::component = entities()->defineComponent(shotStruct(), true);
-		monsterStruct::component = entities()->defineComponent(monsterStruct(), true);
-		simpleMonsterStruct::component = entities()->defineComponent(simpleMonsterStruct(), true);
-		snakeTailStruct::component = entities()->defineComponent(snakeTailStruct(), true);
-		snakeHeadStruct::component = entities()->defineComponent(snakeHeadStruct(), true);
-		shielderStruct::component = entities()->defineComponent(shielderStruct(), true);
-		shieldStruct::component = entities()->defineComponent(shieldStruct(), true);
-		wormholeStruct::component = entities()->defineComponent(wormholeStruct(), true);
-		powerupStruct::component = entities()->defineComponent(powerupStruct(), true);
-		turretStruct::component = entities()->defineComponent(turretStruct(), true);
-		decoyStruct::component = entities()->defineComponent(decoyStruct(), true);
+		gridComponent::component = entities()->defineComponent(gridComponent(), true);
+		effectComponent::component = entities()->defineComponent(effectComponent(), true);
+		shotComponent::component = entities()->defineComponent(shotComponent(), true);
+		monsterComponent::component = entities()->defineComponent(monsterComponent(), true);
+		simpleMonsterComponent::component = entities()->defineComponent(simpleMonsterComponent(), true);
+		snakeTailComponent::component = entities()->defineComponent(snakeTailComponent(), true);
+		snakeHeadComponent::component = entities()->defineComponent(snakeHeadComponent(), true);
+		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
+		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
+		wormholeComponent::component = entities()->defineComponent(wormholeComponent(), true);
+		powerupComponent::component = entities()->defineComponent(powerupComponent(), true);
+		turretComponent::component = entities()->defineComponent(turretComponent(), true);
+		decoyComponent::component = entities()->defineComponent(decoyComponent(), true);
 		shielderEliminatedListener.bind<&shielderEliminated>();
-		shielderStruct::component->getComponentEntities()->entityRemoved.attach(shielderEliminatedListener);
+		shielderComponent::component->getComponentEntities()->entityRemoved.attach(shielderEliminatedListener);
 		entitiesToDestroy = entities()->defineGroup();
 		skyboxOrientation = randomDirectionQuat();
 		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
@@ -143,9 +156,8 @@ namespace grid
 		setScreenGameover(grid::player.score);
 	}
 
-	void controlUpdate(uint64 uTime)
+	void controlUpdate()
 	{
-		player.updateTime = uTime;
 		statistics.updateIterationNoPause++;
 		if (!player.paused)
 			statistics.updateIterationPaused++;
@@ -175,9 +187,9 @@ namespace grid
 			spatialData->rebuild();
 		}
 
-		statistics.shotsCurrent = shotStruct::component->getComponentEntities()->entitiesCount();
+		statistics.shotsCurrent = shotComponent::component->getComponentEntities()->entitiesCount();
 		statistics.shotsMax = max(statistics.shotsMax, statistics.shotsCurrent);
-		statistics.monstersCurrent = monsterStruct::component->getComponentEntities()->entitiesCount() - snakeTailStruct::component->getComponentEntities()->entitiesCount();
+		statistics.monstersCurrent = monsterComponent::component->getComponentEntities()->entitiesCount() - snakeTailComponent::component->getComponentEntities()->entitiesCount();
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = entities()->getAllEntities()->entitiesCount();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);

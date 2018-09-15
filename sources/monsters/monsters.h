@@ -1,4 +1,15 @@
-#include "../includes.h"
+#include <cage-core/core.h>
+#include <cage-core/log.h>
+#include <cage-core/math.h>
+#include <cage-core/geometry.h>
+#include <cage-core/entities.h>
+#include <cage-core/config.h>
+#include <cage-core/utility/hashString.h>
+#include <cage-core/utility/spatial.h>
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+
 #include "../game.h"
 
 namespace grid
@@ -35,7 +46,7 @@ namespace grid
 	void updateWormhole();
 	void spawnWormhole(const vec3 &spawnPosition, const vec3 &color);
 
-	const uint32 spawnSpecial(uint32 &special);
+	uint32 spawnSpecial(uint32 &special);
 	entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life);
 }
 

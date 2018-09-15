@@ -1,9 +1,22 @@
 #include <set>
 
-#include "includes.h"
+#include <cage-core/core.h>
+#include <cage-core/log.h>
+#include <cage-core/math.h>
+#include <cage-core/geometry.h>
+#include <cage-core/config.h>
+#include <cage-core/entities.h>
+#include <cage-core/utility/spatial.h>
+#include <cage-core/utility/color.h>
+#include <cage-core/utility/hashString.h>
+#include <cage-core/utility/hashTable.h> // hash function
+
+#include <cage-client/core.h>
+#include <cage-client/engine.h>
+#include <cage-client/window.h>
+
 #include "game.h"
 
-#include <cage-core/utility/hashTable.h> // hash function
 
 namespace grid
 {
@@ -40,8 +53,8 @@ namespace grid
 				return;
 			player.powerups[(uint32)powerupTypeEnum::Bomb]--;
 			uint32 kills = 0;
-			uint32 count = monsterStruct::component->getComponentEntities()->entitiesCount();
-			for (entityClass *e : monsterStruct::component->getComponentEntities()->entities())
+			uint32 count = monsterComponent::component->getComponentEntities()->entitiesCount();
+			for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
 			{
 				GRID_GET_COMPONENT(monster, m, e);
 				m.life -= 10;
@@ -59,8 +72,8 @@ namespace grid
 			statistics.bombsKillMax = max(statistics.bombsKillMax, kills);
 			statistics.bombsUsed++;
 			{
-				uint32 count = gridStruct::component->getComponentEntities()->entitiesCount();
-				entityClass *const *grids = gridStruct::component->getComponentEntities()->entitiesArray();
+				uint32 count = gridComponent::component->getComponentEntities()->entitiesCount();
+				entityClass *const *grids = gridComponent::component->getComponentEntities()->entitiesArray();
 				for (uint32 i = 0; i < count; i++)
 				{
 					entityClass *e = grids[i];
@@ -241,7 +254,7 @@ namespace grid
 					ef.speed = (change + randomDirection3() * 0.05) * cage::random() * -5;
 					ef.ttl = random(10, 15);
 					ENGINE_GET_COMPONENT(animatedTexture, at, spark);
-					at.startTime = player.updateTime;
+					at.startTime = currentControlTime();
 					at.speed = 30.f / ef.ttl;
 				}
 			}
@@ -322,7 +335,7 @@ namespace grid
 
 		void turretsUpdate()
 		{
-			for (entityClass *e : turretStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : turretComponent::component->getComponentEntities()->entities())
 			{
 				GRID_GET_COMPONENT(turret, tu, e);
 				if (tu.timeout-- == 0)
@@ -358,7 +371,7 @@ namespace grid
 
 		void decoysUpdate()
 		{
-			for (entityClass *e : decoyStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : decoyComponent::component->getComponentEntities()->entities())
 			{
 				GRID_GET_COMPONENT(decoy, dec, e);
 				if (dec.timeout-- == 0)
@@ -378,7 +391,7 @@ namespace grid
 		struct shotUpdateStruct
 		{
 			transformComponent &tr;
-			shotStruct &sh;
+			shotComponent &sh;
 			uint32 closestMonster;
 			real closestDistance;
 			uint32 homingMonster;
@@ -387,7 +400,7 @@ namespace grid
 
 			shotUpdateStruct(entityClass *e) :
 				tr(e->value<transformComponent>(transformComponent::component)),
-				sh(e->value<shotStruct>(shotStruct::component)),
+				sh(e->value<shotComponent>(shotComponent::component)),
 				closestMonster(0), closestDistance(real::PositiveInfinity),
 				homingMonster(0), homingDistance(real::PositiveInfinity),
 				myName(e->getName())
@@ -476,13 +489,13 @@ namespace grid
 				entityClass *e = entities()->getEntity(otherName);
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				vec3 toOther = ot.position - tr.position;
-				if (e->hasComponent(gridStruct::component))
+				if (e->hasComponent(gridComponent::component))
 				{
 					GRID_GET_COMPONENT(grid, og, e);
 					og.speed += sh.speed.normalize() * (0.2f / max(1, toOther.length()));
 					return;
 				}
-				if (!e->hasComponent(monsterStruct::component))
+				if (!e->hasComponent(monsterComponent::component))
 					return;
 				GRID_GET_COMPONENT(monster, om, e);
 				if (om.life <= 0)
@@ -506,7 +519,7 @@ namespace grid
 
 		void shotsUpdate()
 		{
-			for (entityClass *e : shotStruct::component->getComponentEntities()->entities())
+			for (entityClass *e : shotComponent::component->getComponentEntities()->entities())
 				shotUpdateStruct u(e);
 		}
 
@@ -556,7 +569,7 @@ namespace grid
 			if (!entities()->hasEntity(otherName))
 				return;
 			entityClass *e = entities()->getEntity(otherName);
-			if (e->hasComponent(monsterStruct::component))
+			if (e->hasComponent(monsterComponent::component))
 			{
 				ENGINE_GET_COMPONENT(transform, p, e);
 				real d = p.position.distance(player.position);
