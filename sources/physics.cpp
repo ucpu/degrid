@@ -1,24 +1,25 @@
-#include <cage-core/core.h>
-#include <cage-core/math.h>
-#include <cage-core/geometry.h>
-#include <cage-core/entities.h>
-#include <cage-core/config.h>
-
-#include <cage-client/core.h>
-#include <cage-client/engine.h>
-
 #include "game.h"
 
-namespace grid
+#include <cage-core/geometry.h>
+#include <cage-core/entities.h>
+#include <cage-core/utility/spatial.h>
+
+groupClass *entitiesToDestroy;
+holder<spatialDataClass> spatialData;
+holder<spatialQueryClass> spatialQuery;
+
+namespace
 {
-	bool collisionTest(const vec3 &positionA, real radiusA, const vec3 velocityA, const vec3 &positionB, real radiusB, const vec3 velocityB)
+	void engineInit()
 	{
-		vec3 m = velocityB - velocityA;
-		return intersects(makeSegment(positionB, positionB + m), sphere(positionA, radiusA + radiusB));
+		spatialData = newSpatialData(spatialDataCreateConfig());
+		spatialQuery = newSpatialQuery(spatialData.get());
 	}
 
-	void physicsUpdate()
+	void engineUpdate()
 	{
+		entitiesToDestroy->destroyAllEntities();
+
 		if (player.paused)
 			return;
 
@@ -40,6 +41,43 @@ namespace grid
 				else
 					t.ttl--;
 			}
+			entitiesToDestroy->destroyAllEntities();
+		}
+
+		{ // update spatial
+			spatialData->clear();
+			for (entityClass *e : entities()->getAllEntities()->entities())
+			{
+				uint32 n = e->getName();
+				if (n && e->hasComponent(transformComponent::component))
+				{
+					ENGINE_GET_COMPONENT(transform, tr, e);
+					spatialData->update(n, aabb(tr.position - tr.scale, tr.position + tr.scale));
+				}
+			}
+			spatialData->rebuild();
 		}
 	}
+
+	class callbacksClass
+	{
+		eventListener<void()> engineInitListener;
+		eventListener<void()> engineUpdateListener;
+		eventListener<void()> gameStartListener;
+		eventListener<void()> gameStopListener;
+	public:
+		callbacksClass()
+		{
+			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.bind<&engineInit>();
+			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.bind<&engineUpdate>();
+		}
+	} callbacksInstance;
+}
+
+bool collisionTest(const vec3 &positionA, real radiusA, const vec3 velocityA, const vec3 &positionB, real radiusB, const vec3 velocityB)
+{
+	vec3 m = velocityB - velocityA;
+	return intersects(makeSegment(positionB, positionB + m), sphere(positionA, radiusA + radiusB));
 }

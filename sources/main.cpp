@@ -1,20 +1,13 @@
 #include <exception>
 
-#include <cage-core/core.h>
-#include <cage-core/log.h>
-#include <cage-core/math.h>
+#include "game.h"
+#include "screens/screens.h"
+
 #include <cage-core/config.h>
 #include <cage-core/assets.h>
-#include <cage-core/utility/hashString.h>
 
-#include <cage-client/core.h>
-#include <cage-client/engine.h>
-#include <cage-client/window.h>
 #include <cage-client/utility/engineProfiling.h>
 #include <cage-client/utility/highPerformanceGpuHint.h>
-
-#include "game.h"
-#include "screens.h"
 
 configUint32 confLanguage("grid.language.language", 0);
 
@@ -71,24 +64,11 @@ namespace
 			setWindowFullscreen(!window()->isFullscreen());
 			return true;
 		}
+
 		return false;
 	}
 
-	bool update()
-	{
-		grid::controlUpdate();
-		if (!grid::player.gameOver && !grid::player.cinematic)
-			grid::gameGuiUpdate();
-		return false;
-	}
-
-	bool frame()
-	{
-		grid::statistics.frameIteration++;
-		return false;
-	}
-
-	bool assetsUpdate()
+	void assetsUpdate()
 	{
 		if (currentLanguageHash != loadedLanguageHash)
 		{
@@ -98,25 +78,6 @@ namespace
 			if (loadedLanguageHash)
 				assets()->add(loadedLanguageHash);
 		}
-		return false;
-	}
-
-	bool soundInitialize()
-	{
-		grid::soundsInit();
-		return false;
-	}
-
-	bool soundFinalize()
-	{
-		grid::soundsDone();
-		return false;
-	}
-
-	bool soundUpdate()
-	{
-		grid::soundUpdate();
-		return false;
 	}
 }
 
@@ -140,53 +101,34 @@ int main(int argc, const char *args[])
 
 		engineInitialize(engineCreateConfig());
 
-		eventListener<bool()> windowCloseListener;
-		eventListener<bool(uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
-		eventListener<bool()> updateListener;
-		eventListener<bool()> frameListener;
-		eventListener<bool()> assetsUpdateListener;
-		eventListener<bool()> soundInitializeListener;
-		eventListener<bool()> soundFinalizeListener;
-		eventListener<bool()> soundUpdateListener;
-
-		updateListener.bind<&update>();
-		frameListener.bind<&frame>();
+		eventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
-		soundInitializeListener.bind<&soundInitialize>();
-		soundFinalizeListener.bind<&soundFinalize>();
-		soundUpdateListener.bind<&soundUpdate>();
-		windowCloseListener.bind<&windowClose>();
-		keyReleaseListener.bind<&keyRelease>();
-
-		updateListener.attach(controlThread().update);
-		frameListener.attach(graphicsPrepareThread().prepare);
 		assetsUpdateListener.attach(controlThread().assets);
-		soundInitializeListener.attach(soundThread().initialize);
-		soundFinalizeListener.attach(soundThread().finalize);
-		soundUpdateListener.attach(soundThread().sound);
-		window()->events.windowClose.attach(windowCloseListener);
-		window()->events.keyRelease.attach(keyReleaseListener);
+		eventListener<bool()> windowCloseListener;
+		windowCloseListener.bind<&windowClose>();
+		windowCloseListener.attach(window()->events.windowClose);
+		eventListener<bool(uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
+		keyReleaseListener.bind<&keyRelease>();
+		keyReleaseListener.attach(window()->events.keyRelease);
 
 		window()->title("Grid");
 		setWindowFullscreen(configGetBool("grid.fullscreen.enabled"));
 		reloadLanguage(confLanguage);
-		grid::controlInitialize();
 		setScreenMainmenu();
 		assets()->add(hashString("grid/grid.pack"));
 
-		holder<engineProfilingClass> engineProfiling = newEngineProfiling();
-		engineProfiling->profilingScope = engineProfilingScopeEnum::None;
-		engineProfiling->keyToggleFullscreen = 0;
-		engineProfiling->screenPosition = vec2(0.5, 0.5);
+		{
+			holder<engineProfilingClass> engineProfiling = newEngineProfiling();
+			engineProfiling->profilingScope = engineProfilingScopeEnum::None;
+			engineProfiling->keyToggleFullscreen = 0;
+			engineProfiling->screenPosition = vec2(0.5, 0.5);
 
-		engineStart();
+			engineStart();
+		}
 
-		grid::controlFinalize();
 		assets()->remove(hashString("grid/grid.pack"));
 		if (loadedLanguageHash)
 			assets()->remove(loadedLanguageHash);
-
-		engineProfiling.clear();
 
 		engineFinalize();
 
@@ -198,6 +140,7 @@ int main(int argc, const char *args[])
 		{
 			CAGE_LOG(severityEnum::Warning, "grid", "failed to save game configuration");
 		}
+
 		return 0;
 	}
 	catch (const cage::exception &e)

@@ -1,61 +1,13 @@
-#include <cage-core/core.h>
-#include <cage-core/math.h>
-#include <cage-core/entities.h>
-#include <cage-core/config.h>
-#include <cage-core/assets.h>
-#include <cage-core/utility/hashString.h>
-#include <cage-core/utility/textPack.h>
-
-#include <cage-client/core.h>
-#include <cage-client/engine.h>
-#include <cage-client/window.h>
-#include <cage-client/gui.h>
-
-#include "../screens.h"
+#include "screens.h"
 #include "../game.h"
+
+#include <cage-core/entities.h>
+#include <cage-core/assets.h>
+#include <cage-core/utility/textPack.h>
 
 namespace
 {
 	void makeTheGui();
-
-	bool mousePress(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
-	{
-		if (!grid::player.paused)
-			grid::mousePress(buttons, modifiers, point);
-		return true;
-	}
-
-	bool mouseRelease(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
-	{
-		if (!grid::player.paused)
-			grid::mouseRelease(buttons, modifiers, point);
-		return true;
-	}
-
-	bool mouseMove(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
-	{
-		if (!grid::player.paused)
-			grid::mouseMove(buttons, modifiers, point);
-		return true;
-	}
-
-	bool keyPress(uint32 key, uint32, modifiersFlags modifiers)
-	{
-		if (!grid::player.paused)
-			grid::keyPress(key, modifiers);
-		return true;
-	}
-
-	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
-	{
-		if (!grid::player.paused)
-			grid::keyRelease(key, modifiers);
-
-		if (key == 256) // esc
-			grid::player.paused = !grid::player.paused;
-
-		return true;
-	}
 
 	eventListener<bool(uint32)> guiEvent;
 
@@ -64,13 +16,13 @@ namespace
 		switch (en)
 		{
 		case 500:
-			grid::player.life = 0;
-			grid::player.paused = false;
+			player.life = 0;
+			player.paused = false;
 			return true;
 		}
-		if (en <= (uint32)grid::powerupTypeEnum::Total)
+		if (en <= (uint32)powerupTypeEnum::Total)
 		{
-			grid::player.powerups[en - 1]--;
+			player.powerups[en - 1]--;
 			makeTheGui();
 			return true;
 		}
@@ -83,14 +35,6 @@ namespace
 		entityManagerClass *ents = gui()->entities();
 		guiEvent.bind<&guiFunction>();
 		guiEvent.attach(gui()->widgetEvent);
-
-		{
-			winEvtLists.mousePress.bind<&mousePress>();
-			winEvtLists.mouseRelease.bind<&mouseRelease>();
-			winEvtLists.mouseMove.bind<&mouseMove>();
-			winEvtLists.keyPress.bind<&keyPress>();
-			winEvtLists.keyRelease.bind<&keyRelease>();
-		}
 
 		{ // life
 			entityClass *lifeLabel = gui()->entities()->newEntity(100);
@@ -113,7 +57,7 @@ namespace
 			entityClass *lifeLabel = gui()->entities()->newEntity(1);
 			GUI_GET_COMPONENT(label, control, lifeLabel);
 			GUI_GET_COMPONENT(text, text, lifeLabel);
-            (void)text;
+			(void)text;
 			GUI_GET_COMPONENT(textFormat, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
@@ -130,7 +74,7 @@ namespace
 			entityClass *lifeLabel = gui()->entities()->newEntity(2);
 			GUI_GET_COMPONENT(label, control, lifeLabel);
 			GUI_GET_COMPONENT(text, text, lifeLabel);
-            (void)text;
+			(void)text;
 			GUI_GET_COMPONENT(textFormat, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
@@ -147,7 +91,7 @@ namespace
 			entityClass *lifeLabel = gui()->entities()->newEntity(3);
 			GUI_GET_COMPONENT(label, control, lifeLabel);
 			GUI_GET_COMPONENT(text, text, lifeLabel);
-            (void)text;
+			(void)text;
 			GUI_GET_COMPONENT(textFormat, format, lifeLabel);
 			format.align = textAlignEnum::Center;
 			format.color = vec3(1, 1, 1);
@@ -189,18 +133,18 @@ namespace
 			position.position.units[1] = unitEnum::ScreenHeight;
 		}
 
-		for (uint32 i = 0; i < (uint32)grid::powerupTypeEnum::Total; i++)
+		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 		{
-			switch (grid::powerupMode[i])
+			switch (powerupMode[i])
 			{
 			case 0: // collectibles
 				continue;
 			case 1: // timed
-				if (grid::player.paused)
+				if (player.paused)
 					continue;
 				break;
 			case 2: // permanent
-				if (!grid::player.paused || grid::player.powerups[i] == 0)
+				if (!player.paused || player.powerups[i] == 0)
 					continue;
 				break;
 			}
@@ -210,7 +154,7 @@ namespace
 				GUI_GET_COMPONENT(parent, parent, label);
 				parent.parent = column->getName();
 				parent.order = -(sint32)i;
-				if (grid::player.paused)
+				if (player.paused)
 				{
 					GUI_GET_COMPONENT(button, control, label);
 				}
@@ -221,11 +165,11 @@ namespace
 					format.color = vec3(1, 1, 1);
 				}
 				GUI_GET_COMPONENT(text, text, label);
-                (void)text;
+				(void)text;
 			}
 		}
 
-		if (!grid::player.paused)
+		if (!player.paused)
 			return;
 
 		{ // end game button
@@ -266,7 +210,7 @@ namespace
 	}
 }
 
-namespace grid
+namespace
 {
 	bool previousPaused = false;
 
@@ -336,8 +280,9 @@ namespace grid
 
 void setScreenGame()
 {
-	grid::previousPaused = true;
-	grid::gameStart(false);
+	previousPaused = true;
+	player.cinematic = false;
+	gameStartEvent().dispatch();
 
 	gui()->skipAllEventsUntilNextUpdate();
 }

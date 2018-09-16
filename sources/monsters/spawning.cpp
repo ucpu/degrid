@@ -5,161 +5,153 @@
 
 #include <cage-core/utility/color.h>
 
-namespace grid
+namespace
 {
-	namespace
+	vec3 playerPosition;
+
+	const vec3 aroundPosition(real index, real radius, vec3 center)
 	{
-		vec3 playerPosition;
+		rads angle = index * rads::Full;
+		vec3 dir = vec3(cos(angle), 0, sin(angle));
+		return center + dir * radius;
+	}
 
-		const vec3 aroundPosition(real index, real radius, vec3 center)
-		{
-			rads angle = index * rads::Full;
-			vec3 dir = vec3(cos(angle), 0, sin(angle));
-			return center + dir * radius;
-		}
+	const vec3 randomPosition()
+	{
+		return aroundPosition(cage::random(), cage::random(200, 400), playerPosition);
+	}
 
-		const vec3 randomPosition()
-		{
-			return aroundPosition(cage::random(), cage::random(200, 400), playerPosition);
-		}
+	enum class placingPolicyEnum
+	{
+		Random,
+		Around,
+		Grouped,
+	};
 
-		enum class placingPolicyEnum
-		{
-			Random,
-			Around,
-			Grouped,
-		};
+	struct spawnDefinitionStruct
+	{
+		// spawned monsters
+		uint32 spawnCountMin, spawnCountMax;
+		monsterTypeFlags spawnTypes;
+		placingPolicyEnum placingPolicy;
 
-		struct spawnDefinitionStruct
-		{
-			// spawned monsters
-			uint32 spawnCountMin, spawnCountMax;
-			monsterTypeFlags spawnTypes;
-			placingPolicyEnum placingPolicy;
+		// priority
+		real priorityCurrent;
+		real priorityChange;
+		real priorityAdditive;
+		real priorityMultiplier;
 
-			// priority
-			real priorityCurrent;
-			real priorityChange;
-			real priorityAdditive;
-			real priorityMultiplier;
+		// statistics
+		uint32 iteration;
+		uint32 spawned;
+		string name;
 
-			// statistics
-			uint32 iteration;
-			uint32 spawned;
-			string name;
+		spawnDefinitionStruct(const string &name);
+		const bool operator < (const spawnDefinitionStruct &other) const { return priorityCurrent < other.priorityCurrent; }
+		void perform();
+		void performSimulation();
+		void spawn();
+	};
 
-			spawnDefinitionStruct(const string &name);
-			const bool operator < (const spawnDefinitionStruct &other) const { return priorityCurrent < other.priorityCurrent; }
-			void perform();
-			void performSimulation();
-			void spawn();
-		};
+	spawnDefinitionStruct::spawnDefinitionStruct(const string &name) :
+		spawnTypes((monsterTypeFlags)0),
+		spawnCountMin(1), spawnCountMax(1),
+		placingPolicy(placingPolicyEnum::Random),
+		priorityCurrent(0), priorityChange(0), priorityAdditive(0), priorityMultiplier(1),
+		iteration(0), spawned(0), name(name)
+	{}
 
-		spawnDefinitionStruct::spawnDefinitionStruct(const string &name) :
-			spawnTypes((monsterTypeFlags)0),
-			spawnCountMin(1), spawnCountMax(1),
-			placingPolicy(placingPolicyEnum::Random),
-			priorityCurrent(0), priorityChange(0), priorityAdditive(0), priorityMultiplier(1),
-			iteration(0), spawned(0), name(name)
-		{}
-
-		const uint32 monstersLimit()
-		{
+	const uint32 monstersLimit()
+	{
 #ifdef CAGE_DEBUG
-			return 50;
+		return 50;
 #else
-			return player.cinematic ? 100 : (100 + min(player.score / 30, 50u) + min(player.score / 10000, 50u));
+		return player.cinematic ? 100 : (100 + min(player.score / 30, 50u) + min(player.score / 10000, 50u));
 #endif // CAGE_DEBUG
-		}
-
-		std::vector<spawnDefinitionStruct> definitions;
-
-		void spawnDefinitionStruct::perform()
-		{
-			spawn();
-			performSimulation();
-			statistics.monstersCurrentSpawningPriority = priorityCurrent;
-		}
-
-		void spawnDefinitionStruct::performSimulation()
-		{
-			iteration++;
-			priorityCurrent += max(priorityChange, 1e-5);
-			priorityChange += priorityAdditive;
-			priorityChange *= priorityMultiplier;
-		}
-
-		void spawnDefinitionStruct::spawn()
-		{
-			{ // update player position
-				ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
-				playerPosition = p.position;
-			}
-
-			CAGE_ASSERT_RUNTIME(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
-			std::vector<monsterTypeFlags> allowed;
-			allowed.reserve(16);
-			{
-				uint32 bit = 1;
-				for (uint32 i = 0; i < 16; i++)
-				{
-					if ((spawnTypes & (monsterTypeFlags)bit) == (monsterTypeFlags)bit)
-						allowed.push_back((monsterTypeFlags)bit);
-					bit <<= 1;
-				}
-			}
-			uint32 alSiz = numeric_cast<uint32>(allowed.size());
-			CAGE_ASSERT_RUNTIME(alSiz > 0);
-			uint32 spawnCount = random(spawnCountMin, spawnCountMax + 1);
-			spawned += spawnCount;
-			vec3 color = convertHsvToRgb(vec3(cage::random(), sqrt(cage::random()) * 0.5 + 0.5, sqrt(cage::random()) * 0.5 + 0.5));
-			switch (placingPolicy)
-			{
-			case placingPolicyEnum::Random:
-			{
-				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[cage::random(0u, alSiz)], randomPosition(), color);
-			} break;
-			case placingPolicyEnum::Around:
-			{
-				real angularOffset = cage::random();
-				real radius = cage::random(120, 140);
-				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[cage::random(0u, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, playerPosition), color);
-			} break;
-			case placingPolicyEnum::Grouped:
-			{
-				real radius = cage::random(spawnCount / 2, spawnCount);
-				vec3 center = aroundPosition(cage::random(), cage::random(200, 250), playerPosition);
-				for (uint32 i = 0; i < spawnCount; i++)
-					spawnGeneral(allowed[random(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
-			} break;
-			default: CAGE_THROW_CRITICAL(exception, "invalid placing policy");
-			}
-		}
 	}
 
-	void spawnGeneral(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color)
+	std::vector<spawnDefinitionStruct> definitions;
+
+	void spawnDefinitionStruct::perform()
 	{
-		switch (type)
+		spawn();
+		performSimulation();
+		statistics.monstersCurrentSpawningPriority = priorityCurrent;
+	}
+
+	void spawnDefinitionStruct::performSimulation()
+	{
+		iteration++;
+		priorityCurrent += max(priorityChange, 1e-5);
+		priorityChange += priorityAdditive;
+		priorityChange *= priorityMultiplier;
+	}
+
+	void spawnDefinitionStruct::spawn()
+	{
+		{ // update player position
+			ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+			playerPosition = p.position;
+		}
+
+		CAGE_ASSERT_RUNTIME(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
+		std::vector<monsterTypeFlags> allowed;
+		allowed.reserve(16);
 		{
-		case monsterTypeFlags::Shielder: return spawnShielder(spawnPosition, color);
-		case monsterTypeFlags::Snake: return spawnSnake(spawnPosition, color);
-		case monsterTypeFlags::Wormhole: return spawnWormhole(spawnPosition, color);
-		default: return spawnSimple(type, spawnPosition, color);
+			uint32 bit = 1;
+			for (uint32 i = 0; i < 16; i++)
+			{
+				if ((spawnTypes & (monsterTypeFlags)bit) == (monsterTypeFlags)bit)
+					allowed.push_back((monsterTypeFlags)bit);
+				bit <<= 1;
+			}
+		}
+		uint32 alSiz = numeric_cast<uint32>(allowed.size());
+		CAGE_ASSERT_RUNTIME(alSiz > 0);
+		uint32 spawnCount = random(spawnCountMin, spawnCountMax + 1);
+		spawned += spawnCount;
+		vec3 color = convertHsvToRgb(vec3(cage::random(), sqrt(cage::random()) * 0.5 + 0.5, sqrt(cage::random()) * 0.5 + 0.5));
+		switch (placingPolicy)
+		{
+		case placingPolicyEnum::Random:
+		{
+			for (uint32 i = 0; i < spawnCount; i++)
+				spawnGeneral(allowed[cage::random(0u, alSiz)], randomPosition(), color);
+		} break;
+		case placingPolicyEnum::Around:
+		{
+			real angularOffset = cage::random();
+			real radius = cage::random(120, 140);
+			for (uint32 i = 0; i < spawnCount; i++)
+				spawnGeneral(allowed[cage::random(0u, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, playerPosition), color);
+		} break;
+		case placingPolicyEnum::Grouped:
+		{
+			real radius = cage::random(spawnCount / 2, spawnCount);
+			vec3 center = aroundPosition(cage::random(), cage::random(200, 250), playerPosition);
+			for (uint32 i = 0; i < spawnCount; i++)
+				spawnGeneral(allowed[random(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
+		} break;
+		default: CAGE_THROW_CRITICAL(exception, "invalid placing policy");
 		}
 	}
 
-	void monstersSpawnInitial()
+	void engineUpdate()
 	{
-		spawnDefinitionStruct d("initial");
-		d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
-		d.spawnCountMin = monstersLimit() - 5;
-		d.spawnCountMax = d.spawnCountMin + 25;
-		d.spawn();
+		uint32 limit = monstersLimit();
+		real probability = 1.f - (real)statistics.monstersCurrent / (real)limit;
+		if (probability <= 0)
+			return;
+
+		probability = pow(100, probability - 1);
+		if (cage::random() > probability)
+			return;
+
+		definitions[0].perform();
+		std::nth_element(definitions.begin(), definitions.begin(), definitions.end());
 	}
 
-	void spawnInit()
+	void gameStart()
 	{
 		definitions.clear();
 		definitions.reserve(30);
@@ -383,22 +375,7 @@ namespace grid
 #endif
 	}
 
-	void spawnUpdate()
-	{
-		uint32 limit = monstersLimit();
-		real probability = 1.f - (real)statistics.monstersCurrent / (real)limit;
-		if (probability <= 0)
-			return;
-
-		probability = pow(100, probability - 1);
-		if (cage::random() > probability)
-			return;
-
-		definitions[0].perform();
-		std::nth_element(definitions.begin(), definitions.begin(), definitions.end());
-	}
-
-	void spawnDone()
+	void gameStop()
 	{
 #ifdef GRID_TESTING
 		for (auto &d : definitions)
@@ -410,4 +387,42 @@ namespace grid
 
 		definitions.clear();
 	}
+
+	class callbacksClass
+	{
+		eventListener<void()> engineUpdateListener;
+		eventListener<void()> gameStartListener;
+		eventListener<void()> gameStopListener;
+	public:
+		callbacksClass()
+		{
+			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.bind<&engineUpdate>();
+			gameStartListener.attach(gameStartEvent());
+			gameStartListener.bind<&gameStart>();
+			gameStopListener.attach(gameStopEvent());
+			gameStopListener.bind<&gameStop>();
+		}
+	} callbacksInstance;
 }
+
+void spawnGeneral(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color)
+{
+	switch (type)
+	{
+	case monsterTypeFlags::Shielder: return spawnShielder(spawnPosition, color);
+	case monsterTypeFlags::Snake: return spawnSnake(spawnPosition, color);
+	case monsterTypeFlags::Wormhole: return spawnWormhole(spawnPosition, color);
+	default: return spawnSimple(type, spawnPosition, color);
+	}
+}
+
+void monstersSpawnInitial()
+{
+	spawnDefinitionStruct d("initial");
+	d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
+	d.spawnCountMin = monstersLimit() - 5;
+	d.spawnCountMax = d.spawnCountMin + 25;
+	d.spawn();
+}
+

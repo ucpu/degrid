@@ -1,16 +1,20 @@
-#include <cage-core/core.h>
-#include <cage-core/math.h>
-#include <cage-core/entities.h>
-#include <cage-core/config.h>
-#include <cage-core/utility/hashString.h>
-
-#include <cage-client/core.h>
-#include <cage-client/engine.h>
-#include <cage-client/window.h>
-#include <cage-client/gui.h>
-
-#include "../screens.h"
+#include "screens.h"
 #include "../game.h"
+
+#include <cage-core/config.h>
+
+configUint32 confControlMovement("grid.control.movement", 0);
+configUint32 confControlFiring("grid.control.firing", 4);
+configUint32 confControlBomb("grid.control.bomb", 4 + 4);
+configUint32 confControlTurret("grid.control.turret", 2 + 4);
+configUint32 confControlDecoy("grid.control.decoy", 0 + 4);
+configString confPlayerName("grid.player.name", "player name");
+configFloat confPlayerShotColorR("grid.player.shotColorR", 1);
+configFloat confPlayerShotColorG("grid.player.shotColorG", 1);
+configFloat confPlayerShotColorB("grid.player.shotColorB", 1);
+configFloat confVolumeMusic("grid.volume.music", 0.5f);
+configFloat confVolumeEffects("grid.volume.effects", 0.5f);
+configFloat confVolumeSpeech("grid.volume.speech", 0.7f);
 
 namespace
 {
@@ -103,14 +107,14 @@ namespace
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/space");
 		}
-		for (sint32 i = 0; i < sizeof(grid::letters); i++)
+		for (sint32 i = 0; i < sizeof(letters); i++)
 		{
 			entityClass *opt = ents->newUniqueEntity();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
-			parent.order = grid::letters[i];
+			parent.order = letters[i];
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.value = string(&grid::letters[i], 1);
+			txt.value = string(&letters[i], 1);
 		}
 	}
 
@@ -123,49 +127,49 @@ namespace
 		case 31:
 		{
 			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
-			grid::confControlMovement = control.selected;
+			confControlMovement = control.selected;
 			return true;
 		}
 		case 32:
 		{
 			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
-			grid::confControlFiring = control.selected;
+			confControlFiring = control.selected;
 			return true;
 		}
 		case 33:
 		{
 			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
-			grid::confControlBomb = control.selected;
+			confControlBomb = control.selected;
 			return true;
 		}
 		case 34:
 		{
 			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
-			grid::confControlTurret = control.selected;
+			confControlTurret = control.selected;
 			return true;
 		}
 		case 35:
 		{
 			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
-			grid::confControlDecoy = control.selected;
+			confControlDecoy = control.selected;
 			return true;
 		}
 		case 36:
 		{
 			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
-			grid::confVolumeMusic = control.value.value;
+			confVolumeMusic = control.value.value;
 			return true;
 		}
 		case 37:
 		{
 			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
-			grid::confVolumeEffects = control.value.value;
+			confVolumeEffects = control.value.value;
 			return true;
 		}
 		case 38:
 		{
 			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
-			grid::confVolumeSpeech = control.value.value;
+			confVolumeSpeech = control.value.value;
 			return true;
 		}
 		}
@@ -225,7 +229,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
-				control.selected = grid::confControlMovement;
+				control.selected = confControlMovement;
 				addOptionsMovementFiring(ctr->getName());
 			}
 		}
@@ -248,7 +252,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
-				control.selected = grid::confControlFiring;
+				control.selected = confControlFiring;
 				addOptionsMovementFiring(ctr->getName());
 			}
 		}
@@ -271,7 +275,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
-				control.selected = grid::confControlBomb;
+				control.selected = confControlBomb;
 				addOptionsPowers(ctr->getName());
 			}
 		}
@@ -294,7 +298,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
-				control.selected = grid::confControlTurret;
+				control.selected = confControlTurret;
 				addOptionsPowers(ctr->getName());
 			}
 		}
@@ -317,7 +321,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
-				control.selected = grid::confControlDecoy;
+				control.selected = confControlDecoy;
 				addOptionsPowers(ctr->getName());
 			}
 		}
@@ -356,7 +360,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(sliderBar, control, ctr);
-				control.value = real(grid::confVolumeMusic);
+				control.value = real(confVolumeMusic);
 			}
 		}
 
@@ -378,7 +382,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(sliderBar, control, ctr);
-				control.value = real(grid::confVolumeEffects);
+				control.value = real(confVolumeEffects);
 			}
 		}
 
@@ -400,7 +404,7 @@ void setScreenOptions()
 				parent.parent = panel->getName();
 				parent.order = index++;
 				GUI_GET_COMPONENT(sliderBar, control, ctr);
-				control.value = real(grid::confVolumeSpeech);
+				control.value = real(confVolumeSpeech);
 			}
 		}
 	}

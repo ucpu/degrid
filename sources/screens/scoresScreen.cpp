@@ -1,19 +1,10 @@
 #include <vector>
 #include <algorithm>
 
-#include <cage-core/core.h>
-#include <cage-core/math.h>
-#include <cage-core/entities.h>
+#include "screens.h"
+
 #include <cage-core/filesystem.h>
 #include <cage-core/utility/ini.h>
-#include <cage-core/utility/hashString.h>
-
-#include <cage-client/core.h>
-#include <cage-client/engine.h>
-#include <cage-client/window.h>
-#include <cage-client/gui.h>
-
-#include "../screens.h"
 
 namespace
 {
@@ -21,7 +12,6 @@ namespace
 	{
 		uint32 score;
 		string date;
-		string name;
 	};
 
 	struct scoreComparatorStruct
@@ -34,7 +24,6 @@ namespace
 			{
 			case 0: return a.score > b.score;
 			case 1: return a.date > b.date;
-			case 2: return a.name < b.name;
 			default: CAGE_THROW_CRITICAL(exception, "invalid comparison mode");
 			}
 		}
@@ -52,7 +41,6 @@ namespace
 		{
 		case 51:
 		case 52:
-		case 53:
 			buildGui(en - 51);
 			return true;
 		}
@@ -76,7 +64,7 @@ namespace
 			position.size.values[1] = 1;
 			position.size.units[1] = unitEnum::ScreenHeight;
 			GUI_GET_COMPONENT(layoutTable, layout, panel);
-			layout.sections = 3;
+			layout.sections = 2;
 		}
 
 		{ // header
@@ -101,22 +89,11 @@ namespace
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/scores/date");
 			}
-
-			{
-				entityClass *butName = ents->newEntity(53);
-				GUI_GET_COMPONENT(parent, parent, butName);
-				parent.parent = panel->getName();
-				parent.order = 3;
-				GUI_GET_COMPONENT(button, control, butName);
-				GUI_GET_COMPONENT(text, txt, butName);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/scores/name");
-			}
 		}
 
 		uint32 index = 100;
 		std::sort(scores.begin(), scores.end(), scoreComparatorStruct(mode));
-		for (auto it = scores.begin(), et = scores.end(); it != et; it++)
+		for (const auto &it : scores)
 		{
 			{
 				entityClass *txtScore = ents->newUniqueEntity();
@@ -125,7 +102,7 @@ namespace
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, txtScore);
 				GUI_GET_COMPONENT(text, txt, txtScore);
-				txt.value = it->score;
+				txt.value = it.score;
 				GUI_GET_COMPONENT(textFormat, format, txtScore);
 				format.align = textAlignEnum::Right;
 			}
@@ -137,19 +114,9 @@ namespace
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, txtDate);
 				GUI_GET_COMPONENT(text, txt, txtDate);
-				txt.value = it->date;
+				txt.value = it.date;
 				GUI_GET_COMPONENT(textFormat, format, txtDate);
 				format.align = textAlignEnum::Center;
-			}
-
-			{
-				entityClass *txtName = ents->newUniqueEntity();
-				GUI_GET_COMPONENT(parent, parent, txtName);
-				parent.parent = panel->getName();
-				parent.order = index++;
-				GUI_GET_COMPONENT(label, control, txtName);
-				GUI_GET_COMPONENT(text, txt, txtName);
-				txt.value = it->name;
 			}
 		}
 	}
@@ -169,7 +136,6 @@ void setScreenScores()
 			scoreStruct s;
 			s.score = ini->getUint32(i, "score");
 			s.date = ini->getString(i, "date");
-			s.name = ini->getString(i, "name");
 			scores.push_back(s);
 		}
 	}

@@ -1,18 +1,8 @@
-#include <cage-core/core.h>
-#include <cage-core/math.h>
-#include <cage-core/entities.h>
-#include <cage-core/config.h>
-#include <cage-core/filesystem.h>
-#include <cage-core/utility/hashString.h>
-#include <cage-core/utility/timer.h>
-
-#include <cage-client/core.h>
-#include <cage-client/engine.h>
-#include <cage-client/window.h>
-#include <cage-client/gui.h>
-
-#include "../screens.h"
+#include "screens.h"
 #include "../game.h"
+
+#include <cage-core/filesystem.h>
+#include <cage-core/utility/timer.h> // getSystemDateTime
 
 namespace
 {
@@ -27,8 +17,6 @@ namespace
 
 #ifndef GRID_TESTING
 		{
-			GUI_GET_COMPONENT(inputBox, txt, gui()->entities()->getEntity(nameEntity));
-			grid::confPlayerName = txt.value;
 			holder<fileClass> f = newFile("score.ini", fileMode(false, true, true, true));
 			f->writeLine("[]");
 			{
@@ -36,12 +24,12 @@ namespace
 				detail::getSystemDateTime(y, m, d, h, mm, s);
 				f->writeLine(string() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
 			}
-			f->writeLine(string() + "name = " + txt.value);
 			f->writeLine(string() + "score = " + scoreValue);
 		}
 #endif
 
-		grid::gameStart(true);
+		player.cinematic = true;
+		gameStartEvent().dispatch();
 		setScreenScores();
 		return true;
 	}
@@ -98,17 +86,6 @@ void setScreenGameover(uint32 score)
 		format.align = textAlignEnum::Center;
 		format.color = vec3(0, 1, 0);
 		format.size = 50;
-	}
-
-	{
-		entityClass *txtName = ents->newUniqueEntity();
-		GUI_GET_COMPONENT(parent, parent, txtName);
-		parent.parent = panel->getName();
-		parent.order = 3;
-		GUI_GET_COMPONENT(inputBox, control, txtName);
-		control.value = grid::confPlayerName;
-		//GUI_GET_COMPONENT(text, txt, txtName);
-		nameEntity = txtName->getName();
 	}
 
 	{

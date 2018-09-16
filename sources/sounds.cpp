@@ -1,76 +1,75 @@
-#include <cage-core/core.h>
-#include <cage-core/math.h>
+#include "game.h"
+
+#include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
 #include <cage-core/assets.h>
+#include <cage-core/utility/spatial.h>
 #include <cage-core/utility/hashString.h>
 
-#include <cage-client/core.h>
-#include <cage-client/engine.h>
 #include <cage-client/sound.h>
 
-#include "game.h"
+extern configFloat confVolumeMusic;
+extern configFloat confVolumeEffects;
+extern configFloat confVolumeSpeech;
 
-namespace grid
+globalSoundsStruct sounds;
+
+namespace
 {
-	globalSoundsStruct sounds;
-
-	namespace
+	struct soundDataStruct
 	{
-		struct soundDataStruct
+		holder<busClass> suspenseBus;
+		holder<busClass> actionBus;
+		holder<busClass> endBus;
+
+		holder<volumeFilterClass> suspenseVolume;
+		holder<volumeFilterClass> actionVolume;
+		holder<volumeFilterClass> endVolume;
+
+		bool suspenseLoaded;
+		bool actionLoaded;
+		bool endLoaded;
+
+		holder<volumeFilterClass> musicVolume;
+		holder<volumeFilterClass> effectsVolume;
+
+		holder<busClass> speechBus;
+		holder<volumeFilterClass> speechVolume;
+		holder<filterClass> speechFilter;
+		uint64 speechStart;
+		uint32 speechName;
+
+		soundDataStruct() : suspenseLoaded(false), actionLoaded(false), endLoaded(false), speechStart(0), speechName(0) {}
+
+		void speechExecute(const filterApiStruct &api)
 		{
-			holder<busClass> suspenseBus;
-			holder<busClass> actionBus;
-			holder<busClass> endBus;
-
-			holder<volumeFilterClass> suspenseVolume;
-			holder<volumeFilterClass> actionVolume;
-			holder<volumeFilterClass> endVolume;
-
-			bool suspenseLoaded;
-			bool actionLoaded;
-			bool endLoaded;
-
-			holder<volumeFilterClass> musicVolume;
-			holder<volumeFilterClass> effectsVolume;
-
-			holder<busClass> speechBus;
-			holder<volumeFilterClass> speechVolume;
-			holder<filterClass> speechFilter;
-			uint64 speechStart;
-			uint32 speechName;
-
-			soundDataStruct() : suspenseLoaded(false), actionLoaded(false), endLoaded(false), speechStart(0), speechName(0) {}
-
-			void speechExecute(const filterApiStruct &api)
-			{
-				soundDataBufferStruct s = api.output;
-				s.time -= (sint64)speechStart;
-				api.input(s);
-			}
-		};
-		soundDataStruct *data;
-
-		void alterVolume(real &current, real target)
-		{
-			const real change = 0.7f / (1000000 / soundThread().timePerTick);
-			if (current > target + change)
-			{
-				current -= change;
-				return;
-			}
-			if (current < target - change)
-			{
-				current += change;
-				return;
-			}
-			current = target;
+			soundDataBufferStruct s = api.output;
+			s.time -= (sint64)speechStart;
+			api.input(s);
 		}
+	};
+	soundDataStruct *data;
 
-		void alterVolume(holder<volumeFilterClass> &current, real target)
+	void alterVolume(real &current, real target)
+	{
+		const real change = 0.7f / (1000000 / soundThread().timePerTick);
+		if (current > target + change)
 		{
-			alterVolume(current->volume, target);
+			current -= change;
+			return;
 		}
+		if (current < target - change)
+		{
+			current += change;
+			return;
+		}
+		current = target;
+	}
+
+	void alterVolume(holder<volumeFilterClass> &current, real target)
+	{
+		alterVolume(current->volume, target);
 	}
 
 	void soundsInit()
@@ -99,6 +98,25 @@ namespace grid
 	void soundsDone()
 	{
 		detail::systemArena().destroy<soundDataStruct>(data);
+	}
+
+	void destroyOutdatedSouns()
+	{
+		statistics.soundEffectsCurrent = 0;
+		uint64 time = currentControlTime() - 2000000;
+		for (entityClass *e : voiceComponent::component->getComponentEntities()->entities())
+		{
+			ENGINE_GET_COMPONENT(voice, s, e);
+			if (s.name == hashString("grid/player/shield.ogg"))
+				continue;
+			if (!assets()->ready(s.name))
+				continue;
+			sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(s.name);
+			if (src && s.startTime + src->getDuration() + 100000 < time)
+				e->addGroup(entitiesToDestroy);
+			statistics.soundEffectsCurrent++;
+		}
+		statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
 	}
 
 	void soundUpdate()
@@ -149,29 +167,93 @@ namespace grid
 		alterVolume(data->endVolume, 0);
 	}
 
-	void soundEffect(uint32 sound, const vec3 &position)
+	void musicUpdate()
 	{
-		entityClass *e = entities()->newUniqueEntity();
-		ENGINE_GET_COMPONENT(transform, t, e);
-		t.position = position;
-		ENGINE_GET_COMPONENT(voice, s, e);
-		s.name = sound;
-		s.startTime = currentControlTime();
-	}
-
-	void soundSpeech(uint32 sound)
-	{
-		if (data->speechName)
+		if (player.cinematic)
+		{
+			sounds.suspense = 0;
 			return;
-		data->speechName = sound;
-		data->speechStart = currentControlTime() + 10000;
+		}
+		if (player.paused)
+		{
+			sounds.suspense = 1;
+			return;
+		}
+
+		static const real distMin = 25;
+		static const real distMax = 35;
+		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+		real closestMonsterToPlayer = real::PositiveInfinity;
+		spatialQuery->intersection(sphere(playerTransform.position, distMax));
+		for (uint32 otherName : spatialQuery->result())
+		{
+			if (!entities()->hasEntity(otherName))
+				continue;
+			entityClass *e = entities()->getEntity(otherName);
+			if (e->hasComponent(monsterComponent::component))
+			{
+				ENGINE_GET_COMPONENT(transform, p, e);
+				real d = p.position.distance(playerTransform.position);
+				closestMonsterToPlayer = min(closestMonsterToPlayer, d);
+			}
+		}
+		closestMonsterToPlayer = clamp(closestMonsterToPlayer, distMin, distMax);
+		sounds.suspense = (closestMonsterToPlayer - distMin) / (distMax - distMin);
 	}
 
-	void soundSpeech(uint32 *sounds)
+	void gameStart()
 	{
-		uint32 *p = sounds;
-		uint32 count = 0;
-		while (*p++) count++;
-		soundSpeech(sounds[random(0u, count)]);
+		if (!player.cinematic)
+		{
+			uint32 sounds[] = {
+				hashString("grid/speech/starts/enemies-are-approaching.wav"),
+				hashString("grid/speech/starts/enemy-is-approaching.wav"),
+				hashString("grid/speech/starts/its-a-trap.wav"),
+				hashString("grid/speech/starts/lets-do-this.wav"),
+				hashString("grid/speech/starts/let-us-kill-some-.wav"),
+				hashString("grid/speech/starts/ready-set-go.wav"),
+				0
+			};
+			soundSpeech(sounds);
+		}
+	}
+
+	void gameStop()
+	{
+		uint32 sounds[] = {
+			hashString("grid/speech/over/game-over.wav"),
+			hashString("grid/speech/over/lets-try-again.wav"),
+			hashString("grid/speech/over/oh-no.wav"),
+			hashString("grid/speech/over/pitty.wav"),
+			hashString("grid/speech/over/thats-it.wav"),
+			0 };
+		soundSpeech(sounds);
 	}
 }
+
+void soundEffect(uint32 sound, const vec3 &position)
+{
+	entityClass *e = entities()->newUniqueEntity();
+	ENGINE_GET_COMPONENT(transform, t, e);
+	t.position = position;
+	ENGINE_GET_COMPONENT(voice, s, e);
+	s.name = sound;
+	s.startTime = currentControlTime();
+}
+
+void soundSpeech(uint32 sound)
+{
+	if (data->speechName)
+		return;
+	data->speechName = sound;
+	data->speechStart = currentControlTime() + 10000;
+}
+
+void soundSpeech(uint32 sounds[])
+{
+	uint32 *p = sounds;
+	uint32 count = 0;
+	while (*p++) count++;
+	soundSpeech(sounds[random(0u, count)]);
+}
+
