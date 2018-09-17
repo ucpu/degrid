@@ -12,6 +12,7 @@ namespace
 {
 	void engineInit()
 	{
+		entitiesToDestroy = entities()->defineGroup();
 		spatialData = newSpatialData(spatialDataCreateConfig());
 		spatialQuery = newSpatialQuery(spatialData.get());
 	}
@@ -68,9 +69,9 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.attach(controlThread().initialize, -20);
 			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, 30);
 			engineUpdateListener.bind<&engineUpdate>();
 		}
 	} callbacksInstance;

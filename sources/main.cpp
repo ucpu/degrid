@@ -79,6 +79,11 @@ namespace
 				assets()->add(loadedLanguageHash);
 		}
 	}
+
+	void frameCounter()
+	{
+		statistics.frameIteration++;
+	}
 }
 
 void reloadLanguage(uint32 index)
@@ -104,6 +109,9 @@ int main(int argc, const char *args[])
 		eventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
 		assetsUpdateListener.attach(controlThread().assets);
+		eventListener<void()> frameCounterListener;
+		frameCounterListener.bind<&frameCounter>();
+		frameCounterListener.attach(graphicsPrepareThread().prepare);
 		eventListener<bool()> windowCloseListener;
 		windowCloseListener.bind<&windowClose>();
 		windowCloseListener.attach(window()->events.windowClose);

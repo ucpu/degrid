@@ -138,6 +138,9 @@ namespace
 
 	void engineUpdate()
 	{
+		if (player.paused)
+			return;
+
 		uint32 limit = monstersLimit();
 		real probability = 1.f - (real)statistics.monstersCurrent / (real)limit;
 		if (probability <= 0)

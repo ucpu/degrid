@@ -208,14 +208,14 @@ namespace
 			format.size = 50;
 		}
 	}
-}
 
-namespace
-{
 	bool previousPaused = false;
 
-	void gameGuiUpdate()
+	void engineUpdate()
 	{
+		if (player.gameOver || player.cinematic)
+			return;
+
 		if (!assets()->ready(hashString("grid/languages/internationalized.textpack")))
 			return;
 
@@ -276,6 +276,17 @@ namespace
 			}
 		}
 	}
+
+	class callbacksClass
+	{
+		eventListener<void()> engineUpdateListener;
+	public:
+		callbacksClass()
+		{
+			engineUpdateListener.attach(controlThread().update, 60);
+			engineUpdateListener.bind<&engineUpdate>();
+		}
+	} callbacksInstance;
 }
 
 void setScreenGame()

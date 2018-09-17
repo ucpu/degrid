@@ -40,18 +40,18 @@ namespace
 			l.color = vec3(1, 1, 1) * 2;
 		}
 
-#ifdef CAGE_DEBUG
-		return;
-#endif
-
 		const real radius = mapNoPullRadius * 1.5;
+#ifdef CAGE_DEBUG
+		const real step = 50;
+#else
 		const real step = 10;
+#endif
 		for (real y = -radius; y < radius + 1e-3; y += step)
 		{
 			for (real x = -radius; x < radius + 1e-3; x += step)
 			{
 				const real d = vec3(x, 0, y).length();
-				if (d > radius)
+				if (d > radius || d < 1e-7)
 					continue;
 				entityClass *e = entities()->newUniqueEntity();
 				GRID_GET_COMPONENT(velocity, velocity, e);
@@ -70,7 +70,12 @@ namespace
 			}
 		}
 
-		for (rads ang = degs(0); ang < degs(360); ang += degs(1))
+#ifdef CAGE_DEBUG
+		const real angStep = 5;
+#else
+		const real angStep = 1;
+#endif
+		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
 		{
 			entityClass *e = entities()->newUniqueEntity();
 			GRID_GET_COMPONENT(grid, grid, e);
@@ -92,9 +97,9 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, -5);
 			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent());
+			gameStartListener.attach(gameStartEvent(), -5);
 			gameStartListener.bind<&gameStart>();
 		}
 	} callbacksInstance;

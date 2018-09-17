@@ -98,11 +98,11 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, -60);
 			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent());
+			gameStartListener.attach(gameStartEvent(), -60);
 			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent());
+			gameStopListener.attach(gameStopEvent(), -60);
 			gameStopListener.bind<&gameStop>();
 		}
 	} callbacksInstance;

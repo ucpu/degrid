@@ -244,7 +244,11 @@ namespace
 		buttonMap = (mouseButtonsFlags)0;
 
 		entities()->getAllEntities()->destroyAllEntities();
-		player = globalPlayerStruct();
+		{
+			bool cinematic = player.cinematic;
+			player = globalPlayerStruct();
+			player.cinematic = cinematic;
+		}
 		player.life = 100;
 		player.powerupSpawnChance = 0.3;
 
@@ -280,13 +284,13 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.attach(controlThread().initialize, -30);
 			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, -30);
 			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent());
+			gameStartListener.attach(gameStartEvent(), -30);
 			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent());
+			gameStopListener.attach(gameStopEvent(), -30);
 			gameStopListener.bind<&gameStop>();
 		}
 	} callbacksInstance;

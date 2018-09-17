@@ -72,35 +72,7 @@ namespace
 		alterVolume(current->volume, target);
 	}
 
-	void soundsInit()
-	{
-		data = detail::systemArena().createObject<soundDataStruct>();
-#define GCHL_GENERATE(NAME) \
-		data->CAGE_JOIN(NAME, Bus) = newBus(sound()); \
-		data->CAGE_JOIN(NAME, Bus)->addOutput(musicMixer()); \
-		data->CAGE_JOIN(NAME, Volume) = newFilterVolume(sound()); \
-		data->CAGE_JOIN(NAME, Volume)->filter->setBus(data->CAGE_JOIN(NAME, Bus).get()); \
-		data->CAGE_JOIN(NAME, Volume)->volume = 0;
-		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
-#undef GCHL_GENERATE
-
-		data->musicVolume = newFilterVolume(sound());
-		data->musicVolume->filter->setBus(musicMixer());
-		data->effectsVolume = newFilterVolume(sound());
-		data->effectsVolume->filter->setBus(effectsMixer());
-
-		data->speechBus = newBus(sound());
-		data->speechVolume = newFilterVolume(sound());
-		data->speechFilter = newFilter(sound());
-		data->speechFilter->execute.bind<soundDataStruct, &soundDataStruct::speechExecute>(data);
-	}
-
-	void soundsDone()
-	{
-		detail::systemArena().destroy<soundDataStruct>(data);
-	}
-
-	void destroyOutdatedSouns()
+	void destroyOutdatedSounds()
 	{
 		statistics.soundEffectsCurrent = 0;
 		uint64 time = currentControlTime() - 2000000;
@@ -201,6 +173,41 @@ namespace
 		sounds.suspense = (closestMonsterToPlayer - distMin) / (distMax - distMin);
 	}
 
+	void engineInit()
+	{
+		data = detail::systemArena().createObject<soundDataStruct>();
+#define GCHL_GENERATE(NAME) \
+		data->CAGE_JOIN(NAME, Bus) = newBus(sound()); \
+		data->CAGE_JOIN(NAME, Bus)->addOutput(musicMixer()); \
+		data->CAGE_JOIN(NAME, Volume) = newFilterVolume(sound()); \
+		data->CAGE_JOIN(NAME, Volume)->filter->setBus(data->CAGE_JOIN(NAME, Bus).get()); \
+		data->CAGE_JOIN(NAME, Volume)->volume = 0;
+		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
+#undef GCHL_GENERATE
+
+		data->musicVolume = newFilterVolume(sound());
+		data->musicVolume->filter->setBus(musicMixer());
+		data->effectsVolume = newFilterVolume(sound());
+		data->effectsVolume->filter->setBus(effectsMixer());
+
+		data->speechBus = newBus(sound());
+		data->speechVolume = newFilterVolume(sound());
+		data->speechFilter = newFilter(sound());
+		data->speechFilter->execute.bind<soundDataStruct, &soundDataStruct::speechExecute>(data);
+	}
+
+	void engineUpdate()
+	{
+		destroyOutdatedSounds();
+		soundUpdate();
+		musicUpdate();
+	}
+
+	void engineFin()
+	{
+		detail::systemArena().destroy<soundDataStruct>(data);
+	}
+
 	void gameStart()
 	{
 		if (!player.cinematic)
@@ -229,6 +236,29 @@ namespace
 			0 };
 		soundSpeech(sounds);
 	}
+
+	class callbacksClass
+	{
+		eventListener<void()> engineInitListener;
+		eventListener<void()> engineUpdateListener;
+		eventListener<void()> engineFinListener;
+		eventListener<void()> gameStartListener;
+		eventListener<void()> gameStopListener;
+	public:
+		callbacksClass()
+		{
+			engineInitListener.attach(controlThread().initialize, 55);
+			engineInitListener.bind<&engineInit>();
+			engineUpdateListener.attach(controlThread().update, 55);
+			engineUpdateListener.bind<&engineUpdate>();
+			engineFinListener.attach(controlThread().finalize, 55);
+			engineFinListener.bind<&engineFin>();
+			gameStartListener.attach(gameStartEvent(), 55);
+			gameStartListener.bind<&gameStart>();
+			gameStopListener.attach(gameStopEvent(), 55);
+			gameStopListener.bind<&gameStop>();
+		}
+	} callbacksInstance;
 }
 
 void soundEffect(uint32 sound, const vec3 &position)

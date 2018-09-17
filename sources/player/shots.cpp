@@ -197,16 +197,14 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 		eventListener<void()> gameStartListener;
-		eventListener<void()> gameStopListener;
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, -10);
 			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent());
+			gameStartListener.attach(gameStartEvent(), -10);
 			gameStartListener.bind<&gameStart>();
 		}
 	} callbacksInstance;

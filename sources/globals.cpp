@@ -47,7 +47,6 @@ namespace
 		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
 		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
 		wormholeComponent::component = entities()->defineComponent(wormholeComponent(), true);
-		entitiesToDestroy = entities()->defineGroup();
 	}
 
 	class callbacksClass
@@ -56,7 +55,7 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineInitListener.attach(controlThread().initialize, -1000);
+			engineInitListener.attach(controlThread().initialize, -50);
 			engineInitListener.bind<&engineInit>();
 		}
 	} callbacksInstance;

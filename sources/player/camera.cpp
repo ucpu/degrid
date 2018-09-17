@@ -15,6 +15,12 @@ namespace
 	entityClass *secondaryCameraEntity;
 	entityClass *skyboxSecondaryCameraEntity;
 
+	void engineInit()
+	{
+		skyboxOrientation = randomDirectionQuat();
+		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
+	}
+
 	void engineUpdate()
 	{
 		{ // update skybox
@@ -78,12 +84,6 @@ namespace
 		}
 	}
 
-	void engineInit()
-	{
-		skyboxOrientation = randomDirectionQuat();
-		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
-	}
-
 	void gameStart()
 	{
 		{
@@ -139,11 +139,11 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.attach(controlThread().initialize, 50);
 			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, 50);
 			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent());
+			gameStartListener.attach(gameStartEvent(), 50);
 			gameStartListener.bind<&gameStart>();
 		}
 	} callbacksInstance;

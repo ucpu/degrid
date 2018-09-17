@@ -96,7 +96,6 @@ namespace
 			player.scorePrevious += ld * sg;
 
 			uint32 sounds[] = {
-				hashString("grid/speech/gain/additional-life.wav"),
 				hashString("grid/speech/gain/doing-fine.wav"),
 				hashString("grid/speech/gain/doing-well.wav"),
 				hashString("grid/speech/gain/fantastic.wav"),
@@ -108,16 +107,20 @@ namespace
 		}
 	}
 
-	void engineUpdate()
+	bool engineUpdate()
 	{
 		if (!player.paused)
 		{
 			shipMovement();
 			scoreUpdate();
-			if (!player.cinematic && player.life <= 1e-5)
+			if (!player.cinematic && player.life <= 1e-7)
+			{
 				gameStopEvent().dispatch();
+				return true;
+			}
 		}
 		shipShield();
+		return false;
 	}
 
 	void gameStart()
@@ -153,17 +156,17 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineUpdateListener;
+		eventListener<bool()> engineUpdateListener;
 		eventListener<void()> gameStartListener;
 		eventListener<void()> gameStopListener;
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, -20);
 			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent());
+			gameStartListener.attach(gameStartEvent(), -20);
 			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent());
+			gameStopListener.attach(gameStopEvent(), -20);
 			gameStopListener.bind<&gameStop>();
 		}
 	} callbacksInstance;

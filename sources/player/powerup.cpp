@@ -161,7 +161,7 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, -15);
 			engineUpdateListener.bind<&engineUpdate>();
 		}
 	} callbacksInstance;
