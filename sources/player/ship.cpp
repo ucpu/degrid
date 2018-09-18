@@ -44,6 +44,7 @@ namespace
 				ENGINE_GET_COMPONENT(animatedTexture, at, spark);
 				at.startTime = currentControlTime();
 				at.speed = 30.f / ttl.ttl;
+				spark->addGroup(entitiesPhysicsEvenWhenPaused);
 			}
 		}
 		else

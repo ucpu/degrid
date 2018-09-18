@@ -5,6 +5,7 @@
 #include <cage-core/utility/spatial.h>
 
 groupClass *entitiesToDestroy;
+groupClass *entitiesPhysicsEvenWhenPaused;
 holder<spatialDataClass> spatialData;
 holder<spatialQueryClass> spatialQuery;
 
@@ -13,20 +14,18 @@ namespace
 	void engineInit()
 	{
 		entitiesToDestroy = entities()->defineGroup();
+		entitiesPhysicsEvenWhenPaused = entities()->defineGroup();
 		spatialData = newSpatialData(spatialDataCreateConfig());
 		spatialQuery = newSpatialQuery(spatialData.get());
 	}
 
 	void engineUpdate()
 	{
-		entitiesToDestroy->destroyAllEntities();
-
-		if (player.paused)
-			return;
-
 		{ // velocity
 			for (entityClass *e : velocityComponent::component->getComponentEntities()->entities())
 			{
+				if (player.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+					continue;
 				ENGINE_GET_COMPONENT(transform, t, e);
 				GRID_GET_COMPONENT(velocity, v, e);
 				t.position += v.velocity;
@@ -36,14 +35,17 @@ namespace
 		{ // timeout
 			for (entityClass *e : timeoutComponent::component->getComponentEntities()->entities())
 			{
+				if (player.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+					continue;
 				GRID_GET_COMPONENT(timeout, t, e);
 				if (t.ttl == 0)
 					e->addGroup(entitiesToDestroy);
 				else
 					t.ttl--;
 			}
-			entitiesToDestroy->destroyAllEntities();
 		}
+
+		entitiesToDestroy->destroyAllEntities();
 
 		{ // update spatial
 			spatialData->clear();

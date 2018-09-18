@@ -111,6 +111,9 @@ namespace
 
 	void engineUpdate()
 	{
+		if (player.paused)
+			return;
+
 		updateShielders();
 		updateShields();
 	}

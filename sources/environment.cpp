@@ -147,6 +147,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		ENGINE_GET_COMPONENT(render, render, e);
 		render.object = hashString("grid/environment/explosion.object");
 		render.color = colorVariation(color);
+		e->addGroup(entitiesPhysicsEvenWhenPaused);
 	}
 }
 

@@ -18,11 +18,21 @@ globalStatisticsStruct::globalStatisticsStruct()
 
 namespace
 {
+	void countActiveSounds()
+	{
+		statistics.soundEffectsCurrent = 0;
+		for (entityClass *e : voiceComponent::component->getComponentEntities()->entities())
+		{
+			statistics.soundEffectsCurrent++;
+		}
+		statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
+	}
+
 	void engineUpdate()
 	{
 		statistics.updateIterationIgnorePause++;
 		if (!player.paused)
-			statistics.updateIterationPaused++;
+			statistics.updateIterationWithPause++;
 
 		if (player.gameOver)
 			return;
@@ -39,6 +49,7 @@ namespace
 			statistics.timeRenderMin = min(statistics.timeRenderMin, statistics.timeRenderCurrent);
 			statistics.timeRenderMax = max(statistics.timeRenderMax, statistics.timeRenderCurrent);
 		}
+		countActiveSounds();
 	}
 
 	void gameStart()
@@ -79,14 +90,14 @@ namespace
 			entitiesCurrent, entitiesMax, \
 			environmentGridMarkers, environmentExplosions, \
 			keyPressed, buttonPressed, \
-			updateIterationPaused, updateIterationIgnorePause, frameIteration, \
+			updateIterationWithPause, updateIterationIgnorePause, frameIteration, \
 			timeRenderMin, timeRenderMax, timeRenderCurrent, \
 			soundEffectsCurrent, soundEffectsMax \
 		));
 #undef GCHL_GENERATE
 		uint64 duration = getApplicationTime() - statistics.timeStart;
 		CAGE_LOG(severityEnum::Info, "statistics", string() + "duration: " + (duration / 1e6) + " s");
-		CAGE_LOG(severityEnum::Info, "statistics", string() + "average TPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
+		CAGE_LOG(severityEnum::Info, "statistics", string() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
 		CAGE_LOG(severityEnum::Info, "statistics", string() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
 	}
 
@@ -102,7 +113,7 @@ namespace
 			engineUpdateListener.bind<&engineUpdate>();
 			gameStartListener.attach(gameStartEvent(), -60);
 			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent(), -60);
+			gameStopListener.attach(gameStopEvent(), 60);
 			gameStopListener.bind<&gameStop>();
 		}
 	} callbacksInstance;

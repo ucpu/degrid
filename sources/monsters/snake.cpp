@@ -4,6 +4,9 @@ namespace
 {
 	void engineUpdate()
 	{
+		if (player.paused)
+			return;
+
 		// snake heads
 		for (entityClass *e : snakeHeadComponent::component->getComponentEntities()->entities())
 		{

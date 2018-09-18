@@ -50,6 +50,7 @@ const real mapNoPullRadius = 200;
 const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
 
 extern groupClass *entitiesToDestroy;
+extern groupClass *entitiesPhysicsEvenWhenPaused;
 extern holder<spatialDataClass> spatialData;
 extern holder<spatialQueryClass> spatialQuery;
 
@@ -130,7 +131,7 @@ struct globalStatisticsStruct
 	uint32 keyPressed; // keyboard keys pressed
 	uint32 buttonPressed; // mouse buttons pressed
 	uint32 updateIterationIgnorePause; // number of game update ticks, does increment during pause
-	uint32 updateIterationPaused; // number of game update ticks, does NOT increment during pause
+	uint32 updateIterationWithPause; // number of game update ticks, does NOT increment during pause
 	uint32 frameIteration; // numer of rendered frames
 	uint32 soundEffectsCurrent;
 	uint32 soundEffectsMax;

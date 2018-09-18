@@ -38,6 +38,9 @@ namespace
 
 	void engineUpdate()
 	{
+		if (player.paused)
+			return;
+
 		for (entityClass *e : simpleMonsterComponent::component->getComponentEntities()->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);

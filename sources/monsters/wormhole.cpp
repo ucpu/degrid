@@ -107,6 +107,8 @@ namespace
 
 	void engineUpdate()
 	{
+		if (player.paused)
+			return;
 		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
 			wormholeUpdateStruct u(e);
 	}
