@@ -15,10 +15,10 @@ extern configFloat confVolumeMusic;
 extern configFloat confVolumeEffects;
 extern configFloat confVolumeSpeech;
 
-globalSoundsStruct sounds;
-
 namespace
 {
+	real suspense;
+
 	struct soundDataStruct
 	{
 		holder<busClass> suspenseBus;
@@ -76,20 +76,20 @@ namespace
 
 	void musicUpdate()
 	{
-		if (player.cinematic)
+		if (game.cinematic)
 		{
-			sounds.suspense = 0;
+			suspense = 0;
 			return;
 		}
-		if (player.paused)
+		if (game.paused)
 		{
-			sounds.suspense = 1;
+			suspense = 1;
 			return;
 		}
 
 		static const real distMin = 25;
 		static const real distMax = 35;
-		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 		real closestMonsterToPlayer = real::PositiveInfinity;
 		spatialQuery->intersection(sphere(playerTransform.position, distMax));
 		for (uint32 otherName : spatialQuery->result())
@@ -105,7 +105,7 @@ namespace
 			}
 		}
 		closestMonsterToPlayer = clamp(closestMonsterToPlayer, distMin, distMax);
-		sounds.suspense = (closestMonsterToPlayer - distMin) / (distMax - distMin);
+		suspense = (closestMonsterToPlayer - distMin) / (distMax - distMin);
 	}
 
 	void speechCallback(const filterApiStruct &api)
@@ -142,7 +142,7 @@ namespace
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
 
-		if (player.gameOver)
+		if (game.gameOver)
 		{
 			alterVolume(data->suspenseVolume, 0);
 			alterVolume(data->actionVolume, 0);
@@ -150,7 +150,7 @@ namespace
 			return;
 		}
 
-		real f = sounds.suspense; // < 0.5 ? 0 : 1;
+		real f = suspense; // < 0.5 ? 0 : 1;
 		alterVolume(data->suspenseVolume, sqr(f));
 		alterVolume(data->actionVolume, sqr(1 - f));
 		alterVolume(data->endVolume, 0);
@@ -199,7 +199,7 @@ namespace
 
 	void gameStart()
 	{
-		if (!player.cinematic)
+		if (!game.cinematic)
 		{
 			uint32 sounds[] = {
 				hashString("grid/speech/starts/enemies-are-approaching.wav"),

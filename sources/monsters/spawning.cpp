@@ -66,7 +66,7 @@ namespace
 #ifdef CAGE_DEBUG
 		return 50;
 #else
-		return player.cinematic ? 100 : (100 + min(player.score / 30, 50u) + min(player.score / 10000, 50u));
+		return game.cinematic ? 100 : (100 + min(game.score / 30, 50u) + min(game.score / 10000, 50u));
 #endif // CAGE_DEBUG
 	}
 
@@ -90,7 +90,7 @@ namespace
 	void spawnDefinitionStruct::spawn()
 	{
 		{ // update player position
-			ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+			ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
 			playerPosition = p.position;
 		}
 
@@ -138,7 +138,7 @@ namespace
 
 	void engineUpdate()
 	{
-		if (player.paused)
+		if (game.paused)
 			return;
 
 		uint32 limit = monstersLimit();
@@ -159,7 +159,7 @@ namespace
 		definitions.clear();
 		definitions.reserve(30);
 
-		if (player.cinematic)
+		if (game.cinematic)
 		{ // cinematic spawns
 			spawnDefinitionStruct d("cinematic");
 			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle | monsterTypeFlags::SmallTriangle | monsterTypeFlags::SmallCube | monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube);

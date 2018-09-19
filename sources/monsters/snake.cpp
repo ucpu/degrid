@@ -4,7 +4,7 @@ namespace
 {
 	void engineUpdate()
 	{
-		if (player.paused)
+		if (game.paused)
 			return;
 
 		// snake heads
@@ -56,7 +56,7 @@ namespace
 					if (m.life < 0)
 					{
 						e->addGroup(entitiesToDestroy);
-						soundEffect(m.destroyedSound, tr.position);
+						soundEffect(m.defeatedSound, tr.position);
 					}
 				}
 			}

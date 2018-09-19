@@ -28,16 +28,16 @@ namespace
 			ENGINE_GET_COMPONENT(transform, t, skyboxRenderEntity);
 			t.orientation = skyboxOrientation;
 			ENGINE_GET_COMPONENT(animatedTexture, a, skyboxRenderEntity);
-			real playerHit = player.cinematic || statistics.monstersFirstHit == 0 ? 0 : clamp(real(statistics.updateIterationIgnorePause - statistics.monstersLastHit) / 5, 0, 1) * 1000000;
+			real playerHit = game.cinematic || statistics.monstersFirstHit == 0 ? 0 : clamp(real(statistics.updateIterationIgnorePause - statistics.monstersLastHit) / 5, 0, 1) * 1000000;
 			a.offset = playerHit;
 		}
 
-		if (player.gameOver)
+		if (game.gameOver)
 			return;
 
 		{ // camera
 			ENGINE_GET_COMPONENT(transform, tr, primaryCameraEntity);
-			ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+			ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
 			tr.position[0] = p.position[0];
 			tr.position[2] = p.position[2];
 		}
@@ -46,7 +46,7 @@ namespace
 			static configBool secondaryCamera("grid.secondary-camera.enabled", false);
 			if (secondaryCamera)
 			{
-				ENGINE_GET_COMPONENT(transform, tp, player.playerEntity);
+				ENGINE_GET_COMPONENT(transform, tp, game.playerEntity);
 				{
 					ENGINE_GET_COMPONENT(transform, ts, skyboxSecondaryCameraEntity);
 					ts.orientation = tp.orientation;

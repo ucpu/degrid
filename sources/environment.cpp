@@ -12,7 +12,7 @@ namespace
 {
 	void engineUpdate()
 	{
-		if (player.gameOver || player.paused)
+		if (game.gameOver || game.paused)
 			return;
 
 		{ // update grid markers

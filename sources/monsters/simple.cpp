@@ -26,11 +26,12 @@ namespace
 		GRID_GET_COMPONENT(velocity, v, e);
 		GRID_GET_COMPONENT(monster, m, e);
 		GRID_GET_COMPONENT(simpleMonster, s, e);
+		GRID_GET_COMPONENT(rotation, rot, e);
 		v.velocity = randomDirection3();
 		v.velocity[1] = 0;
 		m.dispersion = dispersion;
 		s.avoidance = avoidance;
-		s.animation = animation;
+		rot.rotation = animation;
 		s.maxSpeed = maxSpeed;
 		s.acceleration = s.maxSpeed / accelerationFraction;
 		return e;
@@ -38,7 +39,7 @@ namespace
 
 	void engineUpdate()
 	{
-		if (player.paused)
+		if (game.paused)
 			return;
 
 		for (entityClass *e : simpleMonsterComponent::component->getComponentEntities()->entities())
@@ -83,7 +84,7 @@ namespace
 					closestDistance = toMonster.length();
 				}
 
-				vec3 will = normalize(player.monstersTarget - tr.position);
+				vec3 will = normalize(game.monstersTarget - tr.position);
 
 				if (closestShot)
 				{
@@ -100,8 +101,6 @@ namespace
 				if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed)
 					mv.velocity = mv.velocity.normalize() * sm.maxSpeed;
 			}
-
-			tr.orientation = sm.animation * tr.orientation;
 		}
 	}
 
@@ -136,14 +135,14 @@ void spawnSimple(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &c
 		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 4, 1 + spawnSpecial(special), 0.4 + 0.1 * spawnSpecial(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
 		{
 			GRID_GET_COMPONENT(monster, m, e);
-			m.shotDownCallback.bind<&spawnSmallTriangle>();
+			m.defeatedCallback.bind<&spawnSmallTriangle>();
 		}
 		break;
 	case monsterTypeFlags::LargeCube:
 		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeCube.object"), hashString("grid/monster/bum-cube.ogg"), 4, 1 + spawnSpecial(special), 0.3 + 0.1 * spawnSpecial(special), 3, 1, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
 		{
 			GRID_GET_COMPONENT(monster, m, e);
-			m.shotDownCallback.bind<&spawnSmallCube>();
+			m.defeatedCallback.bind<&spawnSmallCube>();
 		}
 		break;
 	case monsterTypeFlags::PinWheel:

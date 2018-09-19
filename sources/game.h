@@ -54,40 +54,33 @@ extern groupClass *entitiesPhysicsEvenWhenPaused;
 extern holder<spatialDataClass> spatialData;
 extern holder<spatialQueryClass> spatialQuery;
 
-struct globalPlayerStruct
+struct globalGameStruct
 {
-	// entities
-	entityClass *playerEntity;
-	entityClass *shieldEntity;
-
-	// global
+	// game state
 	bool cinematic;
 	bool paused;
 	bool gameOver;
-	vec3 monstersTarget;
+
+	// entities
+	entityClass *playerEntity;
+	entityClass *shieldEntity;
 
 	// player
 	real life;
 	real shootingCooldown;
 	vec3 shotsColor;
 	uint32 score;
-	uint32 scorePrevious;
 	uint32 powerups[(uint32)powerupTypeEnum::Total];
 	real powerupSpawnChance;
-
-	// input (options independent)
-	vec3 arrowsDirection;
-	vec3 mouseCurrentPosition;
-	vec3 mouseLeftPosition;
-	vec3 mouseRightPosition;
+	vec3 monstersTarget;
 
 	// ship controls (options dependent)
 	vec3 moveDirection;
 	vec3 fireDirection;
 
-	globalPlayerStruct();
+	globalGameStruct();
 };
-extern globalPlayerStruct player;
+extern globalGameStruct game;
 
 struct globalStatisticsStruct
 {
@@ -140,18 +133,18 @@ struct globalStatisticsStruct
 };
 extern globalStatisticsStruct statistics;
 
-struct globalSoundsStruct
-{
-	real suspense;
-};
-extern globalSoundsStruct sounds;
-
-// general components
+// components
 
 struct velocityComponent
 {
 	static componentClass *component;
 	vec3 velocity;
+};
+
+struct rotationComponent
+{
+	static componentClass *component;
+	quat rotation;
 };
 
 struct timeoutComponent
@@ -161,16 +154,12 @@ struct timeoutComponent
 	timeoutComponent() : ttl(0) {}
 };
 
-// environment
-
 struct gridComponent
 {
 	static componentClass *component;
 	vec3 place;
 	vec3 originalColor;
 };
-
-// player components
 
 struct shotComponent
 {
@@ -183,87 +172,20 @@ struct shotComponent
 struct powerupComponent
 {
 	static componentClass *component;
-	quat animation;
 	powerupTypeEnum type;
 	powerupComponent() : type(powerupTypeEnum::Total) {}
 };
 
-struct turretComponent
-{
-	static componentClass *component;
-	uint32 shooting;
-	turretComponent() : shooting(0) {}
-};
-
-struct decoyComponent
-{
-	static componentClass *component;
-	quat rotation;
-};
-
-// monsters components
-
 struct monsterComponent
 {
 	static componentClass *component;
-	vec3 baseColorHsv;
 	real life;
 	real damage;
-	real flickeringSpeed;
-	real flickeringOffset;
 	real groundLevel;
 	real dispersion;
-	uint32 destroyedSound;
-	delegate<void(uint32)> shotDownCallback;
-	monsterComponent() : destroyedSound(0) {}
-};
-
-struct simpleMonsterComponent
-{
-	static componentClass *component;
-	quat animation;
-	real maxSpeed;
-	real acceleration;
-	real avoidance;
-};
-
-struct snakeTailComponent
-{
-	static componentClass *component;
-	uint32 follow;
-	snakeTailComponent() : follow(0) {}
-};
-
-struct snakeHeadComponent
-{
-	static componentClass *component;
-	real speedMin, speedMax;
-};
-
-struct shielderComponent
-{
-	static componentClass *component;
-	uint32 shieldEntity;
-	real movementSpeed;
-	uint32 chargingSteps;
-	uint32 turningSteps;
-	uint32 stepsLeft;
-	shielderComponent() : chargingSteps(0), turningSteps(0), stepsLeft(0) {}
-};
-
-struct shieldComponent
-{
-	static componentClass *component;
-	bool active;
-	shieldComponent() : active(false) {}
-};
-
-struct wormholeComponent
-{
-	static componentClass *component;
-	real maxSpeed;
-	real acceleration;
-	real maxLife;
+	uint32 defeatedSound;
+	delegate<void(uint32)> defeatedCallback;
+	monsterComponent() : defeatedSound(0) {}
 };
 
 #define GRID_GET_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);

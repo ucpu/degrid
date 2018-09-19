@@ -33,3 +33,58 @@ namespace cage
 {
 	GCHL_ENUM_BITS(monsterTypeFlags);
 }
+
+struct simpleMonsterComponent
+{
+	static componentClass *component;
+	real maxSpeed;
+	real acceleration;
+	real avoidance;
+};
+
+struct snakeTailComponent
+{
+	static componentClass *component;
+	uint32 follow;
+	snakeTailComponent() : follow(0) {}
+};
+
+struct snakeHeadComponent
+{
+	static componentClass *component;
+	real speedMin, speedMax;
+};
+
+struct shielderComponent
+{
+	static componentClass *component;
+	uint32 shieldEntity;
+	real movementSpeed;
+	uint32 chargingSteps;
+	uint32 turningSteps;
+	uint32 stepsLeft;
+	shielderComponent() : chargingSteps(0), turningSteps(0), stepsLeft(0) {}
+};
+
+struct shieldComponent
+{
+	static componentClass *component;
+	bool active;
+	shieldComponent() : active(false) {}
+};
+
+struct wormholeComponent
+{
+	static componentClass *component;
+	real maxSpeed;
+	real acceleration;
+	real maxLife;
+};
+
+struct monsterFlickeringComponent
+{
+	static componentClass *component;
+	vec3 baseColorHsv;
+	real flickeringFrequency;
+	real flickeringOffset;
+};

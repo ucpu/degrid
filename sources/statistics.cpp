@@ -31,15 +31,15 @@ namespace
 	void engineUpdate()
 	{
 		statistics.updateIterationIgnorePause++;
-		if (!player.paused)
+		if (!game.paused)
 			statistics.updateIterationWithPause++;
 
-		if (player.gameOver)
+		if (game.gameOver)
 			return;
 
 		statistics.shotsCurrent = shotComponent::component->getComponentEntities()->entitiesCount();
 		statistics.shotsMax = max(statistics.shotsMax, statistics.shotsCurrent);
-		statistics.monstersCurrent = monsterComponent::component->getComponentEntities()->entitiesCount() - snakeTailComponent::component->getComponentEntities()->entitiesCount();
+		statistics.monstersCurrent = monsterComponent::component->getComponentEntities()->entitiesCount();
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = entities()->getAllEntities()->entitiesCount();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
@@ -75,8 +75,8 @@ namespace
 			"Multishot"
 		};
 		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
-			if (player.powerups[i] > 0)
-				CAGE_LOG(severityEnum::Info, "statistics", string() + "powerup '" + powerupName[i] + "': " + player.powerups[i]);
+			if (game.powerups[i] > 0)
+				CAGE_LOG(severityEnum::Info, "statistics", string() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
 
 		CAGE_LOG(severityEnum::Info, "statistics", string() + "shots dissipation ratio: " + (1.f * statistics.shotsDissipated / (statistics.shotsFired + statistics.shotsTurret - statistics.shotsCurrent)));
 #define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(severityEnum::Info, "statistics", string() + CAGE_STRINGIZE(N) ": " + statistics.N);

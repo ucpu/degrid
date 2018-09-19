@@ -28,7 +28,7 @@ namespace
 		}
 #endif
 
-		player.cinematic = true;
+		game.cinematic = true;
 		gameStartEvent().dispatch();
 		setScreenScores();
 		return true;

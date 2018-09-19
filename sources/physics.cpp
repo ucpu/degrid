@@ -24,7 +24,7 @@ namespace
 		{ // velocity
 			for (entityClass *e : velocityComponent::component->getComponentEntities()->entities())
 			{
-				if (player.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+				if (game.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
 					continue;
 				ENGINE_GET_COMPONENT(transform, t, e);
 				GRID_GET_COMPONENT(velocity, v, e);
@@ -32,10 +32,21 @@ namespace
 			}
 		}
 
+		{ // rotation
+			for (entityClass *e : rotationComponent::component->getComponentEntities()->entities())
+			{
+				if (game.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+					continue;
+				ENGINE_GET_COMPONENT(transform, t, e);
+				GRID_GET_COMPONENT(rotation, r, e);
+				t.orientation = r.rotation * t.orientation;
+			}
+		}
+
 		{ // timeout
 			for (entityClass *e : timeoutComponent::component->getComponentEntities()->entities())
 			{
-				if (player.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+				if (game.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
 					continue;
 				GRID_GET_COMPONENT(timeout, t, e);
 				if (t.ttl == 0)

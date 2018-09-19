@@ -18,7 +18,7 @@ namespace
 			{ // charging
 				if (sh.stepsLeft)
 				{
-					vec3 t = normalize(player.monstersTarget - tr.position);
+					vec3 t = normalize(game.monstersTarget - tr.position);
 					tr.orientation = interpolate(tr.orientation, quat(t, vec3(0, 1, 0)), 0.02);
 					vec3 f = tr.orientation * vec3(0, 0, -1);
 					mv.velocity = f * sh.movementSpeed;
@@ -34,7 +34,7 @@ namespace
 				mv.velocity = vec3();
 				if (sh.stepsLeft)
 				{
-					vec3 t = normalize(player.monstersTarget - tr.position);
+					vec3 t = normalize(game.monstersTarget - tr.position);
 					tr.orientation = interpolate(tr.orientation, quat(t, vec3(0, 1, 0)), 0.95 / sh.stepsLeft);
 				}
 				else
@@ -111,7 +111,7 @@ namespace
 
 	void engineUpdate()
 	{
-		if (player.paused)
+		if (game.paused)
 			return;
 
 		updateShielders();

@@ -2,28 +2,45 @@
 
 #include <cage-core/color.h>
 
+componentClass *simpleMonsterComponent::component;
+componentClass *snakeHeadComponent::component;
+componentClass *snakeTailComponent::component;
+componentClass *shielderComponent::component;
+componentClass *shieldComponent::component;
+componentClass *wormholeComponent::component;
+componentClass *monsterFlickeringComponent::component;
+
 namespace
 {
+	void engineInit()
+	{
+		simpleMonsterComponent::component = entities()->defineComponent(simpleMonsterComponent(), true);
+		snakeTailComponent::component = entities()->defineComponent(snakeTailComponent(), true);
+		snakeHeadComponent::component = entities()->defineComponent(snakeHeadComponent(), true);
+		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
+		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
+		wormholeComponent::component = entities()->defineComponent(wormholeComponent(), true);
+		monsterFlickeringComponent::component = entities()->defineComponent(monsterFlickeringComponent(), true);
+	}
+
 	void engineUpdate()
 	{
 		{ // flickering
-			for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : monsterFlickeringComponent::component->getComponentEntities()->entities())
 			{
-				GRID_GET_COMPONENT(monster, m, e);
-				if (m.flickeringSpeed == 0)
-					continue;
 				ENGINE_GET_COMPONENT(render, r, e);
-				real l = (real)currentControlTime() * m.flickeringSpeed + m.flickeringOffset;
+				GRID_GET_COMPONENT(monsterFlickering, m, e);
+				real l = (real)currentControlTime() * m.flickeringFrequency + m.flickeringOffset;
 				real s = sin(rads::Full * l) * 0.5 + 0.5;
 				r.color = convertHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
 			}
 		}
 
-		if (player.paused)
+		if (game.paused)
 			return;
 
-		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
+		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 		for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
@@ -57,24 +74,24 @@ namespace
 			// collision with player
 			if (collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
 			{
-				if (player.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::PositiveInfinity)
+				if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::PositiveInfinity)
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
 					vec3 shieldDirection = (t.position - playerTransform.position).normalize();
 					vec3 shieldPosition = playerTransform.position + shieldDirection * (playerScale * 1.1);
 					environmentExplosion(shieldPosition, shieldDirection * 0.5, vec3(1, 1, 1), min(m.damage, 5) * 2 + 2, 3); // shield sparks
-					player.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
+					game.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
 				}
 				else
 				{
 					environmentExplosion(interpolate(t.position, playerTransform.position, 0.5), interpolate(playerVelocity.velocity, v.velocity, 0.5), playerDeathColor, min(m.damage, 5) * 2 + 2, 3); // hull sparks
 					statistics.monstersSucceded++;
-					player.life -= m.damage;
+					game.life -= m.damage;
 					if (statistics.monstersFirstHit == 0)
 						statistics.monstersFirstHit = statistics.updateIterationIgnorePause;
 					statistics.monstersLastHit = statistics.updateIterationIgnorePause;
-					if (player.life > 0 && !player.cinematic)
+					if (game.life > 0 && !game.cinematic)
 					{
 						uint32 sounds[] = {
 							hashString("grid/speech/lost/better-to-avoid-next-time.wav"),
@@ -95,8 +112,8 @@ namespace
 				}
 				monsterExplosion(e);
 				e->addGroup(entitiesToDestroy);
-				if (m.destroyedSound)
-					soundEffect(m.destroyedSound, t.position);
+				if (m.defeatedSound)
+					soundEffect(m.defeatedSound, t.position);
 			}
 
 			// monster vertical movement
@@ -107,10 +124,13 @@ namespace
 
 	class callbacksClass
 	{
+		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
+			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
 		}
@@ -119,11 +139,11 @@ namespace
 
 uint32 spawnSpecial(uint32 &special)
 {
-	if (player.cinematic)
+	if (game.cinematic)
 		return 0;
 	static const uint32 treshold = 33333;
-	uint32 mul = player.score / treshold;
-	real off = (real)player.score / (real)treshold - mul;
+	uint32 mul = game.score / treshold;
+	real off = (real)game.score / (real)treshold - mul;
 	real prob = pow(off, 3) * 0.5;
 	uint32 res = mul * (random() < prob ? 1 : 0);
 	if (res)
@@ -146,10 +166,9 @@ entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, rea
 	transform.scale = scale;
 	render.object = objectName;
 	render.color = colorVariation(color);
-	monster.baseColorHsv = convertRgbToHsv(render.color);
 	monster.damage = damage;
 	monster.life = life;
-	monster.destroyedSound = deadSound;
+	monster.defeatedSound = deadSound;
 	return m;
 }
 

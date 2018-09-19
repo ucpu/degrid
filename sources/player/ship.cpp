@@ -10,18 +10,20 @@ extern configUint32 confControlMovement;
 
 namespace
 {
+	uint32 scorePrevious;
+
 	void shipMovement()
 	{
-		if (player.cinematic)
+		if (game.cinematic)
 			return;
 
-		ENGINE_GET_COMPONENT(transform, tr, player.playerEntity);
-		GRID_GET_COMPONENT(velocity, vl, player.playerEntity);
+		ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
+		GRID_GET_COMPONENT(velocity, vl, game.playerEntity);
 
-		if (player.moveDirection != vec3())
+		if (game.moveDirection != vec3())
 		{
-			real maxSpeed = player.powerups[(uint32)powerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
-			vec3 change = player.moveDirection.normalize() * (player.powerups[(uint32)powerupTypeEnum::Acceleration] + 1) * 0.1;
+			real maxSpeed = game.powerups[(uint32)powerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
+			vec3 change = game.moveDirection.normalize() * (game.powerups[(uint32)powerupTypeEnum::Acceleration] + 1) * 0.1;
 			if (confControlMovement == 1 && ((tr.orientation * vec3(0, 0, -1)).dot(normalize(vl.velocity + change)) < 1e-5))
 				vl.velocity = vec3();
 			else
@@ -59,42 +61,42 @@ namespace
 
 		vl.velocity[1] = 0;
 		tr.position[1] = 0.5;
-		player.monstersTarget = tr.position + vl.velocity * 3;
+		game.monstersTarget = tr.position + vl.velocity * 3;
 		if (vl.velocity.squaredLength() > 1e-5)
 			tr.orientation = quat(degs(), aTan2(-vl.velocity[2], -vl.velocity[0]), degs());
 	}
 
 	void shipShield()
 	{
-		if (!player.playerEntity || !player.shieldEntity)
+		if (!game.playerEntity || !game.shieldEntity)
 			return;
-		ENGINE_GET_COMPONENT(transform, tr, player.playerEntity);
-		ENGINE_GET_COMPONENT(transform, trs, player.shieldEntity);
+		ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
+		ENGINE_GET_COMPONENT(transform, trs, game.shieldEntity);
 		trs.position = tr.position;
 		trs.scale = tr.scale;
-		if (player.powerups[(uint32)powerupTypeEnum::Shield] > 0)
+		if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0)
 		{
-			ENGINE_GET_COMPONENT(render, render, player.shieldEntity);
+			ENGINE_GET_COMPONENT(render, render, game.shieldEntity);
 			render.object = hashString("grid/player/shield.object");
-			ENGINE_GET_COMPONENT(voice, sound, player.shieldEntity);
+			ENGINE_GET_COMPONENT(voice, sound, game.shieldEntity);
 			sound.name = hashString("grid/player/shield.ogg");
 			sound.startTime = -1;
 		}
 		else
 		{
-			player.shieldEntity->removeComponent(renderComponent::component);
-			player.shieldEntity->removeComponent(voiceComponent::component);
+			game.shieldEntity->removeComponent(renderComponent::component);
+			game.shieldEntity->removeComponent(voiceComponent::component);
 		}
 	}
 
 	void scoreUpdate()
 	{
-		uint32 lg = player.scorePrevious >= 20000 ? 10 : player.scorePrevious >= 2000 ? 2 : 1;
+		uint32 lg = scorePrevious >= 20000 ? 10 : scorePrevious >= 2000 ? 2 : 1;
 		uint32 sg = lg * 500;
-		uint32 ld = (player.score - player.scorePrevious) / sg;
+		uint32 ld = (game.score - scorePrevious) / sg;
 		if (ld)
 		{
-			player.scorePrevious += ld * sg;
+			scorePrevious += ld * sg;
 
 			uint32 sounds[] = {
 				hashString("grid/speech/gain/doing-fine.wav"),
@@ -110,11 +112,11 @@ namespace
 
 	bool engineUpdate()
 	{
-		if (!player.paused)
+		if (!game.paused)
 		{
 			shipMovement();
 			scoreUpdate();
-			if (!player.cinematic && player.life <= 1e-7)
+			if (!game.cinematic && game.life <= 1e-7)
 			{
 				gameStopEvent().dispatch();
 				return true;
@@ -126,33 +128,35 @@ namespace
 
 	void gameStart()
 	{
+		scorePrevious = 0;
+
 		{ // player ship entity
-			player.playerEntity = entities()->newUniqueEntity();
-			ENGINE_GET_COMPONENT(transform, transform, player.playerEntity);
+			game.playerEntity = entities()->newUniqueEntity();
+			ENGINE_GET_COMPONENT(transform, transform, game.playerEntity);
 			transform.scale = playerScale;
-			ENGINE_GET_COMPONENT(render, render, player.playerEntity);
+			ENGINE_GET_COMPONENT(render, render, game.playerEntity);
 			render.object = hashString("grid/player/player.object");
-			player.monstersTarget = vec3();
+			game.monstersTarget = vec3();
 		}
 
 		{ // player shield entity
-			player.shieldEntity = entities()->newUniqueEntity();
-			ENGINE_GET_COMPONENT(transform, transform, player.shieldEntity);
+			game.shieldEntity = entities()->newUniqueEntity();
+			ENGINE_GET_COMPONENT(transform, transform, game.shieldEntity);
 			(void)transform;
-			ENGINE_GET_COMPONENT(animatedTexture, aniTex, player.shieldEntity);
+			ENGINE_GET_COMPONENT(animatedTexture, aniTex, game.shieldEntity);
 			aniTex.speed = 0.05;
 		}
 	}
 
 	void gameStop()
 	{
-		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
+		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, 20, playerScale);
 		for (uint32 i = 0; i < 10; i++)
 			environmentExplosion(playerTransform.position, randomDirection3() * vec3(1, 0.1, 1), playerDeathColor, 5, playerScale);
-		player.playerEntity->addGroup(entitiesToDestroy);
-		player.playerEntity = nullptr;
+		game.playerEntity->addGroup(entitiesToDestroy);
+		game.playerEntity = nullptr;
 	}
 
 	class callbacksClass

@@ -7,12 +7,26 @@
 
 namespace
 {
+	struct turretComponent
+	{
+		static componentClass *component;
+		uint32 shooting;
+		turretComponent() : shooting(0) {}
+	};
+
+	struct decoyComponent
+	{
+		static componentClass *component;
+	};
+
+	componentClass *turretComponent::component;
+	componentClass *decoyComponent::component;
+
 	void turretsUpdate()
 	{
 		for (entityClass *e : turretComponent::component->getComponentEntities()->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			tr.orientation = quat(degs(), degs(1), degs()) * tr.orientation;
 			GRID_GET_COMPONENT(turret, tu, e);
 			if (tu.shooting > 0)
 			{
@@ -29,7 +43,7 @@ namespace
 				transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
 				ENGINE_GET_COMPONENT(render, render, shot);
 				render.object = hashString("grid/player/shot.object");
-				render.color = player.shotsColor;
+				render.color = game.shotsColor;
 				GRID_GET_COMPONENT(velocity, vel, shot);
 				vel.velocity = transform.orientation * vec3(0, 0, -1) * 2.5;
 				GRID_GET_COMPONENT(shot, sh, shot);
@@ -45,32 +59,29 @@ namespace
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(velocity, vel, e);
-			GRID_GET_COMPONENT(decoy, dec, e);
-			tr.orientation = dec.rotation * tr.orientation;
 			tr.position[1] = 0;
 			vel.velocity *= 0.97;
-			player.monstersTarget = tr.position;
+			game.monstersTarget = tr.position;
 		}
 	}
 
 	void wastedPowerup()
 	{
 		statistics.powerupsWasted++;
-		player.score += 100;
+		game.score += 100;
 		soundSpeech(hashString("grid/speech/pickup/wasted.wav"));
 	}
 
 	void powerupsUpdate()
 	{
-		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
+		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 		for (entityClass *e : powerupComponent::component->getComponentEntities()->entities())
 		{
 			GRID_GET_COMPONENT(powerup, p, e);
 			CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);
 
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			tr.orientation = p.animation * tr.orientation;
 			if (!collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))
 			{
 				vec3 toPlayer = playerTransform.position - tr.position;
@@ -84,9 +95,9 @@ namespace
 			switch (powerupMode[(uint32)p.type])
 			{
 			case 0: // collectible
-				if (player.powerups[(uint32)p.type] < 3)
+				if (game.powerups[(uint32)p.type] < 3)
 				{
-					player.powerups[(uint32)p.type]++;
+					game.powerups[(uint32)p.type]++;
 					switch (p.type)
 					{
 					case powerupTypeEnum::Bomb: soundSpeech(hashString("grid/speech/pickup/a-bomb.wav")); break;
@@ -100,7 +111,7 @@ namespace
 				break;
 			case 1: // timed
 			{
-				player.powerups[(uint32)p.type] += 30 * 30;
+				game.powerups[(uint32)p.type] += 30 * 30;
 				switch (p.type)
 				{
 				case powerupTypeEnum::Shield: soundSpeech(hashString("grid/speech/pickup/shield-engaged.wav")); break;
@@ -113,10 +124,10 @@ namespace
 			{
 				uint32 sum = 0;
 				for (uint32 i = (uint32)powerupTypeEnum::MaxSpeed; i < (uint32)powerupTypeEnum::Total; i++)
-					sum += player.powerups[i];
+					sum += game.powerups[i];
 				if (sum < 5)
 				{
-					player.powerups[(uint32)p.type]++;
+					game.powerups[(uint32)p.type]++;
 					switch (p.type)
 					{
 					case powerupTypeEnum::Acceleration: soundSpeech(hashString("grid/speech/pickup/acceleration-improved.wav")); break;
@@ -137,16 +148,22 @@ namespace
 		}
 	}
 
+	void engineInit()
+	{
+		turretComponent::component = entities()->defineComponent(turretComponent(), true);
+		decoyComponent::component = entities()->defineComponent(decoyComponent(), true);
+	}
+
 	void engineUpdate()
 	{
-		if (player.paused)
+		if (game.paused)
 			return;
 
 		{ // decrease timed power ups
 			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			{
-				if (powerupMode[i] == 1 && player.powerups[i] > 0)
-					player.powerups[i]--;
+				if (powerupMode[i] == 1 && game.powerups[i] > 0)
+					game.powerups[i]--;
 			}
 		}
 
@@ -157,10 +174,13 @@ namespace
 
 	class callbacksClass
 	{
+		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
+			engineInitListener.attach(controlThread().initialize, -15);
+			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update, -15);
 			engineUpdateListener.bind<&engineUpdate>();
 		}
@@ -178,8 +198,9 @@ void powerupSpawn(const vec3 &position)
 	GRID_GET_COMPONENT(timeout, ttl, e);
 	ttl.ttl = 120 * 30;
 	GRID_GET_COMPONENT(powerup, p, e);
-	p.animation = quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100);
 	p.type = (powerupTypeEnum)random(0u, (uint32)powerupTypeEnum::Total);
+	GRID_GET_COMPONENT(rotation, rot, e);
+	rot.rotation = quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100);
 	ENGINE_GET_COMPONENT(render, render, e);
 	static const uint32 objectName[3] = {
 		hashString("grid/player/powerupCollectible.object"),
@@ -193,9 +214,9 @@ void powerupSpawn(const vec3 &position)
 
 void eventBomb()
 {
-	if (player.powerups[(uint32)powerupTypeEnum::Bomb] == 0)
+	if (game.powerups[(uint32)powerupTypeEnum::Bomb] == 0)
 		return;
-	player.powerups[(uint32)powerupTypeEnum::Bomb]--;
+	game.powerups[(uint32)powerupTypeEnum::Bomb]--;
 	uint32 kills = 0;
 	uint32 count = monsterComponent::component->getComponentEntities()->entitiesCount();
 	for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
@@ -207,7 +228,7 @@ void eventBomb()
 			kills++;
 			e->addGroup(entitiesToDestroy);
 			monsterExplosion(e);
-			player.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
+			game.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
 		}
 	}
 	statistics.bombsHitTotal += count;
@@ -218,7 +239,7 @@ void eventBomb()
 	{
 		vec3 playerPosition;
 		{
-			ENGINE_GET_COMPONENT(transform, p, player.playerEntity);
+			ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
 			playerPosition = p.position;
 		}
 		for (entityClass *e : gridComponent::component->getComponentEntities()->entities())
@@ -239,12 +260,12 @@ void eventBomb()
 
 void eventTurret()
 {
-	if (player.powerups[(uint32)powerupTypeEnum::Turret] == 0)
+	if (game.powerups[(uint32)powerupTypeEnum::Turret] == 0)
 		return;
-	player.powerups[(uint32)powerupTypeEnum::Turret]--;
+	game.powerups[(uint32)powerupTypeEnum::Turret]--;
 	statistics.turretsPlaced++;
 	entityClass *turret = entities()->newUniqueEntity();
-	ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 	ENGINE_GET_COMPONENT(transform, transform, turret);
 	transform.position = playerTransform.position;
 	transform.position[1] = 0;
@@ -256,6 +277,8 @@ void eventTurret()
 	tr.shooting = 2;
 	GRID_GET_COMPONENT(timeout, ttl, turret);
 	ttl.ttl = 60 * 30;
+	GRID_GET_COMPONENT(rotation, rot, turret);
+	rot.rotation = quat(degs(), degs(1), degs());
 
 	uint32 sounds[] = {
 		hashString("grid/speech/use/engaging-a-turret.wav"),
@@ -266,24 +289,25 @@ void eventTurret()
 
 void eventDecoy()
 {
-	if (player.powerups[(uint32)powerupTypeEnum::Decoy] == 0)
+	if (game.powerups[(uint32)powerupTypeEnum::Decoy] == 0)
 		return;
-	player.powerups[(uint32)powerupTypeEnum::Decoy]--;
+	game.powerups[(uint32)powerupTypeEnum::Decoy]--;
 	statistics.decoysUsed++;
 	entityClass *decoy = entities()->newUniqueEntity();
-	ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 	ENGINE_GET_COMPONENT(transform, transform, decoy);
 	transform = playerTransform;
 	transform.scale *= 2;
 	ENGINE_GET_COMPONENT(render, render, decoy);
 	render.object = hashString("grid/player/player.object");
-	GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+	GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 	GRID_GET_COMPONENT(velocity, vel, decoy);
 	vel.velocity = -playerVelocity.velocity;
 	GRID_GET_COMPONENT(timeout, ttl, decoy);
 	ttl.ttl = 60 * 30;
 	GRID_GET_COMPONENT(decoy, dec, decoy);
-	dec.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
+	GRID_GET_COMPONENT(rotation, rot, decoy);
+	rot.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
 	uint32 sounds[] = {
 		hashString("grid/speech/use/decoy-launched.wav"),

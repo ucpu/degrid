@@ -1,5 +1,7 @@
 #include "monsters.h"
 
+#include <cage-core/color.h>
+
 namespace
 {
 	struct wormholeUpdateStruct
@@ -47,7 +49,7 @@ namespace
 						}
 						rads angle = randomAngle();
 						vec3 dir = vec3(cos(angle), 0, sin(angle));
-						ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+						ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 						tre.position = playerTransform.position + dir * random(200, 250);
 						transformComponent &treh = e->value<transformComponent>(transformComponent::componentHistory);
 						treh.position = tre.position;
@@ -57,21 +59,28 @@ namespace
 							if (moe.damage < 100)
 							{
 								moe.damage *= 2;
-								moe.flickeringSpeed += 1e-6;
-								moe.flickeringOffset += random();
+								bool hadFlickering = e->hasComponent(monsterFlickeringComponent::component);
+								GRID_GET_COMPONENT(monsterFlickering, mof, e);
+								if (!hadFlickering)
+								{
+									ENGINE_GET_COMPONENT(render, render, e);
+									mof.baseColorHsv = convertRgbToHsv(render.color);
+								}
+								mof.flickeringFrequency += 1e-6;
+								mof.flickeringOffset += random();
 							}
 						}
 					}
 					continue;
 				}
 
-				if (e->hasComponent(shotComponent::component) || e == player.playerEntity)
+				if (e->hasComponent(shotComponent::component) || e == game.playerEntity)
 				{ // player and shots are pulled, but are not destroyed by the blackhole
 					pull(e);
 					continue;
 				}
 
-				if (e->hasComponent(turretComponent::component) || e->hasComponent(decoyComponent::component) || e->hasComponent(powerupComponent::component))
+				if (e->hasComponent(powerupComponent::component))
 				{ // powerups are pulled and eventually destroyed
 					pull(e);
 					if (distance(e) < 1)
@@ -81,7 +90,7 @@ namespace
 			}
 
 			tr.scale += 0.001;
-			vl.velocity += normalize(player.monstersTarget - tr.position) * wh.acceleration;
+			vl.velocity += normalize(game.monstersTarget - tr.position) * wh.acceleration;
 			vl.velocity = vl.velocity.normalize() * min(vl.velocity.length(), wh.maxSpeed);
 			ENGINE_GET_COMPONENT(animatedTexture, at, e);
 			at.speed = 0;
@@ -107,7 +116,7 @@ namespace
 
 	void engineUpdate()
 	{
-		if (player.paused)
+		if (game.paused)
 			return;
 		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
 			wormholeUpdateStruct u(e);

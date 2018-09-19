@@ -23,37 +23,38 @@ namespace
 {
 	void shipFiring()
 	{
-		if (player.shootingCooldown > 0)
+		if (game.shootingCooldown > 0)
 		{
-			player.shootingCooldown = max(-1, player.shootingCooldown - 1);
+			game.shootingCooldown = max(-1, game.shootingCooldown - 1);
 			return;
 		}
-		if (player.fireDirection == vec3())
+		if (game.fireDirection == vec3())
 			return;
 
-		player.shootingCooldown += real(4) * real(1.3).pow(player.powerups[(uint32)powerupTypeEnum::Multishot]) * real(0.7).pow(player.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
+		game.shootingCooldown += real(4) * real(1.3).pow(game.powerups[(uint32)powerupTypeEnum::Multishot]) * real(0.7).pow(game.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
 
-		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, player.playerEntity);
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
+		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 
-		for (real i = player.powerups[(uint32)powerupTypeEnum::Multishot] * -0.5; i < player.powerups[(uint32)powerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
+		for (real i = game.powerups[(uint32)powerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)powerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 		{
 			statistics.shotsFired++;
 			entityClass *shot = entities()->newUniqueEntity();
 			ENGINE_GET_COMPONENT(transform, transform, shot);
-			rads dir = aTan2(-player.fireDirection[2], -player.fireDirection[0]);
+			rads dir = aTan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += degs(i * 10);
 			transform.orientation = quat(degs(), dir, degs());
-			if (player.powerups[(uint32)powerupTypeEnum::SuperDamage] > 0)
-				transform.scale *= 1.2;
 			ENGINE_GET_COMPONENT(render, render, shot);
 			render.object = hashString("grid/player/shot.object");
-			render.color = player.shotsColor;
+			if (game.powerups[(uint32)powerupTypeEnum::SuperDamage] > 0)
+				render.color = convertHsvToRgb(vec3(random(), 1, 1));
+			else
+				render.color = game.shotsColor;
 			GRID_GET_COMPONENT(velocity, vel, shot);
-			vel.velocity = vec3(-sin(dir), 0, -cos(dir)) * (player.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
+			vel.velocity = vec3(-sin(dir), 0, -cos(dir)) * (game.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
 			GRID_GET_COMPONENT(shot, sh, shot);
-			sh.damage = player.powerups[(uint32)powerupTypeEnum::ShotsDamage] + (player.powerups[(uint32)powerupTypeEnum::SuperDamage] ? 4 : 1);
-			sh.homing = player.powerups[(uint32)powerupTypeEnum::HomingShots] > 0;
+			sh.damage = game.powerups[(uint32)powerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)powerupTypeEnum::SuperDamage] ? 4 : 1);
+			sh.homing = game.powerups[(uint32)powerupTypeEnum::HomingShots] > 0;
 			transform.position = playerTransform.position + vel.velocity.normalize() * playerTransform.scale;
 		}
 	}
@@ -63,7 +64,7 @@ namespace
 		for (entityClass *e : shotComponent::component->getComponentEntities()->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+			ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 			if (tr.position.squaredDistance(playerTransform.position) > 500 * 500)
 			{
 				e->addGroup(entitiesToDestroy); // destroy itself
@@ -130,24 +131,24 @@ namespace
 					ENGINE_GET_COMPONENT(transform, mtr, m);
 					m->addGroup(entitiesToDestroy); // destroy the monster
 					monsterExplosion(m);
-					if (om.destroyedSound)
-						soundEffect(om.destroyedSound, mtr.position);
-					if (om.shotDownCallback)
+					if (om.defeatedSound)
+						soundEffect(om.defeatedSound, mtr.position);
+					if (om.defeatedCallback)
 					{
-						om.shotDownCallback(closestMonster);
-						om.shotDownCallback.clear();
+						om.defeatedCallback(closestMonster);
+						om.defeatedCallback.clear();
 					}
 					else
 					{
 						real r = cage::random();
-						if (r < player.powerupSpawnChance)
+						if (r < game.powerupSpawnChance)
 						{
-							player.powerupSpawnChance -= 1;
+							game.powerupSpawnChance -= 1;
 							powerupSpawn(mtr.position);
 						}
-						player.powerupSpawnChance += interpolate(1.0 / 50, 1.0 / 400, clamp((statistics.powerupsSpawned + 5) / 30.f, 0.f, 1.f));
+						game.powerupSpawnChance += interpolate(1.0 / 50, 1.0 / 400, clamp((statistics.powerupsSpawned + 5) / 30.f, 0.f, 1.f));
 					}
-					player.score += numeric_cast<uint32>(clamp(om.damage, 1, 200));
+					game.score += numeric_cast<uint32>(clamp(om.damage, 1, 200));
 				}
 				if (sh.damage <= 1e-5)
 				{
@@ -183,7 +184,7 @@ namespace
 
 	void engineUpdate()
 	{
-		if (!player.paused)
+		if (!game.paused)
 		{
 			shipFiring();
 			shotsUpdate();
@@ -192,7 +193,7 @@ namespace
 
 	void gameStart()
 	{
-		player.shotsColor = player.cinematic ? convertHsvToRgb(vec3(cage::random(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
+		game.shotsColor = game.cinematic ? convertHsvToRgb(vec3(cage::random(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
 	}
 
 	class callbacksClass

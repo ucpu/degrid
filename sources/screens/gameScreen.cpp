@@ -16,13 +16,13 @@ namespace
 		switch (en)
 		{
 		case 500:
-			player.life = 0;
-			player.paused = false;
+			game.life = 0;
+			game.paused = false;
 			return true;
 		}
 		if (en <= (uint32)powerupTypeEnum::Total)
 		{
-			player.powerups[en - 1]--;
+			game.powerups[en - 1]--;
 			makeTheGui();
 			return true;
 		}
@@ -140,11 +140,11 @@ namespace
 			case 0: // collectibles
 				continue;
 			case 1: // timed
-				if (player.paused)
+				if (game.paused)
 					continue;
 				break;
 			case 2: // permanent
-				if (!player.paused || player.powerups[i] == 0)
+				if (!game.paused || game.powerups[i] == 0)
 					continue;
 				break;
 			}
@@ -154,7 +154,7 @@ namespace
 				GUI_GET_COMPONENT(parent, parent, label);
 				parent.parent = column->getName();
 				parent.order = -(sint32)i;
-				if (player.paused)
+				if (game.paused)
 				{
 					GUI_GET_COMPONENT(button, control, label);
 				}
@@ -169,7 +169,7 @@ namespace
 			}
 		}
 
-		if (!player.paused)
+		if (!game.paused)
 			return;
 
 		{ // end game button
@@ -213,15 +213,15 @@ namespace
 
 	void engineUpdate()
 	{
-		if (player.gameOver || player.cinematic)
+		if (game.gameOver || game.cinematic)
 			return;
 
 		if (!assets()->ready(hashString("grid/languages/internationalized.textpack")))
 			return;
 
-		if (player.paused != previousPaused)
+		if (game.paused != previousPaused)
 		{
-			previousPaused = player.paused;
+			previousPaused = game.paused;
 			makeTheGui();
 		}
 
@@ -229,12 +229,12 @@ namespace
 
 		{ // life
 			GUI_GET_COMPONENT(text, txt, gui()->entities()->getEntity(100));
-			txt.value = texts->get(hashString("gui/game/life")) + "\n" + numeric_cast<uint32>(max(0, player.life));
+			txt.value = texts->get(hashString("gui/game/life")) + "\n" + numeric_cast<uint32>(max(0, game.life));
 		}
 
 		{ // score
 			GUI_GET_COMPONENT(text, txt, gui()->entities()->getEntity(101));
-			txt.value = texts->get(hashString("gui/game/score")) + "\n" + player.score;
+			txt.value = texts->get(hashString("gui/game/score")) + "\n" + game.score;
 		}
 
 		static const uint32 textNames[(uint32)powerupTypeEnum::Total] = {
@@ -257,7 +257,7 @@ namespace
 			if (!gui()->entities()->hasEntity(i + 1))
 				continue;
 			GUI_GET_COMPONENT(text, txt, gui()->entities()->getEntity(i + 1));
-			if (player.powerups[i] == 0)
+			if (game.powerups[i] == 0)
 			{
 				txt.value = "";
 				continue;
@@ -265,13 +265,13 @@ namespace
 			switch (powerupMode[i])
 			{
 			case 0: // collectibles
-				txt.value = texts->get(textNames[i]) + "\n" + player.powerups[i];
+				txt.value = texts->get(textNames[i]) + "\n" + game.powerups[i];
 				break;
 			case 1: // timed
-				txt.value = texts->get(textNames[i]) + " " + (player.powerups[i] / 30);
+				txt.value = texts->get(textNames[i]) + " " + (game.powerups[i] / 30);
 				break;
 			case 2: // permanent
-				txt.value = texts->get(textNames[i]) + " " + player.powerups[i];
+				txt.value = texts->get(textNames[i]) + " " + game.powerups[i];
 				break;
 			}
 		}
@@ -292,7 +292,7 @@ namespace
 void setScreenGame()
 {
 	previousPaused = true;
-	player.cinematic = false;
+	game.cinematic = false;
 	gameStartEvent().dispatch();
 
 	gui()->skipAllEventsUntilNextUpdate();

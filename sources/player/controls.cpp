@@ -16,9 +16,9 @@ void eventDecoy();
 
 entityClass *getPrimaryCameraEntity();
 
-globalPlayerStruct player;
+globalGameStruct game;
 
-globalPlayerStruct::globalPlayerStruct()
+globalGameStruct::globalGameStruct()
 {
 	detail::memset(this, 0, sizeof(*this));
 	cinematic = true;
@@ -29,6 +29,12 @@ namespace
 	bool keyMap[512];
 	mouseButtonsFlags buttonMap;
 	windowEventListeners windowListeners;
+
+	// input (options independent)
+	vec3 arrowsDirection;
+	vec3 mouseCurrentPosition;
+	vec3 mouseLeftPosition;
+	vec3 mouseRightPosition;
 
 	void setMousePosition()
 	{
@@ -49,7 +55,7 @@ namespace
 		vec4 pf = inv * vec4(px, py, 1, 1);
 		vec3 near = vec3(pn) / pn[3];
 		vec3 far = vec3(pf) / pf[3];
-		player.mouseCurrentPosition = (near + far) * 0.5;
+		mouseCurrentPosition = (near + far) * 0.5;
 	}
 
 	void eventAction(uint32 option)
@@ -71,7 +77,7 @@ namespace
 
 	bool mousePress(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
 	{
-		if (player.paused)
+		if (game.paused)
 			return false;
 
 		statistics.buttonPressed++;
@@ -84,7 +90,7 @@ namespace
 	{
 		buttonMap &= ~buttons;
 
-		if (player.paused)
+		if (game.paused)
 			return false;
 
 		if ((buttons & mouseButtonsFlags::Left) == mouseButtonsFlags::Left)
@@ -99,7 +105,7 @@ namespace
 
 	bool keyPress(uint32 key, uint32, modifiersFlags modifiers)
 	{
-		if (player.paused)
+		if (game.paused)
 			return false;
 
 		statistics.keyPressed++;
@@ -112,12 +118,12 @@ namespace
 	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
 	{
 		if (key == 256) // esc
-			player.paused = !player.paused;
+			game.paused = !game.paused;
 
 		if (key < sizeof(keyMap))
 			keyMap[key] = false;
 
-		if (player.paused)
+		if (game.paused)
 			return false;
 
 		switch (key)
@@ -145,99 +151,99 @@ namespace
 		CAGE_LOG(severityEnum::Info, "grid", string() + "TESTING GAME BUILD");
 #endif // GRID_TESTING
 
-		player.cinematic = true;
+		game.cinematic = true;
 		gameStartEvent().dispatch();
 	}
 
 	void engineUpdate()
 	{
-		if (player.paused)
+		if (game.paused)
 			return;
 
-		player.arrowsDirection = vec3();
-		player.moveDirection = vec3();
-		player.fireDirection = vec3();
+		arrowsDirection = vec3();
+		game.moveDirection = vec3();
+		game.fireDirection = vec3();
 
-		if (player.cinematic)
+		if (game.cinematic)
 		{
-			player.fireDirection = randomDirection3();
-			player.fireDirection[1] = 0;
+			game.fireDirection = randomDirection3();
+			game.fireDirection[1] = 0;
 			return;
 		}
 
 		{
 			setMousePosition();
 			if ((buttonMap & mouseButtonsFlags::Left) == mouseButtonsFlags::Left)
-				player.mouseLeftPosition = player.mouseCurrentPosition;
+				mouseLeftPosition = mouseCurrentPosition;
 			if ((buttonMap & mouseButtonsFlags::Right) == mouseButtonsFlags::Right)
-				player.mouseRightPosition = player.mouseCurrentPosition;
+				mouseRightPosition = mouseCurrentPosition;
 		}
 
 		{
 			if (keyMap[87] || keyMap[265]) // w, up
-				player.arrowsDirection += vec3(0, 0, -1);
+				arrowsDirection += vec3(0, 0, -1);
 			if (keyMap[83] || keyMap[264]) // s, down
-				player.arrowsDirection += vec3(0, 0, 1);
+				arrowsDirection += vec3(0, 0, 1);
 			if (keyMap[65] || keyMap[263]) // a, left
-				player.arrowsDirection += vec3(-1, 0, 0);
+				arrowsDirection += vec3(-1, 0, 0);
 			if (keyMap[68] || keyMap[262]) // d, right
-				player.arrowsDirection += vec3(1, 0, 0);
+				arrowsDirection += vec3(1, 0, 0);
 		}
 
-		ENGINE_GET_COMPONENT(transform, playerTransform, player.playerEntity);
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 
 		switch (confControlMovement)
 		{
 		case 0: // arrows (absolute)
-			player.moveDirection = player.arrowsDirection;
+			game.moveDirection = arrowsDirection;
 			break;
 		case 1: // arrows (relative)
 		{
-			ENGINE_GET_COMPONENT(transform, tr, player.playerEntity);
-			player.moveDirection = tr.orientation * player.arrowsDirection;
+			ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
+			game.moveDirection = tr.orientation * arrowsDirection;
 		} break;
 		case 2: // lmb
-			player.moveDirection = player.mouseLeftPosition - playerTransform.position;
-			if (player.moveDirection.squaredLength() < 100)
-				player.moveDirection = vec3();
+			game.moveDirection = mouseLeftPosition - playerTransform.position;
+			if (game.moveDirection.squaredLength() < 100)
+				game.moveDirection = vec3();
 			break;
 		case 3: // rmb
-			player.moveDirection = player.mouseRightPosition - playerTransform.position;
-			if (player.moveDirection.squaredLength() < 100)
-				player.moveDirection = vec3();
+			game.moveDirection = mouseRightPosition - playerTransform.position;
+			if (game.moveDirection.squaredLength() < 100)
+				game.moveDirection = vec3();
 			break;
 		case 4: // cursor position
-			player.moveDirection = player.mouseCurrentPosition - playerTransform.position;
-			if (player.moveDirection.squaredLength() < 100)
-				player.moveDirection = vec3();
+			game.moveDirection = mouseCurrentPosition - playerTransform.position;
+			if (game.moveDirection.squaredLength() < 100)
+				game.moveDirection = vec3();
 			break;
 		}
 
 		switch (confControlFiring)
 		{
 		case 0: // arrows (absolute)
-			player.fireDirection = player.arrowsDirection;
+			game.fireDirection = arrowsDirection;
 			break;
 		case 1: // arrows (relative)
 		{
-			ENGINE_GET_COMPONENT(transform, tr, player.playerEntity);
-			player.fireDirection = tr.orientation * player.arrowsDirection;
+			ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
+			game.fireDirection = tr.orientation * arrowsDirection;
 		} break;
 		case 2: // lmb
-			player.fireDirection = player.mouseLeftPosition - playerTransform.position;
+			game.fireDirection = mouseLeftPosition - playerTransform.position;
 			break;
 		case 3: // rmb
-			player.fireDirection = player.mouseRightPosition - playerTransform.position;
+			game.fireDirection = mouseRightPosition - playerTransform.position;
 			break;
 		case 4: // cursor position
-			player.fireDirection = player.mouseCurrentPosition - playerTransform.position;
+			game.fireDirection = mouseCurrentPosition - playerTransform.position;
 			break;
 		}
 	}
 
 	void gameStart()
 	{
-		CAGE_LOG(severityEnum::Info, "grid", string() + "new game, cinematic: " + player.cinematic);
+		CAGE_LOG(severityEnum::Info, "grid", string() + "new game, cinematic: " + game.cinematic);
 
 		for (uint32 i = 0; i < sizeof(keyMap); i++)
 			keyMap[i] = false;
@@ -245,23 +251,23 @@ namespace
 
 		entities()->getAllEntities()->destroyAllEntities();
 		{
-			bool cinematic = player.cinematic;
-			player = globalPlayerStruct();
-			player.cinematic = cinematic;
+			bool cinematic = game.cinematic;
+			game = globalGameStruct();
+			game.cinematic = cinematic;
 		}
-		player.life = 100;
-		player.powerupSpawnChance = 0.3;
+		game.life = 100;
+		game.powerupSpawnChance = 0.3;
 
 #ifdef GRID_TESTING
-		if (!player.cinematic)
+		if (!game.cinematic)
 		{
-			player.life = 1000000;
+			game.life = 1000000;
 			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			{
 				switch (powerupMode[i])
 				{
-				case 0: player.powerups[i] = 10; break;
-				case 2: player.powerups[i] = 2; break;
+				case 0: game.powerups[i] = 10; break;
+				case 2: game.powerups[i] = 2; break;
 				}
 			}
 		}
@@ -270,9 +276,9 @@ namespace
 
 	void gameStop()
 	{
-		CAGE_LOG(severityEnum::Info, "grid", string() + "game over, score: " + player.score);
-		player.paused = player.gameOver = true;
-		setScreenGameover(player.score);
+		CAGE_LOG(severityEnum::Info, "grid", string() + "game over, score: " + game.score);
+		game.paused = game.gameOver = true;
+		setScreenGameover(game.score);
 	}
 
 	class callbacksClass
