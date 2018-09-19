@@ -2,11 +2,11 @@
 
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
-#include <cage-core/utility/spatial.h>
-#include <cage-core/utility/hashString.h>
+#include <cage-core/spatial.h>
+#include <cage-core/hashString.h>
 
 #include <cage-client/window.h>
-#include <cage-client/utility/engineProfiling.h>
+#include <cage-client/engineProfiling.h>
 
 globalStatisticsStruct statistics;
 

@@ -6,8 +6,8 @@
 #include <cage-core/config.h>
 #include <cage-core/assets.h>
 
-#include <cage-client/utility/engineProfiling.h>
-#include <cage-client/utility/highPerformanceGpuHint.h>
+#include <cage-client/engineProfiling.h>
+#include <cage-client/highPerformanceGpuHint.h>
 
 configUint32 confLanguage("grid.language.language", 0);
 

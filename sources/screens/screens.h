@@ -1,7 +1,7 @@
 #include <cage-core/core.h>
 #include <cage-core/math.h>
 #include <cage-core/entities.h>
-#include <cage-core/utility/hashString.h>
+#include <cage-core/hashString.h>
 
 #include <cage-client/core.h>
 #include <cage-client/engine.h>

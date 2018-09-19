@@ -2,7 +2,7 @@
 #include "../game.h"
 
 #include <cage-core/filesystem.h>
-#include <cage-core/utility/timer.h> // getSystemDateTime
+#include <cage-core/timer.h> // getSystemDateTime
 
 namespace
 {

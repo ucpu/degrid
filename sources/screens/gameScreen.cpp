@@ -3,7 +3,7 @@
 
 #include <cage-core/entities.h>
 #include <cage-core/assets.h>
-#include <cage-core/utility/textPack.h>
+#include <cage-core/textPack.h>
 
 namespace
 {

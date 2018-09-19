@@ -1,6 +1,6 @@
 #include "monsters.h"
 
-#include <cage-core/utility/color.h>
+#include <cage-core/color.h>
 
 namespace
 {

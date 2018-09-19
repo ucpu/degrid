@@ -4,9 +4,9 @@
 #include <cage-core/entities.h>
 #include <cage-core/assets.h>
 #include <cage-core/config.h>
-#include <cage-core/utility/spatial.h>
-#include <cage-core/utility/hashString.h>
-#include <cage-core/utility/color.h>
+#include <cage-core/spatial.h>
+#include <cage-core/hashString.h>
+#include <cage-core/color.h>
 
 namespace
 {
