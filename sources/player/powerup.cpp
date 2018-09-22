@@ -48,7 +48,8 @@ namespace
 				vel.velocity = transform.orientation * vec3(0, 0, -1) * 2.5;
 				GRID_GET_COMPONENT(shot, sh, shot);
 				sh.damage = 1;
-				sh.homing = false;
+				GRID_GET_COMPONENT(timeout, ttl, shot);
+				ttl.ttl = shotsTtl;
 			}
 		}
 	}
@@ -237,15 +238,11 @@ void eventBomb()
 	statistics.bombsKillMax = max(statistics.bombsKillMax, kills);
 	statistics.bombsUsed++;
 	{
-		vec3 playerPosition;
-		{
-			ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
-			playerPosition = p.position;
-		}
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 		for (entityClass *e : gridComponent::component->getComponentEntities()->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
-			t.position = playerPosition + randomDirection3() * vec3(100, 1, 100);
+			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
 		}
 	}
 	monstersSpawnInitial();
@@ -267,6 +264,7 @@ void eventTurret()
 	entityClass *turret = entities()->newUniqueEntity();
 	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 	ENGINE_GET_COMPONENT(transform, transform, turret);
+	GRID_GET_COMPONENT(velocity, vel, turret); // allow it to be affected by gravity
 	transform.position = playerTransform.position;
 	transform.position[1] = 0;
 	transform.orientation = quat(degs(), randomAngle(), degs());

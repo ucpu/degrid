@@ -83,7 +83,7 @@ namespace
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
 			shotsFired, shotsTurret, shotsDissipated, shotsHit, shotsKill, shotsCurrent, shotsMax, \
 			monstersSpawned, monstersSpecial, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersFirstHit, shielderStoppedShots, \
-			wormholesSpawned, \
+			wormholesSpawned, wormholeJumps, \
 			powerupsSpawned, powerupsPicked, powerupsWasted, \
 			bombsUsed, bombsHitTotal, bombsKillTotal, bombsHitMax, bombsKillMax, \
 			shieldStoppedMonsters, shieldAbsorbedDamage, turretsPlaced, decoysUsed, \

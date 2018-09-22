@@ -15,6 +15,7 @@ void monstersSpawnInitial();
 void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale);
 void monsterExplosion(entityClass *e);
 void shotExplosion(entityClass *e);
+bool killMonster(entityClass *e);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(uint32 sounds[]);
@@ -48,6 +49,7 @@ const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 const real playerScale = 3;
 const real mapNoPullRadius = 200;
 const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
+const uint32 shotsTtl = 300;
 
 extern groupClass *entitiesToDestroy;
 extern groupClass *entitiesPhysicsEvenWhenPaused;
@@ -105,6 +107,7 @@ struct globalStatisticsStruct
 	uint32 monstersLastHit;
 	uint32 shielderStoppedShots; // the number of shots eliminated by shielder
 	uint32 wormholesSpawned;
+	uint32 wormholeJumps;
 	uint32 powerupsSpawned;
 	uint32 powerupsPicked; // powerups picked up by the player
 	uint32 powerupsWasted; // picked up powerups, that were over a limit (and converted into score)
@@ -134,6 +137,12 @@ struct globalStatisticsStruct
 extern globalStatisticsStruct statistics;
 
 // components
+
+struct gravityComponent
+{
+	static componentClass *component;
+	real strength; // positive -> pull closer, negative -> push away
+};
 
 struct velocityComponent
 {

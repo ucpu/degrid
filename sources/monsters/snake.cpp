@@ -2,10 +2,34 @@
 
 namespace
 {
+	struct snakeTailComponent
+	{
+		static componentClass *component;
+		uint32 follow;
+		snakeTailComponent() : follow(0) {}
+	};
+
+	struct snakeHeadComponent
+	{
+		static componentClass *component;
+		real speedMin, speedMax;
+	};
+
+	componentClass *snakeHeadComponent::component;
+	componentClass *snakeTailComponent::component;
+
+	void engineInit()
+	{
+		snakeTailComponent::component = entities()->defineComponent(snakeTailComponent(), true);
+		snakeHeadComponent::component = entities()->defineComponent(snakeHeadComponent(), true);
+	}
+
 	void engineUpdate()
 	{
 		if (game.paused)
 			return;
+
+		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 
 		// snake heads
 		for (entityClass *e : snakeHeadComponent::component->getComponentEntities()->entities())
@@ -13,10 +37,15 @@ namespace
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(velocity, v, e);
 			GRID_GET_COMPONENT(snakeHead, snake, e);
-			v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
-			real s = v.velocity.length();
-			if (s < snake.speedMin || s > snake.speedMax)
-				v.velocity = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
+			if (tr.position.distance(playerTransform.position) > 250)
+				v.velocity = (game.monstersTarget - tr.position).normalize() * (snake.speedMin + snake.speedMax) * 0.5;
+			else
+			{
+				v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
+				real s = v.velocity.length();
+				if (s < snake.speedMin || s > snake.speedMax)
+					v.velocity = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
+			}
 			v.velocity[1] = 0;
 			tr.orientation = quat(degs(), aTan2(-v.velocity[2], -v.velocity[0]), degs());
 		}
@@ -29,7 +58,7 @@ namespace
 			GRID_GET_COMPONENT(monster, m, e);
 			GRID_GET_COMPONENT(snakeTail, snake, e);
 
-			if (entities()->hasEntity(snake.follow))
+			if (snake.follow && entities()->hasEntity(snake.follow))
 			{
 				entityClass *p = entities()->getEntity(snake.follow);
 				ENGINE_GET_COMPONENT(transform, trp, p);
@@ -47,6 +76,7 @@ namespace
 			{
 				if (m.life > 1e5)
 				{
+					snake.follow = 0;
 					v.velocity = vec3();
 					m.life = 10;
 				}
@@ -65,10 +95,13 @@ namespace
 
 	class callbacksClass
 	{
+		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
+			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
 		}

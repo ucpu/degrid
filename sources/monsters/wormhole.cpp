@@ -1,133 +1,223 @@
+#include <vector>
+
 #include "monsters.h"
 
 #include <cage-core/color.h>
 
 namespace
 {
-	struct wormholeUpdateStruct
+	struct wormholeComponent
 	{
-		transformComponent &tr;
-		renderComponent &rnd;
-		monsterComponent &mo;
-		velocityComponent &vl;
-		wormholeComponent &wh;
-		const uint32 myName;
-
-		wormholeUpdateStruct(entityClass *e) :
-			tr(e->value<transformComponent>(transformComponent::component)),
-			rnd(e->value<renderComponent>(renderComponent::component)),
-			mo(e->value<monsterComponent>(monsterComponent::component)),
-			vl(e->value<velocityComponent>(velocityComponent::component)),
-			wh(e->value<wormholeComponent>(wormholeComponent::component)),
-			myName(e->getName())
-		{
-			spatialQuery->intersection(sphere(tr.position, tr.scale * 30));
-			for (uint32 otherName : spatialQuery->result())
-			{
-				if (otherName == myName || !entities()->hasEntity(otherName))
-					continue;
-				entityClass *e = entities()->getEntity(otherName);
-
-				if (e->hasComponent(monsterComponent::component) || e->hasComponent(gridComponent::component))
-				{ // monsters and grids are pulled and teleported
-					pull(e);
-					if (distance(e) < 1 && !e->hasComponent(snakeTailComponent::component))
-					{
-						ENGINE_GET_COMPONENT(transform, tre, e);
-						if (e->hasComponent(wormholeComponent::component))
-						{
-							if (tre.scale < tr.scale || (tre.scale == tr.scale && e->getName() < myName))
-							{ // absorb smaller wormhole
-								real otherVolume = real::Pi * tre.scale * tre.scale;
-								real myVolume = real::Pi * tr.scale * tr.scale;
-								myVolume += otherVolume;
-								tr.position = interpolate(tr.position, tre.position, 0.5 * tre.scale / tr.scale);
-								tr.scale = sqrt(myVolume / real::Pi);
-								e->addGroup(entitiesToDestroy); // destroy other wormhole
-							}
-							continue; // do not teleport wormholes
-						}
-						rads angle = randomAngle();
-						vec3 dir = vec3(cos(angle), 0, sin(angle));
-						ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-						tre.position = playerTransform.position + dir * random(200, 250);
-						transformComponent &treh = e->value<transformComponent>(transformComponent::componentHistory);
-						treh.position = tre.position;
-						if (e->hasComponent(monsterComponent::component))
-						{
-							GRID_GET_COMPONENT(monster, moe, e);
-							if (moe.damage < 100)
-							{
-								moe.damage *= 2;
-								bool hadFlickering = e->hasComponent(monsterFlickeringComponent::component);
-								GRID_GET_COMPONENT(monsterFlickering, mof, e);
-								if (!hadFlickering)
-								{
-									ENGINE_GET_COMPONENT(render, render, e);
-									mof.baseColorHsv = convertRgbToHsv(render.color);
-								}
-								mof.flickeringFrequency += 1e-6;
-								mof.flickeringOffset += random();
-							}
-						}
-					}
-					continue;
-				}
-
-				if (e->hasComponent(shotComponent::component) || e == game.playerEntity)
-				{ // player and shots are pulled, but are not destroyed by the blackhole
-					pull(e);
-					continue;
-				}
-
-				if (e->hasComponent(powerupComponent::component))
-				{ // powerups are pulled and eventually destroyed
-					pull(e);
-					if (distance(e) < 1)
-						e->addGroup(entitiesToDestroy);
-					continue;
-				}
-			}
-
-			tr.scale += 0.001;
-			vl.velocity += normalize(game.monstersTarget - tr.position) * wh.acceleration;
-			vl.velocity = vl.velocity.normalize() * min(vl.velocity.length(), wh.maxSpeed);
-			ENGINE_GET_COMPONENT(animatedTexture, at, e);
-			at.speed = 0;
-			at.offset = 1000000 * (19.f / 20) * (1 - mo.life / wh.maxLife);
-		}
-
-		const real distance(entityClass *oe)
-		{
-			ENGINE_GET_COMPONENT(transform, tre, oe);
-			return max(tre.position.distance(tr.position) - tr.scale - tre.scale + 1, 0);
-		}
-
-		void pull(entityClass *oe)
-		{
-			ENGINE_GET_COMPONENT(transform, tre, oe);
-			vec3 dir = normalize(tr.position - tre.position);
-			if (oe->hasComponent(wormholeComponent::component))
-				dir = dir * quat(degs(), degs(80), degs());
-			real force = tr.scale / tre.scale / sqrt(max(distance(oe), 1));
-			tre.position += dir * force;
-		}
+		static componentClass *component;
+		real maxSpeed;
+		real acceleration;
 	};
+
+	struct monsterFlickeringComponent
+	{
+		static componentClass *component;
+		vec3 baseColorHsv;
+		real flickeringFrequency;
+		real flickeringOffset;
+	};
+
+	componentClass *wormholeComponent::component;
+	componentClass *monsterFlickeringComponent::component;
+
+	void countWormholes(uint32 &positive, uint32 &negative)
+	{
+		positive = negative = 0;
+		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
+		{
+			GRID_GET_COMPONENT(gravity, g, e);
+			if (g.strength > 0)
+				positive++;
+			else if (g.strength < 0)
+				negative++;
+		}
+	}
+
+	entityClass *pickWormhole(sint32 sgn)
+	{
+		std::vector<entityClass*> candidates;
+		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
+		{
+			GRID_GET_COMPONENT(gravity, g, e);
+			if (sign(g.strength) == sgn)
+				candidates.push_back(e);
+		}
+		if (candidates.empty())
+			return nullptr;
+		return candidates[random(0u, numeric_cast<uint32>(candidates.size()))];
+	}
+
+	void updateMonsterFlickering(entityClass *oe)
+	{
+		GRID_GET_COMPONENT(monster, om, oe);
+		if (om.damage < 100)
+		{
+			om.damage *= 2;
+			bool hadFlickering = oe->hasComponent(monsterFlickeringComponent::component);
+			GRID_GET_COMPONENT(monsterFlickering, mof, oe);
+			if (!hadFlickering)
+			{
+				ENGINE_GET_COMPONENT(render, render, oe);
+				mof.baseColorHsv = convertRgbToHsv(render.color);
+			}
+			mof.flickeringFrequency += 1e-6;
+			mof.flickeringOffset += random();
+		}
+	}
+
+	void wormholeKilled(uint32 name)
+	{
+		entityClass *w = entities()->getEntity(name);
+		ENGINE_GET_COMPONENT(transform, wt, w);
+		GRID_GET_COMPONENT(gravity, wg, w);
+
+		// kill one pushing wormhole
+		if (wg.strength > 0)
+		{
+			entityClass *ow = pickWormhole(-1);
+			if (ow)
+				killMonster(ow);
+		}
+
+		// create temporary oposite gravity effect
+		entityClass *e = entities()->newUniqueEntity();
+		ENGINE_GET_COMPONENT(transform, et, e);
+		GRID_GET_COMPONENT(gravity, eg, e);
+		et.position = wt.position;
+		eg.strength = -wg.strength * 5;
+		GRID_GET_COMPONENT(timeout, ttl, e);
+		ttl.ttl = 3;
+	}
+
+	void engineInit()
+	{
+		wormholeComponent::component = entities()->defineComponent(wormholeComponent(), true);
+		monsterFlickeringComponent::component = entities()->defineComponent(monsterFlickeringComponent(), true);
+	}
 
 	void engineUpdate()
 	{
+		{ // flickering
+			for (entityClass *e : monsterFlickeringComponent::component->getComponentEntities()->entities())
+			{
+				ENGINE_GET_COMPONENT(render, r, e);
+				GRID_GET_COMPONENT(monsterFlickering, m, e);
+				real l = (real)currentControlTime() * m.flickeringFrequency + m.flickeringOffset;
+				real s = sin(rads::Full * l) * 0.5 + 0.5;
+				r.color = convertHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
+			}
+		}
+
 		if (game.paused)
 			return;
+
+		uint32 positive, negative;
+		countWormholes(positive, negative);
+
 		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
-			wormholeUpdateStruct u(e);
+		{
+			uint32 myName = e->getName();
+			ENGINE_GET_COMPONENT(transform, t, e);
+			GRID_GET_COMPONENT(gravity, g, e);
+
+			// move the wormhole
+			{
+				GRID_GET_COMPONENT(wormhole, w, e);
+				GRID_GET_COMPONENT(velocity, v, e);
+				v.velocity += normalize(game.monstersTarget - t.position) * w.acceleration;
+				v.velocity = v.velocity.normalize() * min(v.velocity.length(), w.maxSpeed);
+			}
+
+			if (g.strength > 0)
+			{ // this is sucking wormhole
+				ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
+				spatialQuery->intersection(sphere(t.position, t.scale + 0.1));
+				for (uint32 otherName : spatialQuery->result())
+				{
+					if (otherName == myName)
+						continue;
+					entityClass *oe = entities()->getEntity(otherName);
+
+					// gravity irrelevant entities
+					if (!oe->hasComponent(velocityComponent::component))
+						continue;
+
+					// shots
+					if (oe->hasComponent(shotComponent::component))
+						continue;
+
+					bool teleport = false;
+
+					// player
+					if (oe == game.playerEntity)
+					{
+						if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0)
+						{
+							teleport = true;
+							statistics.wormholeJumps++;
+						}
+						else
+							continue;
+					}
+
+					// grids
+					if (oe->hasComponent(gridComponent::component))
+						teleport = true;
+
+					// monsters
+					if (oe->hasComponent(monsterComponent::component))
+					{
+						updateMonsterFlickering(oe);
+						teleport = true;
+					}
+
+					if (teleport)
+					{
+						ENGINE_GET_COMPONENT(transform, ot, oe);
+						transformComponent &oth = oe->value<transformComponent>(transformComponent::componentHistory);
+						rads angle = randomAngle();
+						vec3 dir = vec3(cos(angle), 0, sin(angle));
+						entityClass *target = pickWormhole(-1);
+						if (target)
+						{
+							ENGINE_GET_COMPONENT(transform, tt, target);
+							ot.position = tt.position + dir * tt.scale;
+						}
+						else
+							ot.position = playerTransform.position + dir * random(200, 250);
+						oth.position = ot.position;
+					}
+					else
+						oe->addGroup(entitiesToDestroy);
+				}
+			}
+			else
+			{ // this is pushing wormhole
+				if (positive == 0)
+				{ // destroy itself (the wormhole has no opposite to feed it)
+					killMonster(e);
+				}
+			}
+
+			// empowering the wormhole over time
+			g.strength += sign(g.strength) * 0.005;
+			t.scale += 0.001;
+		}
 	}
 
 	class callbacksClass
 	{
+		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
+			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
 		}
@@ -136,18 +226,26 @@ namespace
 
 void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 {
+	uint32 positive, negative;
+	countWormholes(positive, negative);
 	statistics.wormholesSpawned++;
 	uint32 special = 0;
-	entityClass *wormhole = initializeMonster(spawnPosition, color, 3 + 0.5 * spawnSpecial(special), hashString("grid/monster/wormhole.object"), hashString("grid/monster/bum-wormhole.ogg"), real::PositiveInfinity, random(40, 60) + 20 * spawnSpecial(special));
+	entityClass *wormhole = initializeMonster(spawnPosition, color, 3 + 0.5 * spawnSpecial(special), hashString("grid/monster/wormhole.object"), hashString("grid/monster/bum-wormhole.ogg"), 200, random(40, 60) + 20 * spawnSpecial(special) + 1000);
+	ENGINE_GET_COMPONENT(transform, transform, wormhole);
+	transform.scale = 3;
+	transform.orientation = randomDirectionQuat();
 	GRID_GET_COMPONENT(monster, m, wormhole);
 	m.dispersion = 0.001;
+	m.defeatedCallback.bind<&wormholeKilled>();
 	GRID_GET_COMPONENT(wormhole, wh, wormhole);
 	wh.maxSpeed = 0.03 + 0.01 * spawnSpecial(special);
 	wh.acceleration = 0.001;
-	wh.maxLife = m.life;
+	GRID_GET_COMPONENT(gravity, g, wormhole);
+	g.strength = 10 + 3 * spawnSpecial(special);
+	if (positive > 0 && (negative == 0 || random() < 0.5))
+		g.strength *= -1;
 	ENGINE_GET_COMPONENT(animatedTexture, at, wormhole);
-	at.speed = 0;
-	ENGINE_GET_COMPONENT(transform, transform, wormhole);
+	at.speed *= (random() + 0.5) * 0.05 * sign(g.strength);
 	transform.orientation = randomDirectionQuat();
 	if (special > 0)
 	{

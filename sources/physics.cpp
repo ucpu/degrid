@@ -21,6 +21,25 @@ namespace
 
 	void engineUpdate()
 	{
+		if (!game.paused)
+		{ // gravity
+			for (entityClass *e : gravityComponent::component->getComponentEntities()->entities())
+			{
+				ENGINE_GET_COMPONENT(transform, t, e);
+				GRID_GET_COMPONENT(gravity, g, e);
+				for (entityClass *oe : velocityComponent::component->getComponentEntities()->entities())
+				{
+					if (oe->hasComponent(gravityComponent::component))
+						continue;
+					ENGINE_GET_COMPONENT(transform, ot, oe);
+					vec3 d = t.position - ot.position;
+					if (d.squaredLength() < 1e-3)
+						continue;
+					ot.position += d.normalize() * (g.strength / max(d.length() - t.scale, 1));
+				}
+			}
+		}
+
 		{ // velocity
 			for (entityClass *e : velocityComponent::component->getComponentEntities()->entities())
 			{
@@ -60,13 +79,13 @@ namespace
 
 		{ // update spatial
 			spatialData->clear();
-			for (entityClass *e : entities()->getAllEntities()->entities())
+			for (entityClass *e : transformComponent::component->getComponentEntities()->entities())
 			{
 				uint32 n = e->getName();
-				if (n && e->hasComponent(transformComponent::component))
+				if (n)
 				{
 					ENGINE_GET_COMPONENT(transform, tr, e);
-					spatialData->update(n, aabb(tr.position - tr.scale, tr.position + tr.scale));
+					spatialData->update(n, sphere(tr.position, tr.scale));
 				}
 			}
 			spatialData->rebuild();

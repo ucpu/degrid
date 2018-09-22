@@ -2,6 +2,21 @@
 
 namespace
 {
+	struct simpleMonsterComponent
+	{
+		static componentClass *component;
+		real maxSpeed;
+		real acceleration;
+		real avoidance;
+	};
+
+	componentClass *simpleMonsterComponent::component;
+
+	void engineInit()
+	{
+		simpleMonsterComponent::component = entities()->defineComponent(simpleMonsterComponent(), true);
+	}
+
 	void spawnSmallCube(uint32 originalEntity)
 	{
 		entityClass *e = entities()->getEntity(originalEntity);
@@ -59,7 +74,7 @@ namespace
 				spatialQuery->intersection(sphere(tr.position, 15));
 				for (uint32 otherName : spatialQuery->result())
 				{
-					if (otherName == myName || !entities()->hasEntity(otherName))
+					if (otherName == myName)
 						continue;
 
 					entityClass *e = entities()->getEntity(otherName);
@@ -106,10 +121,13 @@ namespace
 
 	class callbacksClass
 	{
+		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
+			engineInitListener.attach(controlThread().initialize);
+			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
 		}

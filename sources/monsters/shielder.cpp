@@ -2,8 +2,62 @@
 
 namespace
 {
-	void updateShielders()
+	struct shielderComponent
 	{
+		static componentClass *component;
+		uint32 shieldEntity;
+		real movementSpeed;
+		uint32 chargingSteps;
+		uint32 turningSteps;
+		uint32 stepsLeft;
+		shielderComponent() : chargingSteps(0), turningSteps(0), stepsLeft(0) {}
+	};
+
+	struct shieldComponent
+	{
+		static componentClass *component;
+		bool active;
+		shieldComponent() : active(false) {}
+	};
+
+	componentClass *shielderComponent::component;
+	componentClass *shieldComponent::component;
+
+	void updateShields()
+	{
+		// update shields transformations
+		for (entityClass *e : shielderComponent::component->getComponentEntities()->entities())
+		{
+			ENGINE_GET_COMPONENT(transform, et, e);
+			GRID_GET_COMPONENT(shielder, es, e);
+			entityClass *s = entities()->getEntity(es.shieldEntity);
+			ENGINE_GET_COMPONENT(transform, st, s);
+			st = et;
+		}
+	}
+
+	void shielderEliminated(entityClass *e)
+	{
+		GRID_GET_COMPONENT(shielder, sh, e);
+		if (entities()->hasEntity(sh.shieldEntity))
+			entities()->getEntity(sh.shieldEntity)->addGroup(entitiesToDestroy);
+	}
+
+	eventListener<void(entityClass*)> shielderEliminatedListener;
+
+	void engineInit()
+	{
+		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
+		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
+		shielderEliminatedListener.bind<&shielderEliminated>();
+		shielderEliminatedListener.attach(shielderComponent::component->getComponentEntities()->entityRemoved);
+	}
+
+	void engineUpdate()
+	{
+		if (game.paused)
+			return;
+
 		for (entityClass *e : shielderComponent::component->getComponentEntities()->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
@@ -11,9 +65,9 @@ namespace
 			GRID_GET_COMPONENT(monster, ms, e);
 			GRID_GET_COMPONENT(shielder, sh, e);
 			entityClass *se = entities()->getEntity(sh.shieldEntity);
-			ENGINE_GET_COMPONENT(transform, tre, se);
 			GRID_GET_COMPONENT(shield, sse, se);
 
+			// update the monster
 			if (sse.active)
 			{ // charging
 				if (sh.stepsLeft)
@@ -46,34 +100,24 @@ namespace
 
 			CAGE_ASSERT_RUNTIME(sh.stepsLeft > 0);
 			sh.stepsLeft--;
-			tre = tr;
-		}
-	}
 
-	void updateShields()
-	{
-		for (entityClass *e : shieldComponent::component->getComponentEntities()->entities())
-		{
-			GRID_GET_COMPONENT(shield, sh, e);
-			if (sh.active)
+			// update shield rendering
+			if (sse.active)
 			{
-				ENGINE_GET_COMPONENT(render, render, e);
+				ENGINE_GET_COMPONENT(render, render, se);
 				render.object = hashString("grid/monster/shield.object");
 			}
 			else
 			{
-				e->removeComponent(renderComponent::component);
-				return;
+				se->removeComponent(renderComponent::component);
+				continue;
 			}
 
-			ENGINE_GET_COMPONENT(transform, tr, e);
-			uint32 myName = e->getName();
+			// destroy shots
 			vec3 forward = tr.orientation * vec3(0, 0, -1);
 			spatialQuery->intersection(sphere(tr.position + tr.orientation * vec3(0, 0, -1) * (tr.scale + 3), 5));
 			for (uint32 otherName : spatialQuery->result())
 			{
-				if (otherName == myName || !entities()->hasEntity(otherName))
-					continue;
 				entityClass *e = entities()->getEntity(otherName);
 				if (!e->hasComponent(shotComponent::component))
 					continue;
@@ -94,41 +138,20 @@ namespace
 		}
 	}
 
-	void shielderEliminated(entityClass *e)
-	{
-		GRID_GET_COMPONENT(shielder, sh, e);
-		if (entities()->hasEntity(sh.shieldEntity))
-			entities()->getEntity(sh.shieldEntity)->addGroup(entitiesToDestroy);
-	}
-
-	eventListener<void(entityClass*)> shielderEliminatedListener;
-
-	void engineInit()
-	{
-		shielderEliminatedListener.bind<&shielderEliminated>();
-		shielderEliminatedListener.attach(shielderComponent::component->getComponentEntities()->entityRemoved);
-	}
-
-	void engineUpdate()
-	{
-		if (game.paused)
-			return;
-
-		updateShielders();
-		updateShields();
-	}
-
 	class callbacksClass
 	{
 		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
+		eventListener<void()> engineUpdateListener1;
+		eventListener<void()> engineUpdateListener2;
 	public:
 		callbacksClass()
 		{
 			engineInitListener.attach(controlThread().initialize);
 			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
+			engineUpdateListener1.attach(controlThread().update);
+			engineUpdateListener1.bind<&engineUpdate>();
+			engineUpdateListener2.attach(controlThread().update, 40); // after physics
+			engineUpdateListener2.bind<&updateShields>();
 		}
 	} callbacksInstance;
 }

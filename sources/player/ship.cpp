@@ -118,11 +118,11 @@ namespace
 			scoreUpdate();
 			if (!game.cinematic && game.life <= 1e-7)
 			{
+				game.life = 0;
 				gameStopEvent().dispatch();
 				return true;
 			}
 		}
-		shipShield();
 		return false;
 	}
 
@@ -161,14 +161,17 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<bool()> engineUpdateListener;
+		eventListener<bool()> engineUpdateListener1;
+		eventListener<void()> engineUpdateListener2;
 		eventListener<void()> gameStartListener;
 		eventListener<void()> gameStopListener;
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update, -20);
-			engineUpdateListener.bind<&engineUpdate>();
+			engineUpdateListener1.attach(controlThread().update, -20);
+			engineUpdateListener1.bind<&engineUpdate>();
+			engineUpdateListener2.attach(controlThread().update, 40); // after physics
+			engineUpdateListener2.bind<&shipShield>();
 			gameStartListener.attach(gameStartEvent(), -20);
 			gameStartListener.bind<&gameStart>();
 			gameStopListener.attach(gameStopEvent(), -20);

@@ -2,40 +2,10 @@
 
 #include <cage-core/color.h>
 
-componentClass *simpleMonsterComponent::component;
-componentClass *snakeHeadComponent::component;
-componentClass *snakeTailComponent::component;
-componentClass *shielderComponent::component;
-componentClass *shieldComponent::component;
-componentClass *wormholeComponent::component;
-componentClass *monsterFlickeringComponent::component;
-
 namespace
 {
-	void engineInit()
-	{
-		simpleMonsterComponent::component = entities()->defineComponent(simpleMonsterComponent(), true);
-		snakeTailComponent::component = entities()->defineComponent(snakeTailComponent(), true);
-		snakeHeadComponent::component = entities()->defineComponent(snakeHeadComponent(), true);
-		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
-		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
-		wormholeComponent::component = entities()->defineComponent(wormholeComponent(), true);
-		monsterFlickeringComponent::component = entities()->defineComponent(monsterFlickeringComponent(), true);
-	}
-
 	void engineUpdate()
 	{
-		{ // flickering
-			for (entityClass *e : monsterFlickeringComponent::component->getComponentEntities()->entities())
-			{
-				ENGINE_GET_COMPONENT(render, r, e);
-				GRID_GET_COMPONENT(monsterFlickering, m, e);
-				real l = (real)currentControlTime() * m.flickeringFrequency + m.flickeringOffset;
-				real s = sin(rads::Full * l) * 0.5 + 0.5;
-				r.color = convertHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
-			}
-		}
-
 		if (game.paused)
 			return;
 
@@ -55,7 +25,7 @@ namespace
 				spatialQuery->intersection(sphere(t.position, t.scale + 1));
 				for (uint32 otherName : spatialQuery->result())
 				{
-					if (otherName == myName || !entities()->hasEntity(otherName))
+					if (otherName == myName)
 						continue;
 					entityClass *e = entities()->getEntity(otherName);
 					ENGINE_GET_COMPONENT(transform, ot, e);
@@ -124,13 +94,10 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
 		}
@@ -172,3 +139,24 @@ entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, rea
 	return m;
 }
 
+bool killMonster(entityClass *e)
+{
+	e->addGroup(entitiesToDestroy);
+	monsterExplosion(e);
+	ENGINE_GET_COMPONENT(transform, t, e);
+	GRID_GET_COMPONENT(monster, m, e);
+	m.life = 0;
+	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
+	if (m.defeatedSound)
+	{
+		soundEffect(m.defeatedSound, t.position);
+		m.defeatedSound = 0;
+	}
+	if (m.defeatedCallback)
+	{
+		m.defeatedCallback(e->getName());
+		m.defeatedCallback.clear();
+		return false;
+	}
+	return true;
+}

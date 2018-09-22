@@ -2,6 +2,7 @@
 
 #include <cage-core/entities.h>
 
+componentClass *gravityComponent::component;
 componentClass *velocityComponent::component;
 componentClass *rotationComponent::component;
 componentClass *timeoutComponent::component;
@@ -26,6 +27,7 @@ namespace
 {
 	void engineInit()
 	{
+		gravityComponent::component = entities()->defineComponent(gravityComponent(), true);
 		velocityComponent::component = entities()->defineComponent(velocityComponent(), true);
 		rotationComponent::component = entities()->defineComponent(rotationComponent(), true);
 		timeoutComponent::component = entities()->defineComponent(timeoutComponent(), true);

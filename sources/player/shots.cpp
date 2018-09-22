@@ -56,6 +56,8 @@ namespace
 			sh.damage = game.powerups[(uint32)powerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)powerupTypeEnum::SuperDamage] ? 4 : 1);
 			sh.homing = game.powerups[(uint32)powerupTypeEnum::HomingShots] > 0;
 			transform.position = playerTransform.position + vel.velocity.normalize() * playerTransform.scale;
+			GRID_GET_COMPONENT(timeout, ttl, shot);
+			ttl.ttl = shotsTtl;
 		}
 	}
 
@@ -65,12 +67,6 @@ namespace
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-			if (tr.position.squaredDistance(playerTransform.position) > 500 * 500)
-			{
-				e->addGroup(entitiesToDestroy); // destroy itself
-				statistics.shotsDissipated++;
-				continue;
-			}
 
 			uint32 closestMonster = 0;
 			uint32 homingMonster = 0;
@@ -83,7 +79,7 @@ namespace
 			spatialQuery->intersection(sphere(tr.position, vl.velocity.length() + tr.scale + (sh.homing ? 20 : 10)));
 			for (uint32 otherName : spatialQuery->result())
 			{
-				if (otherName == myName || !entities()->hasEntity(otherName))
+				if (otherName == myName)
 					continue;
 
 				entityClass *e = entities()->getEntity(otherName);
@@ -128,27 +124,17 @@ namespace
 				if (om.life <= 1e-5)
 				{
 					statistics.shotsKill++;
-					ENGINE_GET_COMPONENT(transform, mtr, m);
-					m->addGroup(entitiesToDestroy); // destroy the monster
-					monsterExplosion(m);
-					if (om.defeatedSound)
-						soundEffect(om.defeatedSound, mtr.position);
-					if (om.defeatedCallback)
-					{
-						om.defeatedCallback(closestMonster);
-						om.defeatedCallback.clear();
-					}
-					else
+					if (killMonster(m))
 					{
 						real r = cage::random();
 						if (r < game.powerupSpawnChance)
 						{
 							game.powerupSpawnChance -= 1;
+							ENGINE_GET_COMPONENT(transform, mtr, m);
 							powerupSpawn(mtr.position);
 						}
 						game.powerupSpawnChance += interpolate(1.0 / 50, 1.0 / 400, clamp((statistics.powerupsSpawned + 5) / 30.f, 0.f, 1.f));
 					}
-					game.score += numeric_cast<uint32>(clamp(om.damage, 1, 200));
 				}
 				if (sh.damage <= 1e-5)
 				{

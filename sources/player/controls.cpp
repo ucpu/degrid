@@ -249,12 +249,15 @@ namespace
 			keyMap[i] = false;
 		buttonMap = (mouseButtonsFlags)0;
 
-		entities()->getAllEntities()->destroyAllEntities();
+		for (entityClass *e : entities()->getAllEntities()->entities())
+			e->addGroup(entitiesToDestroy);
+
 		{
 			bool cinematic = game.cinematic;
 			game = globalGameStruct();
 			game.cinematic = cinematic;
 		}
+
 		game.life = 100;
 		game.powerupSpawnChance = 0.3;
 

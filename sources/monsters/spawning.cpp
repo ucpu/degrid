@@ -18,7 +18,7 @@ namespace
 
 	const vec3 randomPosition()
 	{
-		return aroundPosition(cage::random(), cage::random(200, 400), playerPosition);
+		return aroundPosition(cage::random(), cage::random(200, 300), playerPosition);
 	}
 
 	enum class placingPolicyEnum
@@ -121,7 +121,7 @@ namespace
 		case placingPolicyEnum::Around:
 		{
 			real angularOffset = cage::random();
-			real radius = cage::random(120, 140);
+			real radius = cage::random(140, 160);
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[cage::random(0u, alSiz)], aroundPosition(angularOffset + (cage::random() * 0.3 + i) / (real)spawnCount, radius, playerPosition), color);
 		} break;
@@ -354,7 +354,7 @@ namespace
 		{ // wormholes
 			spawnDefinitionStruct d("wormholes");
 			d.spawnCountMin = 1;
-			d.spawnCountMax = 2;
+			d.spawnCountMax = 3;
 			d.spawnTypes = (monsterTypeFlags::Wormhole);
 			d.placingPolicy = placingPolicyEnum::Around;
 			d.priorityCurrent = 7000;
