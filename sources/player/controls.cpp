@@ -279,7 +279,11 @@ namespace
 
 	void gameStop()
 	{
-		CAGE_LOG(severityEnum::Info, "grid", string() + "game over, score: " + game.score);
+		if (!game.cinematic)
+		{
+			CAGE_LOG(severityEnum::Info, "grid", string() + "game over");
+			CAGE_LOG(severityEnum::Info, "grid", string() + "score: " + game.score);
+		}
 		game.paused = game.gameOver = true;
 		setScreenGameover(game.score);
 	}

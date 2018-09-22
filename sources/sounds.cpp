@@ -87,15 +87,13 @@ namespace
 			return;
 		}
 
-		static const real distMin = 25;
-		static const real distMax = 35;
+		static const real distMin = 30;
+		static const real distMax = 60;
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 		real closestMonsterToPlayer = real::PositiveInfinity;
 		spatialQuery->intersection(sphere(playerTransform.position, distMax));
 		for (uint32 otherName : spatialQuery->result())
 		{
-			if (!entities()->hasEntity(otherName))
-				continue;
 			entityClass *e = entities()->getEntity(otherName);
 			if (e->hasComponent(monsterComponent::component))
 			{
@@ -104,8 +102,11 @@ namespace
 				closestMonsterToPlayer = min(closestMonsterToPlayer, d);
 			}
 		}
-		closestMonsterToPlayer = clamp(closestMonsterToPlayer, distMin, distMax);
-		suspense = (closestMonsterToPlayer - distMin) / (distMax - distMin);
+		// hysteresis
+		if (closestMonsterToPlayer < distMin)
+			suspense = 0;
+		else if (closestMonsterToPlayer > distMax)
+			suspense = 1;
 	}
 
 	void speechCallback(const filterApiStruct &api)
@@ -150,9 +151,8 @@ namespace
 			return;
 		}
 
-		real f = suspense; // < 0.5 ? 0 : 1;
-		alterVolume(data->suspenseVolume, sqr(f));
-		alterVolume(data->actionVolume, sqr(1 - f));
+		alterVolume(data->suspenseVolume, suspense);
+		alterVolume(data->actionVolume, 1 - suspense);
 		alterVolume(data->endVolume, 0);
 	}
 
@@ -280,6 +280,6 @@ void soundSpeech(uint32 sounds[])
 	uint32 count = 0;
 	while (*p++)
 		count++;
-	soundSpeech(sounds[random(0u, count)]);
+	soundSpeech(sounds[randomRange(0u, count)]);
 }
 

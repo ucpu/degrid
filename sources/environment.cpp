@@ -57,7 +57,7 @@ namespace
 				GRID_GET_COMPONENT(velocity, velocity, e);
 				velocity.velocity = randomDirection3();
 				GRID_GET_COMPONENT(grid, grid, e);
-				grid.place = vec3(x, -2, y) + vec3(random(), random() * 0.1, random()) * 2 - 1;
+				grid.place = vec3(x, -2, y) + vec3(randomChance(), randomChance() * 0.1, randomChance()) * 2 - 1;
 				ENGINE_GET_COMPONENT(transform, transform, e);
 				transform.scale = 0.6;
 				transform.position = grid.place + randomDirection3() * vec3(10, 0.1, 10);
@@ -134,15 +134,15 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	{
 		entityClass *e = entities()->newAnonymousEntity();
 		GRID_GET_COMPONENT(timeout, timeout, e);
-		timeout.ttl = numeric_cast<uint32>(random() * 5 + 10);
+		timeout.ttl = numeric_cast<uint32>(randomChance() * 5 + 10);
 		GRID_GET_COMPONENT(velocity, vel, e);
 		vel.velocity = randomDirection3();
 		if (velocity.squaredLength() > 0)
 			vel.velocity = normalize(vel.velocity + velocity.normalize() * velocity.length().sqrt());
-		vel.velocity *= random() + 0.5;
+		vel.velocity *= randomChance() + 0.5;
 		ENGINE_GET_COMPONENT(transform, transform, e);
-		transform.scale = scale * (random() * 0.4 + 0.8) * 0.4;
-		transform.position = position + vec3(random() * 2 - 1, 0, random() * 2 - 1);
+		transform.scale = scale * (randomChance() * 0.4 + 0.8) * 0.4;
+		transform.position = position + vec3(randomChance() * 2 - 1, 0, randomChance() * 2 - 1);
 		transform.orientation = randomDirectionQuat();
 		ENGINE_GET_COMPONENT(render, render, e);
 		render.object = hashString("grid/environment/explosion.object");
@@ -170,7 +170,7 @@ void shotExplosion(entityClass *e)
 
 vec3 colorVariation(const vec3 &color)
 {
-	vec3 dev = vec3(random(), random(), random()) * 0.1 - 0.05;
+	vec3 dev = randomChance3() * 0.1 - 0.05;
 	vec3 hsv = convertRgbToHsv(color) + dev;
 	hsv[0] = (hsv[0] + 1) % 1;
 	return convertHsvToRgb(clamp(hsv, vec3(0, 0, 0), vec3(1, 1, 1)));

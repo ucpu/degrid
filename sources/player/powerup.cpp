@@ -69,7 +69,7 @@ namespace
 	void wastedPowerup()
 	{
 		statistics.powerupsWasted++;
-		game.score += 100;
+		game.currency += 100;
 		soundSpeech(hashString("grid/speech/pickup/wasted.wav"));
 	}
 
@@ -199,7 +199,7 @@ void powerupSpawn(const vec3 &position)
 	GRID_GET_COMPONENT(timeout, ttl, e);
 	ttl.ttl = 120 * 30;
 	GRID_GET_COMPONENT(powerup, p, e);
-	p.type = (powerupTypeEnum)random(0u, (uint32)powerupTypeEnum::Total);
+	p.type = (powerupTypeEnum)randomRange(0u, (uint32)powerupTypeEnum::Total);
 	GRID_GET_COMPONENT(rotation, rot, e);
 	rot.rotation = quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100);
 	ENGINE_GET_COMPONENT(render, render, e);
@@ -209,7 +209,7 @@ void powerupSpawn(const vec3 &position)
 		hashString("grid/player/powerupPermanent.object")
 	};
 	render.object = objectName[powerupMode[(uint32)p.type]];
-	render.color = convertHsvToRgb(vec3(random(), 1, 1));
+	render.color = convertHsvToRgb(vec3(randomChance(), 1, 1));
 	soundEffect(hashString("grid/player/powerup.ogg"), transform.position);
 }
 
@@ -227,9 +227,7 @@ void eventBomb()
 		if (m.life <= 1e-5)
 		{
 			kills++;
-			e->addGroup(entitiesToDestroy);
-			monsterExplosion(e);
-			game.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
+			killMonster(e, false);
 		}
 	}
 	statistics.bombsHitTotal += count;

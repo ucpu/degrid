@@ -115,18 +115,16 @@ namespace
 
 			// destroy shots
 			vec3 forward = tr.orientation * vec3(0, 0, -1);
-			spatialQuery->intersection(sphere(tr.position + tr.orientation * vec3(0, 0, -1) * (tr.scale + 3), 5));
+			spatialQuery->intersection(sphere(tr.position + forward * (tr.scale + 3), 5));
 			for (uint32 otherName : spatialQuery->result())
 			{
 				entityClass *e = entities()->getEntity(otherName);
 				if (!e->hasComponent(shotComponent::component))
 					continue;
 				ENGINE_GET_COMPONENT(transform, ot, e);
-				GRID_GET_COMPONENT(shot, os, e);
-				(void)os;
 				vec3 toShot = ot.position - tr.position;
 				real lenShot = toShot.length();
-				if (lenShot < tr.scale + 1 || lenShot > tr.scale + 5)
+				if (lenShot < tr.scale || lenShot > tr.scale + 6)
 					continue;
 				vec3 dirShot = toShot.normalize();
 				if (dirShot.dot(forward) < cos(degs(45)))
@@ -159,27 +157,23 @@ namespace
 void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	entityClass *shielder = initializeMonster(spawnPosition, color, 3, hashString("grid/monster/shielder.object"), hashString("grid/monster/bum-shielder.ogg"), 5, 3 + spawnSpecial(special));
+	entityClass *shielder = initializeMonster(spawnPosition, color, 3, hashString("grid/monster/shielder.object"), hashString("grid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
 	entityClass *shield = entities()->newUniqueEntity();
 	{
 		GRID_GET_COMPONENT(shielder, sh, shielder);
 		sh.shieldEntity = shield->getName();
-		sh.movementSpeed = 0.8 + 0.2 * spawnSpecial(special);
-		sh.turningSteps = random(20u, 30u);
-		sh.chargingSteps = random(60u, 180u);
+		sh.movementSpeed = 0.8 + 0.2 * monsterMutation(special);
+		sh.turningSteps = randomRange(20u, 30u);
+		sh.chargingSteps = randomRange(60u, 180u);
 		sh.stepsLeft = sh.turningSteps;
 		GRID_GET_COMPONENT(monster, m, shielder);
 		m.dispersion = 0.2;
-		if (special > 0)
-		{
-			ENGINE_GET_COMPONENT(transform, transform, shielder);
-			transform.scale *= 1.2;
-			statistics.monstersSpecial++;
-		}
+		monsterReflectMutation(shielder, special);
 	}
 	{
+		ENGINE_GET_COMPONENT(transform, transformShielder, shielder);
 		ENGINE_GET_COMPONENT(transform, transform, shield);
-		transform.position = spawnPosition;
+		transform = transformShielder;
 		GRID_GET_COMPONENT(shield, sh, shield);
 		sh.active = false;
 	}

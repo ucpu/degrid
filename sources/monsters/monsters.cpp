@@ -51,7 +51,6 @@ namespace
 					vec3 shieldDirection = (t.position - playerTransform.position).normalize();
 					vec3 shieldPosition = playerTransform.position + shieldDirection * (playerScale * 1.1);
 					environmentExplosion(shieldPosition, shieldDirection * 0.5, vec3(1, 1, 1), min(m.damage, 5) * 2 + 2, 3); // shield sparks
-					game.score += clamp(numeric_cast<uint32>(m.damage), 1u, 200u);
 				}
 				else
 				{
@@ -80,10 +79,7 @@ namespace
 						soundSpeech(sounds);
 					}
 				}
-				monsterExplosion(e);
-				e->addGroup(entitiesToDestroy);
-				if (m.defeatedSound)
-					soundEffect(m.defeatedSound, t.position);
+				killMonster(e, false);
 			}
 
 			// monster vertical movement
@@ -104,20 +100,30 @@ namespace
 	} callbacksInstance;
 }
 
-uint32 spawnSpecial(uint32 &special)
+uint32 monsterMutation(uint32 &special)
 {
 	if (game.cinematic)
 		return 0;
-	static const uint32 treshold = 33333;
-	uint32 mul = game.score / treshold;
-	real off = (real)game.score / (real)treshold - mul;
-	real prob = pow(off, 3) * 0.5;
-	uint32 res = mul * (random() < prob ? 1 : 0);
-	if (res)
-		res = numeric_cast<uint32>(sqrt(res));
-	special = max(special, res);
-	//CAGE_LOG(severityEnum::Info, "special", string() + "score:\t" + player.score + ", mul:\t" + mul + ", off:\t" + off + ", prob:\t" + prob + ", res:\t" + res);
+
+	statistics.monstersCurrentMutationIteration++;
+	real c = (statistics.monstersCurrentMutationIteration) / 30000;
+	c = pow(c, 1.2);
+	uint32 m = numeric_cast<uint32>(c);
+	real p = pow(c - m, 3);
+	uint32 res = randomChance() < p;
+	res *= m;
+	special += res;
 	return res;
+}
+
+void monsterReflectMutation(entityClass *e, uint32 special)
+{
+	if (!special)
+		return;
+	ENGINE_GET_COMPONENT(transform, transform, e);
+	transform.scale *= 1.5;
+	statistics.monstersMutated++;
+	statistics.monstersMutations += special;
 }
 
 entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
@@ -129,7 +135,7 @@ entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, rea
 	GRID_GET_COMPONENT(monster, monster, m);
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.position = spawnPosition;
-	transform.position[1] = monster.groundLevel = random() * 2 - 1;
+	transform.position[1] = monster.groundLevel = randomChance() * 2 - 1;
 	transform.scale = scale;
 	render.object = objectName;
 	render.color = colorVariation(color);
@@ -139,19 +145,23 @@ entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, rea
 	return m;
 }
 
-bool killMonster(entityClass *e)
+bool killMonster(entityClass *e, bool allowCallback)
 {
+	if (e->hasGroup(entitiesToDestroy))
+		return false;
 	e->addGroup(entitiesToDestroy);
 	monsterExplosion(e);
-	ENGINE_GET_COMPONENT(transform, t, e);
 	GRID_GET_COMPONENT(monster, m, e);
 	m.life = 0;
 	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
 	if (m.defeatedSound)
 	{
+		ENGINE_GET_COMPONENT(transform, t, e);
 		soundEffect(m.defeatedSound, t.position);
 		m.defeatedSound = 0;
 	}
+	if (!allowCallback)
+		return false;
 	if (m.defeatedCallback)
 	{
 		m.defeatedCallback(e->getName());

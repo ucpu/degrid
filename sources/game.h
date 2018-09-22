@@ -15,7 +15,7 @@ void monstersSpawnInitial();
 void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale);
 void monsterExplosion(entityClass *e);
 void shotExplosion(entityClass *e);
-bool killMonster(entityClass *e);
+bool killMonster(entityClass *e, bool allowCallback);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(uint32 sounds[]);
@@ -73,6 +73,7 @@ struct globalGameStruct
 	vec3 shotsColor;
 	uint32 score;
 	uint32 powerups[(uint32)powerupTypeEnum::Total];
+	uint32 currency;
 	real powerupSpawnChance;
 	vec3 monstersTarget;
 
@@ -98,11 +99,13 @@ struct globalStatisticsStruct
 	uint32 shotsCurrent;
 	uint32 shotsMax; // maximum number of shots at any single moment
 	uint32 monstersSpawned; // total number of monsters spawned (including special)
-	uint32 monstersSpecial; // total number of monsters, who spawned with special augments
+	uint32 monstersMutated; // total number of monsters, who spawned with any mutation
+	uint32 monstersMutations; // total number of mutations (may be more than one per monster)
 	uint32 monstersSucceded; // monsters that hit the player
 	uint32 monstersCurrent;
 	uint32 monstersMax; // maximum number of monsters at any single moment
 	real monstersCurrentSpawningPriority; // current value of variable, that controls monsters spawning
+	uint32 monstersCurrentMutationIteration;
 	uint32 monstersFirstHit; // the time (in relation to updateIteration) in which the player was first hit by a monster
 	uint32 monstersLastHit;
 	uint32 shielderStoppedShots; // the number of shots eliminated by shielder

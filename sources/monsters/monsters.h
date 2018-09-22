@@ -26,8 +26,9 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color);
 void spawnShielder(const vec3 &spawnPosition, const vec3 &color);
 void spawnWormhole(const vec3 &spawnPosition, const vec3 &color);
 
-uint32 spawnSpecial(uint32 &special);
 entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life);
+uint32 monsterMutation(uint32 &special);
+void monsterReflectMutation(entityClass *e, uint32 special);
 
 namespace cage
 {

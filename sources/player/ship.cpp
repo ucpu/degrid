@@ -34,15 +34,15 @@ namespace
 			{
 				entityClass *spark = entities()->newAnonymousEntity();
 				ENGINE_GET_COMPONENT(transform, transform, spark);
-				transform.scale = cage::random() * 0.2 + 0.3;
+				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
 				transform.orientation = randomDirectionQuat();
 				ENGINE_GET_COMPONENT(render, render, spark);
 				render.object = hashString("grid/environment/spark.object");
 				GRID_GET_COMPONENT(velocity, vel, spark);
-				vel.velocity = (change + randomDirection3() * 0.05) * cage::random() * -5;
+				vel.velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
 				GRID_GET_COMPONENT(timeout, ttl, spark);
-				ttl.ttl = random(10, 15);
+				ttl.ttl = randomRange(10, 15);
 				ENGINE_GET_COMPONENT(animatedTexture, at, spark);
 				at.startTime = currentControlTime();
 				at.speed = 30.f / ttl.ttl;

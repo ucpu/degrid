@@ -48,7 +48,7 @@ namespace
 		}
 		if (candidates.empty())
 			return nullptr;
-		return candidates[random(0u, numeric_cast<uint32>(candidates.size()))];
+		return candidates[randomRange(0u, numeric_cast<uint32>(candidates.size()))];
 	}
 
 	void updateMonsterFlickering(entityClass *oe)
@@ -65,7 +65,7 @@ namespace
 				mof.baseColorHsv = convertRgbToHsv(render.color);
 			}
 			mof.flickeringFrequency += 1e-6;
-			mof.flickeringOffset += random();
+			mof.flickeringOffset += randomChance();
 		}
 	}
 
@@ -80,7 +80,7 @@ namespace
 		{
 			entityClass *ow = pickWormhole(-1);
 			if (ow)
-				killMonster(ow);
+				killMonster(ow, true);
 		}
 
 		// create temporary oposite gravity effect
@@ -188,7 +188,7 @@ namespace
 							ot.position = tt.position + dir * tt.scale;
 						}
 						else
-							ot.position = playerTransform.position + dir * random(200, 250);
+							ot.position = playerTransform.position + dir * randomRange(200, 250);
 						oth.position = ot.position;
 					}
 					else
@@ -199,7 +199,7 @@ namespace
 			{ // this is pushing wormhole
 				if (positive == 0)
 				{ // destroy itself (the wormhole has no opposite to feed it)
-					killMonster(e);
+					killMonster(e, true);
 				}
 			}
 
@@ -230,7 +230,7 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 	countWormholes(positive, negative);
 	statistics.wormholesSpawned++;
 	uint32 special = 0;
-	entityClass *wormhole = initializeMonster(spawnPosition, color, 3 + 0.5 * spawnSpecial(special), hashString("grid/monster/wormhole.object"), hashString("grid/monster/bum-wormhole.ogg"), 200, random(40, 60) + 20 * spawnSpecial(special) + 1000);
+	entityClass *wormhole = initializeMonster(spawnPosition, color, 3 + 0.5 * monsterMutation(special), hashString("grid/monster/wormhole.object"), hashString("grid/monster/bum-wormhole.ogg"), 200, randomRange(200, 300) + 100 * monsterMutation(special));
 	ENGINE_GET_COMPONENT(transform, transform, wormhole);
 	transform.scale = 3;
 	transform.orientation = randomDirectionQuat();
@@ -238,20 +238,16 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 	m.dispersion = 0.001;
 	m.defeatedCallback.bind<&wormholeKilled>();
 	GRID_GET_COMPONENT(wormhole, wh, wormhole);
-	wh.maxSpeed = 0.03 + 0.01 * spawnSpecial(special);
+	wh.maxSpeed = 0.03 + 0.01 * monsterMutation(special);
 	wh.acceleration = 0.001;
 	GRID_GET_COMPONENT(gravity, g, wormhole);
-	g.strength = 10 + 3 * spawnSpecial(special);
-	if (positive > 0 && (negative == 0 || random() < 0.5))
+	g.strength = 10 + 3 * monsterMutation(special);
+	if (positive > 0 && (negative == 0 || randomChance() < 0.5))
 		g.strength *= -1;
 	ENGINE_GET_COMPONENT(animatedTexture, at, wormhole);
-	at.speed *= (random() + 0.5) * 0.05 * sign(g.strength);
+	at.speed *= (randomChance() + 0.5) * 0.05 * sign(g.strength);
 	transform.orientation = randomDirectionQuat();
-	if (special > 0)
-	{
-		transform.scale *= 1.2;
-		statistics.monstersSpecial++;
-	}
+	monsterReflectMutation(wormhole, special);
 	soundEffect(hashString("grid/monster/wormhole.ogg"), spawnPosition);
 }
 

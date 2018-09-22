@@ -23,7 +23,7 @@ namespace
 		ENGINE_GET_COMPONENT(transform, t, e);
 		ENGINE_GET_COMPONENT(render, r, e);
 		for (uint32 i = 0; i < 2; i++)
-			spawnSimple(monsterTypeFlags::SmallCube, t.position + vec3(random() - 0.5, 0, random() - 0.5), r.color);
+			spawnSimple(monsterTypeFlags::SmallCube, t.position + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
 
 	void spawnSmallTriangle(uint32 originalEntity)
@@ -32,7 +32,7 @@ namespace
 		ENGINE_GET_COMPONENT(transform, t, e);
 		ENGINE_GET_COMPONENT(render, r, e);
 		for (uint32 i = 0; i < 2; i++)
-			spawnSimple(monsterTypeFlags::SmallTriangle, t.position + vec3(random() - 0.5, 0, random() - 0.5), r.color);
+			spawnSimple(monsterTypeFlags::SmallTriangle, t.position + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
 
 	entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, const quat &animation)
@@ -141,41 +141,36 @@ void spawnSimple(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &c
 	switch (type)
 	{
 	case monsterTypeFlags::Circle:
-		e = initializeSimple(spawnPosition, color, 2, hashString("grid/monster/smallCircle.object"), hashString("grid/monster/bum-circle.ogg"), 2, 1 + spawnSpecial(special), 0.3 + 0.1 * spawnSpecial(special), 2, 0, 1, quat());
+		e = initializeSimple(spawnPosition, color, 2, hashString("grid/monster/smallCircle.object"), hashString("grid/monster/bum-circle.ogg"), 2, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 2, 0, 1, quat());
 		break;
 	case monsterTypeFlags::SmallTriangle:
-		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 3, 1 + spawnSpecial(special), 0.4 + 0.1 * spawnSpecial(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
+		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 3, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
 		break;
 	case monsterTypeFlags::SmallCube:
-		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallCube.object"), hashString("grid/monster/bum-cube.ogg"), 3, 1 + spawnSpecial(special), 0.3 + 0.1 * spawnSpecial(special), 3, 1, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
+		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallCube.object"), hashString("grid/monster/bum-cube.ogg"), 3, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
 		break;
 	case monsterTypeFlags::LargeTriangle:
-		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 4, 1 + spawnSpecial(special), 0.4 + 0.1 * spawnSpecial(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
+		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 4, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
 		{
 			GRID_GET_COMPONENT(monster, m, e);
 			m.defeatedCallback.bind<&spawnSmallTriangle>();
 		}
 		break;
 	case monsterTypeFlags::LargeCube:
-		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeCube.object"), hashString("grid/monster/bum-cube.ogg"), 4, 1 + spawnSpecial(special), 0.3 + 0.1 * spawnSpecial(special), 3, 1, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
+		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeCube.object"), hashString("grid/monster/bum-cube.ogg"), 4, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
 		{
 			GRID_GET_COMPONENT(monster, m, e);
 			m.defeatedCallback.bind<&spawnSmallCube>();
 		}
 		break;
 	case monsterTypeFlags::PinWheel:
-		e = initializeSimple(spawnPosition, color, 3.5, hashString("grid/monster/pinWheel.object"), hashString("grid/monster/bum-pinwheel.ogg"), 4, 1 + spawnSpecial(special), 2 + 0.4 * spawnSpecial(special), 50, 0, 0, quat(degs(), degs(20), degs()));
+		e = initializeSimple(spawnPosition, color, 3.5, hashString("grid/monster/pinWheel.object"), hashString("grid/monster/bum-pinwheel.ogg"), 4, 1 + monsterMutation(special), 2 + 0.4 * monsterMutation(special), 50, 0, 0, quat(degs(), degs(20), degs()));
 		break;
 	case monsterTypeFlags::Diamond:
-		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeDiamond.object"), hashString("grid/monster/bum-diamond.ogg"), 4, 1 + spawnSpecial(special), 0.7 + 0.15 * spawnSpecial(special), 1, 0.9, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
+		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeDiamond.object"), hashString("grid/monster/bum-diamond.ogg"), 4, 1 + monsterMutation(special), 0.7 + 0.15 * monsterMutation(special), 1, 0.9, 0.2, quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100));
 		break;
 	default: CAGE_THROW_CRITICAL(exception, "invalid monster type");
 	}
-	if (special > 0)
-	{
-		ENGINE_GET_COMPONENT(transform, transform, e);
-		transform.scale *= 1.2;
-		statistics.monstersSpecial++;
-	}
+	monsterReflectMutation(e, special);
 }
 

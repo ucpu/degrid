@@ -47,7 +47,7 @@ namespace
 			ENGINE_GET_COMPONENT(render, render, shot);
 			render.object = hashString("grid/player/shot.object");
 			if (game.powerups[(uint32)powerupTypeEnum::SuperDamage] > 0)
-				render.color = convertHsvToRgb(vec3(random(), 1, 1));
+				render.color = convertHsvToRgb(vec3(randomChance(), 1, 1));
 			else
 				render.color = game.shotsColor;
 			GRID_GET_COMPONENT(velocity, vel, shot);
@@ -124,9 +124,9 @@ namespace
 				if (om.life <= 1e-5)
 				{
 					statistics.shotsKill++;
-					if (killMonster(m))
+					if (killMonster(m, true))
 					{
-						real r = cage::random();
+						real r = randomChance();
 						if (r < game.powerupSpawnChance)
 						{
 							game.powerupSpawnChance -= 1;
@@ -179,7 +179,7 @@ namespace
 
 	void gameStart()
 	{
-		game.shotsColor = game.cinematic ? convertHsvToRgb(vec3(cage::random(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
+		game.shotsColor = game.cinematic ? convertHsvToRgb(vec3(randomChance(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
 	}
 
 	class callbacksClass

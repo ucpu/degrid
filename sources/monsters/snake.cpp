@@ -67,28 +67,22 @@ namespace
 				if (toPrev.squaredLength() > r * r + 0.01)
 				{
 					v.velocity = toPrev.normalize() * (toPrev.length() - r);
-					tr.orientation = quat(degs(), aTan2(-v.velocity[2], -v.velocity[0]), degs());
+					tr.orientation = quat(toPrev, vec3(0, 1, 0));
 				}
 				else
 					v.velocity = vec3();
 			}
+			else if (snake.follow)
+			{
+				snake.follow = 0;
+				v.velocity = vec3();
+				m.life = 10;
+			}
 			else
 			{
-				if (m.life > 1e5)
-				{
-					snake.follow = 0;
-					v.velocity = vec3();
-					m.life = 10;
-				}
-				else
-				{
-					m.life -= 1;
-					if (m.life < 0)
-					{
-						e->addGroup(entitiesToDestroy);
-						soundEffect(m.defeatedSound, tr.position);
-					}
-				}
+				m.life -= 1;
+				if (m.life < 0)
+					killMonster(e, true);
 			}
 		}
 	}
@@ -112,34 +106,29 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
 	uint32 pieces = 0;
-	if (random() < 0.0001)
+	if (randomRange(0u, 1000u) == 42)
 	{
 		CAGE_LOG(severityEnum::Info, "joke", "JOKE: monster snake");
-		pieces = random(100, 150);
+		pieces = randomRange(100, 150);
 	}
 	else
-		pieces = random(8, 12) + spawnSpecial(special);
+		pieces = randomRange(8, 12) + monsterMutation(special) * 2;
 	uint32 prev = 0;
 	real groundLevel;
 	{ // head
-		entityClass *head = initializeMonster(spawnPosition, color, 2, hashString("grid/monster/snakeHead.object"), hashString("grid/monster/bum-snake-head.ogg"), 5, 3 + spawnSpecial(special));
+		entityClass *head = initializeMonster(spawnPosition, color, 2, hashString("grid/monster/snakeHead.object"), hashString("grid/monster/bum-snake-head.ogg"), 5, 3 + monsterMutation(special));
 		GRID_GET_COMPONENT(snakeHead, snake, head);
-		snake.speedMin = 0.3 + 0.1 * spawnSpecial(special);
-		snake.speedMax = snake.speedMin + 0.6 + 0.2 * spawnSpecial(special);
-		if (special > 0)
-		{
-			ENGINE_GET_COMPONENT(transform, transform, head);
-			transform.scale *= 1.2;
-			statistics.monstersSpecial++;
-		}
+		snake.speedMin = 0.3 + 0.1 * monsterMutation(special);
+		snake.speedMax = snake.speedMin + 0.6 + 0.2 * monsterMutation(special);
+		monsterReflectMutation(head, special);
 		prev = head->getName();
 		GRID_GET_COMPONENT(monster, monster, head);
 		groundLevel = monster.groundLevel;
 	}
-	uint64 aniInitOff = random(0, 10000000);
+	uint64 aniInitOff = randomRange(0, 10000000);
 	for (uint32 i = 0; i < pieces; i++)
 	{ // tail
-		entityClass *tail = initializeMonster(spawnPosition + vec3(random() - 0.5, 0, random() - 0.5), color, special ? 2.4 : 2, hashString("grid/monster/snakeTail.object"), hashString("grid/monster/bum-snake-tail.ogg"), 5, real::PositiveInfinity);
+		entityClass *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, special ? 2.4 : 2, hashString("grid/monster/snakeTail.object"), hashString("grid/monster/bum-snake-tail.ogg"), 5, real::PositiveInfinity);
 		GRID_GET_COMPONENT(snakeTail, snake, tail);
 		snake.follow = prev;
 		prev = tail->getName();
