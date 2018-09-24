@@ -13,25 +13,25 @@ namespace
 	{
 		switch (en)
 		{
-		case 13:
+		case 103:
 			setScreenGame();
 			return true;
-		case 14:
+		case 104:
 			setScreenOptions();
 			return true;
-		case 15:
+		case 105:
 			setScreenScores();
 			return true;
-		case 16:
+		case 106:
 			setScreenCredits();
 			return true;
-		case 17:
+		case 107:
 			engineStop();
 			return true;
 		}
-		if (en >= 100 && en < 150)
+		if (en >= 200)
 		{
-			reloadLanguage(confLanguage = en - 100);
+			reloadLanguage(confLanguage = en - 200);
 			return true;
 		}
 		return false;
@@ -40,31 +40,30 @@ namespace
 
 void setScreenMainmenu()
 {
-	eraseGui();
-	generateLogo();
+	{
+		guiConfig c;
+		c.backButton = false;
+		regenerateGui(c);
+	}
 	entityManagerClass *ents = gui()->entities();
 	guiEvent.bind<&guiFunction>();
 	guiEvent.attach(gui()->widgetEvent);
 
 	{ // main menu
-		entityClass *panel = ents->newUniqueEntity();
+		entityClass *panel = ents->createUnique();
 		{
 			GUI_GET_COMPONENT(groupBox, groupBox, panel);
 			groupBox.type = groupBoxTypeEnum::Panel;
-			GUI_GET_COMPONENT(position, position, panel);
-			position.anchor = vec2(0.5, 0.5);
-			position.position.values[0] = 0.8;
-			position.position.units[0] = unitEnum::ScreenWidth;
-			position.position.values[1] = 0.6;
-			position.position.units[1] = unitEnum::ScreenHeight;
+			GUI_GET_COMPONENT(parent, parent, panel);
+			parent.parent = 12;
 			GUI_GET_COMPONENT(layoutLine, layout, panel);
 			layout.vertical = true;
 		}
 
 		{
-			entityClass *butNewGame = ents->newEntity(13);
+			entityClass *butNewGame = ents->create(103);
 			GUI_GET_COMPONENT(parent, parent, butNewGame);
-			parent.parent = panel->getName();
+			parent.parent = panel->name();
 			parent.order = 1;
 			GUI_GET_COMPONENT(button, control, butNewGame);
 			GUI_GET_COMPONENT(text, txt, butNewGame);
@@ -73,9 +72,9 @@ void setScreenMainmenu()
 		}
 
 		{
-			entityClass *butOptions = ents->newEntity(14);
+			entityClass *butOptions = ents->create(104);
 			GUI_GET_COMPONENT(parent, parent, butOptions);
-			parent.parent = panel->getName();
+			parent.parent = panel->name();
 			parent.order = 2;
 			GUI_GET_COMPONENT(button, control, butOptions);
 			GUI_GET_COMPONENT(text, txt, butOptions);
@@ -84,9 +83,9 @@ void setScreenMainmenu()
 		}
 
 		{
-			entityClass *butScores = ents->newEntity(15);
+			entityClass *butScores = ents->create(105);
 			GUI_GET_COMPONENT(parent, parent, butScores);
-			parent.parent = panel->getName();
+			parent.parent = panel->name();
 			parent.order = 3;
 			GUI_GET_COMPONENT(button, control, butScores);
 			GUI_GET_COMPONENT(text, txt, butScores);
@@ -95,9 +94,9 @@ void setScreenMainmenu()
 		}
 
 		{
-			entityClass *butCredits = ents->newEntity(16);
+			entityClass *butCredits = ents->create(106);
 			GUI_GET_COMPONENT(parent, parent, butCredits);
-			parent.parent = panel->getName();
+			parent.parent = panel->name();
 			parent.order = 4;
 			GUI_GET_COMPONENT(button, control, butCredits);
 			GUI_GET_COMPONENT(text, txt, butCredits);
@@ -106,9 +105,9 @@ void setScreenMainmenu()
 		}
 
 		{
-			entityClass *butQuit = ents->newEntity(17);
+			entityClass *butQuit = ents->create(107);
 			GUI_GET_COMPONENT(parent, parent, butQuit);
-			parent.parent = panel->getName();
+			parent.parent = panel->name();
 			parent.order = 5;
 			GUI_GET_COMPONENT(button, control, butQuit);
 			GUI_GET_COMPONENT(text, txt, butQuit);
@@ -118,8 +117,10 @@ void setScreenMainmenu()
 	}
 
 	{ // languages
-		entityClass *column = ents->newUniqueEntity();
+		entityClass *column = ents->createUnique();
 		{
+			GUI_GET_COMPONENT(parent, parent, column);
+			parent.parent = 10;
 			GUI_GET_COMPONENT(layoutLine, layout, column);
 			layout.vertical = true;
 		}
@@ -131,9 +132,9 @@ void setScreenMainmenu()
 
 		for (uint32 i = 0; i < sizeof(flags) / sizeof(flags[0]); i++)
 		{
-			entityClass *but = ents->newEntity(100 + i);
+			entityClass *but = ents->create(200 + i);
 			GUI_GET_COMPONENT(parent, parent, but);
-			parent.parent = column->getName();
+			parent.parent = column->name();
 			parent.order = i;
 			GUI_GET_COMPONENT(button, control, but);
 			GUI_GET_COMPONENT(image, img, but);
@@ -146,6 +147,4 @@ void setScreenMainmenu()
 			position.size.units[1] = unitEnum::ScreenHeight;
 		}
 	}
-
-	gui()->skipAllEventsUntilNextUpdate();
 }

@@ -78,8 +78,8 @@ namespace
 			}
 			else
 			{
-				skyboxSecondaryCameraEntity->removeComponent(cameraComponent::component);
-				secondaryCameraEntity->removeComponent(cameraComponent::component);
+				skyboxSecondaryCameraEntity->remove(cameraComponent::component);
+				secondaryCameraEntity->remove(cameraComponent::component);
 			}
 		}
 	}
@@ -87,7 +87,7 @@ namespace
 	void gameStart()
 	{
 		{
-			skyboxRenderEntity = entities()->newUniqueEntity();
+			skyboxRenderEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(render, r, skyboxRenderEntity);
 			r.object = hashString("grid/environment/skybox.object");
 			r.renderMask = 2;
@@ -96,7 +96,7 @@ namespace
 		}
 
 		{
-			skyboxPrimaryCameraEntity = entities()->newUniqueEntity();
+			skyboxPrimaryCameraEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, skyboxPrimaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
 			ENGINE_GET_COMPONENT(camera, c, skyboxPrimaryCameraEntity);
@@ -108,7 +108,7 @@ namespace
 		}
 
 		{
-			primaryCameraEntity = entities()->newUniqueEntity();
+			primaryCameraEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, primaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
 			transform.position = vec3(0, 140, 0);
@@ -126,8 +126,8 @@ namespace
 		}
 
 		{
-			skyboxSecondaryCameraEntity = entities()->newUniqueEntity();
-			secondaryCameraEntity = entities()->newUniqueEntity();
+			skyboxSecondaryCameraEntity = entities()->createUnique();
+			secondaryCameraEntity = entities()->createUnique();
 		}
 	}
 

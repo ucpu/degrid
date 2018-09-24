@@ -249,8 +249,8 @@ namespace
 			keyMap[i] = false;
 		buttonMap = (mouseButtonsFlags)0;
 
-		for (entityClass *e : entities()->getAllEntities()->entities())
-			e->addGroup(entitiesToDestroy);
+		for (entityClass *e : entities()->group()->entities())
+			e->add(entitiesToDestroy);
 
 		{
 			bool cinematic = game.cinematic;

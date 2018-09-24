@@ -22,8 +22,8 @@ namespace
 		{
 			switch (mode)
 			{
-			case 0: return a.score > b.score;
-			case 1: return a.date > b.date;
+			case 0: return a.date > b.date;
+			case 1: return a.score > b.score;
 			default: CAGE_THROW_CRITICAL(exception, "invalid comparison mode");
 			}
 		}
@@ -49,45 +49,42 @@ namespace
 
 	void buildGui(int mode)
 	{
-		eraseGui();
-		generateLogo();
-		generateButtonBack();
+		regenerateGui(guiConfig());
 		entityManagerClass *ents = gui()->entities();
 		guiEvent.bind<&guiFunction>();
 		guiEvent.attach(gui()->widgetEvent);
 
-		entityClass *panel = ents->newUniqueEntity();
+		entityClass *panel = ents->createUnique();
 		{
 			GUI_GET_COMPONENT(groupBox, groupBox, panel);
 			groupBox.type = groupBoxTypeEnum::Panel;
-			GUI_GET_COMPONENT(position, position, panel);
-			position.size.values[1] = 1;
-			position.size.units[1] = unitEnum::ScreenHeight;
+			GUI_GET_COMPONENT(parent, parent, panel);
+			parent.parent = 12;
 			GUI_GET_COMPONENT(layoutTable, layout, panel);
 			layout.sections = 2;
 		}
 
 		{ // header
 			{
-				entityClass *butScore = ents->newEntity(51);
+				entityClass *butScore = ents->create(51);
 				GUI_GET_COMPONENT(parent, parent, butScore);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = 1;
 				GUI_GET_COMPONENT(button, control, butScore);
 				GUI_GET_COMPONENT(text, txt, butScore);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/scores/score");
+				txt.textName = hashString("gui/scores/date");
 			}
 
 			{
-				entityClass *butDate = ents->newEntity(52);
+				entityClass *butDate = ents->create(52);
 				GUI_GET_COMPONENT(parent, parent, butDate);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = 2;
 				GUI_GET_COMPONENT(button, control, butDate);
 				GUI_GET_COMPONENT(text, txt, butDate);
 				txt.assetName = hashString("grid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/scores/date");
+				txt.textName = hashString("gui/scores/score");
 			}
 		}
 
@@ -96,27 +93,27 @@ namespace
 		for (const auto &it : scores)
 		{
 			{
-				entityClass *txtScore = ents->newUniqueEntity();
+				entityClass *txtScore = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, txtScore);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, txtScore);
 				GUI_GET_COMPONENT(text, txt, txtScore);
-				txt.value = it.score;
+				txt.value = it.date;
 				GUI_GET_COMPONENT(textFormat, format, txtScore);
-				format.align = textAlignEnum::Right;
+				format.align = textAlignEnum::Center;
 			}
 
 			{
-				entityClass *txtDate = ents->newUniqueEntity();
+				entityClass *txtDate = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, txtDate);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, txtDate);
 				GUI_GET_COMPONENT(text, txt, txtDate);
-				txt.value = it.date;
+				txt.value = it.score;
 				GUI_GET_COMPONENT(textFormat, format, txtDate);
-				format.align = textAlignEnum::Center;
+				format.align = textAlignEnum::Right;
 			}
 		}
 	}
@@ -140,6 +137,5 @@ void setScreenScores()
 		}
 	}
 
-	guiFunction(51);
-	gui()->skipAllEventsUntilNextUpdate();
+	guiFunction(52);
 }

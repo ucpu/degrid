@@ -11,7 +11,7 @@ namespace
 
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
-		for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : monsterComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
 			GRID_GET_COMPONENT(velocity, v, e);
@@ -20,17 +20,17 @@ namespace
 			// monster dispersion
 			if (m.dispersion > 0)
 			{
-				uint32 myName = e->getName();
+				uint32 myName = e->name();
 				vec3 dispersion;
 				spatialQuery->intersection(sphere(t.position, t.scale + 1));
 				for (uint32 otherName : spatialQuery->result())
 				{
 					if (otherName == myName)
 						continue;
-					entityClass *e = entities()->getEntity(otherName);
+					entityClass *e = entities()->get(otherName);
 					ENGINE_GET_COMPONENT(transform, ot, e);
 					vec3 toMonster = t.position - ot.position;
-					if (e->hasComponent(monsterComponent::component))
+					if (e->has(monsterComponent::component))
 					{
 						real d = ot.scale + t.scale;
 						if (toMonster.squaredLength() < d*d)
@@ -129,7 +129,7 @@ void monsterReflectMutation(entityClass *e, uint32 special)
 entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
 {
 	statistics.monstersSpawned++;
-	entityClass *m = entities()->newUniqueEntity();
+	entityClass *m = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, transform, m);
 	ENGINE_GET_COMPONENT(render, render, m);
 	GRID_GET_COMPONENT(monster, monster, m);
@@ -147,9 +147,9 @@ entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, rea
 
 bool killMonster(entityClass *e, bool allowCallback)
 {
-	if (e->hasGroup(entitiesToDestroy))
+	if (e->has(entitiesToDestroy))
 		return false;
-	e->addGroup(entitiesToDestroy);
+	e->add(entitiesToDestroy);
 	monsterExplosion(e);
 	GRID_GET_COMPONENT(monster, m, e);
 	m.life = 0;
@@ -164,7 +164,7 @@ bool killMonster(entityClass *e, bool allowCallback)
 		return false;
 	if (m.defeatedCallback)
 	{
-		m.defeatedCallback(e->getName());
+		m.defeatedCallback(e->name());
 		m.defeatedCallback.clear();
 		return false;
 	}

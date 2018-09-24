@@ -10,9 +10,14 @@
 
 using namespace cage;
 
-void eraseGui();
-void generateLogo();
-void generateButtonBack();
+struct guiConfig
+{
+	bool backButton;
+	bool logo;
+	guiConfig();
+};
+
+void regenerateGui(const guiConfig &config);
 
 void setScreenMainmenu();
 void setScreenGame();

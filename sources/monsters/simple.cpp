@@ -19,7 +19,7 @@ namespace
 
 	void spawnSmallCube(uint32 originalEntity)
 	{
-		entityClass *e = entities()->getEntity(originalEntity);
+		entityClass *e = entities()->get(originalEntity);
 		ENGINE_GET_COMPONENT(transform, t, e);
 		ENGINE_GET_COMPONENT(render, r, e);
 		for (uint32 i = 0; i < 2; i++)
@@ -28,7 +28,7 @@ namespace
 
 	void spawnSmallTriangle(uint32 originalEntity)
 	{
-		entityClass *e = entities()->getEntity(originalEntity);
+		entityClass *e = entities()->get(originalEntity);
 		ENGINE_GET_COMPONENT(transform, t, e);
 		ENGINE_GET_COMPONENT(render, r, e);
 		for (uint32 i = 0; i < 2; i++)
@@ -57,7 +57,7 @@ namespace
 		if (game.paused)
 			return;
 
-		for (entityClass *e : simpleMonsterComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : simpleMonsterComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(velocity, mv, e);
@@ -70,16 +70,16 @@ namespace
 				// shot avoidance
 				uint32 closestShot = 0;
 				real closestDistance = real::PositiveInfinity;
-				uint32 myName = e->getName();
+				uint32 myName = e->name();
 				spatialQuery->intersection(sphere(tr.position, 15));
 				for (uint32 otherName : spatialQuery->result())
 				{
 					if (otherName == myName)
 						continue;
 
-					entityClass *e = entities()->getEntity(otherName);
+					entityClass *e = entities()->get(otherName);
 
-					if (!e->hasComponent(shotComponent::component))
+					if (!e->has(shotComponent::component))
 						continue;
 
 					ENGINE_GET_COMPONENT(transform, ot, e);
@@ -103,7 +103,7 @@ namespace
 
 				if (closestShot)
 				{
-					entityClass *s = entities()->getEntity(closestShot);
+					entityClass *s = entities()->get(closestShot);
 					ENGINE_GET_COMPONENT(transform, ot, s);
 					GRID_GET_COMPONENT(velocity, ov, s);
 					vec3 a = tr.position - ot.position;

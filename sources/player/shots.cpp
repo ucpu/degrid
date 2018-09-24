@@ -39,7 +39,7 @@ namespace
 		for (real i = game.powerups[(uint32)powerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)powerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 		{
 			statistics.shotsFired++;
-			entityClass *shot = entities()->newUniqueEntity();
+			entityClass *shot = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, shot);
 			rads dir = aTan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += degs(i * 10);
@@ -63,7 +63,7 @@ namespace
 
 	void shotsUpdate()
 	{
-		for (entityClass *e : shotComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : shotComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
@@ -72,7 +72,7 @@ namespace
 			uint32 homingMonster = 0;
 			real closestDistance = real::PositiveInfinity;
 			real homingDistance = real::PositiveInfinity;
-			uint32 myName = e->getName();
+			uint32 myName = e->name();
 			GRID_GET_COMPONENT(shot, sh, e);
 			GRID_GET_COMPONENT(velocity, vl, e);
 
@@ -82,16 +82,16 @@ namespace
 				if (otherName == myName)
 					continue;
 
-				entityClass *e = entities()->getEntity(otherName);
+				entityClass *e = entities()->get(otherName);
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				vec3 toOther = ot.position - tr.position;
-				if (e->hasComponent(gridComponent::component))
+				if (e->has(gridComponent::component))
 				{
 					GRID_GET_COMPONENT(velocity, og, e);
 					og.velocity += vl.velocity.normalize() * (0.2f / max(1, toOther.length()));
 					continue;
 				}
-				if (!e->hasComponent(monsterComponent::component))
+				if (!e->has(monsterComponent::component))
 					continue;
 				GRID_GET_COMPONENT(monster, om, e);
 				if (om.life <= 0)
@@ -116,7 +116,7 @@ namespace
 			if (closestMonster)
 			{
 				statistics.shotsHit++;
-				entityClass *m = entities()->getEntity(closestMonster);
+				entityClass *m = entities()->get(closestMonster);
 				GRID_GET_COMPONENT(monster, om, m);
 				real dmg = sh.damage;
 				sh.damage -= om.life;
@@ -139,7 +139,7 @@ namespace
 				if (sh.damage <= 1e-5)
 				{
 					shotExplosion(e);
-					e->addGroup(entitiesToDestroy); // destroy the shot
+					e->add(entitiesToDestroy); // destroy the shot
 					return;
 				}
 				vl.velocity += randomDirection3() * 0.5;
@@ -149,7 +149,7 @@ namespace
 			{
 				if (homingMonster)
 				{
-					entityClass *m = entities()->getEntity(homingMonster);
+					entityClass *m = entities()->get(homingMonster);
 					ENGINE_GET_COMPONENT(transform, mtr, m);
 					vec3 toOther = normalize(mtr.position - tr.position);
 					real spd = vl.velocity.length();

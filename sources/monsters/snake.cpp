@@ -32,7 +32,7 @@ namespace
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 
 		// snake heads
-		for (entityClass *e : snakeHeadComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : snakeHeadComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(velocity, v, e);
@@ -51,16 +51,16 @@ namespace
 		}
 
 		// snake tails
-		for (entityClass *e : snakeTailComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : snakeTailComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(velocity, v, e);
 			GRID_GET_COMPONENT(monster, m, e);
 			GRID_GET_COMPONENT(snakeTail, snake, e);
 
-			if (snake.follow && entities()->hasEntity(snake.follow))
+			if (snake.follow && entities()->has(snake.follow))
 			{
-				entityClass *p = entities()->getEntity(snake.follow);
+				entityClass *p = entities()->get(snake.follow);
 				ENGINE_GET_COMPONENT(transform, trp, p);
 				vec3 toPrev = trp.position - tr.position;
 				real r = trp.scale + tr.scale;
@@ -121,7 +121,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		snake.speedMin = 0.3 + 0.1 * monsterMutation(special);
 		snake.speedMax = snake.speedMin + 0.6 + 0.2 * monsterMutation(special);
 		monsterReflectMutation(head, special);
-		prev = head->getName();
+		prev = head->name();
 		GRID_GET_COMPONENT(monster, monster, head);
 		groundLevel = monster.groundLevel;
 	}
@@ -131,7 +131,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		entityClass *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, special ? 2.4 : 2, hashString("grid/monster/snakeTail.object"), hashString("grid/monster/bum-snake-tail.ogg"), 5, real::PositiveInfinity);
 		GRID_GET_COMPONENT(snakeTail, snake, tail);
 		snake.follow = prev;
-		prev = tail->getName();
+		prev = tail->name();
 		ENGINE_GET_COMPONENT(animatedTexture, aniTex, tail);
 		aniTex.startTime = currentControlTime() + aniInitOff + i * 1000000;
 		aniTex.speed = 0.4;

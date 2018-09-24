@@ -21,7 +21,7 @@ namespace
 	void countActiveSounds()
 	{
 		statistics.soundEffectsCurrent = 0;
-		for (entityClass *e : voiceComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : voiceComponent::component->entities())
 		{
 			statistics.soundEffectsCurrent++;
 		}
@@ -37,11 +37,11 @@ namespace
 		if (game.gameOver)
 			return;
 
-		statistics.shotsCurrent = shotComponent::component->getComponentEntities()->entitiesCount();
+		statistics.shotsCurrent = shotComponent::component->group()->count();
 		statistics.shotsMax = max(statistics.shotsMax, statistics.shotsCurrent);
-		statistics.monstersCurrent = monsterComponent::component->getComponentEntities()->entitiesCount();
+		statistics.monstersCurrent = monsterComponent::component->group()->count();
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
-		statistics.entitiesCurrent = entities()->getAllEntities()->entitiesCount();
+		statistics.entitiesCurrent = entities()->group()->count();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
 		statistics.timeRenderCurrent = engineProfilingValues(engineProfilingStatsFlags::FrameTime, engineProfilingModeEnum::Last);
 		if (statistics.updateIterationIgnorePause > 1000)

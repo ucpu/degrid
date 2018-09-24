@@ -13,7 +13,7 @@ namespace
 
 	bool buttonSave(uint32 en)
 	{
-		if (en != 12) return false;
+		if (en != 100) return false;
 
 #ifndef GRID_TESTING
 		{
@@ -38,31 +38,30 @@ namespace
 void setScreenGameover(uint32 score)
 {
 	scoreValue = score;
-	eraseGui();
-	generateLogo();
+	{
+		guiConfig c;
+		c.backButton = false;
+		regenerateGui(c);
+	}
 	entityManagerClass *ents = gui()->entities();
 	guiEvent.bind<&buttonSave>();
 	guiEvent.attach(gui()->widgetEvent);
 
-	entityClass *panel = ents->newUniqueEntity();
+	entityClass *panel = ents->createUnique();
 	{
 		GUI_GET_COMPONENT(groupBox, groupBox, panel);
 		groupBox.type = groupBoxTypeEnum::Panel;
-		GUI_GET_COMPONENT(position, position, panel);
-		position.anchor = vec2(0.5, 0.5);
-		position.position.values[0] = 0.3;
-		position.position.units[0] = unitEnum::ScreenWidth;
-		position.position.values[1] = 0.6;
-		position.position.units[1] = unitEnum::ScreenHeight;
+		GUI_GET_COMPONENT(parent, parent, panel);
+		parent.parent = 12;
 		GUI_GET_COMPONENT(layoutLine, layout, panel);
 		layout.vertical = true;
 		layout.expandToSameWidth = true;
 	}
 
 	{
-		entityClass *empOver = ents->newUniqueEntity();
+		entityClass *empOver = ents->createUnique();
 		GUI_GET_COMPONENT(parent, parent, empOver);
-		parent.parent = panel->getName();
+		parent.parent = panel->name();
 		parent.order = 1;
 		GUI_GET_COMPONENT(label, control, empOver);
 		GUI_GET_COMPONENT(text, txt, empOver);
@@ -75,9 +74,9 @@ void setScreenGameover(uint32 score)
 	}
 
 	{
-		entityClass *empScore = ents->newUniqueEntity();
+		entityClass *empScore = ents->createUnique();
 		GUI_GET_COMPONENT(parent, parent, empScore);
-		parent.parent = panel->getName();
+		parent.parent = panel->name();
 		parent.order = 2;
 		GUI_GET_COMPONENT(label, control, empScore);
 		GUI_GET_COMPONENT(text, txt, empScore);
@@ -89,18 +88,12 @@ void setScreenGameover(uint32 score)
 	}
 
 	{
-		entityClass *butSave = ents->newEntity(12);
+		entityClass *butSave = ents->create(100);
 		GUI_GET_COMPONENT(button, control, butSave);
 		GUI_GET_COMPONENT(text, txt, butSave);
 		txt.assetName = hashString("grid/languages/internationalized.textpack");
 		txt.textName = hashString("gui/gameover/save");
-		GUI_GET_COMPONENT(position, position, butSave);
-		position.anchor = vec2(1, 1);
-		position.position.values[0] = 1;
-		position.position.units[0] = unitEnum::ScreenWidth;
-		position.position.values[1] = 1;
-		position.position.units[1] = unitEnum::ScreenHeight;
+		GUI_GET_COMPONENT(parent, parent, butSave);
+		parent.parent = 15;
 	}
-
-	gui()->skipAllEventsUntilNextUpdate();
 }

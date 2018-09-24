@@ -94,8 +94,8 @@ namespace
 		spatialQuery->intersection(sphere(playerTransform.position, distMax));
 		for (uint32 otherName : spatialQuery->result())
 		{
-			entityClass *e = entities()->getEntity(otherName);
-			if (e->hasComponent(monsterComponent::component))
+			entityClass *e = entities()->get(otherName);
+			if (e->has(monsterComponent::component))
 			{
 				ENGINE_GET_COMPONENT(transform, p, e);
 				real d = p.position.distance(playerTransform.position);
@@ -255,7 +255,7 @@ void soundEffect(uint32 sound, const vec3 &position)
 	sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(sound);
 	if (!src)
 		return;
-	entityClass *e = entities()->newUniqueEntity();
+	entityClass *e = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, t, e);
 	t.position = position;
 	ENGINE_GET_COMPONENT(voice, s, e);
@@ -263,7 +263,7 @@ void soundEffect(uint32 sound, const vec3 &position)
 	s.startTime = currentControlTime();
 	GRID_GET_COMPONENT(timeout, ttl, e);
 	ttl.ttl = numeric_cast<uint32>((src->getDuration() + 100000) / controlThread().timePerTick);
-	e->addGroup(entitiesPhysicsEvenWhenPaused);
+	e->add(entitiesPhysicsEvenWhenPaused);
 }
 
 void soundSpeech(uint32 sound)

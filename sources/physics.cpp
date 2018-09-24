@@ -23,13 +23,13 @@ namespace
 	{
 		if (!game.paused)
 		{ // gravity
-			for (entityClass *e : gravityComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : gravityComponent::component->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, t, e);
 				GRID_GET_COMPONENT(gravity, g, e);
-				for (entityClass *oe : velocityComponent::component->getComponentEntities()->entities())
+				for (entityClass *oe : velocityComponent::component->entities())
 				{
-					if (oe->hasComponent(gravityComponent::component))
+					if (oe->has(gravityComponent::component))
 						continue;
 					ENGINE_GET_COMPONENT(transform, ot, oe);
 					vec3 d = t.position - ot.position;
@@ -41,9 +41,9 @@ namespace
 		}
 
 		{ // velocity
-			for (entityClass *e : velocityComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : velocityComponent::component->entities())
 			{
-				if (game.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
 				ENGINE_GET_COMPONENT(transform, t, e);
 				GRID_GET_COMPONENT(velocity, v, e);
@@ -52,9 +52,9 @@ namespace
 		}
 
 		{ // rotation
-			for (entityClass *e : rotationComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : rotationComponent::component->entities())
 			{
-				if (game.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
 				ENGINE_GET_COMPONENT(transform, t, e);
 				GRID_GET_COMPONENT(rotation, r, e);
@@ -63,25 +63,25 @@ namespace
 		}
 
 		{ // timeout
-			for (entityClass *e : timeoutComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : timeoutComponent::component->entities())
 			{
-				if (game.paused && !e->hasGroup(entitiesPhysicsEvenWhenPaused))
+				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
 				GRID_GET_COMPONENT(timeout, t, e);
 				if (t.ttl == 0)
-					e->addGroup(entitiesToDestroy);
+					e->add(entitiesToDestroy);
 				else
 					t.ttl--;
 			}
 		}
 
-		entitiesToDestroy->destroyAllEntities();
+		entitiesToDestroy->destroy();
 
 		{ // update spatial
 			spatialData->clear();
-			for (entityClass *e : transformComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : transformComponent::component->entities())
 			{
-				uint32 n = e->getName();
+				uint32 n = e->name();
 				if (n)
 				{
 					ENGINE_GET_COMPONENT(transform, tr, e);

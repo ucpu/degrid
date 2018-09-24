@@ -32,7 +32,7 @@ namespace
 				vl.velocity = vl.velocity.normalize() * maxSpeed;
 			if (change.squaredLength() > 0.01)
 			{
-				entityClass *spark = entities()->newAnonymousEntity();
+				entityClass *spark = entities()->createAnonymous();
 				ENGINE_GET_COMPONENT(transform, transform, spark);
 				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
@@ -46,7 +46,7 @@ namespace
 				ENGINE_GET_COMPONENT(animatedTexture, at, spark);
 				at.startTime = currentControlTime();
 				at.speed = 30.f / ttl.ttl;
-				spark->addGroup(entitiesPhysicsEvenWhenPaused);
+				spark->add(entitiesPhysicsEvenWhenPaused);
 			}
 		}
 		else
@@ -84,8 +84,8 @@ namespace
 		}
 		else
 		{
-			game.shieldEntity->removeComponent(renderComponent::component);
-			game.shieldEntity->removeComponent(voiceComponent::component);
+			game.shieldEntity->remove(renderComponent::component);
+			game.shieldEntity->remove(voiceComponent::component);
 		}
 	}
 
@@ -131,7 +131,7 @@ namespace
 		scorePrevious = 0;
 
 		{ // player ship entity
-			game.playerEntity = entities()->newUniqueEntity();
+			game.playerEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, game.playerEntity);
 			transform.scale = playerScale;
 			ENGINE_GET_COMPONENT(render, render, game.playerEntity);
@@ -140,7 +140,7 @@ namespace
 		}
 
 		{ // player shield entity
-			game.shieldEntity = entities()->newUniqueEntity();
+			game.shieldEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, game.shieldEntity);
 			(void)transform;
 			ENGINE_GET_COMPONENT(animatedTexture, aniTex, game.shieldEntity);
@@ -155,7 +155,7 @@ namespace
 		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, 20, playerScale);
 		for (uint32 i = 0; i < 10; i++)
 			environmentExplosion(playerTransform.position, randomDirection3() * vec3(1, 0.1, 1), playerDeathColor, 5, playerScale);
-		game.playerEntity->addGroup(entitiesToDestroy);
+		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;
 	}
 

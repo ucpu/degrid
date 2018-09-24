@@ -26,11 +26,11 @@ namespace
 	void updateShields()
 	{
 		// update shields transformations
-		for (entityClass *e : shielderComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : shielderComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, et, e);
 			GRID_GET_COMPONENT(shielder, es, e);
-			entityClass *s = entities()->getEntity(es.shieldEntity);
+			entityClass *s = entities()->get(es.shieldEntity);
 			ENGINE_GET_COMPONENT(transform, st, s);
 			st = et;
 		}
@@ -39,8 +39,8 @@ namespace
 	void shielderEliminated(entityClass *e)
 	{
 		GRID_GET_COMPONENT(shielder, sh, e);
-		if (entities()->hasEntity(sh.shieldEntity))
-			entities()->getEntity(sh.shieldEntity)->addGroup(entitiesToDestroy);
+		if (entities()->has(sh.shieldEntity))
+			entities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
 
 	eventListener<void(entityClass*)> shielderEliminatedListener;
@@ -50,7 +50,7 @@ namespace
 		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
 		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
 		shielderEliminatedListener.bind<&shielderEliminated>();
-		shielderEliminatedListener.attach(shielderComponent::component->getComponentEntities()->entityRemoved);
+		shielderEliminatedListener.attach(shielderComponent::component->group()->entityRemoved);
 	}
 
 	void engineUpdate()
@@ -58,13 +58,13 @@ namespace
 		if (game.paused)
 			return;
 
-		for (entityClass *e : shielderComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : shielderComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(velocity, mv, e);
 			GRID_GET_COMPONENT(monster, ms, e);
 			GRID_GET_COMPONENT(shielder, sh, e);
-			entityClass *se = entities()->getEntity(sh.shieldEntity);
+			entityClass *se = entities()->get(sh.shieldEntity);
 			GRID_GET_COMPONENT(shield, sse, se);
 
 			// update the monster
@@ -109,7 +109,7 @@ namespace
 			}
 			else
 			{
-				se->removeComponent(renderComponent::component);
+				se->remove(renderComponent::component);
 				continue;
 			}
 
@@ -118,8 +118,8 @@ namespace
 			spatialQuery->intersection(sphere(tr.position + forward * (tr.scale + 3), 5));
 			for (uint32 otherName : spatialQuery->result())
 			{
-				entityClass *e = entities()->getEntity(otherName);
-				if (!e->hasComponent(shotComponent::component))
+				entityClass *e = entities()->get(otherName);
+				if (!e->has(shotComponent::component))
 					continue;
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				vec3 toShot = ot.position - tr.position;
@@ -129,7 +129,7 @@ namespace
 				vec3 dirShot = toShot.normalize();
 				if (dirShot.dot(forward) < cos(degs(45)))
 					continue;
-				e->addGroup(entitiesToDestroy);
+				e->add(entitiesToDestroy);
 				statistics.shielderStoppedShots++;
 				shotExplosion(e);
 			}
@@ -158,10 +158,10 @@ void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
 	entityClass *shielder = initializeMonster(spawnPosition, color, 3, hashString("grid/monster/shielder.object"), hashString("grid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
-	entityClass *shield = entities()->newUniqueEntity();
+	entityClass *shield = entities()->createUnique();
 	{
 		GRID_GET_COMPONENT(shielder, sh, shielder);
-		sh.shieldEntity = shield->getName();
+		sh.shieldEntity = shield->name();
 		sh.movementSpeed = 0.8 + 0.2 * monsterMutation(special);
 		sh.turningSteps = randomRange(20u, 30u);
 		sh.chargingSteps = randomRange(60u, 180u);

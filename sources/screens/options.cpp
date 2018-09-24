@@ -22,7 +22,7 @@ namespace
 	{
 		entityManagerClass *ents = gui()->entities();
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 0;
@@ -31,7 +31,7 @@ namespace
 			txt.textName = hashString("gui/options/arrowsAbsolute");
 		}
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 1;
@@ -40,7 +40,7 @@ namespace
 			txt.textName = hashString("gui/options/arrowsRelative");
 		}
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 2;
@@ -49,7 +49,7 @@ namespace
 			txt.textName = hashString("gui/options/lmb");
 		}
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 3;
@@ -58,7 +58,7 @@ namespace
 			txt.textName = hashString("gui/options/rmb");
 		}
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 4;
@@ -72,7 +72,7 @@ namespace
 	{
 		entityManagerClass *ents = gui()->entities();
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -4;
@@ -81,7 +81,7 @@ namespace
 			txt.textName = hashString("gui/options/lmb");
 		}
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -3;
@@ -90,7 +90,7 @@ namespace
 			txt.textName = hashString("gui/options/mmb");
 		}
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -2;
@@ -99,7 +99,7 @@ namespace
 			txt.textName = hashString("gui/options/rmb");
 		}
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -1;
@@ -109,7 +109,7 @@ namespace
 		}
 		for (sint32 i = 0; i < sizeof(letters); i++)
 		{
-			entityClass *opt = ents->newUniqueEntity();
+			entityClass *opt = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = letters[i];
@@ -126,49 +126,49 @@ namespace
 		{
 		case 31:
 		{
-			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->get(en));
 			confControlMovement = control.selected;
 			return true;
 		}
 		case 32:
 		{
-			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->get(en));
 			confControlFiring = control.selected;
 			return true;
 		}
 		case 33:
 		{
-			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->get(en));
 			confControlBomb = control.selected;
 			return true;
 		}
 		case 34:
 		{
-			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->get(en));
 			confControlTurret = control.selected;
 			return true;
 		}
 		case 35:
 		{
-			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(comboBox, control, gui()->entities()->get(en));
 			confControlDecoy = control.selected;
 			return true;
 		}
 		case 36:
 		{
-			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->get(en));
 			confVolumeMusic = control.value.value;
 			return true;
 		}
 		case 37:
 		{
-			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->get(en));
 			confVolumeEffects = control.value.value;
 			return true;
 		}
 		case 38:
 		{
-			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->getEntity(en));
+			GUI_GET_COMPONENT(sliderBar, control, gui()->entities()->get(en));
 			confVolumeSpeech = control.value.value;
 			return true;
 		}
@@ -179,29 +179,26 @@ namespace
 
 void setScreenOptions()
 {
-	eraseGui();
-	generateLogo();
-	generateButtonBack();
+	regenerateGui(guiConfig());
 	entityManagerClass *ents = gui()->entities();
 	guiEvent.bind<&guiFunction>();
 	guiEvent.attach(gui()->widgetEvent);
 
-	entityClass *tabs = ents->newUniqueEntity();
+	entityClass *tabs = ents->createUnique();
 	{
-		GUI_GET_COMPONENT(position, position, tabs);
-		position.size.values[1] = 1;
-		position.size.units[1] = unitEnum::ScreenHeight;
+		GUI_GET_COMPONENT(parent, parent, tabs);
+		parent.parent = 12;
 		GUI_GET_COMPONENT(layoutLine, layout, tabs);
 		layout.vertical = true;
 		layout.expandToSameWidth = true;
 	}
 
 	{ // controls
-		entityClass *panel = ents->newUniqueEntity();
+		entityClass *panel = ents->createUnique();
 		{
 			GUI_GET_COMPONENT(groupBox, control, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
-			parent.parent = tabs->getName();
+			parent.parent = tabs->name();
 			parent.order = 1;
 			GUI_GET_COMPONENT(layoutTable, layout, panel);
 			layout.sections = 2;
@@ -213,9 +210,9 @@ void setScreenOptions()
 
 		{ // movement
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -224,21 +221,21 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(31);
+				entityClass *ctr = ents->create(31);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
 				control.selected = confControlMovement;
-				addOptionsMovementFiring(ctr->getName());
+				addOptionsMovementFiring(ctr->name());
 			}
 		}
 
 		{ // firing
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -247,21 +244,21 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(32);
+				entityClass *ctr = ents->create(32);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
 				control.selected = confControlFiring;
-				addOptionsMovementFiring(ctr->getName());
+				addOptionsMovementFiring(ctr->name());
 			}
 		}
 
 		{ // bomb
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -270,21 +267,21 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(33);
+				entityClass *ctr = ents->create(33);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
 				control.selected = confControlBomb;
-				addOptionsPowers(ctr->getName());
+				addOptionsPowers(ctr->name());
 			}
 		}
 
 		{ // turret
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -293,21 +290,21 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(34);
+				entityClass *ctr = ents->create(34);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
 				control.selected = confControlTurret;
-				addOptionsPowers(ctr->getName());
+				addOptionsPowers(ctr->name());
 			}
 		}
 
 		{ // decoy
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -316,23 +313,23 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(35);
+				entityClass *ctr = ents->create(35);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(comboBox, control, ctr);
 				control.selected = confControlDecoy;
-				addOptionsPowers(ctr->getName());
+				addOptionsPowers(ctr->name());
 			}
 		}
 	}
 
 	{
-		entityClass *panel = ents->newUniqueEntity();
+		entityClass *panel = ents->createUnique();
 		{
 			GUI_GET_COMPONENT(groupBox, control, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
-			parent.parent = tabs->getName();
+			parent.parent = tabs->name();
 			parent.order = 2;
 			GUI_GET_COMPONENT(layoutTable, layout, panel);
 			layout.sections = 2;
@@ -344,9 +341,9 @@ void setScreenOptions()
 
 		{ // music volume
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -355,9 +352,9 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(36);
+				entityClass *ctr = ents->create(36);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(sliderBar, control, ctr);
 				control.value = real(confVolumeMusic);
@@ -366,9 +363,9 @@ void setScreenOptions()
 
 		{ // effects volume
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -377,9 +374,9 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(37);
+				entityClass *ctr = ents->create(37);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(sliderBar, control, ctr);
 				control.value = real(confVolumeEffects);
@@ -388,9 +385,9 @@ void setScreenOptions()
 
 		{ // speech volume
 			{
-				entityClass *lbl = ents->newUniqueEntity();
+				entityClass *lbl = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, lbl);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
@@ -399,16 +396,14 @@ void setScreenOptions()
 			}
 
 			{
-				entityClass *ctr = ents->newEntity(38);
+				entityClass *ctr = ents->create(38);
 				GUI_GET_COMPONENT(parent, parent, ctr);
-				parent.parent = panel->getName();
+				parent.parent = panel->name();
 				parent.order = index++;
 				GUI_GET_COMPONENT(sliderBar, control, ctr);
 				control.value = real(confVolumeSpeech);
 			}
 		}
 	}
-
-	gui()->skipAllEventsUntilNextUpdate();
 }
 

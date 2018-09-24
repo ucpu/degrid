@@ -24,7 +24,7 @@ namespace
 
 	void turretsUpdate()
 	{
-		for (entityClass *e : turretComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : turretComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(turret, tu, e);
@@ -37,7 +37,7 @@ namespace
 			for (uint32 i = 0; i < 6; i++)
 			{
 				statistics.shotsTurret++;
-				entityClass *shot = entities()->newUniqueEntity();
+				entityClass *shot = entities()->createUnique();
 				ENGINE_GET_COMPONENT(transform, transform, shot);
 				transform.orientation = quat(degs(), degs(i * 60), degs()) * tr.orientation;
 				transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
@@ -56,7 +56,7 @@ namespace
 
 	void decoysUpdate()
 	{
-		for (entityClass *e : decoyComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : decoyComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
 			GRID_GET_COMPONENT(velocity, vel, e);
@@ -77,7 +77,7 @@ namespace
 	{
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
-		for (entityClass *e : powerupComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : powerupComponent::component->entities())
 		{
 			GRID_GET_COMPONENT(powerup, p, e);
 			CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);
@@ -92,7 +92,7 @@ namespace
 			}
 
 			statistics.powerupsPicked++;
-			e->addGroup(entitiesToDestroy);
+			e->add(entitiesToDestroy);
 			switch (powerupMode[(uint32)p.type])
 			{
 			case 0: // collectible
@@ -191,7 +191,7 @@ namespace
 void powerupSpawn(const vec3 &position)
 {
 	statistics.powerupsSpawned++;
-	entityClass *e = entities()->newUniqueEntity();
+	entityClass *e = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, transform, e);
 	transform.position = position * vec3(1, 0, 1);
 	transform.orientation = quat(randomAngle(), randomAngle(), randomAngle());
@@ -219,8 +219,8 @@ void eventBomb()
 		return;
 	game.powerups[(uint32)powerupTypeEnum::Bomb]--;
 	uint32 kills = 0;
-	uint32 count = monsterComponent::component->getComponentEntities()->entitiesCount();
-	for (entityClass *e : monsterComponent::component->getComponentEntities()->entities())
+	uint32 count = monsterComponent::component->group()->count();
+	for (entityClass *e : monsterComponent::component->entities())
 	{
 		GRID_GET_COMPONENT(monster, m, e);
 		m.life -= 10;
@@ -237,7 +237,7 @@ void eventBomb()
 	statistics.bombsUsed++;
 	{
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		for (entityClass *e : gridComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : gridComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
 			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
@@ -259,7 +259,7 @@ void eventTurret()
 		return;
 	game.powerups[(uint32)powerupTypeEnum::Turret]--;
 	statistics.turretsPlaced++;
-	entityClass *turret = entities()->newUniqueEntity();
+	entityClass *turret = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 	ENGINE_GET_COMPONENT(transform, transform, turret);
 	GRID_GET_COMPONENT(velocity, vel, turret); // allow it to be affected by gravity
@@ -289,7 +289,7 @@ void eventDecoy()
 		return;
 	game.powerups[(uint32)powerupTypeEnum::Decoy]--;
 	statistics.decoysUsed++;
-	entityClass *decoy = entities()->newUniqueEntity();
+	entityClass *decoy = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 	ENGINE_GET_COMPONENT(transform, transform, decoy);
 	transform = playerTransform;

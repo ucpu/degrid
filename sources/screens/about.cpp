@@ -2,18 +2,15 @@
 
 void setScreenCredits()
 {
-	eraseGui();
-	generateLogo();
-	generateButtonBack();
+	regenerateGui(guiConfig());
 	entityManagerClass *ents = gui()->entities();
 
-	entityClass *panel = ents->newUniqueEntity();
+	entityClass *panel = ents->createUnique();
 	{
 		GUI_GET_COMPONENT(groupBox, groupBox, panel);
 		groupBox.type = groupBoxTypeEnum::Panel;
-		GUI_GET_COMPONENT(position, position, panel);
-		position.size.values[1] = 1;
-		position.size.units[1] = unitEnum::ScreenHeight;
+		GUI_GET_COMPONENT(parent, parent, panel);
+		parent.parent = 12;
 		GUI_GET_COMPONENT(layoutLine, layout, panel);
 		layout.vertical = true;
 	}
@@ -28,9 +25,9 @@ void setScreenCredits()
 	uint32 idx = 0;
 	for (auto it : textNames)
 	{
-		entityClass *label = gui()->entities()->newEntity(idx + 1);
+		entityClass *label = gui()->entities()->createUnique();
 		GUI_GET_COMPONENT(parent, parent, label);
-		parent.parent = panel->getName();
+		parent.parent = panel->name();
 		parent.order = idx;
 		GUI_GET_COMPONENT(label, lab, label);
 		GUI_GET_COMPONENT(text, txt, label);
@@ -38,6 +35,4 @@ void setScreenCredits()
 		txt.textName = textNames[idx];
 		idx++;
 	}
-
-	gui()->skipAllEventsUntilNextUpdate();
 }

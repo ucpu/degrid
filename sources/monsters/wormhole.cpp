@@ -27,7 +27,7 @@ namespace
 	void countWormholes(uint32 &positive, uint32 &negative)
 	{
 		positive = negative = 0;
-		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : wormholeComponent::component->entities())
 		{
 			GRID_GET_COMPONENT(gravity, g, e);
 			if (g.strength > 0)
@@ -40,7 +40,7 @@ namespace
 	entityClass *pickWormhole(sint32 sgn)
 	{
 		std::vector<entityClass*> candidates;
-		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : wormholeComponent::component->entities())
 		{
 			GRID_GET_COMPONENT(gravity, g, e);
 			if (sign(g.strength) == sgn)
@@ -57,7 +57,7 @@ namespace
 		if (om.damage < 100)
 		{
 			om.damage *= 2;
-			bool hadFlickering = oe->hasComponent(monsterFlickeringComponent::component);
+			bool hadFlickering = oe->has(monsterFlickeringComponent::component);
 			GRID_GET_COMPONENT(monsterFlickering, mof, oe);
 			if (!hadFlickering)
 			{
@@ -71,7 +71,7 @@ namespace
 
 	void wormholeKilled(uint32 name)
 	{
-		entityClass *w = entities()->getEntity(name);
+		entityClass *w = entities()->get(name);
 		ENGINE_GET_COMPONENT(transform, wt, w);
 		GRID_GET_COMPONENT(gravity, wg, w);
 
@@ -84,7 +84,7 @@ namespace
 		}
 
 		// create temporary oposite gravity effect
-		entityClass *e = entities()->newUniqueEntity();
+		entityClass *e = entities()->createUnique();
 		ENGINE_GET_COMPONENT(transform, et, e);
 		GRID_GET_COMPONENT(gravity, eg, e);
 		et.position = wt.position;
@@ -102,7 +102,7 @@ namespace
 	void engineUpdate()
 	{
 		{ // flickering
-			for (entityClass *e : monsterFlickeringComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : monsterFlickeringComponent::component->entities())
 			{
 				ENGINE_GET_COMPONENT(render, r, e);
 				GRID_GET_COMPONENT(monsterFlickering, m, e);
@@ -118,9 +118,9 @@ namespace
 		uint32 positive, negative;
 		countWormholes(positive, negative);
 
-		for (entityClass *e : wormholeComponent::component->getComponentEntities()->entities())
+		for (entityClass *e : wormholeComponent::component->entities())
 		{
-			uint32 myName = e->getName();
+			uint32 myName = e->name();
 			ENGINE_GET_COMPONENT(transform, t, e);
 			GRID_GET_COMPONENT(gravity, g, e);
 
@@ -140,14 +140,14 @@ namespace
 				{
 					if (otherName == myName)
 						continue;
-					entityClass *oe = entities()->getEntity(otherName);
+					entityClass *oe = entities()->get(otherName);
 
 					// gravity irrelevant entities
-					if (!oe->hasComponent(velocityComponent::component))
+					if (!oe->has(velocityComponent::component))
 						continue;
 
 					// shots
-					if (oe->hasComponent(shotComponent::component))
+					if (oe->has(shotComponent::component))
 						continue;
 
 					bool teleport = false;
@@ -165,11 +165,11 @@ namespace
 					}
 
 					// grids
-					if (oe->hasComponent(gridComponent::component))
+					if (oe->has(gridComponent::component))
 						teleport = true;
 
 					// monsters
-					if (oe->hasComponent(monsterComponent::component))
+					if (oe->has(monsterComponent::component))
 					{
 						updateMonsterFlickering(oe);
 						teleport = true;
@@ -192,7 +192,7 @@ namespace
 						oth.position = ot.position;
 					}
 					else
-						oe->addGroup(entitiesToDestroy);
+						oe->add(entitiesToDestroy);
 				}
 			}
 			else

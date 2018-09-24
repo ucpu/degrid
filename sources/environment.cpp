@@ -16,7 +16,7 @@ namespace
 			return;
 
 		{ // update grid markers
-			for (entityClass *e : gridComponent::component->getComponentEntities()->entities())
+			for (entityClass *e : gridComponent::component->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, t, e);
 				ENGINE_GET_COMPONENT(render, r, e);
@@ -32,7 +32,7 @@ namespace
 	void gameStart()
 	{
 		{
-			entityClass *light = entities()->newUniqueEntity();
+			entityClass *light = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, t, light);
 			t.orientation = quat(degs(), degs(45), degs());
 			ENGINE_GET_COMPONENT(light, l, light);
@@ -53,7 +53,7 @@ namespace
 				const real d = vec3(x, 0, y).length();
 				if (d > radius || d < 1e-7)
 					continue;
-				entityClass *e = entities()->newUniqueEntity();
+				entityClass *e = entities()->createUnique();
 				GRID_GET_COMPONENT(velocity, velocity, e);
 				velocity.velocity = randomDirection3();
 				GRID_GET_COMPONENT(grid, grid, e);
@@ -77,7 +77,7 @@ namespace
 #endif
 		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
 		{
-			entityClass *e = entities()->newUniqueEntity();
+			entityClass *e = entities()->createUnique();
 			GRID_GET_COMPONENT(grid, grid, e);
 			ENGINE_GET_COMPONENT(transform, transform, e);
 			transform.position = grid.place = vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
@@ -87,7 +87,7 @@ namespace
 			grid.originalColor = render.color = vec3(1, 1, 1);
 		}
 
-		statistics.environmentGridMarkers = gridComponent::component->getComponentEntities()->entitiesCount();
+		statistics.environmentGridMarkers = gridComponent::component->group()->count();
 	}
 
 	class callbacksClass
@@ -113,10 +113,10 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	spatialQuery->intersection(sphere(position, size));
 	for (uint32 otherName : spatialQuery->result())
 	{
-		if (!entities()->hasEntity(otherName))
+		if (!entities()->has(otherName))
 			continue;
-		entityClass *e = entities()->getEntity(otherName);
-		if (!e->hasComponent(gridComponent::component))
+		entityClass *e = entities()->get(otherName);
+		if (!e->has(gridComponent::component))
 			continue;
 		ENGINE_GET_COMPONENT(transform, ot, e);
 		ENGINE_GET_COMPONENT(render, orc, e);
@@ -132,7 +132,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	uint32 cnt = numeric_cast<uint32>(clamp(size, 2, 20));
 	for (uint32 i = 0; i < cnt; i++)
 	{
-		entityClass *e = entities()->newAnonymousEntity();
+		entityClass *e = entities()->createAnonymous();
 		GRID_GET_COMPONENT(timeout, timeout, e);
 		timeout.ttl = numeric_cast<uint32>(randomChance() * 5 + 10);
 		GRID_GET_COMPONENT(velocity, vel, e);
@@ -147,7 +147,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		ENGINE_GET_COMPONENT(render, render, e);
 		render.object = hashString("grid/environment/explosion.object");
 		render.color = colorVariation(color);
-		e->addGroup(entitiesPhysicsEvenWhenPaused);
+		e->add(entitiesPhysicsEvenWhenPaused);
 	}
 }
 
