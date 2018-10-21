@@ -4,6 +4,7 @@ pause = Pozastaveno
 end = Ukončit hru
 life = Životy:
 score = Skóre:
+currency = Peníze:
 puBomb = Bomby:
 puTurret = Střílny:
 puDecoy = Návnady:

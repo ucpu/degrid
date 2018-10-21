@@ -49,13 +49,11 @@ void setScreenGameover(uint32 score)
 
 	entityClass *panel = ents->createUnique();
 	{
-		GUI_GET_COMPONENT(groupBox, groupBox, panel);
-		groupBox.type = groupBoxTypeEnum::Panel;
+		GUI_GET_COMPONENT(panel, panel2, panel);
 		GUI_GET_COMPONENT(parent, parent, panel);
 		parent.parent = 12;
 		GUI_GET_COMPONENT(layoutLine, layout, panel);
 		layout.vertical = true;
-		layout.expandToSameWidth = true;
 	}
 
 	{

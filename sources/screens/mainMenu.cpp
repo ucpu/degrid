@@ -52,8 +52,7 @@ void setScreenMainmenu()
 	{ // main menu
 		entityClass *panel = ents->createUnique();
 		{
-			GUI_GET_COMPONENT(groupBox, groupBox, panel);
-			groupBox.type = groupBoxTypeEnum::Panel;
+			GUI_GET_COMPONENT(panel, panel2, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
 			parent.parent = 12;
 			GUI_GET_COMPONENT(layoutLine, layout, panel);
@@ -139,12 +138,8 @@ void setScreenMainmenu()
 			GUI_GET_COMPONENT(button, control, but);
 			GUI_GET_COMPONENT(image, img, but);
 			img.textureName = flags[i];
-			GUI_GET_COMPONENT(position, position, but);
-			position.anchor = vec2(0, 0);
-			position.size.values[0] = 0.1;
-			position.size.units[0] = unitEnum::ScreenHeight;
-			position.size.values[1] = 0.05;
-			position.size.units[1] = unitEnum::ScreenHeight;
+			GUI_GET_COMPONENT(explicitSize, size, but);
+			size.size = vec2(80, 40);
 		}
 	}
 }

@@ -4,6 +4,7 @@ pause = Paused
 end = End game
 life = Life:
 score = Score:
+currency = Money:
 puBomb = Bombs:
 puTurret = Turrets:
 puDecoy = Decoys:

@@ -190,13 +190,12 @@ void setScreenOptions()
 		parent.parent = 12;
 		GUI_GET_COMPONENT(layoutLine, layout, tabs);
 		layout.vertical = true;
-		layout.expandToSameWidth = true;
 	}
 
 	{ // controls
 		entityClass *panel = ents->createUnique();
 		{
-			GUI_GET_COMPONENT(groupBox, control, panel);
+			GUI_GET_COMPONENT(panel, control, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
 			parent.parent = tabs->name();
 			parent.order = 1;
@@ -327,7 +326,7 @@ void setScreenOptions()
 	{
 		entityClass *panel = ents->createUnique();
 		{
-			GUI_GET_COMPONENT(groupBox, control, panel);
+			GUI_GET_COMPONENT(panel, control, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
 			parent.parent = tabs->name();
 			parent.order = 2;

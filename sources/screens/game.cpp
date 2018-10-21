@@ -52,8 +52,7 @@ namespace
 				GUI_GET_COMPONENT(parent, parent, table);
 				parent.parent = 10;
 				GUI_GET_COMPONENT(layoutTable, layout, table);
-				GUI_GET_COMPONENT(groupBox, gb, table);
-				gb.type = groupBoxTypeEnum::Panel;
+				GUI_GET_COMPONENT(panel, gb, table);
 			}
 			uint32 index = 1;
 
@@ -67,7 +66,7 @@ namespace
 				text.assetName = hashString("grid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/life");
 				GUI_GET_COMPONENT(textFormat, format, label);
-				format.color = vec3(1, 0, 0);
+				format.color = vec3(.5, 0, 0);
 				format.size = 20;
 			}
 
@@ -80,7 +79,7 @@ namespace
 				GUI_GET_COMPONENT(text, text, label);
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.align = textAlignEnum::Right;
-				format.color = vec3(1, 0, 0);
+				format.color = vec3(.5, 0, 0);
 				format.size = 20;
 			}
 
@@ -94,7 +93,7 @@ namespace
 				text.assetName = hashString("grid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/currency");
 				GUI_GET_COMPONENT(textFormat, format, label);
-				format.color = vec3(1, 1, 0);
+				format.color = vec3(.5, .5, 0);
 				format.size = 20;
 			}
 
@@ -107,7 +106,7 @@ namespace
 				GUI_GET_COMPONENT(text, text, label);
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.align = textAlignEnum::Right;
-				format.color = vec3(1, 1, 0);
+				format.color = vec3(.5, .5, 0);
 				format.size = 20;
 			}
 
@@ -121,7 +120,7 @@ namespace
 				text.assetName = hashString("grid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/score");
 				GUI_GET_COMPONENT(textFormat, format, label);
-				format.color = vec3(0, 1, 0);
+				format.color = vec3(0, .5, 0);
 				format.size = 20;
 			}
 
@@ -134,7 +133,7 @@ namespace
 				GUI_GET_COMPONENT(text, text, label);
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.align = textAlignEnum::Right;
-				format.color = vec3(0, 1, 0);
+				format.color = vec3(0, .5, 0);
 				format.size = 20;
 			}
 		}
@@ -145,8 +144,7 @@ namespace
 				GUI_GET_COMPONENT(parent, parent, table);
 				parent.parent = 14;
 				GUI_GET_COMPONENT(layoutTable, layout, table);
-				GUI_GET_COMPONENT(groupBox, gb, table);
-				gb.type = groupBoxTypeEnum::Panel;
+				GUI_GET_COMPONENT(panel, gb, table);
 			}
 			uint32 index = 1;
 
@@ -185,8 +183,7 @@ namespace
 				GUI_GET_COMPONENT(parent, parent, table);
 				parent.parent = 11;
 				GUI_GET_COMPONENT(layoutTable, layout, table);
-				GUI_GET_COMPONENT(groupBox, gb, table);
-				gb.type = groupBoxTypeEnum::Panel;
+				GUI_GET_COMPONENT(panel, gb, table);
 			}
 			uint32 index = 1;
 
@@ -228,16 +225,13 @@ namespace
 			GUI_GET_COMPONENT(text, txt, but);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/game/end");
-			GUI_GET_COMPONENT(position, position, but);
 			GUI_GET_COMPONENT(parent, parent, but);
 			parent.parent = 15;
 		}
 
 		{ // paused
 			entityClass *panel = ents->createUnique();
-			GUI_GET_COMPONENT(groupBox, groupBox, panel);
-			groupBox.type = groupBoxTypeEnum::Panel;
-			GUI_GET_COMPONENT(position, position, panel);
+			GUI_GET_COMPONENT(panel, panel2, panel);
 			GUI_GET_COMPONENT(parent, parentPanel, panel);
 			parentPanel.parent = 12;
 

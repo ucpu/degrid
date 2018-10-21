@@ -84,10 +84,6 @@ namespace
 			splits[0] = e->name();
 			GUI_GET_COMPONENT(layoutSplitter, ls, e);
 			ls.inverse = true;
-			GUI_GET_COMPONENT(position, pos, e);
-			pos.size.value = vec2(1, 1);
-			pos.size.units[0] = unitEnum::ScreenWidth;
-			pos.size.units[1] = unitEnum::ScreenHeight;
 		}
 		{ // splitter 1
 			entityClass *e = ents->createUnique();
@@ -98,8 +94,6 @@ namespace
 			GUI_GET_COMPONENT(layoutSplitter, ls, e);
 			ls.vertical = true;
 			ls.inverse = true;
-			ls.allowMasterResize = ls.allowSlaveResize = true;
-			ls.anchor = 1;
 		}
 		{ // splitter 2
 			entityClass *e = ents->createUnique();
@@ -118,7 +112,6 @@ namespace
 			GUI_GET_COMPONENT(layoutSplitter, ls, e);
 			ls.vertical = true;
 			ls.inverse = true;
-			ls.allowMasterResize = ls.allowSlaveResize = true;
 		}
 
 		{ // panel 10
@@ -126,40 +119,40 @@ namespace
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[3];
 			p.order = 1;
-			GUI_GET_COMPONENT(groupBox, gb, e);
-			gb.type = groupBoxTypeEnum::Invisible;
+			GUI_GET_COMPONENT(scrollbars, sc, e);
+			sc.alignment = vec2(0, 0);
 		}
 		{ // panel 11
 			entityClass *e = ents->create(11);
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[3];
 			p.order = 2;
-			GUI_GET_COMPONENT(groupBox, gb, e);
-			gb.type = groupBoxTypeEnum::Invisible;
+			GUI_GET_COMPONENT(scrollbars, sc, e);
+			sc.alignment = vec2(0, 1);
 		}
 		{ // panel 12
 			entityClass *e = ents->create(12);
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[2];
 			p.order = 2;
-			GUI_GET_COMPONENT(groupBox, gb, e);
-			gb.type = groupBoxTypeEnum::Invisible;
+			GUI_GET_COMPONENT(scrollbars, sc, e);
+			sc.alignment = vec2(0.5, 0.5);
 		}
 		{ // panel 14
 			entityClass *e = ents->create(14);
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[1];
 			p.order = 1;
-			GUI_GET_COMPONENT(groupBox, gb, e);
-			gb.type = groupBoxTypeEnum::Invisible;
+			GUI_GET_COMPONENT(scrollbars, sc, e);
+			sc.alignment = vec2(1, 0);
 		}
 		{ // panel 15
 			entityClass *e = ents->create(15);
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[1];
 			p.order = 2;
-			GUI_GET_COMPONENT(groupBox, gb, e);
-			gb.type = groupBoxTypeEnum::Invisible;
+			GUI_GET_COMPONENT(scrollbars, sc, e);
+			sc.alignment = vec2(1, 1);
 		}
 	}
 
