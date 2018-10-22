@@ -50,6 +50,12 @@ void setScreenMainmenu()
 	guiEvent.attach(gui()->widgetEvent);
 
 	{ // main menu
+		{
+			entityClass *e = ents->get(12);
+			GUI_GET_COMPONENT(scrollbars, sc, e);
+			sc.alignment = vec2(0.8, 0.66);
+		}
+
 		entityClass *panel = ents->createUnique();
 		{
 			GUI_GET_COMPONENT(panel, panel2, panel);

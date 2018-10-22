@@ -133,7 +133,7 @@ namespace
 							ENGINE_GET_COMPONENT(transform, mtr, m);
 							powerupSpawn(mtr.position);
 						}
-						game.powerupSpawnChance += interpolate(1.0 / 50, 1.0 / 400, clamp((statistics.powerupsSpawned + 5) / 30.f, 0.f, 1.f));
+						game.powerupSpawnChance += interpolate(1.f / 50, 1.f / 400, clamp((statistics.powerupsSpawned + 5) / 30.f, 0.f, 1.f)) / (1 - powerupIsCoin);
 					}
 				}
 				if (sh.damage <= 1e-5)

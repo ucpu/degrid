@@ -283,6 +283,7 @@ namespace
 		{
 			CAGE_LOG(severityEnum::Info, "grid", string() + "game over");
 			CAGE_LOG(severityEnum::Info, "grid", string() + "score: " + game.score);
+			CAGE_LOG(severityEnum::Info, "grid", string() + "money: " + game.money);
 		}
 		game.paused = game.gameOver = true;
 		setScreenGameover(game.score);

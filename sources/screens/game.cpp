@@ -83,7 +83,7 @@ namespace
 				format.size = 20;
 			}
 
-			{ // currency label
+			{ // money label
 				entityClass *label = gui()->entities()->createUnique();
 				GUI_GET_COMPONENT(parent, parent, label);
 				parent.parent = table->name();
@@ -91,13 +91,13 @@ namespace
 				GUI_GET_COMPONENT(label, control, label);
 				GUI_GET_COMPONENT(text, text, label);
 				text.assetName = hashString("grid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/currency");
+				text.textName = hashString("gui/game/money");
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.color = vec3(.5, .5, 0);
 				format.size = 20;
 			}
 
-			{ // currency value
+			{ // money value
 				entityClass *label = gui()->entities()->create(101);
 				GUI_GET_COMPONENT(parent, parent, label);
 				parent.parent = table->name();
@@ -238,7 +238,7 @@ namespace
 			entityClass *label = ents->createUnique();
 			GUI_GET_COMPONENT(parent, parent, label);
 			parent.parent = panel->name();
-			GUI_GET_COMPONENT(label, controlL, label);
+			GUI_GET_COMPONENT(label, control, label);
 			GUI_GET_COMPONENT(text, txt, label);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/game/pause");
@@ -264,9 +264,9 @@ namespace
 			GUI_GET_COMPONENT(text, txt, gui()->entities()->get(100));
 			txt.value = numeric_cast<uint32>(max(0, game.life));
 		}
-		{ // currency
+		{ // money
 			GUI_GET_COMPONENT(text, txt, gui()->entities()->get(101));
-			txt.value = game.currency;
+			txt.value = game.money;
 		}
 		{ // score
 			GUI_GET_COMPONENT(text, txt, gui()->entities()->get(102));

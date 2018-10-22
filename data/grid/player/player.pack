@@ -7,6 +7,7 @@ powerupCollectible.object
 powerupPermanent.object
 turret.object
 shield.object
+coin.object
 
 []
 powerup.ogg

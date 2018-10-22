@@ -69,8 +69,8 @@ namespace
 	void wastedPowerup()
 	{
 		statistics.powerupsWasted++;
-		game.currency += 100;
-		soundSpeech(hashString("grid/speech/pickup/wasted.wav"));
+		game.money += 10;
+		soundSpeech(hashString("grid/speech/pickup/sold.wav"));
 	}
 
 	void powerupsUpdate()
@@ -124,7 +124,7 @@ namespace
 			case 2: // permanent
 			{
 				uint32 sum = 0;
-				for (uint32 i = (uint32)powerupTypeEnum::MaxSpeed; i < (uint32)powerupTypeEnum::Total; i++)
+				for (uint32 i = (uint32)powerupTypeEnum::MaxSpeed; i < (uint32)powerupTypeEnum::Coin; i++)
 					sum += game.powerups[i];
 				if (sum < 5)
 				{
@@ -142,6 +142,13 @@ namespace
 				}
 				else
 					wastedPowerup();
+			} break;
+			case 3: // coin
+			{
+				game.powerups[(uint32)p.type]++; // count the coins (just for statistics)
+				game.money += 1;
+				if (randomChance() > powerupIsCoin)
+					soundSpeech(hashString("grid/speech/pickup/a-coin.wav"));
 			} break;
 			default:
 				CAGE_THROW_CRITICAL(exception, "invalid powerup mode");
@@ -190,27 +197,35 @@ namespace
 
 void powerupSpawn(const vec3 &position)
 {
-	statistics.powerupsSpawned++;
+	bool coin = randomChance() < powerupIsCoin;
+	if (coin)
+		statistics.coinsSpawned++;
+	else
+		statistics.powerupsSpawned++;
 	entityClass *e = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, transform, e);
 	transform.position = position * vec3(1, 0, 1);
-	transform.orientation = quat(randomAngle(), randomAngle(), randomAngle());
-	transform.scale = 2.5;
+	transform.orientation = randomDirectionQuat();
+	transform.scale = coin ? 1.5 : 2.5;
 	GRID_GET_COMPONENT(timeout, ttl, e);
 	ttl.ttl = 120 * 30;
 	GRID_GET_COMPONENT(powerup, p, e);
-	p.type = (powerupTypeEnum)randomRange(0u, (uint32)powerupTypeEnum::Total);
+	p.type = coin ? powerupTypeEnum::Coin : (powerupTypeEnum)randomRange(0u, (uint32)powerupTypeEnum::Coin);
 	GRID_GET_COMPONENT(rotation, rot, e);
-	rot.rotation = quat(randomAngle() / 100, randomAngle() / 100, randomAngle() / 100);
+	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
 	ENGINE_GET_COMPONENT(render, render, e);
-	static const uint32 objectName[3] = {
+	static const uint32 objectName[4] = {
 		hashString("grid/player/powerupCollectible.object"),
 		hashString("grid/player/powerupOnetime.object"),
-		hashString("grid/player/powerupPermanent.object")
+		hashString("grid/player/powerupPermanent.object"),
+		hashString("grid/player/coin.object")
 	};
 	render.object = objectName[powerupMode[(uint32)p.type]];
-	render.color = convertHsvToRgb(vec3(randomChance(), 1, 1));
-	soundEffect(hashString("grid/player/powerup.ogg"), transform.position);
+	if (!coin)
+	{
+		render.color = convertHsvToRgb(vec3(randomChance(), 1, 1));
+		soundEffect(hashString("grid/player/powerup.ogg"), transform.position);
+	}
 }
 
 void eventBomb()

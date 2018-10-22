@@ -40,16 +40,19 @@ enum class powerupTypeEnum
 	ShotsSpeed,
 	FiringSpeed,
 	Multishot,
+	// extra
+	Coin,
 	// total
 	Total
 };
 
-const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
+const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3 };
 const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 const real playerScale = 3;
 const real mapNoPullRadius = 200;
 const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
 const uint32 shotsTtl = 300;
+const real powerupIsCoin = 0.85;
 
 extern groupClass *entitiesToDestroy;
 extern groupClass *entitiesPhysicsEvenWhenPaused;
@@ -73,7 +76,7 @@ struct globalGameStruct
 	vec3 shotsColor;
 	uint32 score;
 	uint32 powerups[(uint32)powerupTypeEnum::Total];
-	uint32 currency;
+	uint32 money;
 	real powerupSpawnChance;
 	vec3 monstersTarget;
 
@@ -112,6 +115,7 @@ struct globalStatisticsStruct
 	uint32 wormholesSpawned;
 	uint32 wormholeJumps;
 	uint32 powerupsSpawned;
+	uint32 coinsSpawned;
 	uint32 powerupsPicked; // powerups picked up by the player
 	uint32 powerupsWasted; // picked up powerups, that were over a limit (and converted into score)
 	uint32 bombsUsed;

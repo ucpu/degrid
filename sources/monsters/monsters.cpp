@@ -63,19 +63,20 @@ namespace
 					if (game.life > 0 && !game.cinematic)
 					{
 						uint32 sounds[] = {
-							hashString("grid/speech/lost/better-to-avoid-next-time.wav"),
-							hashString("grid/speech/lost/beware.wav"),
-							hashString("grid/speech/lost/critical-damage.wav"),
-							hashString("grid/speech/lost/damaged.wav"),
-							hashString("grid/speech/lost/dont-do-this.wav"),
-							hashString("grid/speech/lost/evasive-maneuvers.wav"),
-							hashString("grid/speech/lost/hit.wav"),
-							hashString("grid/speech/lost/hull-is-breached.wav"),
-							hashString("grid/speech/lost/shields-are-failing.wav"),
-							hashString("grid/speech/lost/warning.wav"),
-							hashString("grid/speech/lost/we-are-doomed.wav"),
-							hashString("grid/speech/lost/we-have-been-hit.wav"),
-							0 };
+							hashString("grid/speech/damage/better-to-avoid-next-time.wav"),
+							hashString("grid/speech/damage/beware.wav"),
+							hashString("grid/speech/damage/critical-damage.wav"),
+							hashString("grid/speech/damage/damaged.wav"),
+							hashString("grid/speech/damage/dont-do-this.wav"),
+							hashString("grid/speech/damage/evasive-maneuvers.wav"),
+							hashString("grid/speech/damage/hit.wav"),
+							hashString("grid/speech/damage/hull-is-breached.wav"),
+							hashString("grid/speech/damage/shields-are-failing.wav"),
+							hashString("grid/speech/damage/warning.wav"),
+							hashString("grid/speech/damage/we-are-doomed.wav"),
+							hashString("grid/speech/damage/we-have-been-hit.wav"),
+							0
+						};
 						soundSpeech(sounds);
 					}
 				}

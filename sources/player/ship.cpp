@@ -99,13 +99,16 @@ namespace
 			scorePrevious += ld * sg;
 
 			uint32 sounds[] = {
-				hashString("grid/speech/gain/doing-fine.wav"),
-				hashString("grid/speech/gain/doing-well.wav"),
-				hashString("grid/speech/gain/fantastic.wav"),
-				hashString("grid/speech/gain/go-on.wav"),
-				hashString("grid/speech/gain/keep-going.wav"),
-				hashString("grid/speech/gain/lets-roll.wav"),
-				0 };
+				hashString("grid/speech/progress/doing-fine.wav"),
+				hashString("grid/speech/progress/doing-well.wav"),
+				hashString("grid/speech/progress/fantastic.wav"),
+				hashString("grid/speech/progress/go-on.wav"),
+				hashString("grid/speech/progress/i-hope-the-princess-is-worth-all-the-trouble.wav"),
+				hashString("grid/speech/progress/keep-going.wav"),
+				hashString("grid/speech/progress/lets-roll.wav"),
+				hashString("grid/speech/progress/they-say-the-princess-is-very-beautiful.wav"),
+				0
+			};
 			soundSpeech(sounds);
 		}
 	}

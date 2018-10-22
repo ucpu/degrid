@@ -72,7 +72,8 @@ namespace
 			"ShotsDamage",
 			"ShotsSpeed",
 			"Shooting",
-			"Multishot"
+			"Multishot",
+			"Coin"
 		};
 		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			if (game.powerups[i] > 0)
@@ -85,7 +86,7 @@ namespace
 			monstersSpawned, monstersMutated, monstersMutations, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersCurrentMutationIteration, monstersFirstHit, \
 			shielderStoppedShots, \
 			wormholesSpawned, wormholeJumps, \
-			powerupsSpawned, powerupsPicked, powerupsWasted, \
+			powerupsSpawned, coinsSpawned, powerupsPicked, powerupsWasted, \
 			bombsUsed, bombsHitTotal, bombsKillTotal, bombsHitMax, bombsKillMax, \
 			shieldStoppedMonsters, shieldAbsorbedDamage, turretsPlaced, decoysUsed, \
 			entitiesCurrent, entitiesMax, \

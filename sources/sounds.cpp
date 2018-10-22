@@ -115,9 +115,9 @@ namespace
 		data->speechBus3->clear();
 		if (!data->speechName)
 			return;
-		sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(data->speechName);
-		if (!src)
+		if (!assets()->ready(data->speechName))
 			return;
+		sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(data->speechName);
 		if (data->speechStart + src->getDuration() + 100000 < currentControlTime())
 		{
 			data->speechName = 0;
@@ -202,11 +202,15 @@ namespace
 		if (!game.cinematic)
 		{
 			uint32 sounds[] = {
-				hashString("grid/speech/starts/enemies-are-approaching.wav"),
+				hashString("grid/speech/starts/a-princess-needs-our-help.wav"),
 				hashString("grid/speech/starts/enemy-is-approaching.wav"),
 				hashString("grid/speech/starts/its-a-trap.wav"),
+				hashString("grid/speech/starts/let-the-journey-begins.wav"),
+				hashString("grid/speech/starts/our-destiny-awaits.wav"),
+				hashString("grid/speech/starts/enemies-are-approaching.wav"),
+				hashString("grid/speech/starts/it-is-our-duty-to-save-the-princess.wav"),
 				hashString("grid/speech/starts/lets-do-this.wav"),
-				hashString("grid/speech/starts/let-us-kill-some-.wav"),
+				hashString("grid/speech/starts/let-us-kill-some-triangles.wav"),
 				hashString("grid/speech/starts/ready-set-go.wav"),
 				0
 			};
@@ -217,12 +221,13 @@ namespace
 	void gameStop()
 	{
 		uint32 sounds[] = {
-			hashString("grid/speech/over/game-over.wav"),
-			hashString("grid/speech/over/lets-try-again.wav"),
-			hashString("grid/speech/over/oh-no.wav"),
-			hashString("grid/speech/over/pitty.wav"),
-			hashString("grid/speech/over/thats-it.wav"),
-			0 };
+			hashString("grid/speech/gameover/game-over.wav"),
+			hashString("grid/speech/gameover/lets-try-again.wav"),
+			hashString("grid/speech/gameover/oh-no.wav"),
+			hashString("grid/speech/gameover/pitty.wav"),
+			hashString("grid/speech/gameover/thats-it.wav"),
+			0
+		};
 		soundSpeech(sounds);
 	}
 
