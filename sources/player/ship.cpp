@@ -96,6 +96,13 @@ namespace
 		uint32 ld = (game.score - scorePrevious) / sg;
 		if (ld)
 		{
+			if (game.score >= 10000 && scorePrevious < 10000)
+			{
+				achievementFullfilled("starting-kit");
+				if (game.jokeMap)
+					achievementFullfilled("joke-map");
+			}
+
 			scorePrevious += ld * sg;
 
 			uint32 sounds[] = {

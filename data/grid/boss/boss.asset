@@ -1,0 +1,9 @@
+
+[]
+scheme = pack
+boss.pack
+
+[]
+scheme = texture
+icon/unknown.png
+icon/defeated.png

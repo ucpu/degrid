@@ -157,6 +157,12 @@ namespace
 		std::nth_element(definitions.begin(), definitions.begin(), definitions.end());
 	}
 
+	void announceJokeMap()
+	{
+		game.jokeMap = true;
+		makeAnnouncement(hashString("announcement/joke-map"), hashString("announcement-desc/joke-map"), 120 * 30);
+	}
+
 	void gameStart()
 	{
 		definitions.clear();
@@ -176,21 +182,12 @@ namespace
 
 		if (randomRange(0u, 1000u) == 42)
 		{
-			CAGE_LOG(severityEnum::Info, "joke", "JOKE: snakes only");
+			CAGE_LOG(severityEnum::Info, "joke", "JOKE: snakes only map");
 			spawnDefinitionStruct d("snakes only");
 			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Snake);
 			d.priorityCurrent = 0;
 			definitions.push_back(d);
-			return;
-		}
-
-		if (randomRange(0u, 1000u) == 42)
-		{
-			CAGE_LOG(severityEnum::Info, "joke", "JOKE: shielders only");
-			spawnDefinitionStruct d("shielders only");
-			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Shielder);
-			d.priorityCurrent = 0;
-			definitions.push_back(d);
+			announceJokeMap();
 			return;
 		}
 

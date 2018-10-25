@@ -1,14 +1,39 @@
 
+[boss]
+unknown = Unknown
+Shaper
+Gravitron
+Hydra
+Organic
+Mega Self
+
+[achievement]
+starting-kit = Starting Kit
+joke-map = Easter Map
+
+[achievement-desc]
+starting-kit = Reach 10 000 score. Every achievement you acquire gives you a bonus into the beginning of all future games.
+joke-map = Reach 10 000 score in an Easter map.
+
+[announcement]
+joke-map = Easter Map
+joke-snake = Easter Snake
+
+[announcement-desc]
+joke-map = There IS something else, somewhere. I am sure of it.
+joke-snake = Ridiculously long snake. Please do NOT kill it.
+
 [gui/game]
-pause = Paused
-end = End game
+pause = Game Paused
+end = Give Up
+continue = Continue
 life = Life:
 score = Score:
 money = Money:
 puBomb = Bombs:
 puTurret = Turrets:
 puDecoy = Decoys:
-puHomingShots = Homming Shots:
+puHomingShots = Homing Shots:
 puSuperDamage = Super Damage:
 puShield = Shield:
 puMaxSpeed = Speed:
@@ -17,6 +42,10 @@ puShotsDamage = Shots Damage:
 puShotsSpeed = Shots Speed:
 puShooting = Firing Speed:
 puMultishot = Multiple Shots:
+bosses = Bosses
+market = Space Market
+sell = Sell
+buy = Buy
 
 [gui/gameover]
 over = Game Over

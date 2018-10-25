@@ -1,13 +1,38 @@
 
+[boss]
+unknown = Neznámý
+Tvárník
+Gravitron
+Hydra
+Organik
+Mega Já
+
+[achievement]
+starting-kit = Startovní balíček
+joke-map = Velikonoční mapa
+
+[achievement-desc]
+starting-kit = Dosáhni 10 000 skóre. Získání achievementu vám dá bonus do začátku dalších her.
+joke-map = Dosáhni 10 000 skóre ve velikonoční mapě.
+
+[announcement]
+joke-map = Velikonoční mapa
+joke-snake = Velikonoční had
+
+[announcement-desc]
+joke-map = Jsem si jistý, že tu bude i něco jiného, ale kde?
+joke-snake = Směšně dlouhý had. Prosím, nezabíjej ho.
+
 [gui/game]
-pause = Pozastaveno
-end = Ukončit hru
+pause = Hra pozastavena
+end = Vzdát hru
+continue = Pokračovat
 life = Životy:
 score = Skóre:
 money = Peníze:
 puBomb = Bomby:
 puTurret = Střílny:
-puDecoy = Návnady:
+puDecoy = Klamné cíle:
 puHomingShots = Naváděné střely:
 puSuperDamage = Super poškození:
 puShield = Štít:
@@ -17,6 +42,10 @@ puShotsDamage = Poškození střel:
 puShotsSpeed = Rychlost střel:
 puShooting = Rychlost střílení:
 puMultishot = Více střel:
+bosses = Bosové
+market = Vesmírný Trh
+sell = Prodat
+buy = Koupit
 
 [gui/gameover]
 over = Hra skončila

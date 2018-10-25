@@ -19,9 +19,12 @@ bool killMonster(entityClass *e, bool allowCallback);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(uint32 sounds[]);
+bool achievementFullfilled(const string &name, bool bossKill = false); // returs if this is the firts time the achievement is fullfilled
+void makeAnnouncement(uint32 headline, uint32 description, uint32 duration = 30 * 30);
+bool canAddPermanentPowerup();
 vec3 colorVariation(const vec3 &color);
-cage::eventDispatcher<bool()> &gameStartEvent();
-cage::eventDispatcher<bool()> &gameStopEvent();
+eventDispatcher<bool()> &gameStartEvent();
+eventDispatcher<bool()> &gameStopEvent();
 
 enum class powerupTypeEnum
 {
@@ -53,11 +56,21 @@ const real mapNoPullRadius = 200;
 const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
 const uint32 shotsTtl = 300;
 const real powerupIsCoin = 0.85;
+const uint32 bossesTotalCount = 5;
 
 extern groupClass *entitiesToDestroy;
 extern groupClass *entitiesPhysicsEvenWhenPaused;
 extern holder<spatialDataClass> spatialData;
 extern holder<spatialQueryClass> spatialQuery;
+
+struct achievementsStruct
+{
+	uint32 bosses;
+	uint32 acquired;
+
+	achievementsStruct();
+};
+extern achievementsStruct achievements;
 
 struct globalGameStruct
 {
@@ -65,6 +78,10 @@ struct globalGameStruct
 	bool cinematic;
 	bool paused;
 	bool gameOver;
+	bool jokeMap;
+
+	uint32 defeatedBosses;
+	uint32 buyPriceMultiplier;
 
 	// entities
 	entityClass *playerEntity;

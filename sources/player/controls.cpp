@@ -22,6 +22,7 @@ globalGameStruct::globalGameStruct()
 {
 	detail::memset(this, 0, sizeof(*this));
 	cinematic = true;
+	buyPriceMultiplier = 1;
 }
 
 namespace
@@ -259,12 +260,14 @@ namespace
 		}
 
 		game.life = 100;
+		game.money = achievements.acquired * 100;
 		game.powerupSpawnChance = 0.3;
 
 #ifdef GRID_TESTING
 		if (!game.cinematic)
 		{
 			game.life = 1000000;
+			game.money = 1000000;
 			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			{
 				switch (powerupMode[i])

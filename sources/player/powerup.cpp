@@ -91,6 +91,7 @@ namespace
 				continue;
 			}
 
+			game.score += 10;
 			statistics.powerupsPicked++;
 			e->add(entitiesToDestroy);
 			switch (powerupMode[(uint32)p.type])
@@ -123,10 +124,7 @@ namespace
 			} break;
 			case 2: // permanent
 			{
-				uint32 sum = 0;
-				for (uint32 i = (uint32)powerupTypeEnum::MaxSpeed; i < (uint32)powerupTypeEnum::Coin; i++)
-					sum += game.powerups[i];
-				if (sum < 5)
+				if (canAddPermanentPowerup())
 				{
 					game.powerups[(uint32)p.type]++;
 					switch (p.type)
@@ -197,11 +195,15 @@ namespace
 
 void powerupSpawn(const vec3 &position)
 {
+	if (game.cinematic)
+		return;
+
 	bool coin = randomChance() < powerupIsCoin;
 	if (coin)
 		statistics.coinsSpawned++;
 	else
 		statistics.powerupsSpawned++;
+
 	entityClass *e = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, transform, e);
 	transform.position = position * vec3(1, 0, 1);
@@ -213,6 +215,7 @@ void powerupSpawn(const vec3 &position)
 	p.type = coin ? powerupTypeEnum::Coin : (powerupTypeEnum)randomRange(0u, (uint32)powerupTypeEnum::Coin);
 	GRID_GET_COMPONENT(rotation, rot, e);
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
+	GRID_GET_COMPONENT(velocity, velocity, e); // to make the powerup affected by gravity
 	ENGINE_GET_COMPONENT(render, render, e);
 	static const uint32 objectName[4] = {
 		hashString("grid/player/powerupCollectible.object"),
@@ -325,4 +328,12 @@ void eventDecoy()
 		hashString("grid/speech/use/launching-a-decoy.wav"),
 		0 };
 	soundSpeech(sounds);
+}
+
+bool canAddPermanentPowerup()
+{
+	uint32 sum = 0;
+	for (uint32 i = (uint32)powerupTypeEnum::MaxSpeed; i < (uint32)powerupTypeEnum::Coin; i++)
+		sum += game.powerups[i];
+	return sum < achievements.bosses + 5;
 }

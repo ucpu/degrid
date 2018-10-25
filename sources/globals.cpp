@@ -11,15 +11,15 @@ componentClass *shotComponent::component;
 componentClass *powerupComponent::component;
 componentClass *monsterComponent::component;
 
-cage::eventDispatcher<bool()> &gameStartEvent()
+eventDispatcher<bool()> &gameStartEvent()
 {
-	static cage::eventDispatcher<bool()> inst;
+	static eventDispatcher<bool()> inst;
 	return inst;
 }
 
-cage::eventDispatcher<bool()> &gameStopEvent()
+eventDispatcher<bool()> &gameStopEvent()
 {
-	static cage::eventDispatcher<bool()> inst;
+	static eventDispatcher<bool()> inst;
 	return inst;
 }
 

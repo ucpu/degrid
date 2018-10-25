@@ -246,7 +246,8 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 		g.strength *= -1;
 	ENGINE_GET_COMPONENT(animatedTexture, at, wormhole);
 	at.speed *= (randomChance() + 0.5) * 0.05 * sign(g.strength);
-	transform.orientation = randomDirectionQuat();
+	GRID_GET_COMPONENT(rotation, rotation, wormhole);
+	rotation.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
 	monsterReflectMutation(wormhole, special);
 	soundEffect(hashString("grid/monster/wormhole.ogg"), spawnPosition);
 }

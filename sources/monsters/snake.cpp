@@ -95,10 +95,18 @@ namespace
 		}
 	}
 
+	void subtractSnakeTails()
+	{
+		// snake tails should not count towards monster limit
+		uint32 sub = snakeTailComponent::component->group()->count();
+		statistics.monstersCurrent = sub < statistics.monstersCurrent ? statistics.monstersCurrent - sub : 0;
+	}
+
 	class callbacksClass
 	{
 		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
+		eventListener<void()> snakeTailsListener;
 	public:
 		callbacksClass()
 		{
@@ -106,6 +114,8 @@ namespace
 			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
+			snakeTailsListener.attach(controlThread().update, -59); // right after statistics
+			snakeTailsListener.bind<&subtractSnakeTails>();
 		}
 	} callbacksInstance;
 }
@@ -118,6 +128,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 	{
 		CAGE_LOG(severityEnum::Info, "joke", "JOKE: monster snake");
 		pieces = randomRange(80, 100);
+		makeAnnouncement(hashString("announcement/joke-snake"), hashString("announcement-desc/joke-snake"));
 	}
 	else
 		pieces = randomRange(10, 13) + monsterMutation(special) * 2;
@@ -132,6 +143,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		monsterReflectMutation(head, special);
 		prev = head->name();
 		GRID_GET_COMPONENT(monster, monster, head);
+		monster.dispersion = 0.2;
 		groundLevel = monster.groundLevel;
 		ENGINE_GET_COMPONENT(transform, transform, head);
 		scale = transform.scale;
@@ -148,6 +160,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		aniTex.startTime = currentControlTime() + aniInitOff + i * 1000000;
 		aniTex.speed = 0.4;
 		GRID_GET_COMPONENT(monster, monster, tail);
+		monster.dispersion = 0.2;
 		ENGINE_GET_COMPONENT(transform, transform, tail);
 		transform.position[1] = monster.groundLevel = groundLevel;
 		CAGE_ASSERT_RUNTIME(transform.scale == scale);
