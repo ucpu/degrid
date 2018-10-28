@@ -21,7 +21,8 @@ void regenerateGui(const guiConfig &config);
 
 void setScreenMainmenu();
 void setScreenGame();
-void setScreenGameover(uint32 score);
+void setScreenGameover();
 void setScreenOptions();
 void setScreenScores();
 void setScreenCredits();
+void setScreenAchievements();

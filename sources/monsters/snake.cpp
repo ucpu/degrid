@@ -73,10 +73,19 @@ namespace
 				ENGINE_GET_COMPONENT(transform, trp, p);
 				vec3 toPrev = trp.position - tr.position;
 				real r = tr.scale * 2;
-				if (toPrev.squaredLength() > r * r + 0.01)
+				real d2 = toPrev.squaredLength();
+				if (d2 > sqr(r) + 0.01)
 				{
-					v.velocity = toPrev.normalize() * (toPrev.length() - r);
-					tr.orientation = quat(toPrev, vec3(0, 1, 0));
+					if (d2 > sqr(r + 20))
+					{ // teleport
+						tr.position = trp.position + randomChance3() - 0.5;
+						e->remove(transformComponent::componentHistory);
+					}
+					else
+					{ // move
+						v.velocity = toPrev.normalize() * (toPrev.length() - r);
+						tr.orientation = quat(toPrev, vec3(0, 1, 0));
+					}
 				}
 			}
 			else if (snake.follow)

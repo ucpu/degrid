@@ -9,11 +9,29 @@ Mega Já
 
 [achievement]
 starting-kit = Startovní balíček
+bronze = Bronzová medaile
+silver = Stříbrná medaile
+gold = Zlatá medaile
 joke-map = Velikonoční mapa
+wasted = Plýtvání
+turrets = Střílny
+spacetime-travel = Časoprostorová cesta
+timelord = Pán času
+collector = Sběratel
+vault-digger = Zlatokopka
 
 [achievement-desc]
-starting-kit = Dosáhni 10 000 skóre. Získání achievementu vám dá bonus do začátku dalších her.
+starting-kit = Dosáhni 10 000 skóre. Získání jakéhokoli ocenění vám dá bonus do začátku dalších her.
+bronze = Dosáhni 50 000 skóre.
+silver = Dosáhni 250 000 skóre.
+gold = Dosáhni 1 250 000 skóre.
 joke-map = Dosáhni 10 000 skóre ve velikonoční mapě.
+wasted = Použij bombu a nic nezabij.
+turrets = Měj více současně aktivovaných střílen než je limit.
+spacetime-travel = Přežij časoprostorový skok.
+timelord = Nashromáždi tři časové powerupy stejného druhu.
+collector = Nasbírej maximální počet všech sbíratelných powerupů současně.
+vault-digger = Posbírej 1 000 mincí.
 
 [announcement]
 joke-map = Velikonoční mapa
@@ -46,6 +64,7 @@ bosses = Bosové
 market = Vesmírný Trh
 sell = Prodat
 buy = Koupit
+poermanentLimit = Powerupy: {0} / {1}
 
 [gui/gameover]
 over = Hra skončila
@@ -55,6 +74,7 @@ save = Uložit
 newgame = Nová hra
 options = Nastavení
 scores = Skóre
+achievements = Ocenění
 credits = O hře
 quit = Konec
 back = Zpátky

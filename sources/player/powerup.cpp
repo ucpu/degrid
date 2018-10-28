@@ -107,6 +107,16 @@ namespace
 					case powerupTypeEnum::Turret: soundSpeech(hashString("grid/speech/pickup/a-turret.wav")); break;
 					default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 					}
+					{ // achievement
+						bool ok = true;
+						for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+						{
+							if (powerupMode[i] == 0 && game.powerups[i] < 3)
+								ok = false;
+						}
+						if (ok)
+							achievementFullfilled("collector");
+					}
 				}
 				else
 					wastedPowerup();
@@ -121,6 +131,8 @@ namespace
 				case powerupTypeEnum::SuperDamage: soundSpeech(hashString("grid/speech/pickup/super-damage.wav")); break;
 				default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 				}
+				if (game.powerups[(uint32)p.type] > 2 * 30 * 30)
+					achievementFullfilled("timelord");
 			} break;
 			case 2: // permanent
 			{
@@ -143,10 +155,12 @@ namespace
 			} break;
 			case 3: // coin
 			{
-				game.powerups[(uint32)p.type]++; // count the coins (just for statistics)
+				game.powerups[(uint32)p.type]++; // count the coins (for statistics & achievement)
 				game.money += 1;
 				if (randomChance() > powerupIsCoin)
 					soundSpeech(hashString("grid/speech/pickup/a-coin.wav"));
+				if (game.powerups[(uint32)p.type] == 1000)
+					achievementFullfilled("vault-digger");
 			} break;
 			default:
 				CAGE_THROW_CRITICAL(exception, "invalid powerup mode");
@@ -269,6 +283,9 @@ void eventBomb()
 		hashString("grid/speech/use/let-them-burn.wav"),
 		0 };
 	soundSpeech(sounds);
+
+	if (kills == 0)
+		achievementFullfilled("wasted");
 }
 
 void eventTurret()
@@ -299,6 +316,9 @@ void eventTurret()
 		hashString("grid/speech/use/turret-engaged.wav"),
 		0 };
 	soundSpeech(sounds);
+
+	if (turretComponent::component->group()->count() >= 4)
+		achievementFullfilled("turrets");
 }
 
 void eventDecoy()
@@ -330,10 +350,20 @@ void eventDecoy()
 	soundSpeech(sounds);
 }
 
-bool canAddPermanentPowerup()
+uint32 permanentPowerupLimit()
+{
+	return achievements.bosses + 5;
+}
+
+uint32 currentPermanentPowerups()
 {
 	uint32 sum = 0;
 	for (uint32 i = (uint32)powerupTypeEnum::MaxSpeed; i < (uint32)powerupTypeEnum::Coin; i++)
 		sum += game.powerups[i];
-	return sum < achievements.bosses + 5;
+	return sum;
+}
+
+bool canAddPermanentPowerup()
+{
+	return currentPermanentPowerups() < permanentPowerupLimit();
 }

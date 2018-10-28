@@ -204,10 +204,10 @@ namespace
 		}
 
 		{ // market
-			uint32 panelName;
+			uint32 marketName;
 			{ // panel
 				entityClass *e = ents->createUnique();
-				panelName = e->name();
+				marketName = e->name();
 				GUI_GET_COMPONENT(panel, panel, e);
 				GUI_GET_COMPONENT(parent, parent, e);
 				parent.parent = layoutName;
@@ -217,6 +217,32 @@ namespace
 				text.textName = hashString("gui/game/market");
 				GUI_GET_COMPONENT(scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
+				GUI_GET_COMPONENT(layoutLine, ll, e);
+				ll.vertical = true;
+			}
+
+			{ // permanent powerup limit
+				entityClass *e = ents->createUnique();
+				GUI_GET_COMPONENT(parent, parent, e);
+				parent.parent = marketName;
+				parent.order = 1;
+				GUI_GET_COMPONENT(text, text, e);
+				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.textName = hashString("gui/game/poermanentLimit");
+				text.value = string() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
+				GUI_GET_COMPONENT(label, but, e);
+				GUI_GET_COMPONENT(textFormat, tf, e);
+				tf.align = textAlignEnum::Center;
+			}
+
+			uint32 panelName;
+			{ // permanent powerup market
+
+				entityClass *e = ents->createUnique();
+				panelName = e->name();
+				GUI_GET_COMPONENT(parent, parent, e);
+				parent.parent = marketName;
+				parent.order = 2;
 				GUI_GET_COMPONENT(layoutTable, lt, e);
 				lt.sections = 3;
 			}

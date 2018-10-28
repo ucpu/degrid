@@ -289,7 +289,7 @@ namespace
 			CAGE_LOG(severityEnum::Info, "grid", string() + "money: " + game.money);
 		}
 		game.paused = game.gameOver = true;
-		setScreenGameover(game.score);
+		setScreenGameover();
 	}
 
 	class callbacksClass

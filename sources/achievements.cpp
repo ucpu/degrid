@@ -1,4 +1,5 @@
 #include "game.h"
+#include "screens/screens.h"
 
 #include <cage-core/config.h>
 #include <cage-core/timer.h>
@@ -116,6 +117,8 @@ namespace
 		}
 		summaries(achievements.acquired, achievements.bosses);
 		CAGE_LOG(severityEnum::Info, "achievements", string() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
+		for (const auto &a : data)
+			CAGE_LOG_CONTINUE(severityEnum::Note, "achievements", string() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
 		if (achievements.bosses > bossesTotalCount)
 		{
 			CAGE_LOG(severityEnum::Warning, "achievements", "are you cheating? there is not that many bosses in the game");
@@ -164,4 +167,57 @@ namespace
 			engineFinishListener.bind<&engineFinish>();
 		}
 	} callbacksInstance;
+}
+
+void setScreenAchievements()
+{
+	regenerateGui(guiConfig());
+	entityManagerClass *ents = gui()->entities();
+
+	{
+		GUI_GET_COMPONENT(layoutLine, layout, ents->get(12));
+		layout.vertical = true;
+	}
+
+	uint32 index = 0;
+	for (const auto &it : data)
+	{
+		uint32 panelName;
+		{ // panel
+			entityClass *e = ents->createUnique();
+			panelName = e->name();
+			GUI_GET_COMPONENT(parent, parent, e);
+			parent.parent = 12;
+			parent.order = index++;
+			GUI_GET_COMPONENT(panel, panel, e);
+			GUI_GET_COMPONENT(text, txt, e);
+			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.textName = hashString((string() + "achievement/" + it.first).c_str());
+			GUI_GET_COMPONENT(layoutLine, layout, e);
+			layout.vertical = true;
+		}
+
+		{ // description
+			entityClass *e = ents->createUnique();
+			GUI_GET_COMPONENT(parent, parent, e);
+			parent.parent = panelName;
+			parent.order = 1;
+			GUI_GET_COMPONENT(label, label, e);
+			GUI_GET_COMPONENT(text, txt, e);
+			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.textName = hashString((string() + "achievement-desc/" + it.first).c_str());
+		}
+
+		{ // date
+			entityClass *e = ents->createUnique();
+			GUI_GET_COMPONENT(parent, parent, e);
+			parent.parent = panelName;
+			parent.order = 2;
+			GUI_GET_COMPONENT(label, label, e);
+			GUI_GET_COMPONENT(text, txt, e);
+			txt.value = it.second.date;
+			GUI_GET_COMPONENT(textFormat, format, e);
+			format.align = textAlignEnum::Right;
+		}
+	}
 }

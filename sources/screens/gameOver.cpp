@@ -6,17 +6,16 @@
 
 namespace
 {
-	uint32 scoreValue;
-	uint32 nameEntity;
-
 	eventListener<bool(uint32)> guiEvent;
 
 	bool buttonSave(uint32 en)
 	{
-		if (en != 100) return false;
+		if (en != 100)
+			return false;
 
-#ifndef GRID_TESTING
+		if (game.score > 0)
 		{
+#ifndef GRID_TESTING
 			holder<fileClass> f = newFile("score.ini", fileMode(false, true, true, true));
 			f->writeLine("[]");
 			{
@@ -24,9 +23,9 @@ namespace
 				detail::getSystemDateTime(y, m, d, h, mm, s);
 				f->writeLine(string() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
 			}
-			f->writeLine(string() + "score = " + scoreValue);
-		}
+			f->writeLine(string() + "score = " + game.score);
 #endif
+		}
 
 		game.cinematic = true;
 		gameStartEvent().dispatch();
@@ -35,9 +34,8 @@ namespace
 	}
 }
 
-void setScreenGameover(uint32 score)
+void setScreenGameover()
 {
-	scoreValue = score;
 	{
 		guiConfig c;
 		c.backButton = false;
@@ -78,7 +76,7 @@ void setScreenGameover(uint32 score)
 		parent.order = 2;
 		GUI_GET_COMPONENT(label, control, empScore);
 		GUI_GET_COMPONENT(text, txt, empScore);
-		txt.value = string(score);
+		txt.value = string(game.score);
 		GUI_GET_COMPONENT(textFormat, format, empScore);
 		format.align = textAlignEnum::Center;
 		format.color = vec3(0, 1, 0);

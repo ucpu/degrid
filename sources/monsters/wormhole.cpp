@@ -159,6 +159,7 @@ namespace
 						{
 							teleport = true;
 							statistics.wormholeJumps++;
+							achievementFullfilled("spacetime-travel");
 						}
 						else
 							continue;
@@ -178,7 +179,6 @@ namespace
 					if (teleport)
 					{
 						ENGINE_GET_COMPONENT(transform, ot, oe);
-						transformComponent &oth = oe->value<transformComponent>(transformComponent::componentHistory);
 						rads angle = randomAngle();
 						vec3 dir = vec3(cos(angle), 0, sin(angle));
 						entityClass *target = pickWormhole(-1);
@@ -189,7 +189,7 @@ namespace
 						}
 						else
 							ot.position = playerTransform.position + dir * randomRange(200, 250);
-						oth.position = ot.position;
+						oe->remove(transformComponent::componentHistory);
 					}
 					else
 						oe->add(entitiesToDestroy);

@@ -9,11 +9,29 @@ Mega Self
 
 [achievement]
 starting-kit = Starting Kit
+bronze = Bronze Medal
+silver = Silver Medal
+gold = Gold Medal
 joke-map = Easter Map
+wasted = Wasted
+turrets = Turrets
+spacetime-travel = Spacetime Travel
+timelord = Timelord
+collector = Collector
+vault-digger = Vault Digger
 
 [achievement-desc]
-starting-kit = Reach 10 000 score. Every achievement you acquire gives you a bonus into the beginning of all future games.
-joke-map = Reach 10 000 score in an Easter map.
+starting-kit = Reach 10,000 score. Every achievement you acquire gives you a bonus into the beginning of all future games.
+bronze = Reach 50,000 score.
+silver = Reach 250,000 score.
+gold = Reach 1,250,000 score.
+joke-map = Reach 10,000 score in an Easter map.
+wasted = Use a bomb and kill nothing.
+turrets = Have more concurrently active turrets than the limit.
+spacetime-travel = Survive a spacetime trip.
+timelord = Accumulate 3 timed powerups of same type.
+collector = Accumulate all collectible powerups to their limits.
+vault-digger = Pick up 1,000 coins.
 
 [announcement]
 joke-map = Easter Map
@@ -46,6 +64,7 @@ bosses = Bosses
 market = Space Market
 sell = Sell
 buy = Buy
+poermanentLimit = Powerups: {0} / {1}
 
 [gui/gameover]
 over = Game Over
@@ -55,6 +74,7 @@ save = Save
 newgame = New Game
 options = Options
 scores = Scores
+achievements = Achievements
 credits = About
 quit = Quit
 back = Back

@@ -1,4 +1,5 @@
 #include "screens.h"
+#include "../game.h"
 
 #include <cage-core/config.h>
 
@@ -21,6 +22,9 @@ namespace
 			return true;
 		case 105:
 			setScreenScores();
+			return true;
+		case 108:
+			setScreenAchievements();
 			return true;
 		case 106:
 			setScreenCredits();
@@ -98,11 +102,23 @@ void setScreenMainmenu()
 			txt.textName = hashString("gui/mainmenu/scores");
 		}
 
+		if (achievements.acquired > 0)
+		{
+			entityClass *butAchivs = ents->create(108);
+			GUI_GET_COMPONENT(parent, parent, butAchivs);
+			parent.parent = panel->name();
+			parent.order = 4;
+			GUI_GET_COMPONENT(button, control, butAchivs);
+			GUI_GET_COMPONENT(text, txt, butAchivs);
+			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.textName = hashString("gui/mainmenu/achievements");
+		}
+
 		{
 			entityClass *butCredits = ents->create(106);
 			GUI_GET_COMPONENT(parent, parent, butCredits);
 			parent.parent = panel->name();
-			parent.order = 4;
+			parent.order = 5;
 			GUI_GET_COMPONENT(button, control, butCredits);
 			GUI_GET_COMPONENT(text, txt, butCredits);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
@@ -113,7 +129,7 @@ void setScreenMainmenu()
 			entityClass *butQuit = ents->create(107);
 			GUI_GET_COMPONENT(parent, parent, butQuit);
 			parent.parent = panel->name();
-			parent.order = 5;
+			parent.order = 6;
 			GUI_GET_COMPONENT(button, control, butQuit);
 			GUI_GET_COMPONENT(text, txt, butQuit);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");

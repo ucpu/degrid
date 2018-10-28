@@ -10,7 +10,8 @@ extern configUint32 confControlMovement;
 
 namespace
 {
-	uint32 scorePrevious;
+	uint32 scorePreviousSound;
+	uint32 scorePreviousAchievements;
 
 	void shipMovement()
 	{
@@ -89,21 +90,28 @@ namespace
 		}
 	}
 
+	void checkScore(uint32 limit, const string &name)
+	{
+		if (game.score >= limit && scorePreviousAchievements < limit)
+			achievementFullfilled(name);
+	}
+
 	void scoreUpdate()
 	{
-		uint32 lg = scorePrevious >= 20000 ? 10 : scorePrevious >= 2000 ? 2 : 1;
+		if (game.jokeMap && game.score >= 10000 && scorePreviousAchievements < 10000)
+			achievementFullfilled("joke-map");
+		checkScore(  10000, "starting-kit");
+		checkScore(  50000, "bronze");
+		checkScore( 250000, "silver");
+		checkScore(1250000, "gold");
+		scorePreviousAchievements = game.score;
+
+		uint32 lg = scorePreviousSound >= 20000 ? 10 : scorePreviousSound >= 2000 ? 2 : 1;
 		uint32 sg = lg * 500;
-		uint32 ld = (game.score - scorePrevious) / sg;
+		uint32 ld = (game.score - scorePreviousSound) / sg;
 		if (ld)
 		{
-			if (game.score >= 10000 && scorePrevious < 10000)
-			{
-				achievementFullfilled("starting-kit");
-				if (game.jokeMap)
-					achievementFullfilled("joke-map");
-			}
-
-			scorePrevious += ld * sg;
+			scorePreviousSound += ld * sg;
 
 			uint32 sounds[] = {
 				hashString("grid/speech/progress/doing-fine.wav"),
@@ -138,7 +146,7 @@ namespace
 
 	void gameStart()
 	{
-		scorePrevious = 0;
+		scorePreviousSound = 0;
 
 		{ // player ship entity
 			game.playerEntity = entities()->createUnique();
