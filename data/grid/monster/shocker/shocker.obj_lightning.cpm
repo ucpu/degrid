@@ -1,0 +1,11 @@
+
+[base]
+mask = 0.5
+roughness = 0.5
+metalness = 0.01
+
+[textures]
+albedo = lightning_$$.png
+
+[flags]
+transparency

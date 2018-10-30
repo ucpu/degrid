@@ -101,15 +101,16 @@ space = Mezerník
 [gui/scores]
 score = Skóre
 date = Datum
-name = Jméno
 
 [gui/credits]
-=
-Hra je k dispozici zdarma a má otevřený zdrojový kód.
-Hra je poskytována tak, jak je, bez žádných záruk.
+Zdarma dostupná hra s otevřeným kódem.
 Více informací na https://github.com/ucpu/grid.
 =
-Hru vytvořil Tomáš Malý (malytomas zavináč ucpu.cz), 2018.
-Inspirací byla hra Grid Wars 2.
+Používá herní engine Cage.
 =
-Hra funguje na herním enginu Cage.
+Poskytována bez jakýchkoli záruk.
+=
+Hru vytvořil Tomáš Malý, 2018.
+Hudbu vytvořili Stratkat a CommonlyCC.
+=
+Předlohou byla hra Grid Wars 2.

@@ -205,7 +205,7 @@ namespace
 
 			// empowering the wormhole over time
 			g.strength += sign(g.strength) * 0.005;
-			t.scale += 0.001;
+			t.scale += 0.0005;
 		}
 	}
 
@@ -230,9 +230,8 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 	countWormholes(positive, negative);
 	statistics.wormholesSpawned++;
 	uint32 special = 0;
-	entityClass *wormhole = initializeMonster(spawnPosition, color, 3 + 0.5 * monsterMutation(special), hashString("grid/monster/wormhole.object"), hashString("grid/monster/bum-wormhole.ogg"), 200, randomRange(200, 300) + 100 * monsterMutation(special));
+	entityClass *wormhole = initializeMonster(spawnPosition, color, 5, hashString("grid/monster/wormhole.object"), hashString("grid/monster/bum-wormhole.ogg"), 200, randomRange(200, 300) + 100 * monsterMutation(special));
 	ENGINE_GET_COMPONENT(transform, transform, wormhole);
-	transform.scale = 3;
 	transform.orientation = randomDirectionQuat();
 	GRID_GET_COMPONENT(monster, m, wormhole);
 	m.dispersion = 0.001;

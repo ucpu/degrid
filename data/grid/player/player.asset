@@ -41,6 +41,7 @@ scheme = sound
 before = discard
 after = discard
 powerup.ogg
+coin.ogg
 
 []
 scheme = sound

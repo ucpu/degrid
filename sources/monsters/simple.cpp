@@ -35,23 +35,6 @@ namespace
 			spawnSimple(monsterTypeFlags::SmallTriangle, t.position + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
 
-	entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, const quat &animation)
-	{
-		entityClass *e = initializeMonster(spawnPosition, color, scale, objectName, deadSound, damage, life);
-		GRID_GET_COMPONENT(velocity, v, e);
-		GRID_GET_COMPONENT(monster, m, e);
-		GRID_GET_COMPONENT(simpleMonster, s, e);
-		GRID_GET_COMPONENT(rotation, rot, e);
-		v.velocity = randomDirection3();
-		v.velocity[1] = 0;
-		m.dispersion = dispersion;
-		s.avoidance = avoidance;
-		rot.rotation = animation;
-		s.maxSpeed = maxSpeed;
-		s.acceleration = s.maxSpeed / accelerationFraction;
-		return e;
-	}
-
 	void engineUpdate()
 	{
 		if (game.paused)
@@ -132,6 +115,23 @@ namespace
 			engineUpdateListener.bind<&engineUpdate>();
 		}
 	} callbacksInstance;
+}
+
+entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, const quat &animation)
+{
+	entityClass *e = initializeMonster(spawnPosition, color, scale, objectName, deadSound, damage, life);
+	GRID_GET_COMPONENT(velocity, v, e);
+	GRID_GET_COMPONENT(monster, m, e);
+	GRID_GET_COMPONENT(simpleMonster, s, e);
+	GRID_GET_COMPONENT(rotation, rot, e);
+	v.velocity = randomDirection3();
+	v.velocity[1] = 0;
+	m.dispersion = dispersion;
+	s.avoidance = avoidance;
+	rot.rotation = animation;
+	s.maxSpeed = maxSpeed;
+	s.acceleration = s.maxSpeed / accelerationFraction;
+	return e;
 }
 
 void spawnSimple(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color)

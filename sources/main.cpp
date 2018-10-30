@@ -51,6 +51,9 @@ namespace
 
 	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
 	{
+		if (modifiers != modifiersFlags::None)
+			return false;
+
 		static configBool secondaryCamera("grid.secondary-camera.enabled", false);
 
 		CAGE_LOG_DEBUG(severityEnum::Info, "keyboard", string() + "key: " + key);

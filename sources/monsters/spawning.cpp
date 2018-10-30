@@ -18,7 +18,7 @@ namespace
 
 	vec3 randomPosition()
 	{
-		return aroundPosition(randomChance(), randomRange(200, 300), playerPosition);
+		return aroundPosition(randomChance(), randomRange(200, 250), playerPosition);
 	}
 
 	enum class placingPolicyEnum
@@ -124,14 +124,14 @@ namespace
 		case placingPolicyEnum::Around:
 		{
 			real angularOffset = randomChance();
-			real radius = randomRange(140, 160);
+			real radius = randomRange(160, 190);
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition(angularOffset + (randomChance() * 0.3 + i) / (real)spawnCount, radius, playerPosition), color);
 		} break;
 		case placingPolicyEnum::Grouped:
 		{
 			real radius = randomRange(spawnCount / 2, spawnCount);
-			vec3 center = aroundPosition(randomChance(), randomRange(200, 250), playerPosition);
+			vec3 center = randomPosition();
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
 		} break;
@@ -171,7 +171,7 @@ namespace
 		if (game.cinematic)
 		{ // cinematic spawns
 			spawnDefinitionStruct d("cinematic");
-			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle | monsterTypeFlags::SmallTriangle | monsterTypeFlags::SmallCube | monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube);
+			d.spawnTypes = (monsterTypeFlags::Circle | monsterTypeFlags::SmallTriangle | monsterTypeFlags::SmallCube | monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube);
 			definitions.push_back(d);
 			return;
 		}
@@ -184,7 +184,7 @@ namespace
 		{
 			CAGE_LOG(severityEnum::Info, "joke", "JOKE: snakes only map");
 			spawnDefinitionStruct d("snakes only");
-			d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Snake);
+			d.spawnTypes = (monsterTypeFlags::Snake);
 			d.priorityCurrent = 0;
 			definitions.push_back(d);
 			announceJokeMap();
@@ -237,21 +237,31 @@ namespace
 			definitions.push_back(d);
 		}
 
-		{ // shielders individually
-			spawnDefinitionStruct d("individual shielders");
-			d.spawnTypes = (monsterTypeFlags::Shielder);
+		{ // snakes individually
+			spawnDefinitionStruct d("individual snakes");
+			d.spawnTypes = (monsterTypeFlags::Snake);
 			d.priorityCurrent = 2000;
-			d.priorityChange = 71;
-			d.priorityAdditive = 0.5;
+			d.priorityChange = 133;
+			d.priorityAdditive = 1;
 			d.priorityMultiplier = 1.02;
 			definitions.push_back(d);
 		}
 
-		{ // snakes individually
-			spawnDefinitionStruct d("individual snakes");
-			d.spawnTypes = (monsterTypeFlags::Snake);
+		{ // shielders individually
+			spawnDefinitionStruct d("individual shielders");
+			d.spawnTypes = (monsterTypeFlags::Shielder);
+			d.priorityCurrent = 2500;
+			d.priorityChange = 127;
+			d.priorityAdditive = 1;
+			d.priorityMultiplier = 1.02;
+			definitions.push_back(d);
+		}
+
+		{ // shockers individually
+			spawnDefinitionStruct d("individual shockers");
+			d.spawnTypes = (monsterTypeFlags::Shocker);
 			d.priorityCurrent = 3000;
-			d.priorityChange = 133;
+			d.priorityChange = 143;
 			d.priorityAdditive = 1;
 			d.priorityMultiplier = 1.02;
 			definitions.push_back(d);
@@ -325,29 +335,27 @@ namespace
 		// final stage
 		///////////////////////////////////////////////////////////////////////////
 
-		{ // finals 1
-			spawnDefinitionStruct d("finals 1");
+		{ // mixed group
+			spawnDefinitionStruct d("mixed group");
 			d.spawnCountMin = 20;
 			d.spawnCountMax = 25;
 			d.spawnTypes = (monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube | monsterTypeFlags::Diamond);
-			d.placingPolicy = placingPolicyEnum::Around;
+			d.placingPolicy = placingPolicyEnum::Grouped;
 			d.priorityCurrent = 5000;
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(5, 15);
-			d.priorityMultiplier = 0.98;
 			definitions.push_back(d);
 		}
 
-		{ // finals 2
-			spawnDefinitionStruct d("finals 2");
-			d.spawnCountMin = 10;
-			d.spawnCountMax = 20;
-			d.spawnTypes = (monsterTypeFlags::Circle | monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube | monsterTypeFlags::PinWheel | monsterTypeFlags::Shielder);
+		{ // mixed around
+			spawnDefinitionStruct d("mixed around");
+			d.spawnCountMin = 5;
+			d.spawnCountMax = 15;
+			d.spawnTypes = (monsterTypeFlags::PinWheel | monsterTypeFlags::Snake | monsterTypeFlags::Shielder | monsterTypeFlags::Shocker);
 			d.placingPolicy = placingPolicyEnum::Around;
-			d.priorityCurrent = 5000;
-			d.priorityChange = randomRange(300, 400);
-			d.priorityAdditive = randomRange(10, 20);
-			d.priorityMultiplier = 0.98;
+			d.priorityCurrent = 5500;
+			d.priorityChange = randomRange(200, 300);
+			d.priorityAdditive = randomRange(5, 15);
 			definitions.push_back(d);
 		}
 
@@ -360,7 +368,6 @@ namespace
 			d.priorityCurrent = 7000;
 			d.priorityChange = randomRange(6000, 8000);
 			d.priorityAdditive = randomRange(300, 500);
-			d.priorityMultiplier = 0.98;
 			definitions.push_back(d);
 		}
 
@@ -413,8 +420,9 @@ void spawnGeneral(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &
 {
 	switch (type)
 	{
-	case monsterTypeFlags::Shielder: return spawnShielder(spawnPosition, color);
 	case monsterTypeFlags::Snake: return spawnSnake(spawnPosition, color);
+	case monsterTypeFlags::Shielder: return spawnShielder(spawnPosition, color);
+	case monsterTypeFlags::Shocker: return spawnShocker(spawnPosition, color);
 	case monsterTypeFlags::Wormhole: return spawnWormhole(spawnPosition, color);
 	default: return spawnSimple(type, spawnPosition, color);
 	}

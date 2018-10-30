@@ -101,15 +101,16 @@ space = Spacebar
 [gui/scores]
 score = Score
 date = Date
-name = Name
 
 [gui/credits]
-=
-The game is free and open-source.
-The game is provided as-is, without warranty of any kind.
+Free and open-source game.
 See https://github.com/ucpu/grid for more information.
 =
-The game was made by Tomáš Malý (malytomas at ucpu.cz), 2018.
-The game Grid Wars 2 was a great inspiration for this game.
+Powered by Cage, a hobbyist RTS game engine.
 =
-The game is powered by Cage.
+Provided as-is, without warranty of any kind.
+=
+Made by Tomáš Malý, 2018.
+Music by Stratkat and CommonlyCC.
+=
+Grid Wars 2 was great inspiration for this game.

@@ -12,6 +12,8 @@ snakeTail.object
 shielder.object
 shield.object
 wormhole.object
+shocker/shocker.object
+shocker/lightning.object
 
 []
 bum-circle.ogg
@@ -24,4 +26,5 @@ bum-snake-head.ogg
 bum-snake-tail.ogg
 bum-wormhole.ogg
 wormhole.ogg
-
+shocker/bum-shocker.ogg
+shocker/lightning.flac
