@@ -417,7 +417,7 @@ namespace
 				text.assetName = hashString("grid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/life");
 				GUI_GET_COMPONENT(textFormat, format, label);
-				format.color = vec3(.5, 0, 0);
+				format.color = vec3(1, 0, 0);
 				format.size = 20;
 			}
 
@@ -430,7 +430,7 @@ namespace
 				GUI_GET_COMPONENT(text, text, label);
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.align = textAlignEnum::Right;
-				format.color = vec3(.5, 0, 0);
+				format.color = vec3(1, 0, 0);
 				format.size = 20;
 			}
 
@@ -444,7 +444,7 @@ namespace
 				text.assetName = hashString("grid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/money");
 				GUI_GET_COMPONENT(textFormat, format, label);
-				format.color = vec3(.5, .5, 0);
+				format.color = vec3(1, 1, 0);
 				format.size = 20;
 			}
 
@@ -457,7 +457,7 @@ namespace
 				GUI_GET_COMPONENT(text, text, label);
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.align = textAlignEnum::Right;
-				format.color = vec3(.5, .5, 0);
+				format.color = vec3(1, 1, 0);
 				format.size = 20;
 			}
 
@@ -471,7 +471,7 @@ namespace
 				text.assetName = hashString("grid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/score");
 				GUI_GET_COMPONENT(textFormat, format, label);
-				format.color = vec3(0, .5, 0);
+				format.color = vec3(0, 1, 0);
 				format.size = 20;
 			}
 
@@ -484,7 +484,7 @@ namespace
 				GUI_GET_COMPONENT(text, text, label);
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.align = textAlignEnum::Right;
-				format.color = vec3(0, .5, 0);
+				format.color = vec3(0, 1, 0);
 				format.size = 20;
 			}
 		}

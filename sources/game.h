@@ -19,7 +19,7 @@ bool killMonster(entityClass *e, bool allowCallback);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(uint32 sounds[]);
-bool achievementFullfilled(const string &name, bool bossKill = false); // returs if this is the firts time the achievement is fullfilled
+bool achievementFullfilled(const string &name, bool bossKill = false); // returs if this is the first time the achievement is fullfilled
 void makeAnnouncement(uint32 headline, uint32 description, uint32 duration = 30 * 30);
 uint32 permanentPowerupLimit();
 uint32 currentPermanentPowerups();

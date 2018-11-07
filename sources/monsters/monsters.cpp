@@ -95,7 +95,7 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update);
+			engineUpdateListener.attach(controlThread().update, 1);
 			engineUpdateListener.bind<&engineUpdate>();
 		}
 	} callbacksInstance;
