@@ -175,6 +175,8 @@ namespace
 			environmentExplosion(playerTransform.position, randomDirection3() * vec3(1, 0.1, 1), playerDeathColor, 5, playerScale);
 		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;
+		game.shieldEntity->add(entitiesToDestroy);
+		game.shieldEntity = nullptr;
 	}
 
 	class callbacksClass

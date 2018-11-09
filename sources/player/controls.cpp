@@ -118,11 +118,14 @@ namespace
 
 	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
 	{
-		if (key == 256) // esc
-			game.paused = !game.paused;
-
 		if (key < sizeof(keyMap))
 			keyMap[key] = false;
+
+		if (game.cinematic || game.gameOver)
+			return false;
+
+		if (key == 256) // esc
+			game.paused = !game.paused;
 
 		if (game.paused)
 			return false;
@@ -158,6 +161,8 @@ namespace
 
 	void engineUpdate()
 	{
+		CAGE_ASSERT_RUNTIME(!game.gameOver || game.paused, game.gameOver, game.paused, game.cinematic);
+
 		if (game.paused)
 			return;
 

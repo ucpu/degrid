@@ -38,7 +38,6 @@ namespace
 			return true;
 		}
 
-
 		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 		{
 			if (powerupMode[i] == 2)
@@ -657,15 +656,12 @@ namespace
 
 void setScreenGame()
 {
-	previousPaused = true;
 	game.cinematic = false;
 	announecements.clear();
 	gameStartEvent().dispatch();
 	if (game.money > 0)
-	{
-		previousPaused = false;
 		game.paused = true;
-	}
+	previousPaused = !game.paused;
 }
 
 void makeAnnouncement(uint32 headline, uint32 description, uint32 duration)

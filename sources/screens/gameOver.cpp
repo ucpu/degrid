@@ -7,11 +7,11 @@
 namespace
 {
 	eventListener<bool(uint32)> guiEvent;
+	eventListener<bool(uint32, uint32, modifiersFlags)> keyReleaseListener;
 
-	bool buttonSave(uint32 en)
+	void saveScore()
 	{
-		if (en != 100)
-			return false;
+		keyReleaseListener.detach();
 
 		if (game.score > 0)
 		{
@@ -30,6 +30,23 @@ namespace
 		game.cinematic = true;
 		gameStartEvent().dispatch();
 		setScreenScores();
+	}
+
+	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
+	{
+		if (key == 256) // esc
+		{
+			saveScore();
+			return true;
+		}
+		return false;
+	}
+
+	bool buttonSave(uint32 en)
+	{
+		if (en != 100)
+			return false;
+		saveScore();
 		return true;
 	}
 }
@@ -44,6 +61,8 @@ void setScreenGameover()
 	entityManagerClass *ents = gui()->entities();
 	guiEvent.bind<&buttonSave>();
 	guiEvent.attach(gui()->widgetEvent);
+	keyReleaseListener.attach(window()->events.keyRelease);
+	keyReleaseListener.bind<&keyRelease>();
 
 	entityClass *panel = ents->createUnique();
 	{

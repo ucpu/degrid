@@ -3,6 +3,7 @@
 namespace
 {
 	eventListener<bool(uint32)> guiListener;
+	eventListener<bool(uint32, uint32, modifiersFlags)> keyReleaseListener;
 
 	bool buttonBack(uint32 en)
 	{
@@ -12,6 +13,16 @@ namespace
 		return true;
 	}
 
+	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
+	{
+		if (key == 256) // esc
+		{
+			setScreenMainmenu();
+			return true;
+		}
+		return false;
+	}
+
 	void eraseGui()
 	{
 		guiClass *guii = gui();
@@ -19,6 +30,7 @@ namespace
 		guii->setFocus(0);
 		guii->entities()->destroy();
 		guii->widgetEvent.detach();
+		keyReleaseListener.detach();
 	}
 
 	void generateLayout()
@@ -177,8 +189,10 @@ namespace
 		txt.textName = hashString("gui/mainmenu/back");
 		GUI_GET_COMPONENT(parent, parent, but);
 		parent.parent = 15;
-		gui()->widgetEvent.attach(guiListener);
+		guiListener.attach(gui()->widgetEvent);
 		guiListener.bind<&buttonBack>();
+		keyReleaseListener.attach(window()->events.keyRelease);
+		keyReleaseListener.bind<&keyRelease>();
 	}
 
 }
