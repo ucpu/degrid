@@ -7,3 +7,4 @@ no-depth-test
 no-depth-write
 no-lighting
 no-shadow-cast
+no-velocity-write

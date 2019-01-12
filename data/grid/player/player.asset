@@ -5,6 +5,7 @@ player.pack
 
 []
 scheme = texture
+degamma_on = true
 player.png
 turret.png
 coin.png
@@ -12,6 +13,7 @@ coin.png
 []
 scheme = texture
 target = GL_TEXTURE_2D_ARRAY
+degamma_on = true
 shield/baked$$$$.png
 
 []

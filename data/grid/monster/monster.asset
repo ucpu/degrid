@@ -6,6 +6,7 @@ monster.pack
 []
 scheme = texture
 target = GL_TEXTURE_2D_ARRAY
+degamma_on = true
 snakeTail/_$$.png
 blackhole/baked$$$$.png
 shocker/lightning_$$.png

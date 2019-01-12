@@ -15,6 +15,9 @@ namespace
 	entityClass *secondaryCameraEntity;
 	entityClass *skyboxSecondaryCameraEntity;
 
+	const real ambientSkybox = 1.0;
+	const real ambientPlayer = 0.25;
+
 	void engineInit()
 	{
 		skyboxOrientation = randomDirectionQuat();
@@ -55,7 +58,7 @@ namespace
 					c.renderMask = 2;
 					c.near = 0.5;
 					c.far = 3;
-					c.ambientLight = vec3(1, 1, 1);
+					c.ambientLight = vec3(1, 1, 1) * ambientSkybox;
 					c.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
@@ -69,11 +72,12 @@ namespace
 					c.renderMask = 1;
 					c.near = 3;
 					c.far = 500;
-					c.ambientLight = vec3(1, 1, 1) * 0.8;
+					c.ambientLight = vec3(1, 1, 1) * ambientPlayer;
 					c.clear = (cameraClearFlags)0;
 					c.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
+					c.effects = cameraEffectsFlags::CombinedPass;
 				}
 			}
 			else
@@ -104,7 +108,7 @@ namespace
 			c.renderMask = 2;
 			c.near = 0.5;
 			c.far = 3;
-			c.ambientLight = vec3(1, 1, 1);
+			c.ambientLight = vec3(1, 1, 1) * ambientSkybox;
 		}
 
 		{
@@ -117,8 +121,9 @@ namespace
 			c.renderMask = 1;
 			c.near = 50;
 			c.far = 200;
-			c.ambientLight = vec3(1, 1, 1) * 0.8;
+			c.ambientLight = vec3(1, 1, 1) * ambientPlayer;
 			c.clear = (cameraClearFlags)0;
+			c.effects = cameraEffectsFlags::CombinedPass;
 			ENGINE_GET_COMPONENT(listener, l, primaryCameraEntity);
 			static const float halfVolumeDistance = 30;
 			l.attenuation[1] = 2.0 / halfVolumeDistance;

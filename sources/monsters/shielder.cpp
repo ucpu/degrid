@@ -148,7 +148,7 @@ namespace
 			engineInitListener.bind<&engineInit>();
 			engineUpdateListener1.attach(controlThread().update);
 			engineUpdateListener1.bind<&engineUpdate>();
-			engineUpdateListener2.attach(controlThread().update, 40); // after physics
+			engineUpdateListener2.attach(controlThread().update, 41); // after physics
 			engineUpdateListener2.bind<&updateShields>();
 		}
 	} callbacksInstance;

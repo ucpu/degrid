@@ -20,10 +20,10 @@ namespace
 		real d = a.distance(b);
 		vec3 v = (b - a).normalize();
 		vec3 c = (a + b) * 0.5;
-		if (d > 25)
+		if (d > 35)
 		{
 			vec3 side = cross(v, vec3(0, 1, 0));
-			c += side * (d * randomRange(-0.3, 0.3));
+			c += side * (d * randomRange(-0.2, 0.2));
 			lightning(a, c, color);
 			lightning(c, b, color);
 			return;
@@ -32,7 +32,7 @@ namespace
 		ENGINE_GET_COMPONENT(transform, t, e);
 		t.position = c;
 		t.orientation = quat(v, vec3(0, 1, 0), true);
-		t.scale = 10;
+		t.scale = 15;
 		ENGINE_GET_COMPONENT(render, r, e);
 		r.object = hashString("grid/monster/shocker/lightning.object");
 		r.color = color;
