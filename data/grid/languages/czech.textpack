@@ -60,11 +60,13 @@ puShotsDamage = Poškození střel:
 puShotsSpeed = Rychlost střel:
 puShooting = Rychlost střílení:
 puMultishot = Více střel:
+puArmor = Brnění:
+puDuration = Trvání:
 bosses = Bosové
 market = Vesmírný Trh
 sell = Prodat
 buy = Koupit
-poermanentLimit = Powerupy: {0} / {1}
+permanentLimit = Powerupy: {0} / {1}
 
 [gui/gameover]
 over = Hra skončila

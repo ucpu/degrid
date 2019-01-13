@@ -9,9 +9,10 @@
 
 using namespace cage;
 
-bool collisionTest(const vec3 &positionA, real radiusA, const vec3 velocityA, const vec3 &positionB, real radiusB, const vec3 velocityB);
+bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, const vec3 &positionB, real radiusB, const vec3 &velocityB);
 void powerupSpawn(const vec3 &position);
 void monstersSpawnInitial();
+real lifeDamage(real damage); // how much life does the damage take (based on players armor)
 void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale);
 void monsterExplosion(entityClass *e);
 void shotExplosion(entityClass *e);
@@ -34,7 +35,7 @@ enum class powerupTypeEnum
 	Bomb,
 	Turret,
 	Decoy,
-	// one-time
+	// timed
 	HomingShots,
 	SuperDamage,
 	Shield,
@@ -45,13 +46,15 @@ enum class powerupTypeEnum
 	ShotsSpeed,
 	FiringSpeed,
 	Multishot,
+	Armor,
+	Duration,
 	// extra
 	Coin,
 	// total
 	Total
 };
 
-const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3 };
+const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3 };
 const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 const real playerScale = 3;
 const real mapNoPullRadius = 200;

@@ -60,11 +60,13 @@ puShotsDamage = Shots Damage:
 puShotsSpeed = Shots Speed:
 puShooting = Firing Speed:
 puMultishot = Multiple Shots:
+puArmor = Armor:
+puDuration = Duration:
 bosses = Bosses
 market = Space Market
 sell = Sell
 buy = Buy
-poermanentLimit = Powerups: {0} / {1}
+permanentLimit = Powerups: {0} / {1}
 
 [gui/gameover]
 over = Game Over

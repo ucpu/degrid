@@ -109,7 +109,7 @@ namespace
 	} callbacksInstance;
 }
 
-bool collisionTest(const vec3 &positionA, real radiusA, const vec3 velocityA, const vec3 &positionB, real radiusB, const vec3 velocityB)
+bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, const vec3 &positionB, real radiusB, const vec3 &velocityB)
 {
 	vec3 m = velocityB - velocityA;
 	return intersects(makeSegment(positionB, positionB + m), sphere(positionA, radiusA + radiusB));

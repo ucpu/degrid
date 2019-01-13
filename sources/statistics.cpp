@@ -73,6 +73,8 @@ namespace
 			"ShotsSpeed",
 			"Shooting",
 			"Multishot",
+			"Armor",
+			"Duration",
 			"Coin"
 		};
 		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)

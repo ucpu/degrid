@@ -56,7 +56,7 @@ namespace
 				{
 					environmentExplosion(interpolate(t.position, playerTransform.position, 0.5), interpolate(playerVelocity.velocity, v.velocity, 0.5), playerDeathColor, min(m.damage, 5) * 2 + 2, 3); // hull sparks
 					statistics.monstersSucceded++;
-					game.life -= m.damage;
+					game.life -= lifeDamage(m.damage);
 					if (statistics.monstersFirstHit == 0)
 						statistics.monstersFirstHit = statistics.updateIterationIgnorePause;
 					statistics.monstersLastHit = statistics.updateIterationIgnorePause;
@@ -99,6 +99,12 @@ namespace
 			engineUpdateListener.bind<&engineUpdate>();
 		}
 	} callbacksInstance;
+}
+
+real lifeDamage(real damage)
+{
+	uint32 armor = game.powerups[(uint32)powerupTypeEnum::Armor];
+	return damage / (armor * 0.5 + 1);
 }
 
 uint32 monsterMutation(uint32 &special)

@@ -80,7 +80,9 @@ namespace
 		hashString("gui/game/puShotsDamage"),
 		hashString("gui/game/puShotsSpeed"),
 		hashString("gui/game/puShooting"),
-		hashString("gui/game/puMultishot")
+		hashString("gui/game/puMultishot"),
+		hashString("gui/game/puArmor"),
+		hashString("gui/game/puDuration")
 	};
 
 	void makeTheGuiPaused()
@@ -227,7 +229,7 @@ namespace
 				parent.order = 1;
 				GUI_GET_COMPONENT(text, text, e);
 				text.assetName = hashString("grid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/poermanentLimit");
+				text.textName = hashString("gui/game/permanentLimit");
 				text.value = string() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
 				GUI_GET_COMPONENT(label, but, e);
 				GUI_GET_COMPONENT(textFormat, tf, e);

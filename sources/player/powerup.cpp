@@ -123,7 +123,8 @@ namespace
 				break;
 			case 1: // timed
 			{
-				game.powerups[(uint32)p.type] += 30 * 30;
+				uint32 duration = 30 * (30 + 15 * game.powerups[(uint32)powerupTypeEnum::Duration]);
+				game.powerups[(uint32)p.type] += duration;
 				switch (p.type)
 				{
 				case powerupTypeEnum::Shield: soundSpeech(hashString("grid/speech/pickup/shield-engaged.wav")); break;
@@ -131,7 +132,7 @@ namespace
 				case powerupTypeEnum::SuperDamage: soundSpeech(hashString("grid/speech/pickup/super-damage.wav")); break;
 				default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 				}
-				if (game.powerups[(uint32)p.type] > 2 * 30 * 30)
+				if (game.powerups[(uint32)p.type] > 2 * duration)
 					achievementFullfilled("timelord");
 			} break;
 			case 2: // permanent
@@ -147,6 +148,8 @@ namespace
 					case powerupTypeEnum::ShotsSpeed: soundSpeech(hashString("grid/speech/pickup/missiles-speed-improved.wav")); break;
 					case powerupTypeEnum::ShotsDamage: soundSpeech(hashString("grid/speech/pickup/missiles-damage-improved.wav")); break;
 					case powerupTypeEnum::FiringSpeed: soundSpeech(hashString("grid/speech/pickup/firing-speed-improved.wav")); break;
+					case powerupTypeEnum::Armor: soundSpeech(hashString("grid/speech/pickup/improved-armor.wav")); break;
+					case powerupTypeEnum::Duration: soundSpeech(hashString("grid/speech/pickup/increased-powerup-duration.wav")); break;
 					default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 					}
 				}
