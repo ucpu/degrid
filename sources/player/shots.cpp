@@ -43,7 +43,8 @@ namespace
 			ENGINE_GET_COMPONENT(transform, transform, shot);
 			rads dir = aTan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += degs(i * 10);
-			transform.position = playerTransform.position;
+			vec3 dirv = vec3(-sin(dir), 0, -cos(dir));
+			transform.position = playerTransform.position + dirv * 2;
 			transform.orientation = quat(degs(), dir, degs());
 			ENGINE_GET_COMPONENT(render, render, shot);
 			render.object = hashString("grid/player/shot.object");
@@ -52,7 +53,7 @@ namespace
 			else
 				render.color = game.shotsColor;
 			GRID_GET_COMPONENT(velocity, vel, shot);
-			vel.velocity = vec3(-sin(dir), 0, -cos(dir)) * (game.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
+			vel.velocity = dirv * (game.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
 			GRID_GET_COMPONENT(shot, sh, shot);
 			sh.damage = game.powerups[(uint32)powerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)powerupTypeEnum::SuperDamage] ? 4 : 1);
 			sh.homing = game.powerups[(uint32)powerupTypeEnum::HomingShots] > 0;
