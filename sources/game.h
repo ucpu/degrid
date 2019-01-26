@@ -130,7 +130,7 @@ struct globalStatisticsStruct
 	uint32 monstersCurrent;
 	uint32 monstersMax; // maximum number of monsters at any single moment
 	real monstersCurrentSpawningPriority; // current value of variable, that controls monsters spawning
-	uint32 monstersCurrentMutationIteration;
+	uint64 monstersCurrentMutationIteration;
 	uint32 monstersFirstHit; // the time (in relation to updateIteration) in which the player was first hit by a monster
 	uint32 monstersLastHit;
 	uint32 shielderStoppedShots; // the number of shots eliminated by shielder

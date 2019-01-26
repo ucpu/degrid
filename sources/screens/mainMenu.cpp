@@ -165,3 +165,17 @@ void setScreenMainmenu()
 		}
 	}
 }
+
+namespace
+{
+	class callbacksClass
+	{
+		eventListener<void()> engineInitListener;
+	public:
+		callbacksClass()
+		{
+			engineInitListener.attach(controlThread().initialize, 200);
+			engineInitListener.bind<&setScreenMainmenu>();
+		}
+	} callbacksInstance;
+}

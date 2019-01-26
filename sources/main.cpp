@@ -125,7 +125,6 @@ int main(int argc, const char *args[])
 		window()->title("Grid");
 		setWindowFullscreen(configGetBool("grid.fullscreen.enabled"));
 		reloadLanguage(confLanguage);
-		setScreenMainmenu();
 		assets()->add(hashString("grid/grid.pack"));
 
 		{

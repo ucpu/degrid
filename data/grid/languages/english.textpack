@@ -19,6 +19,7 @@ spacetime-travel = Spacetime Travel
 timelord = Timelord
 collector = Collector
 vault-digger = Vault Digger
+mutated = Mutated
 
 [achievement-desc]
 starting-kit = Reach 10,000 score. Every achievement you acquire gives you a bonus into the beginning of all future games.
@@ -32,6 +33,7 @@ spacetime-travel = Survive a spacetime trip.
 timelord = Accumulate 3 timed powerups of same type.
 collector = Accumulate all collectible powerups to their limits.
 vault-digger = Pick up 1,000 coins.
+mutated = Face a mutated monster.
 
 [announcement]
 joke-map = Easter Map

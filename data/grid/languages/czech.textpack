@@ -19,6 +19,7 @@ spacetime-travel = Časoprostorová cesta
 timelord = Pán času
 collector = Sběratel
 vault-digger = Zlatokopka
+mutated = Zmutovaný
 
 [achievement-desc]
 starting-kit = Dosáhni 10 000 skóre. Získání jakéhokoli ocenění vám dá bonus do začátku dalších her.
@@ -32,6 +33,7 @@ spacetime-travel = Přežij časoprostorový skok.
 timelord = Nashromáždi tři časové powerupy stejného druhu.
 collector = Nasbírej maximální počet všech sbíratelných powerupů současně.
 vault-digger = Posbírej 1 000 mincí.
+mutated = Postavte se proti zmutované potvoře.
 
 [announcement]
 joke-map = Velikonoční mapa

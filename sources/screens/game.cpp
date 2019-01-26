@@ -42,7 +42,7 @@ namespace
 		{
 			if (powerupMode[i] == 2)
 			{
-				if (en == 1000 + i * 3 + 1) // sell
+				if (en == 1000 + i * 4 + 2) // sell
 				{
 					CAGE_ASSERT_RUNTIME(game.powerups[i] > 0);
 					game.powerups[i]--;
@@ -51,7 +51,7 @@ namespace
 					makeTheGui();
 					return true;
 				}
-				if (en == 1000 + i * 3 + 2) // buy
+				if (en == 1000 + i * 4 + 3) // buy
 				{
 					CAGE_ASSERT_RUNTIME(canAddPermanentPowerup());
 					CAGE_ASSERT_RUNTIME(game.money >= basePermanentPowerupBuyPrice * game.buyPriceMultiplier);

@@ -135,7 +135,6 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 	uint32 pieces = 0;
 	if (randomRange(0u, 1000u) == 42)
 	{
-		CAGE_LOG(severityEnum::Info, "joke", "JOKE: monster snake");
 		pieces = randomRange(80, 100);
 		makeAnnouncement(hashString("announcement/joke-snake"), hashString("announcement-desc/joke-snake"));
 	}

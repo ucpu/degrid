@@ -113,13 +113,13 @@ uint32 monsterMutation(uint32 &special)
 		return 0;
 
 	statistics.monstersCurrentMutationIteration++;
-	real c = (statistics.monstersCurrentMutationIteration) / 30000;
+	real c = statistics.monstersCurrentMutationIteration / 100000.0;
 	c = pow(c, 1.2);
 	uint32 m = numeric_cast<uint32>(c);
-	real p = pow(c - m, 3);
+	real p = pow(c - m, 3.0);
 	uint32 res = randomChance() < p;
 	res *= m;
-	special += res;
+	special += res ? 1 : 0;
 	return res;
 }
 
@@ -128,9 +128,10 @@ void monsterReflectMutation(entityClass *e, uint32 special)
 	if (!special)
 		return;
 	ENGINE_GET_COMPONENT(transform, transform, e);
-	transform.scale *= 1.5;
+	transform.scale *= 1.3;
 	statistics.monstersMutated++;
 	statistics.monstersMutations += special;
+	achievementFullfilled("mutated");
 }
 
 entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
