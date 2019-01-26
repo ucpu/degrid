@@ -189,7 +189,7 @@ void setScreenOptions()
 		GUI_GET_COMPONENT(parent, parent, tabs);
 		parent.parent = 12;
 		GUI_GET_COMPONENT(layoutLine, layout, tabs);
-		layout.vertical = true;
+		layout.vertical = false;
 	}
 
 	{ // controls
@@ -204,6 +204,7 @@ void setScreenOptions()
 			GUI_GET_COMPONENT(text, txt, panel);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/controls");
+			GUI_GET_COMPONENT(scrollbars, sc, panel);
 		}
 		uint32 index = 0;
 
@@ -335,6 +336,7 @@ void setScreenOptions()
 			GUI_GET_COMPONENT(text, txt, panel);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/sounds");
+			GUI_GET_COMPONENT(scrollbars, sc, panel);
 		}
 		uint32 index = 0;
 

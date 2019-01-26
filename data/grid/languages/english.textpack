@@ -66,6 +66,7 @@ bosses = Bosses
 market = Space Market
 sell = Sell
 buy = Buy
+count = Active
 permanentLimit = Powerups: {0} / {1}
 
 [gui/gameover]

@@ -66,6 +66,7 @@ bosses = Bosové
 market = Vesmírný Trh
 sell = Prodat
 buy = Koupit
+count = Aktivní
 permanentLimit = Powerupy: {0} / {1}
 
 [gui/gameover]

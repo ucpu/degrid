@@ -59,7 +59,7 @@ namespace
 					c.near = 0.5;
 					c.far = 3;
 					c.ambientLight = vec3(1, 1, 1) * ambientSkybox;
-					c.perspectiveFov = degs(60);
+					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
 				}
@@ -74,7 +74,7 @@ namespace
 					c.far = 500;
 					c.ambientLight = vec3(1, 1, 1) * ambientPlayer;
 					c.clear = (cameraClearFlags)0;
-					c.perspectiveFov = degs(60);
+					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
 					c.effects = cameraEffectsFlags::CombinedPass;

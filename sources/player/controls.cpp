@@ -50,7 +50,7 @@ namespace
 		ENGINE_GET_COMPONENT(transform, ts, getPrimaryCameraEntity());
 		ENGINE_GET_COMPONENT(camera, cs, getPrimaryCameraEntity());
 		mat4 view = mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)).inverse();
-		mat4 proj = perspectiveProjection(cs.perspectiveFov, real(res.x) / real(res.y), cs.near, cs.far);
+		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res.x) / real(res.y), cs.near, cs.far);
 		mat4 inv = (proj * view).inverse();
 		vec4 pn = inv * vec4(px, py, -1, 1);
 		vec4 pf = inv * vec4(px, py, 1, 1);
@@ -151,6 +151,10 @@ namespace
 		windowListeners.keyPress.bind<&keyPress>();
 		windowListeners.keyRelease.bind<&keyRelease>();
 
+		// process some events before gui
+		windowListeners.mouseRelease.attach(window()->events.mouseRelease, -1);
+		windowListeners.keyRelease.attach(window()->events.keyRelease, -1);
+
 #ifdef GRID_TESTING
 		CAGE_LOG(severityEnum::Info, "grid", string() + "TESTING GAME BUILD");
 #endif // GRID_TESTING
@@ -172,8 +176,27 @@ namespace
 
 		if (game.cinematic)
 		{
-			game.fireDirection = randomDirection3();
-			game.fireDirection[1] = 0;
+			uint32 cnt = monsterComponent::component->group()->count();
+			if (cnt == 0)
+			{
+				game.fireDirection = randomDirection3();
+				game.fireDirection[1] = 0;
+			}
+			else
+			{
+				cnt = randomRange(0u, cnt);
+				for (entityClass *e : monsterComponent::component->entities())
+				{
+					if (cnt-- == 0)
+					{
+						ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
+						ENGINE_GET_COMPONENT(transform, t, e);
+						game.fireDirection = t.position - p.position;
+						game.fireDirection[1] = 0;
+						return;
+					}
+				}
+			}
 			return;
 		}
 

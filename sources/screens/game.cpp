@@ -245,7 +245,7 @@ namespace
 				parent.parent = marketName;
 				parent.order = 2;
 				GUI_GET_COMPONENT(layoutTable, lt, e);
-				lt.sections = 3;
+				lt.sections = 4;
 			}
 
 			{ // header
@@ -255,11 +255,21 @@ namespace
 					parent.parent = panelName;
 					parent.order = -10;
 				}
-				{ // sell
+				{ // count
 					entityClass *e = ents->createUnique();
 					GUI_GET_COMPONENT(parent, parent, e);
 					parent.parent = panelName;
 					parent.order = -9;
+					GUI_GET_COMPONENT(label, but, e);
+					GUI_GET_COMPONENT(text, text, e);
+					text.assetName = hashString("grid/languages/internationalized.textpack");
+					text.textName = hashString("gui/game/count");
+				}
+				{ // sell
+					entityClass *e = ents->createUnique();
+					GUI_GET_COMPONENT(parent, parent, e);
+					parent.parent = panelName;
+					parent.order = -8;
 					GUI_GET_COMPONENT(text, text, e);
 					text.assetName = hashString("grid/languages/internationalized.textpack");
 					text.textName = hashString("gui/game/sell");
@@ -271,7 +281,7 @@ namespace
 					entityClass *e = ents->createUnique();
 					GUI_GET_COMPONENT(parent, parent, e);
 					parent.parent = panelName;
-					parent.order = -8;
+					parent.order = -7;
 					GUI_GET_COMPONENT(text, text, e);
 					text.assetName = hashString("grid/languages/internationalized.textpack");
 					text.textName = hashString("gui/game/buy");
@@ -287,20 +297,31 @@ namespace
 				if (powerupMode[i] == 2)
 				{
 					{ // label
-						entityClass *e = ents->create(1000 + i * 3 + 0);
+						entityClass *e = ents->create(1000 + i * 4 + 0);
 						GUI_GET_COMPONENT(parent, parent, e);
 						parent.parent = panelName;
-						parent.order = i * 3 + 0;
+						parent.order = i * 4 + 0;
 						GUI_GET_COMPONENT(text, text, e);
 						text.assetName = hashString("grid/languages/internationalized.textpack");
 						text.textName = textNames[i];
 						GUI_GET_COMPONENT(label, but, e);
 					}
-					{ // sell
-						entityClass *e = ents->create(1000 + i * 3 + 1);
+					{ // count
+						entityClass *e = ents->create(1000 + i * 4 + 1);
 						GUI_GET_COMPONENT(parent, parent, e);
 						parent.parent = panelName;
-						parent.order = i * 3 + 1;
+						parent.order = i * 4 + 1;
+						GUI_GET_COMPONENT(text, text, e);
+						text.value = game.powerups[i];
+						GUI_GET_COMPONENT(label, but, e);
+						GUI_GET_COMPONENT(textFormat, format, e);
+						format.align = textAlignEnum::Center;
+					}
+					{ // sell
+						entityClass *e = ents->create(1000 + i * 4 + 2);
+						GUI_GET_COMPONENT(parent, parent, e);
+						parent.parent = panelName;
+						parent.order = i * 4 + 2;
 						GUI_GET_COMPONENT(text, text, e);
 						text.value = basePermanentPowerupSellPrice;
 						GUI_GET_COMPONENT(button, but, e);
@@ -311,10 +332,10 @@ namespace
 						}
 					}
 					{ // buy
-						entityClass *e = ents->create(1000 + i * 3 + 2);
+						entityClass *e = ents->create(1000 + i * 4 + 3);
 						GUI_GET_COMPONENT(parent, parent, e);
 						parent.parent = panelName;
-						parent.order = i * 3 + 2;
+						parent.order = i * 4 + 3;
 						GUI_GET_COMPONENT(text, text, e);
 						text.value = basePermanentPowerupBuyPrice * game.buyPriceMultiplier;
 						GUI_GET_COMPONENT(button, but, e);
@@ -529,7 +550,7 @@ namespace
 			}
 		}
 
-		{ // timed/permanent
+		{ // timed
 			entityClass *table = ents->createUnique();
 			{
 				GUI_GET_COMPONENT(parent, parent, table);
@@ -541,7 +562,7 @@ namespace
 
 			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			{
-				if (powerupMode[i] == (game.paused ? 2 : 1))
+				if (powerupMode[i] == 1)
 				{
 					{ // label
 						entityClass *label = gui()->entities()->createUnique();

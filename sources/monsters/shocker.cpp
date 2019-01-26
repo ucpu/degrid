@@ -68,7 +68,7 @@ namespace
 			// lightning
 			if (d < sh.radius)
 			{
-				playerVelocity.velocity *= 0.72;
+				playerVelocity.velocity *= 0.77;
 				if (((statistics.updateIterationIgnorePause + e->name()) % 3) == 0)
 				{
 					ENGINE_GET_COMPONENT(render, r, e);

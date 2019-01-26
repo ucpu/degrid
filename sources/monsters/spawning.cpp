@@ -16,11 +16,6 @@ namespace
 		return center + dir * radius;
 	}
 
-	vec3 randomPosition()
-	{
-		return aroundPosition(randomChance(), randomRange(200, 250), playerPosition);
-	}
-
 	enum class placingPolicyEnum
 	{
 		Random,
@@ -32,6 +27,7 @@ namespace
 	{
 		// spawned monsters
 		uint32 spawnCountMin, spawnCountMax;
+		real distanceMin, distanceMax;
 		monsterTypeFlags spawnTypes;
 		placingPolicyEnum placingPolicy;
 
@@ -56,6 +52,7 @@ namespace
 	spawnDefinitionStruct::spawnDefinitionStruct(const string &name) :
 		spawnTypes((monsterTypeFlags)0),
 		spawnCountMin(1), spawnCountMax(1),
+		distanceMin(200), distanceMax(250),
 		placingPolicy(placingPolicyEnum::Random),
 		priorityCurrent(0), priorityChange(0), priorityAdditive(0), priorityMultiplier(1),
 		iteration(0), spawned(0), name(name)
@@ -98,6 +95,7 @@ namespace
 		}
 
 		CAGE_ASSERT_RUNTIME(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
+		CAGE_ASSERT_RUNTIME(distanceMin <= distanceMax && distanceMin > 0, distanceMin, distanceMax);
 		std::vector<monsterTypeFlags> allowed;
 		allowed.reserve(16);
 		{
@@ -119,19 +117,19 @@ namespace
 		case placingPolicyEnum::Random:
 		{
 			for (uint32 i = 0; i < spawnCount; i++)
-				spawnGeneral(allowed[randomRange(0u, alSiz)], randomPosition(), color);
+				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition(randomChance(), randomRange(distanceMin, distanceMax), playerPosition), color);
 		} break;
 		case placingPolicyEnum::Around:
 		{
 			real angularOffset = randomChance();
-			real radius = randomRange(160, 190);
+			real radius = randomRange(distanceMin, distanceMax);
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition(angularOffset + (randomChance() * 0.3 + i) / (real)spawnCount, radius, playerPosition), color);
 		} break;
 		case placingPolicyEnum::Grouped:
 		{
-			real radius = randomRange(spawnCount / 2, spawnCount);
-			vec3 center = randomPosition();
+			real radius = (distanceMax - distanceMin) * 0.5;
+			vec3 center = aroundPosition(randomChance(), distanceMin + radius, playerPosition);
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
 		} break;
@@ -353,6 +351,8 @@ namespace
 			d.spawnCountMax = 15;
 			d.spawnTypes = (monsterTypeFlags::PinWheel | monsterTypeFlags::Snake | monsterTypeFlags::Shielder | monsterTypeFlags::Shocker);
 			d.placingPolicy = placingPolicyEnum::Around;
+			d.distanceMin = 160;
+			d.distanceMax = 190;
 			d.priorityCurrent = 5500;
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(5, 15);
@@ -365,6 +365,8 @@ namespace
 			d.spawnCountMax = 3;
 			d.spawnTypes = (monsterTypeFlags::Wormhole);
 			d.placingPolicy = placingPolicyEnum::Around;
+			d.distanceMin = 160;
+			d.distanceMax = 190;
 			d.priorityCurrent = 7000;
 			d.priorityChange = randomRange(6000, 8000);
 			d.priorityAdditive = randomRange(300, 500);
@@ -430,9 +432,21 @@ void spawnGeneral(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &
 
 void monstersSpawnInitial()
 {
-	spawnDefinitionStruct d("initial");
-	d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
-	d.spawnCountMin = monstersLimit() - 5;
-	d.spawnCountMax = d.spawnCountMin + 25;
-	d.spawn();
+	{
+		spawnDefinitionStruct d("initial 1");
+		d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
+		d.spawnCountMin = monstersLimit();
+		d.spawnCountMax = d.spawnCountMin + 10;
+		d.spawn();
+	}
+	{
+		spawnDefinitionStruct d("initial 2");
+		d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
+		d.placingPolicy = placingPolicyEnum::Grouped;
+		d.distanceMin = 80;
+		d.distanceMax = 100;
+		d.spawnCountMin = 1;
+		d.spawnCountMax = 3;
+		d.spawn();
+	}
 }
