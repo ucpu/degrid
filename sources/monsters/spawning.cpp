@@ -46,6 +46,7 @@ namespace
 		bool operator < (const spawnDefinitionStruct &other) const { return priorityCurrent < other.priorityCurrent; }
 		void perform();
 		void performSimulation();
+		void updatePriority();
 		void spawn();
 	};
 
@@ -65,7 +66,7 @@ namespace
 #else
 		if (game.cinematic)
 			return 100;
-		uint32 t = statistics.updateIterationWithPause;
+		uint32 t = statistics.updateIteration;
 		return 100 + min(t / 200, 50u) + min(t / 1000, 50u);
 #endif // CAGE_DEBUG
 	}
@@ -75,16 +76,22 @@ namespace
 	void spawnDefinitionStruct::perform()
 	{
 		spawn();
-		performSimulation();
+		updatePriority();
 		statistics.monstersCurrentSpawningPriority = priorityCurrent;
 	}
 
-	void spawnDefinitionStruct::performSimulation()
+	void spawnDefinitionStruct::updatePriority()
 	{
 		iteration++;
 		priorityCurrent += max(priorityChange, 1e-5);
 		priorityChange += priorityAdditive;
 		priorityChange *= priorityMultiplier;
+	}
+
+	void spawnDefinitionStruct::performSimulation()
+	{
+		updatePriority();
+		statistics.monstersCurrentMutationIteration += 2; // simulate average mutation growth
 	}
 
 	void spawnDefinitionStruct::spawn()
@@ -97,10 +104,10 @@ namespace
 		CAGE_ASSERT_RUNTIME(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
 		CAGE_ASSERT_RUNTIME(distanceMin <= distanceMax && distanceMin > 0, distanceMin, distanceMax);
 		std::vector<monsterTypeFlags> allowed;
-		allowed.reserve(16);
+		allowed.reserve(32);
 		{
 			uint32 bit = 1;
-			for (uint32 i = 0; i < 16; i++)
+			for (uint32 i = 0; i < 32; i++)
 			{
 				if ((spawnTypes & (monsterTypeFlags)bit) == (monsterTypeFlags)bit)
 					allowed.push_back((monsterTypeFlags)bit);
@@ -140,6 +147,9 @@ namespace
 	void engineUpdate()
 	{
 		if (game.paused)
+			return;
+
+		if (bossComponent::component->group()->count() > 0)
 			return;
 
 		uint32 limit = monstersLimit();
@@ -188,6 +198,8 @@ namespace
 			announceJokeMap();
 			return;
 		}
+
+		// todo monkeys joke
 
 		///////////////////////////////////////////////////////////////////////////
 		// individually spawned monsters
@@ -330,6 +342,26 @@ namespace
 		}
 
 		///////////////////////////////////////////////////////////////////////////
+		// bosses
+		///////////////////////////////////////////////////////////////////////////
+
+		{ // bosses
+			spawnDefinitionStruct d("bosses");
+			d.spawnCountMin = 1;
+			d.spawnCountMax = 1;
+			d.spawnTypes = (monsterTypeFlags::BossEgg);
+			d.placingPolicy = placingPolicyEnum::Around;
+			d.distanceMin = 300;
+			d.distanceMax = 350;
+#if 1
+			d.priorityCurrent = 4000;
+			d.priorityChange = 20000;
+			d.priorityMultiplier = 2;
+#endif
+			definitions.push_back(d);
+		}
+
+		///////////////////////////////////////////////////////////////////////////
 		// final stage
 		///////////////////////////////////////////////////////////////////////////
 
@@ -426,6 +458,7 @@ void spawnGeneral(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &
 	case monsterTypeFlags::Shielder: return spawnShielder(spawnPosition, color);
 	case monsterTypeFlags::Shocker: return spawnShocker(spawnPosition, color);
 	case monsterTypeFlags::Wormhole: return spawnWormhole(spawnPosition, color);
+	case monsterTypeFlags::BossEgg: return spawnBossEgg(spawnPosition, color);
 	default: return spawnSimple(type, spawnPosition, color);
 	}
 }

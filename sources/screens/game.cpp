@@ -16,7 +16,8 @@ namespace
 		{}
 	};
 
-	std::vector<announcementStruct> announecements;
+	std::vector<announcementStruct> announcements;
+	bool needToRemakeGui;
 
 	eventListener<bool(uint32)> guiEvent;
 
@@ -92,6 +93,7 @@ namespace
 		{
 			GUI_GET_COMPONENT(layoutLine, ll, ents->get(15));
 			ll.vertical = true;
+			GUI_GET_COMPONENT(scrollbars, sc, ents->get(15));
 		}
 
 		{ // continue button
@@ -151,7 +153,7 @@ namespace
 			format.align = textAlignEnum::Center;
 		}
 
-		{ // bosses
+		{ // story
 			uint32 panelName;
 			{ // panel
 				entityClass *e = ents->createUnique();
@@ -159,13 +161,49 @@ namespace
 				GUI_GET_COMPONENT(panel, panel, e);
 				GUI_GET_COMPONENT(parent, parent, e);
 				parent.parent = layoutName;
-				parent.order = 2;
+				parent.order = 3;
 				GUI_GET_COMPONENT(text, text, e);
 				text.assetName = hashString("grid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/bosses");
+				text.textName = hashString("gui/game/story");
 				GUI_GET_COMPONENT(scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
 				GUI_GET_COMPONENT(layoutLine, ll, e);
+				ll.vertical = false;
+			}
+
+			{ // story
+				uint32 textsName;
+				{ // texts
+					entityClass *e = ents->createUnique();
+					textsName = e->name();
+					GUI_GET_COMPONENT(parent, parent, e);
+					parent.parent = panelName;
+					parent.order = -1;
+					GUI_GET_COMPONENT(layoutLine, ll, e);
+					ll.vertical = true;
+					GUI_GET_COMPONENT(scrollbars, sc, e);
+					sc.alignment = vec2(0.5, 0.5);
+				}
+
+				static const uint32 textNames[] = {
+			#define GCHL_GENERATE(N) hashString("gui/story/" CAGE_STRINGIZE(N)),
+					GCHL_GENERATE(0)
+					CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
+			#undef GCHL_GENERATE
+				};
+
+				for (uint32 idx = 0; idx < game.defeatedBosses + 1; idx++)
+				{
+					entityClass *label = gui()->entities()->createUnique();
+					GUI_GET_COMPONENT(parent, parent, label);
+					parent.parent = textsName;
+					parent.order = idx;
+					GUI_GET_COMPONENT(label, lab, label);
+					GUI_GET_COMPONENT(text, txt, label);
+					txt.assetName = hashString("grid/languages/internationalized.textpack");
+					txt.textName = textNames[idx];
+					idx++;
+				}
 			}
 
 			for (uint32 i = 0; i < bossesTotalCount; i++)
@@ -212,7 +250,7 @@ namespace
 				GUI_GET_COMPONENT(panel, panel, e);
 				GUI_GET_COMPONENT(parent, parent, e);
 				parent.parent = layoutName;
-				parent.order = 3;
+				parent.order = 4;
 				GUI_GET_COMPONENT(text, text, e);
 				text.assetName = hashString("grid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/market");
@@ -375,7 +413,7 @@ namespace
 
 		{ // announcements
 			uint32 order = 1;
-			for (const auto &a : announecements)
+			for (const auto &a : announcements)
 			{
 				entityClass *panel = ents->createUnique();
 				{
@@ -598,8 +636,9 @@ namespace
 	bool validateAnnouncements()
 	{
 		// delete elapsed announcements
-		bool result = false;
-		announecements.erase(std::remove_if(announecements.begin(), announecements.end(), [&](announcementStruct &a)
+		bool result = needToRemakeGui;
+		needToRemakeGui = false;
+		announcements.erase(std::remove_if(announcements.begin(), announcements.end(), [&](announcementStruct &a)
 		{
 			if (a.duration == 0)
 			{
@@ -609,7 +648,7 @@ namespace
 			a.duration--;
 			return false;
 		}
-		), announecements.end());
+		), announcements.end());
 		return result;
 	}
 
@@ -680,7 +719,7 @@ namespace
 void setScreenGame()
 {
 	game.cinematic = false;
-	announecements.clear();
+	announcements.clear();
 	gameStartEvent().dispatch();
 	if (game.money > 0)
 		game.paused = true;
@@ -693,6 +732,6 @@ void makeAnnouncement(uint32 headline, uint32 description, uint32 duration)
 	a.headingName = headline;
 	a.descriptionName = description;
 	a.duration = duration;
-	announecements.push_back(a);
-	makeTheGui();
+	announcements.push_back(a);
+	needToRemakeGui = true;
 }

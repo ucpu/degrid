@@ -9,57 +9,63 @@ namespace
 	eventListener<bool(uint32)> guiEvent;
 	eventListener<bool(uint32, uint32, modifiersFlags)> keyReleaseListener;
 
-	void saveScore()
+	void endScreen()
 	{
 		keyReleaseListener.detach();
-
-		if (game.score > 0)
-		{
-#ifndef GRID_TESTING
-			holder<fileClass> f = newFile("score.ini", fileMode(false, true, true, true));
-			f->writeLine("[]");
-			{
-				uint32 y, m, d, h, mm, s;
-				detail::getSystemDateTime(y, m, d, h, mm, s);
-				f->writeLine(string() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
-			}
-			f->writeLine(string() + "score = " + game.score);
-#endif
-		}
-
 		game.cinematic = true;
+		bool showScore = game.score > 0;
 		gameStartEvent().dispatch();
-		setScreenScores();
+		if (showScore)
+			setScreenScores();
+		else
+			setScreenMainmenu();
 	}
 
 	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
 	{
 		if (key == 256) // esc
 		{
-			saveScore();
+			endScreen();
 			return true;
 		}
 		return false;
 	}
 
-	bool buttonSave(uint32 en)
+	bool buttonContinue(uint32 en)
 	{
 		if (en != 100)
 			return false;
-		saveScore();
+		endScreen();
 		return true;
 	}
 }
 
 void setScreenGameover()
 {
+	if (game.score > 0)
+	{
+#ifndef GRID_TESTING
+		holder<fileClass> f = newFile("score.ini", fileMode(false, true, true, true));
+		f->writeLine("[]");
+		{
+			uint32 y, m, d, h, mm, s;
+			detail::getSystemDateTime(y, m, d, h, mm, s);
+			f->writeLine(string() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
+		}
+		f->writeLine(string() + "bosses = " + game.defeatedBosses + " / " + achievements.bosses);
+		f->writeLine(string() + "achievements = " + achievements.acquired);
+		f->writeLine(string() + "duration = " + statistics.updateIteration);
+		f->writeLine(string() + "score = " + game.score);
+#endif
+	}
+
 	{
 		guiConfig c;
 		c.backButton = false;
 		regenerateGui(c);
 	}
 	entityManagerClass *ents = gui()->entities();
-	guiEvent.bind<&buttonSave>();
+	guiEvent.bind<&buttonContinue>();
 	guiEvent.attach(gui()->widgetEvent);
 	keyReleaseListener.attach(window()->events.keyRelease);
 	keyReleaseListener.bind<&keyRelease>();
@@ -107,7 +113,7 @@ void setScreenGameover()
 		GUI_GET_COMPONENT(button, control, butSave);
 		GUI_GET_COMPONENT(text, txt, butSave);
 		txt.assetName = hashString("grid/languages/internationalized.textpack");
-		txt.textName = hashString("gui/gameover/save");
+		txt.textName = hashString("gui/gameover/continue");
 		GUI_GET_COMPONENT(parent, parent, butSave);
 		parent.parent = 15;
 	}

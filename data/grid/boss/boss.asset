@@ -7,3 +7,14 @@ boss.pack
 scheme = texture
 icon/unknown.png
 icon/defeated.png
+
+[]
+scheme = object
+cannoneerBody.object
+egg.object
+
+[]
+scheme = mesh
+export_uv = false
+export_tangent = false
+egg.obj

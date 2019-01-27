@@ -156,7 +156,7 @@ struct globalStatisticsStruct
 	uint32 keyPressed; // keyboard keys pressed
 	uint32 buttonPressed; // mouse buttons pressed
 	uint32 updateIterationIgnorePause; // number of game update ticks, does increment during pause
-	uint32 updateIterationWithPause; // number of game update ticks, does NOT increment during pause
+	uint32 updateIteration; // number of game update ticks, does NOT increment during pause
 	uint32 frameIteration; // numer of rendered frames
 	uint32 soundEffectsCurrent;
 	uint32 soundEffectsMax;
@@ -224,6 +224,11 @@ struct monsterComponent
 	uint32 defeatedSound;
 	delegate<void(uint32)> defeatedCallback;
 	monsterComponent() : defeatedSound(0) {}
+};
+
+struct bossComponent
+{
+	static componentClass *component;
 };
 
 #define GRID_GET_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);

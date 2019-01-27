@@ -10,6 +10,7 @@ componentClass *gridComponent::component;
 componentClass *shotComponent::component;
 componentClass *powerupComponent::component;
 componentClass *monsterComponent::component;
+componentClass *bossComponent::component;
 
 eventDispatcher<bool()> &gameStartEvent()
 {
@@ -35,6 +36,7 @@ namespace
 		shotComponent::component = entities()->defineComponent(shotComponent(), true);
 		powerupComponent::component = entities()->defineComponent(powerupComponent(), true);
 		monsterComponent::component = entities()->defineComponent(monsterComponent(), true);
+		bossComponent::component = entities()->defineComponent(bossComponent(), true);
 	}
 
 	class callbacksClass

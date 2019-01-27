@@ -160,7 +160,7 @@ namespace
 				else
 				{
 					// homing missiles are shivering
-					tr.position += vl.velocity.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full * statistics.updateIterationWithPause / 10 + degs(detail::hash(myName) % 360)) * (vl.velocity.length() * 0.3);
+					tr.position += vl.velocity.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full * statistics.updateIteration / 10 + degs(detail::hash(myName) % 360)) * (vl.velocity.length() * 0.3);
 				}
 			}
 

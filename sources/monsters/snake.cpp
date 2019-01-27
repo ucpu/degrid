@@ -28,7 +28,7 @@ namespace
 	void snakeSideMove(vec3 &p, const quat &forward, uint32 index, real dist)
 	{
 		real phase = dist * index / -3;
-		p += forward * vec3(1, 0, 0) * sin(rads(statistics.updateIterationWithPause * 0.2f + phase)) * 0.4;
+		p += forward * vec3(1, 0, 0) * sin(rads(statistics.updateIteration * 0.2f + phase)) * 0.4;
 	}
 
 	void engineUpdate()

@@ -18,21 +18,11 @@ globalStatisticsStruct::globalStatisticsStruct()
 
 namespace
 {
-	void countActiveSounds()
-	{
-		statistics.soundEffectsCurrent = 0;
-		for (entityClass *e : voiceComponent::component->entities())
-		{
-			statistics.soundEffectsCurrent++;
-		}
-		statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
-	}
-
 	void engineUpdate()
 	{
 		statistics.updateIterationIgnorePause++;
 		if (!game.paused)
-			statistics.updateIterationWithPause++;
+			statistics.updateIteration++;
 
 		if (game.gameOver)
 			return;
@@ -49,7 +39,8 @@ namespace
 			statistics.timeRenderMin = min(statistics.timeRenderMin, statistics.timeRenderCurrent);
 			statistics.timeRenderMax = max(statistics.timeRenderMax, statistics.timeRenderCurrent);
 		}
-		countActiveSounds();
+		statistics.soundEffectsCurrent = voiceComponent::component->group()->count();
+		statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
 	}
 
 	void gameStart()
@@ -94,7 +85,7 @@ namespace
 			entitiesCurrent, entitiesMax, \
 			environmentGridMarkers, environmentExplosions, \
 			keyPressed, buttonPressed, \
-			updateIterationWithPause, updateIterationIgnorePause, frameIteration, \
+			updateIteration, updateIterationIgnorePause, frameIteration, \
 			timeRenderMin, timeRenderMax, timeRenderCurrent, \
 			soundEffectsCurrent, soundEffectsMax \
 		));

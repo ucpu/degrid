@@ -1,11 +1,11 @@
 
 [boss]
 unknown = Unknown
-Shaper
+Cannoneer
 Gravitron
 Hydra
-Organic
 Mega Self
+Princess
 
 [achievement]
 starting-kit = Starting Kit
@@ -38,10 +38,12 @@ mutated = Face a mutated monster.
 [announcement]
 joke-map = Easter Map
 joke-snake = Easter Snake
+incoming-boss = Incoming Boss
 
 [announcement-desc]
 joke-map = There IS something else, somewhere. I am sure of it.
 joke-snake = Ridiculously long snake. Please do NOT kill it.
+incoming-boss = Kill all other monsters and get ready.
 
 [gui/game]
 pause = Game Paused
@@ -64,7 +66,7 @@ puShooting = Firing Speed:
 puMultishot = Multiple Shots:
 puArmor = Armor:
 puDuration = Duration:
-bosses = Bosses
+story = Story
 market = Space Market
 sell = Sell
 buy = Buy
@@ -73,7 +75,7 @@ permanentLimit = Powerups: {0} / {1}
 
 [gui/gameover]
 over = Game Over
-save = Save
+continue = Continue
 
 [gui/mainmenu]
 newgame = New Game
@@ -106,6 +108,15 @@ space = Spacebar
 [gui/scores]
 score = Score
 date = Date
+
+[gui/story]
+This game does have a story.
+You have to save the princess.
+That simple...
+... or is it?
+=
+There is no princess. It was a trap.
+Sorry.
 
 [gui/credits]
 Free and open-source game.

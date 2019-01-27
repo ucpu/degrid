@@ -1,11 +1,11 @@
 
 [boss]
 unknown = Neznámý
-Tvárník
+Dělostřelec
 Gravitron
 Hydra
-Organik
 Mega Já
+Princezna
 
 [achievement]
 starting-kit = Startovní balíček
@@ -38,10 +38,12 @@ mutated = Postavte se proti zmutované potvoře.
 [announcement]
 joke-map = Velikonoční mapa
 joke-snake = Velikonoční had
+incoming-boss = Přicházející boss
 
 [announcement-desc]
 joke-map = Jsem si jistý, že tu bude i něco jiného, ale kde?
 joke-snake = Směšně dlouhý had. Prosím, nezabíjej ho.
+incoming-boss = Zabij všechny ostatní potvory a připrav se.
 
 [gui/game]
 pause = Hra pozastavena
@@ -64,7 +66,7 @@ puShooting = Rychlost střílení:
 puMultishot = Více střel:
 puArmor = Brnění:
 puDuration = Trvání:
-bosses = Bosové
+story = Příběh
 market = Vesmírný Trh
 sell = Prodat
 buy = Koupit
@@ -73,7 +75,7 @@ permanentLimit = Powerupy: {0} / {1}
 
 [gui/gameover]
 over = Hra skončila
-save = Uložit
+continue = Pokračovat
 
 [gui/mainmenu]
 newgame = Nová hra
@@ -106,6 +108,15 @@ space = Mezerník
 [gui/scores]
 score = Skóre
 date = Datum
+
+[gui/story]
+Tahle hra má příběh.
+Musíš zachránit princeznu.
+Tak jednoduché...
+... nebo ne?
+=
+Žádná princezna není. Byla to past.
+Pardon.
 
 [gui/credits]
 Zdarma dostupná hra s otevřeným kódem.

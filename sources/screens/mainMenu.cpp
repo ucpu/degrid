@@ -2,6 +2,7 @@
 #include "../game.h"
 
 #include <cage-core/config.h>
+#include <cage-core/filesystem.h>
 
 void reloadLanguage(uint32 index);
 extern configUint32 confLanguage;
@@ -91,6 +92,7 @@ void setScreenMainmenu()
 			txt.textName = hashString("gui/mainmenu/options");
 		}
 
+		if (newFilesystem()->exists("score.ini"))
 		{
 			entityClass *butScores = ents->create(105);
 			GUI_GET_COMPONENT(parent, parent, butScores);

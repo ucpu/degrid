@@ -257,9 +257,9 @@ namespace
 
 void soundEffect(uint32 sound, const vec3 &position)
 {
-	sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(sound);
-	if (!src)
+	if (!assets()->ready(sound))
 		return;
+	sourceClass *src = assets()->get<assetSchemeIndexSound, sourceClass>(sound);
 	entityClass *e = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, t, e);
 	t.position = position;
