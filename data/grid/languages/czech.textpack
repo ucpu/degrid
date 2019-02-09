@@ -4,8 +4,8 @@ unknown = Neznámý
 Dělostřelec
 Gravitron
 Hydra
-Mega Já
-Princezna
+Hodinky
+Královna
 
 [achievement]
 starting-kit = Startovní balíček
@@ -46,9 +46,6 @@ joke-snake = Směšně dlouhý had. Prosím, nezabíjej ho.
 incoming-boss = Zabij všechny ostatní potvory a připrav se.
 
 [gui/game]
-pause = Hra pozastavena
-end = Vzdát hru
-continue = Pokračovat
 life = Životy:
 score = Skóre:
 money = Peníze:
@@ -66,6 +63,12 @@ puShooting = Rychlost střílení:
 puMultishot = Více střel:
 puArmor = Brnění:
 puDuration = Trvání:
+
+[gui/paused]
+paused = Hra pozastavena
+giveup = Vzdát hru
+continue = Pokračovat
+bosses = Bosové
 story = Příběh
 market = Vesmírný Trh
 sell = Prodat
@@ -110,12 +113,12 @@ score = Skóre
 date = Datum
 
 [gui/story]
-Tahle hra má příběh.
-Musíš zachránit princeznu.
-Tak jednoduché...
-... nebo ne?
-=
-Žádná princezna není. Byla to past.
+Uvidíme, jak hluboká ta nora je.
+Na jejím konci je královna. Sedí na trůnu ve tvaru srdce. Takový protiklad.
+Její dědička, nejkrásnější ze všech, je uvězněna v nejvyšší věži hradu.
+Princezna prahne po její svobodě. Zachráníš ji?
+V cestě už ti stojí jen královna. A celá královská ochranka.
+V hradu žádná princezna není. Byla to past. Ale ty teď vládneš této pustině.
 Pardon.
 
 [gui/credits]

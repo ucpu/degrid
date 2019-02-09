@@ -24,7 +24,7 @@ namespace
 	const uint32 basePermanentPowerupSellPrice = 20;
 	const uint32 basePermanentPowerupBuyPrice = 100;
 
-	void makeTheGui();
+	void makeTheGui(uint32 mode = 0);
 
 	bool guiFunction(uint32 en)
 	{
@@ -49,7 +49,7 @@ namespace
 					game.powerups[i]--;
 					game.money += basePermanentPowerupSellPrice;
 					gui()->skipAllEventsUntilNextUpdate();
-					makeTheGui();
+					makeTheGui(3);
 					return true;
 				}
 				if (en == 1000 + i * 4 + 3) // buy
@@ -60,7 +60,7 @@ namespace
 					game.money -= basePermanentPowerupBuyPrice * game.buyPriceMultiplier;
 					game.buyPriceMultiplier++;
 					gui()->skipAllEventsUntilNextUpdate();
-					makeTheGui();
+					makeTheGui(3);
 					return true;
 				}
 			}
@@ -86,14 +86,13 @@ namespace
 		hashString("gui/game/puDuration")
 	};
 
-	void makeTheGuiPaused()
+	void makeTheGuiPaused(uint32 openPanel)
 	{
 		entityManagerClass *ents = gui()->entities();
 
 		{
 			GUI_GET_COMPONENT(layoutLine, ll, ents->get(15));
 			ll.vertical = true;
-			GUI_GET_COMPONENT(scrollbars, sc, ents->get(15));
 		}
 
 		{ // continue button
@@ -101,10 +100,12 @@ namespace
 			GUI_GET_COMPONENT(button, control, but);
 			GUI_GET_COMPONENT(text, txt, but);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/game/continue");
+			txt.textName = hashString("gui/paused/continue");
 			GUI_GET_COMPONENT(parent, parent, but);
 			parent.parent = 15;
 			parent.order = 1;
+			GUI_GET_COMPONENT(textFormat, format, but);
+			format.color = redPillColor;
 		}
 
 		{ // end game button
@@ -112,14 +113,12 @@ namespace
 			GUI_GET_COMPONENT(button, control, but);
 			GUI_GET_COMPONENT(text, txt, but);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/game/end");
+			txt.textName = hashString("gui/paused/giveup");
 			GUI_GET_COMPONENT(parent, parent, but);
 			parent.parent = 15;
 			parent.order = 2;
-		}
-
-		{
-			ents->get(12)->remove(gui()->components().scrollbars);
+			GUI_GET_COMPONENT(textFormat, format, but);
+			format.color = bluePillColor;
 		}
 
 		uint32 layoutName;
@@ -132,78 +131,65 @@ namespace
 			ll.vertical = true;
 		}
 
-		{ // paused label
-			entityClass *panel = ents->createUnique();
-			GUI_GET_COMPONENT(panel, panel2, panel);
-			GUI_GET_COMPONENT(parent, parentPanel, panel);
-			parentPanel.parent = layoutName;
-			parentPanel.order = 1;
-			GUI_GET_COMPONENT(scrollbars, sc, panel);
-			sc.alignment = vec2(0.5, 0.5);
-
-			entityClass *label = ents->createUnique();
-			GUI_GET_COMPONENT(parent, parent, label);
-			parent.parent = panel->name();
-			GUI_GET_COMPONENT(label, control, label);
-			GUI_GET_COMPONENT(text, txt, label);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/game/pause");
-			GUI_GET_COMPONENT(textFormat, format, label);
-			format.size = 30;
-			format.align = textAlignEnum::Center;
-		}
-
 		{ // story
 			uint32 panelName;
 			{ // panel
 				entityClass *e = ents->createUnique();
 				panelName = e->name();
-				GUI_GET_COMPONENT(panel, panel, e);
+				GUI_GET_COMPONENT(spoiler, spoiler, e);
+				spoiler.collapsed = openPanel != 1;
+				spoiler.collapsesSiblings = true;
 				GUI_GET_COMPONENT(parent, parent, e);
 				parent.parent = layoutName;
-				parent.order = 3;
+				parent.order = 1;
 				GUI_GET_COMPONENT(text, text, e);
 				text.assetName = hashString("grid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/story");
+				text.textName = hashString("gui/paused/story");
+				GUI_GET_COMPONENT(scrollbars, sc, e);
+				sc.alignment = vec2(0.5, 0.5);
+				GUI_GET_COMPONENT(layoutLine, ll, e);
+				ll.vertical = true;
+			}
+
+			static const uint32 textNames[] = {
+				#define GCHL_GENERATE(N) hashString("gui/story/" CAGE_STRINGIZE(N)),
+						GCHL_GENERATE(0)
+						CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
+				#undef GCHL_GENERATE
+			};
+
+			for (uint32 idx = 0; idx < game.defeatedBosses + 1; idx++)
+			{
+				entityClass *label = gui()->entities()->createUnique();
+				GUI_GET_COMPONENT(parent, parent, label);
+				parent.parent = panelName;
+				parent.order = idx;
+				GUI_GET_COMPONENT(label, lab, label);
+				GUI_GET_COMPONENT(text, txt, label);
+				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.textName = textNames[idx];
+				idx++;
+			}
+		}
+
+		{ // bosses
+			uint32 panelName;
+			{ // panel
+				entityClass *e = ents->createUnique();
+				panelName = e->name();
+				GUI_GET_COMPONENT(spoiler, spoiler, e);
+				spoiler.collapsed = openPanel != 2;
+				spoiler.collapsesSiblings = true;
+				GUI_GET_COMPONENT(parent, parent, e);
+				parent.parent = layoutName;
+				parent.order = 2;
+				GUI_GET_COMPONENT(text, text, e);
+				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.textName = hashString("gui/paused/bosses");
 				GUI_GET_COMPONENT(scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
 				GUI_GET_COMPONENT(layoutLine, ll, e);
 				ll.vertical = false;
-			}
-
-			{ // story
-				uint32 textsName;
-				{ // texts
-					entityClass *e = ents->createUnique();
-					textsName = e->name();
-					GUI_GET_COMPONENT(parent, parent, e);
-					parent.parent = panelName;
-					parent.order = -1;
-					GUI_GET_COMPONENT(layoutLine, ll, e);
-					ll.vertical = true;
-					GUI_GET_COMPONENT(scrollbars, sc, e);
-					sc.alignment = vec2(0.5, 0.5);
-				}
-
-				static const uint32 textNames[] = {
-			#define GCHL_GENERATE(N) hashString("gui/story/" CAGE_STRINGIZE(N)),
-					GCHL_GENERATE(0)
-					CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
-			#undef GCHL_GENERATE
-				};
-
-				for (uint32 idx = 0; idx < game.defeatedBosses + 1; idx++)
-				{
-					entityClass *label = gui()->entities()->createUnique();
-					GUI_GET_COMPONENT(parent, parent, label);
-					parent.parent = textsName;
-					parent.order = idx;
-					GUI_GET_COMPONENT(label, lab, label);
-					GUI_GET_COMPONENT(text, txt, label);
-					txt.assetName = hashString("grid/languages/internationalized.textpack");
-					txt.textName = textNames[idx];
-					idx++;
-				}
 			}
 
 			for (uint32 i = 0; i < bossesTotalCount; i++)
@@ -247,13 +233,15 @@ namespace
 			{ // panel
 				entityClass *e = ents->createUnique();
 				marketName = e->name();
-				GUI_GET_COMPONENT(panel, panel, e);
+				GUI_GET_COMPONENT(spoiler, spoiler, e);
+				spoiler.collapsed = openPanel != 3;
+				spoiler.collapsesSiblings = true;
 				GUI_GET_COMPONENT(parent, parent, e);
 				parent.parent = layoutName;
-				parent.order = 4;
+				parent.order = 3;
 				GUI_GET_COMPONENT(text, text, e);
 				text.assetName = hashString("grid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/market");
+				text.textName = hashString("gui/paused/market");
 				GUI_GET_COMPONENT(scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
 				GUI_GET_COMPONENT(layoutLine, ll, e);
@@ -267,7 +255,7 @@ namespace
 				parent.order = 1;
 				GUI_GET_COMPONENT(text, text, e);
 				text.assetName = hashString("grid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/permanentLimit");
+				text.textName = hashString("gui/paused/permanentLimit");
 				text.value = string() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
 				GUI_GET_COMPONENT(label, but, e);
 				GUI_GET_COMPONENT(textFormat, tf, e);
@@ -301,7 +289,7 @@ namespace
 					GUI_GET_COMPONENT(label, but, e);
 					GUI_GET_COMPONENT(text, text, e);
 					text.assetName = hashString("grid/languages/internationalized.textpack");
-					text.textName = hashString("gui/game/count");
+					text.textName = hashString("gui/paused/count");
 				}
 				{ // sell
 					entityClass *e = ents->createUnique();
@@ -310,7 +298,7 @@ namespace
 					parent.order = -8;
 					GUI_GET_COMPONENT(text, text, e);
 					text.assetName = hashString("grid/languages/internationalized.textpack");
-					text.textName = hashString("gui/game/sell");
+					text.textName = hashString("gui/paused/sell");
 					GUI_GET_COMPONENT(label, but, e);
 					GUI_GET_COMPONENT(textFormat, tf, e);
 					tf.align = textAlignEnum::Center;
@@ -322,7 +310,7 @@ namespace
 					parent.order = -7;
 					GUI_GET_COMPONENT(text, text, e);
 					text.assetName = hashString("grid/languages/internationalized.textpack");
-					text.textName = hashString("gui/game/buy");
+					text.textName = hashString("gui/paused/buy");
 					GUI_GET_COMPONENT(label, but, e);
 					GUI_GET_COMPONENT(textFormat, tf, e);
 					tf.align = textAlignEnum::Center;
@@ -445,7 +433,7 @@ namespace
 		}
 	}
 
-	void makeTheGui()
+	void makeTheGui(uint32 openPanel)
 	{
 		{
 			guiConfig c;
@@ -628,7 +616,7 @@ namespace
 		}
 
 		if (game.paused)
-			makeTheGuiPaused();
+			makeTheGuiPaused(openPanel);
 		else
 			makeTheGuiPlaying();
 	}
@@ -668,7 +656,7 @@ namespace
 		if (game.paused != previousPaused)
 		{
 			previousPaused = game.paused;
-			makeTheGui();
+			makeTheGui(currentPermanentPowerups() == 0 && game.money > 0 ? 3 : 1); // market or story
 		}
 
 		{ // life

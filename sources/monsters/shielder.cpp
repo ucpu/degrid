@@ -115,7 +115,7 @@ namespace
 
 			// destroy shots
 			vec3 forward = tr.orientation * vec3(0, 0, -1);
-			spatialQuery->intersection(sphere(tr.position + forward * (tr.scale + 3), 5));
+			spatialQuery->intersection(sphere(tr.position + forward * (tr.scale + 1), 5));
 			for (uint32 otherName : spatialQuery->result())
 			{
 				entityClass *e = entities()->get(otherName);
@@ -123,9 +123,6 @@ namespace
 					continue;
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				vec3 toShot = ot.position - tr.position;
-				real lenShot = toShot.length();
-				if (lenShot < tr.scale || lenShot > tr.scale + 6)
-					continue;
 				vec3 dirShot = toShot.normalize();
 				if (dirShot.dot(forward) < cos(degs(45)))
 					continue;

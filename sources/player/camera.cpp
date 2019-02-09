@@ -58,7 +58,7 @@ namespace
 					c.renderMask = 2;
 					c.near = 0.5;
 					c.far = 3;
-					c.ambientLight = vec3(1, 1, 1) * ambientSkybox;
+					c.ambientLight = vec3(ambientSkybox);
 					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
@@ -72,12 +72,12 @@ namespace
 					c.renderMask = 1;
 					c.near = 3;
 					c.far = 500;
-					c.ambientLight = vec3(1, 1, 1) * ambientPlayer;
+					c.ambientLight = vec3(ambientPlayer);
 					c.clear = (cameraClearFlags)0;
 					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
-					c.effects = cameraEffectsFlags::CombinedPass;
+					c.effects = cameraEffectsFlags::CombinedPass & ~cameraEffectsFlags::AmbientOcclusion;
 				}
 			}
 			else
@@ -108,22 +108,24 @@ namespace
 			c.renderMask = 2;
 			c.near = 0.5;
 			c.far = 3;
-			c.ambientLight = vec3(1, 1, 1) * ambientSkybox;
+			c.camera.perspectiveFov = degs(40);
+			c.ambientLight = vec3(ambientSkybox);
 		}
 
 		{
 			primaryCameraEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, primaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
-			transform.position = vec3(0, 140, 0);
+			transform.position = vec3(0, 220, 0);
 			ENGINE_GET_COMPONENT(camera, c, primaryCameraEntity);
 			c.cameraOrder = 2;
 			c.renderMask = 1;
-			c.near = 50;
-			c.far = 200;
-			c.ambientLight = vec3(1, 1, 1) * ambientPlayer;
+			c.near = 150;
+			c.far = 1000;
+			c.camera.perspectiveFov = degs(40);
+			c.ambientLight = vec3(ambientPlayer);
 			c.clear = (cameraClearFlags)0;
-			c.effects = cameraEffectsFlags::CombinedPass;
+			c.effects = cameraEffectsFlags::CombinedPass & ~cameraEffectsFlags::AmbientOcclusion;
 			ENGINE_GET_COMPONENT(listener, l, primaryCameraEntity);
 			static const float halfVolumeDistance = 30;
 			l.attenuation[1] = 2.0 / halfVolumeDistance;

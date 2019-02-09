@@ -1,7 +1,7 @@
 
 [base]
-roughness = 0.1
+roughness = 0.2
 metalness = 0.97
 
 [textures]
-albedo = turret.png
+albedo = coin.png

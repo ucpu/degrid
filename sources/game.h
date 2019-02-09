@@ -62,6 +62,8 @@ const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
 const uint32 shotsTtl = 300;
 const real powerupIsCoin = 0.85;
 const uint32 bossesTotalCount = 5;
+const vec3 redPillColor = vec3(229, 101, 84) / 255;
+const vec3 bluePillColor = vec3(123, 198, 242) / 255;
 
 extern groupClass *entitiesToDestroy;
 extern groupClass *entitiesPhysicsEvenWhenPaused;

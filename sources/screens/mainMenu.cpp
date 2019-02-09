@@ -79,6 +79,8 @@ void setScreenMainmenu()
 			GUI_GET_COMPONENT(text, txt, butNewGame);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/newgame");
+			GUI_GET_COMPONENT(textFormat, format, butNewGame);
+			format.color = redPillColor;
 		}
 
 		{
@@ -136,6 +138,8 @@ void setScreenMainmenu()
 			GUI_GET_COMPONENT(text, txt, butQuit);
 			txt.assetName = hashString("grid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/quit");
+			GUI_GET_COMPONENT(textFormat, format, butQuit);
+			format.color = bluePillColor;
 		}
 	}
 

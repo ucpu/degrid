@@ -4,8 +4,8 @@ unknown = Unknown
 Cannoneer
 Gravitron
 Hydra
-Mega Self
-Princess
+Clockwork
+Queen
 
 [achievement]
 starting-kit = Starting Kit
@@ -46,9 +46,6 @@ joke-snake = Ridiculously long snake. Please do NOT kill it.
 incoming-boss = Kill all other monsters and get ready.
 
 [gui/game]
-pause = Game Paused
-end = Give Up
-continue = Continue
 life = Life:
 score = Score:
 money = Money:
@@ -66,6 +63,12 @@ puShooting = Firing Speed:
 puMultishot = Multiple Shots:
 puArmor = Armor:
 puDuration = Duration:
+
+[gui/paused]
+paused = Game Paused
+giveup = Give Up
+continue = Continue
+bosses = Bosses
 story = Story
 market = Space Market
 sell = Sell
@@ -110,12 +113,12 @@ score = Score
 date = Date
 
 [gui/story]
-This game does have a story.
-You have to save the princess.
-That simple...
-... or is it?
-=
-There is no princess. It was a trap.
+Let us see how deep the rabbit hole goes.
+There is a queen at the end. She sits on a throne in shape of a heart. What a contrary.
+Her heiress, the fairest of all, is confined in the tallest tower of the castle.
+The princess craves for her freedom. Will you save her?
+The queen is all that stands in your way now. And all of the royal protectors.
+There is no princess in the castle. It was a trap. But you rule the wastelands now.
 Sorry.
 
 [gui/credits]

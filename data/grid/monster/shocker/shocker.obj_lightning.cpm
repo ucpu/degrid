@@ -1,11 +1,14 @@
 
 [base]
 mask = 0.5
-roughness = 0.5
-metalness = 0.01
+emissive = 2
 
 [textures]
 albedo = lightning_$$.png
 
 [flags]
+no-lighting
+no-shadow-cast
+no-velocity-write
+no-depth-write
 transparency

@@ -1,7 +1,9 @@
 
 [base]
-roughness = 0.5
-metalness = 0.01
+emissive = -0.15
 
 [textures]
 albedo = blackhole/baked$$$$.png
+
+[flags]
+no-lighting

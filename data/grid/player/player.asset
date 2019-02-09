@@ -12,8 +12,13 @@ coin.png
 
 []
 scheme = texture
+player_special.png
+
+[]
+scheme = texture
 target = GL_TEXTURE_2D_ARRAY
 srgb = true
+premultiply_alpha = true
 shield/baked$$$$.png
 
 []

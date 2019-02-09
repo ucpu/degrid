@@ -1,3 +1,13 @@
 
+[base]
+emissive = 2
+
 [textures]
 albedo = spark_$.png
+
+[flags]
+no-lighting
+no-shadow-cast
+no-velocity-write
+no-depth-write
+

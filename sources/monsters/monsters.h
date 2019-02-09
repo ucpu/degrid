@@ -38,6 +38,6 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color);
 void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color);
 
 entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life);
-entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, const quat &animation);
+entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, real circling, real spiraling, const quat &animation);
 uint32 monsterMutation(uint32 &special);
 void monsterReflectMutation(entityClass *e, uint32 special);

@@ -1,7 +1,4 @@
 
-[base]
-roughness = 0.5
-metalness = 0.01
-
 [textures]
 albedo = player.png
+special = player_special.png

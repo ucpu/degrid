@@ -34,10 +34,10 @@ namespace
 		{
 			entityClass *light = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, t, light);
-			t.orientation = quat(degs(), degs(45), degs());
+			t.orientation = quat(degs(-55), degs(70), degs());
 			ENGINE_GET_COMPONENT(light, l, light);
 			l.lightType = lightTypeEnum::Directional;
-			l.color = vec3(1, 1, 1) * 2;
+			l.color = vec3(2);
 		}
 
 		const real radius = mapNoPullRadius * 1.5;
@@ -129,7 +129,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	}
 
 	// create some debris
-	uint32 cnt = numeric_cast<uint32>(clamp(size, 2, 20));
+	uint32 cnt = numeric_cast<uint32>(clamp(size, 2, 40));
 	for (uint32 i = 0; i < cnt; i++)
 	{
 		entityClass *e = entities()->createAnonymous();
@@ -141,13 +141,20 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 			vel.velocity = normalize(vel.velocity + velocity.normalize() * velocity.length().sqrt());
 		vel.velocity *= randomChance() + 0.5;
 		ENGINE_GET_COMPONENT(transform, transform, e);
-		transform.scale = scale * (randomChance() * 0.4 + 0.8) * 0.4;
+		transform.scale = scale * (randomChance() * 0.4 + 0.8) * 0.35;
 		transform.position = position + vec3(randomChance() * 2 - 1, 0, randomChance() * 2 - 1);
 		transform.orientation = randomDirectionQuat();
 		ENGINE_GET_COMPONENT(render, render, e);
 		render.object = hashString("grid/environment/explosion.object");
 		render.color = colorVariation(color);
 		e->add(entitiesPhysicsEvenWhenPaused);
+		if (randomChance() < 0.2)
+		{
+			ENGINE_GET_COMPONENT(light, light, e);
+			light.color = colorVariation(color) * 3;
+			light.lightType = lightTypeEnum::Point;
+			light.attenuation = vec3(0, 0, 0.01);
+		}
 	}
 }
 

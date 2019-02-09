@@ -8,6 +8,8 @@ namespace
 		real maxSpeed;
 		real acceleration;
 		real avoidance;
+		real circling;
+		real spiraling;
 	};
 
 	componentClass *simpleMonsterComponent::component;
@@ -46,44 +48,62 @@ namespace
 			GRID_GET_COMPONENT(velocity, mv, e);
 			GRID_GET_COMPONENT(simpleMonster, sm, e);
 
-			if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed + 0.0001)
+			if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed + 1e-4)
 				mv.velocity = mv.velocity.normalize() * max(sm.maxSpeed, mv.velocity.length() - sm.acceleration);
 			else
 			{
-				// shot avoidance
-				uint32 closestShot = 0;
-				real closestDistance = real::PositiveInfinity;
-				uint32 myName = e->name();
-				spatialQuery->intersection(sphere(tr.position, 15));
-				for (uint32 otherName : spatialQuery->result())
+				vec3 will;
+				// spiraling
 				{
-					if (otherName == myName)
-						continue;
-
-					entityClass *e = entities()->get(otherName);
-
-					if (!e->has(shotComponent::component))
-						continue;
-
-					ENGINE_GET_COMPONENT(transform, ot, e);
-					vec3 toMonster = tr.position - ot.position;
-
-					// test whether other is closer
-					if (toMonster.squaredLength() >= closestDistance * closestDistance)
-						continue;
-
-					GRID_GET_COMPONENT(velocity, ov, e);
-
-					// test its direction
-					if (dot(toMonster.normalize(), ov.velocity.normalize()) < 0)
-						continue;
-
-					closestShot = otherName;
-					closestDistance = toMonster.length();
+					vec3 direct = normalize(game.monstersTarget - tr.position);
+					vec3 side = normalize(cross(direct, vec3(0, 1, 0)));
+					if ((e->name() % 13) == 0)
+						side *= -1;
+					will = interpolate(direct, side, sm.spiraling);
 				}
 
-				vec3 will = normalize(game.monstersTarget - tr.position);
+				// circling
+				{
+					rads ang = real(e->name() % 2) * rads::Stright + real(((e->name() / 2) % 30) / 30.0) * rads::Full + rads(currentControlTime() * 1e-6);
+					vec3 dir = quat(degs(), ang, degs()) * vec3(0, 0, -1);
+					will = interpolate(will, dir, sm.circling);
+				}
 
+				// closest shot
+				uint32 closestShot = 0;
+				{
+					real closestDistance = real::PositiveInfinity;
+					uint32 myName = e->name();
+					spatialQuery->intersection(sphere(tr.position, 15));
+					for (uint32 otherName : spatialQuery->result())
+					{
+						if (otherName == myName)
+							continue;
+
+						entityClass *e = entities()->get(otherName);
+
+						if (!e->has(shotComponent::component))
+							continue;
+
+						ENGINE_GET_COMPONENT(transform, ot, e);
+						vec3 toMonster = tr.position - ot.position;
+
+						// test whether other is closer
+						if (toMonster.squaredLength() >= closestDistance * closestDistance)
+							continue;
+
+						GRID_GET_COMPONENT(velocity, ov, e);
+
+						// test its direction
+						if (dot(toMonster.normalize(), ov.velocity.normalize()) < 0)
+							continue;
+
+						closestShot = otherName;
+						closestDistance = toMonster.length();
+					}
+				}
+
+				// avoidance
 				if (closestShot)
 				{
 					entityClass *s = entities()->get(closestShot);
@@ -117,7 +137,7 @@ namespace
 	} callbacksInstance;
 }
 
-entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, const quat &animation)
+entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, real circling, real spiraling, const quat &animation)
 {
 	entityClass *e = initializeMonster(spawnPosition, color, scale, objectName, deadSound, damage, life);
 	GRID_GET_COMPONENT(velocity, v, e);
@@ -130,6 +150,8 @@ entityClass *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real
 	s.avoidance = avoidance;
 	rot.rotation = animation;
 	s.maxSpeed = maxSpeed;
+	s.circling = circling;
+	s.spiraling = spiraling;
 	s.acceleration = s.maxSpeed / accelerationFraction;
 	return e;
 }
@@ -141,33 +163,33 @@ void spawnSimple(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &c
 	switch (type)
 	{
 	case monsterTypeFlags::Circle:
-		e = initializeSimple(spawnPosition, color, 2, hashString("grid/monster/smallCircle.object"), hashString("grid/monster/bum-circle.ogg"), 2, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 2, 0, 1, quat());
+		e = initializeSimple(spawnPosition, color, 2, hashString("grid/monster/smallCircle.object"), hashString("grid/monster/bum-circle.ogg"), 2, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 2, 0, 1, 0, 0.3, quat());
 		break;
 	case monsterTypeFlags::SmallTriangle:
-		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 3, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
+		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 3, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, 0.8, 0.1, quat(degs(), randomAngle() / 50, degs()));
 		break;
 	case monsterTypeFlags::SmallCube:
-		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallCube.object"), hashString("grid/monster/bum-cube.ogg"), 3, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, interpolate(quat(), randomDirectionQuat(), 0.01));
+		e = initializeSimple(spawnPosition, color, 2.5, hashString("grid/monster/smallCube.object"), hashString("grid/monster/bum-cube.ogg"), 3, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, 0, 0.3, interpolate(quat(), randomDirectionQuat(), 0.01));
 		break;
 	case monsterTypeFlags::LargeTriangle:
-		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 4, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, quat(degs(), randomAngle() / 50, degs()));
+		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeTriangle.object"), hashString("grid/monster/bum-triangle.ogg"), 4, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, 0.1, 0.4, quat(degs(), randomAngle() / 50, degs()));
 		{
 			GRID_GET_COMPONENT(monster, m, e);
 			m.defeatedCallback.bind<&spawnSmallTriangle>();
 		}
 		break;
 	case monsterTypeFlags::LargeCube:
-		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeCube.object"), hashString("grid/monster/bum-cube.ogg"), 4, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, interpolate(quat(), randomDirectionQuat(), 0.01));
+		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeCube.object"), hashString("grid/monster/bum-cube.ogg"), 4, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, 0, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
 		{
 			GRID_GET_COMPONENT(monster, m, e);
 			m.defeatedCallback.bind<&spawnSmallCube>();
 		}
 		break;
 	case monsterTypeFlags::PinWheel:
-		e = initializeSimple(spawnPosition, color, 3.5, hashString("grid/monster/pinWheel.object"), hashString("grid/monster/bum-pinwheel.ogg"), 4, 1 + monsterMutation(special), 2 + 0.4 * monsterMutation(special), 50, 0, 0.005, quat(degs(), degs(20), degs()));
+		e = initializeSimple(spawnPosition, color, 3.5, hashString("grid/monster/pinWheel.object"), hashString("grid/monster/bum-pinwheel.ogg"), 4, 1 + monsterMutation(special), 2 + 0.4 * monsterMutation(special), 50, 0, 0.005, 0, 0, quat(degs(), degs(20), degs()));
 		break;
 	case monsterTypeFlags::Diamond:
-		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeDiamond.object"), hashString("grid/monster/bum-diamond.ogg"), 4, 1 + monsterMutation(special), 0.7 + 0.15 * monsterMutation(special), 1, 0.9, 0.2, interpolate(quat(), randomDirectionQuat(), 0.01));
+		e = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/largeDiamond.object"), hashString("grid/monster/bum-diamond.ogg"), 4, 1 + monsterMutation(special), 0.7 + 0.15 * monsterMutation(special), 1, 0.9, 0.2, 0, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
 		break;
 	default: CAGE_THROW_CRITICAL(exception, "invalid monster type");
 	}
