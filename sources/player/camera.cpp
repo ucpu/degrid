@@ -6,35 +6,15 @@
 
 namespace
 {
-	quat skyboxOrientation;
-	quat skyboxRotation;
-
-	entityClass *skyboxRenderEntity;
 	entityClass *primaryCameraEntity;
 	entityClass *skyboxPrimaryCameraEntity;
 	entityClass *secondaryCameraEntity;
 	entityClass *skyboxSecondaryCameraEntity;
 
-	const real ambientSkybox = 1.0;
 	const real ambientPlayer = 0.25;
-
-	void engineInit()
-	{
-		skyboxOrientation = randomDirectionQuat();
-		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
-	}
 
 	void engineUpdate()
 	{
-		{ // update skybox
-			skyboxOrientation = skyboxRotation * skyboxOrientation;
-			ENGINE_GET_COMPONENT(transform, t, skyboxRenderEntity);
-			t.orientation = skyboxOrientation;
-			ENGINE_GET_COMPONENT(animatedTexture, a, skyboxRenderEntity);
-			real playerHit = game.cinematic || statistics.monstersFirstHit == 0 ? 0 : clamp(real(statistics.updateIterationIgnorePause - statistics.monstersLastHit) / 5, 0, 1) * 1000000;
-			a.offset = playerHit;
-		}
-
 		if (game.gameOver)
 			return;
 
@@ -58,7 +38,7 @@ namespace
 					c.renderMask = 2;
 					c.near = 0.5;
 					c.far = 3;
-					c.ambientLight = vec3(ambientSkybox);
+					c.ambientLight = vec3(1);
 					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
@@ -91,15 +71,6 @@ namespace
 	void gameStart()
 	{
 		{
-			skyboxRenderEntity = entities()->createUnique();
-			ENGINE_GET_COMPONENT(render, r, skyboxRenderEntity);
-			r.object = hashString("grid/environment/skybox.object");
-			r.renderMask = 2;
-			ENGINE_GET_COMPONENT(animatedTexture, a, skyboxRenderEntity);
-			a.speed = 0;
-		}
-
-		{
 			skyboxPrimaryCameraEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, skyboxPrimaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
@@ -109,7 +80,7 @@ namespace
 			c.near = 0.5;
 			c.far = 3;
 			c.camera.perspectiveFov = degs(40);
-			c.ambientLight = vec3(ambientSkybox);
+			c.ambientLight = vec3(1);
 		}
 
 		{
@@ -140,14 +111,11 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 		eventListener<void()> gameStartListener;
 	public:
 		callbacksClass()
 		{
-			engineInitListener.attach(controlThread().initialize, 50);
-			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update, 50);
 			engineUpdateListener.bind<&engineUpdate>();
 			gameStartListener.attach(gameStartEvent(), 50);

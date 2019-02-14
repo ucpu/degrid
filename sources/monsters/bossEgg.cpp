@@ -16,6 +16,13 @@ namespace
 
 	void hatchEgg(entityClass *e)
 	{
+		static const uint32 skyboxNames[] = {
+			#define GCHL_GENERATE(N) hashString("grid/environment/skyboxes/skybox.obj;" CAGE_STRINGIZE(N)),
+					GCHL_GENERATE(0)
+					CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
+			#undef GCHL_GENERATE
+		};
+		setSkybox(skyboxNames[game.defeatedBosses + 1]);
 		monsterExplosion(e);
 		ENGINE_GET_COMPONENT(transform, t, e);
 		ENGINE_GET_COMPONENT(render, r, e);

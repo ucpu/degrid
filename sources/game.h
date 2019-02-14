@@ -12,7 +12,7 @@ using namespace cage;
 bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, const vec3 &positionB, real radiusB, const vec3 &velocityB);
 void powerupSpawn(const vec3 &position);
 void monstersSpawnInitial();
-real lifeDamage(real damage); // how much life does the damage take (based on players armor)
+real lifeDamage(real damage); // how much life is taken by the damage (based on players armor)
 void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale);
 void monsterExplosion(entityClass *e);
 void shotExplosion(entityClass *e);
@@ -20,6 +20,7 @@ bool killMonster(entityClass *e, bool allowCallback);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(uint32 sounds[]);
+void setSkybox(uint32 objectName);
 bool achievementFullfilled(const string &name, bool bossKill = false); // returs if this is the first time the achievement is fullfilled
 void makeAnnouncement(uint32 headline, uint32 description, uint32 duration = 30 * 30);
 uint32 permanentPowerupLimit();

@@ -10,8 +10,61 @@
 
 namespace
 {
+	quat skyboxOrientation;
+	quat skyboxRotation;
+
+	struct skyboxComponent
+	{
+		static componentClass *component;
+
+		bool dissipating;
+
+		skyboxComponent() : dissipating(false)
+		{}
+	};
+
+	componentClass *skyboxComponent::component;
+
+	void engineInit()
+	{
+		skyboxComponent::component = entities()->defineComponent(skyboxComponent(), true);
+		skyboxOrientation = randomDirectionQuat();
+		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
+	}
+
 	void engineUpdate()
 	{
+		{ // update skybox
+			skyboxOrientation = skyboxRotation * skyboxOrientation;
+
+			for (entityClass *e : skyboxComponent::component->entities())
+			{
+				ENGINE_GET_COMPONENT(transform, t, e);
+				t.orientation = skyboxOrientation;
+				GRID_GET_COMPONENT(skybox, s, e);
+				if (s.dissipating)
+				{
+					ENGINE_GET_COMPONENT(render, r, e);
+					r.opacity -= 0.05;
+					if (r.opacity < 1e-5)
+						e->add(entitiesToDestroy);
+				}
+			}
+
+			{ // hurt
+				if (statistics.updateIterationIgnorePause == statistics.monstersLastHit && !game.cinematic)
+				{
+					entityClass *e = entities()->createUnique();
+					ENGINE_GET_COMPONENT(transform, t, e);
+					ENGINE_GET_COMPONENT(render, r, e);
+					r.renderMask = 2;
+					r.object = hashString("grid/environment/skyboxes/skybox.obj;hurt");
+					GRID_GET_COMPONENT(skybox, s, e);
+					s.dissipating = true;
+				}
+			}
+		}
+
 		if (game.gameOver || game.paused)
 			return;
 
@@ -31,6 +84,19 @@ namespace
 
 	void gameStart()
 	{
+		for (entityClass *e : skyboxComponent::component->entities())
+		{
+			// prevent the skyboxes to be destroyed so that they can dissipate properly
+			GRID_GET_COMPONENT(skybox, s, e);
+			if (!s.dissipating)
+				e->remove(entitiesToDestroy);
+		}
+
+		if (game.cinematic)
+			setSkybox(hashString("grid/environment/skyboxes/skybox.obj;menu"));
+		else
+			setSkybox(hashString("grid/environment/skyboxes/skybox.obj;0"));
+
 		{
 			entityClass *light = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, t, light);
@@ -44,7 +110,7 @@ namespace
 #ifdef CAGE_DEBUG
 		const real step = 50;
 #else
-		const real step = 10;
+		const real step = 8;
 #endif
 		for (real y = -radius; y < radius + 1e-3; y += step)
 		{
@@ -84,7 +150,7 @@ namespace
 			transform.scale = 0.6;
 			ENGINE_GET_COMPONENT(render, render, e);
 			render.object = hashString("grid/environment/grid.object");
-			grid.originalColor = render.color = vec3(1, 1, 1);
+			grid.originalColor = render.color = vec3(1);
 		}
 
 		statistics.environmentGridMarkers = gridComponent::component->group()->count();
@@ -92,17 +158,43 @@ namespace
 
 	class callbacksClass
 	{
+		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
 		eventListener<void()> gameStartListener;
 	public:
 		callbacksClass()
 		{
-			engineUpdateListener.attach(controlThread().update, -5);
+			engineInitListener.attach(controlThread().initialize, -35);
+			engineInitListener.bind<&engineInit>();
+			engineUpdateListener.attach(controlThread().update, 5);
 			engineUpdateListener.bind<&engineUpdate>();
 			gameStartListener.attach(gameStartEvent(), -5);
 			gameStartListener.bind<&gameStart>();
 		}
 	} callbacksInstance;
+}
+
+void setSkybox(uint32 objectName)
+{
+	{ // initiate dissapearing of old skyboxes
+		for (entityClass *e : skyboxComponent::component->entities())
+		{
+			ENGINE_GET_COMPONENT(transform, t, e);
+			t.position[2] *= 0.9; // move the skybox closer to camera
+			GRID_GET_COMPONENT(skybox, s, e);
+			s.dissipating = true;
+		}
+	}
+
+	{ // create new skybox
+		entityClass *e = entities()->createUnique();
+		ENGINE_GET_COMPONENT(transform, t, e);
+		t.position[2] = -1e-5; // semitransparent objects are rendered back-to-front; this makes the skybox the furthest
+		ENGINE_GET_COMPONENT(render, r, e);
+		r.renderMask = 2;
+		r.object = objectName;
+		GRID_GET_COMPONENT(skybox, s, e);
+	}
 }
 
 void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale)
@@ -141,20 +233,17 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 			vel.velocity = normalize(vel.velocity + velocity.normalize() * velocity.length().sqrt());
 		vel.velocity *= randomChance() + 0.5;
 		ENGINE_GET_COMPONENT(transform, transform, e);
-		transform.scale = scale * (randomChance() * 0.4 + 0.8) * 0.35;
-		transform.position = position + vec3(randomChance() * 2 - 1, 0, randomChance() * 2 - 1);
+		transform.scale = scale * (randomRange(0.8, 1.2) * 0.35);
+		transform.position = position + randomRange3(-1, 1) * scale;
 		transform.orientation = randomDirectionQuat();
 		ENGINE_GET_COMPONENT(render, render, e);
 		render.object = hashString("grid/environment/explosion.object");
-		render.color = colorVariation(color);
+		render.color = colorVariation(color) * 2;
 		e->add(entitiesPhysicsEvenWhenPaused);
-		if (randomChance() < 0.2)
-		{
-			ENGINE_GET_COMPONENT(light, light, e);
-			light.color = colorVariation(color) * 3;
-			light.lightType = lightTypeEnum::Point;
-			light.attenuation = vec3(0, 0, 0.01);
-		}
+		ENGINE_GET_COMPONENT(light, light, e);
+		light.color = render.color;
+		light.lightType = lightTypeEnum::Point;
+		light.attenuation = vec3(0, 0, 0.01);
 	}
 }
 
@@ -180,5 +269,5 @@ vec3 colorVariation(const vec3 &color)
 	vec3 dev = randomChance3() * 0.1 - 0.05;
 	vec3 hsv = convertRgbToHsv(color) + dev;
 	hsv[0] = (hsv[0] + 1) % 1;
-	return convertHsvToRgb(clamp(hsv, vec3(0, 0, 0), vec3(1, 1, 1)));
+	return convertHsvToRgb(clamp(hsv, vec3(0), vec3(1)));
 }

@@ -1,0 +1,49 @@
+
+[]
+scheme = pack
+skyboxes.pack
+
+[]
+scheme = mesh
+override_material = 0.cpm
+skybox.obj;0
+[]
+scheme = mesh
+override_material = 1.cpm
+skybox.obj;1
+[]
+scheme = mesh
+override_material = 2.cpm
+skybox.obj;2
+[]
+scheme = mesh
+override_material = 3.cpm
+skybox.obj;3
+[]
+scheme = mesh
+override_material = 4.cpm
+skybox.obj;4
+[]
+scheme = mesh
+override_material = 5.cpm
+skybox.obj;5
+[]
+scheme = mesh
+override_material = hurt.cpm
+skybox.obj;hurt
+[]
+scheme = mesh
+override_material = menu.cpm
+skybox.obj;menu
+
+[]
+scheme = texture
+srgb = true
+0.png
+1.png
+2.png
+3.png
+4.png
+5.png
+hurt.png
+menu.png
