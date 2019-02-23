@@ -11,7 +11,7 @@ namespace
 	entityClass *secondaryCameraEntity;
 	entityClass *skyboxSecondaryCameraEntity;
 
-	const real ambientPlayer = 0.25;
+	const vec3 ambientLight = vec3(0.2);
 
 	void engineUpdate()
 	{
@@ -52,7 +52,7 @@ namespace
 					c.renderMask = 1;
 					c.near = 3;
 					c.far = 500;
-					c.ambientLight = vec3(ambientPlayer);
+					c.ambientLight = ambientLight;
 					c.clear = (cameraClearFlags)0;
 					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
@@ -94,7 +94,7 @@ namespace
 			c.near = 150;
 			c.far = 1000;
 			c.camera.perspectiveFov = degs(40);
-			c.ambientLight = vec3(ambientPlayer);
+			c.ambientLight = ambientLight;
 			c.clear = (cameraClearFlags)0;
 			c.effects = cameraEffectsFlags::CombinedPass & ~cameraEffectsFlags::AmbientOcclusion;
 			ENGINE_GET_COMPONENT(listener, l, primaryCameraEntity);

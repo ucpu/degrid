@@ -25,12 +25,30 @@ shield/baked$$$$.png
 scheme = mesh
 player.obj?player
 player.obj?shot
-player.obj?powerupOnetime
-player.obj?powerupCollectible
-player.obj?powerupPermanent
 player.obj?turret
 player.obj?shield
 coin.obj
+
+[]
+scheme = mesh
+override_material = player.obj_powerupOnetime.cpm
+export_uv = false
+export_tangent = false
+powerup.obj;onetime
+
+[]
+scheme = mesh
+override_material = player.obj_powerupCollectible.cpm
+export_uv = false
+export_tangent = false
+powerup.obj;collectible
+
+[]
+scheme = mesh
+override_material = player.obj_powerupPermanent.cpm
+export_uv = false
+export_tangent = false
+powerup.obj;permanent
 
 []
 scheme = object

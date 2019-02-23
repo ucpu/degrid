@@ -1,4 +1,3 @@
 
 []
-player.obj?powerupOnetime
-player.obj?shield
+powerup.obj;onetime

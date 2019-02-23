@@ -1,7 +1,7 @@
 
 [base]
 mask = 0.5
-emissive = 2
+emissive = 10
 
 [textures]
 albedo = lightning_$$.png

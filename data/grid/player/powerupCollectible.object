@@ -1,4 +1,3 @@
 
 []
-player.obj?powerupCollectible
-player.obj?shield
+powerup.obj;collectible

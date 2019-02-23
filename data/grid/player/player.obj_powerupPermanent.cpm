@@ -1,5 +1,5 @@
 
 [base]
-mask = 1
+albedo = 1.000, 0.766, 0.336
 roughness = 0.5
-metalness = 0.01
+metalness = 0.9

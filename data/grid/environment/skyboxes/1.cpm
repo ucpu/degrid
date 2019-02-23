@@ -1,4 +1,7 @@
 
+[mult]
+albedo = 0.5, 0.5, 0.5
+
 [textures]
 albedo = 1.png
 

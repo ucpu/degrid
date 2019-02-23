@@ -97,7 +97,7 @@ namespace
 		else
 			setSkybox(hashString("grid/environment/skyboxes/skybox.obj;0"));
 
-		{
+		{ // the sun
 			entityClass *light = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, t, light);
 			t.orientation = quat(degs(-55), degs(70), degs());
@@ -243,7 +243,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		ENGINE_GET_COMPONENT(light, light, e);
 		light.color = render.color;
 		light.lightType = lightTypeEnum::Point;
-		light.attenuation = vec3(0, 0, 0.01);
+		light.attenuation = vec3(0, 0, 0.02);
 	}
 }
 

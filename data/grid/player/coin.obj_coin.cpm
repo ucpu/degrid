@@ -1,7 +1,7 @@
 
 [base]
-roughness = 0.2
-metalness = 0.97
+roughness = 0.5
+metalness = 0.9
 
 [textures]
 albedo = coin.png

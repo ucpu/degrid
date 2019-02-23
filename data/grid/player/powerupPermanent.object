@@ -1,4 +1,3 @@
 
 []
-player.obj?powerupPermanent
-player.obj?shield
+powerup.obj;permanent

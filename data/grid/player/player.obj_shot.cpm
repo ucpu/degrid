@@ -1,7 +1,7 @@
 
 [base]
 mask = 1
-emissive = 0.2
+emissive = 0.7
 
 [flags]
 no-lighting
