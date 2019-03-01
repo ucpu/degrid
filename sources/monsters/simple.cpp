@@ -1,19 +1,9 @@
 #include "monsters.h"
 
+componentClass *simpleMonsterComponent::component;
+
 namespace
 {
-	struct simpleMonsterComponent
-	{
-		static componentClass *component;
-		real maxSpeed;
-		real acceleration;
-		real avoidance;
-		real circling;
-		real spiraling;
-	};
-
-	componentClass *simpleMonsterComponent::component;
-
 	void engineInit()
 	{
 		simpleMonsterComponent::component = entities()->defineComponent(simpleMonsterComponent(), true);

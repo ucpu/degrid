@@ -353,7 +353,9 @@ namespace
 			d.placingPolicy = placingPolicyEnum::Around;
 			d.distanceMin = 300;
 			d.distanceMax = 350;
-#if 1
+#if 0
+			d.priorityChange = 1;
+#else
 			d.priorityCurrent = 4000;
 			d.priorityChange = 20000;
 			d.priorityMultiplier = 2;

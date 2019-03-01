@@ -4,5 +4,10 @@ icon/unknown.png
 icon/defeated.png
 
 []
-cannoneerBody.object
 egg.object
+
+[]
+cannoneerBody.object
+cannoneerCannon.object
+cannoneer.obj?ball
+cannoneer.obj?shield

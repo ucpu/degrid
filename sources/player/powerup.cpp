@@ -249,6 +249,7 @@ void eventBomb()
 {
 	if (game.powerups[(uint32)powerupTypeEnum::Bomb] == 0)
 		return;
+
 	game.powerups[(uint32)powerupTypeEnum::Bomb]--;
 	uint32 kills = 0;
 	uint32 count = monsterComponent::component->group()->count();
@@ -262,11 +263,13 @@ void eventBomb()
 			killMonster(e, false);
 		}
 	}
+
 	statistics.bombsHitTotal += count;
 	statistics.bombsKillTotal += kills;
 	statistics.bombsHitMax = max(statistics.bombsHitMax, count);
 	statistics.bombsKillMax = max(statistics.bombsKillMax, kills);
 	statistics.bombsUsed++;
+
 	{
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 		for (entityClass *e : gridComponent::component->entities())
@@ -275,7 +278,9 @@ void eventBomb()
 			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
 		}
 	}
-	monstersSpawnInitial();
+
+	if (bossComponent::component->group()->count() == 0)
+		monstersSpawnInitial();
 
 	uint32 sounds[] = {
 		hashString("grid/speech/use/bomb-them-all.wav"),

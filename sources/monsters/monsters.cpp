@@ -11,6 +11,7 @@ namespace
 
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+
 		for (entityClass *e : monsterComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
@@ -80,7 +81,8 @@ namespace
 						soundSpeech(sounds);
 					}
 				}
-				killMonster(e, false);
+				if (m.life < real::PositiveInfinity)
+					killMonster(e, false);
 			}
 
 			// monster vertical movement

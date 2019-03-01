@@ -11,6 +11,7 @@ icon/defeated.png
 []
 scheme = object
 cannoneerBody.object
+cannoneerCannon.object
 egg.object
 
 []
@@ -18,3 +19,22 @@ scheme = mesh
 export_uv = false
 export_tangent = false
 egg.obj
+
+[]
+scheme = mesh
+export_uv = false
+export_tangent = false
+cannoneer.obj?body_body_body
+cannoneer.obj?body_body_inner
+cannoneer.obj?body_body_roof
+cannoneer.obj?bulb_bulb_bulb
+cannoneer.obj?cannon_cannon_cannon
+cannoneer.obj?cannon_cannon_inner
+cannoneer.obj?ball
+
+[]
+scheme = mesh
+override_material = ../player/player.obj_shield.cpm
+cannoneer.obj?shield
+
+
