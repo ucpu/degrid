@@ -9,7 +9,7 @@
 #include <cage-client/engineProfiling.h>
 #include <cage-client/highPerformanceGpuHint.h>
 
-configUint32 confLanguage("grid.language.language", 0);
+configUint32 confLanguage("degrid.language.language", 0);
 
 void reloadLanguage(uint32 index);
 
@@ -26,10 +26,10 @@ namespace
 
 	void setWindowFullscreen(bool fullscreen)
 	{
-		static configUint32 ww("grid.window.width", 1280);
-		static configUint32 wh("grid.window.height", 720);
-		static configUint32 fw("grid.fullscreen.width", 0);
-		static configUint32 fh("grid.fullscreen.height", 0);
+		static configUint32 ww("degrid.window.width", 1280);
+		static configUint32 wh("degrid.window.height", 720);
+		static configUint32 fw("degrid.fullscreen.width", 0);
+		static configUint32 fh("degrid.fullscreen.height", 0);
 		if (fullscreen)
 		{
 			try
@@ -54,7 +54,7 @@ namespace
 		if (modifiers != modifiersFlags::None)
 			return false;
 
-		static configBool secondaryCamera("grid.secondary-camera.enabled", false);
+		static configBool secondaryCamera("degrid.secondary-camera.enabled", false);
 
 		CAGE_LOG_DEBUG(severityEnum::Info, "keyboard", string() + "key: " + key);
 
@@ -92,8 +92,8 @@ namespace
 void reloadLanguage(uint32 index)
 {
 	static const uint32 languages[] = {
-		hashString("grid/languages/english.textpack"),
-		hashString("grid/languages/czech.textpack")
+		hashString("degrid/languages/english.textpack"),
+		hashString("degrid/languages/czech.textpack")
 	};
 	if (index < sizeof(languages) / sizeof(languages[0]))
 		currentLanguageHash = languages[index];
@@ -122,10 +122,10 @@ int main(int argc, const char *args[])
 		keyReleaseListener.bind<&keyRelease>();
 		keyReleaseListener.attach(window()->events.keyRelease);
 
-		window()->title("Grid");
-		setWindowFullscreen(configGetBool("grid.fullscreen.enabled"));
+		window()->title("Degrid");
+		setWindowFullscreen(configGetBool("degrid.fullscreen.enabled"));
 		reloadLanguage(confLanguage);
-		assets()->add(hashString("grid/grid.pack"));
+		assets()->add(hashString("degrid/degrid.pack"));
 
 		{
 			holder<engineProfilingClass> engineProfiling = newEngineProfiling();
@@ -136,7 +136,7 @@ int main(int argc, const char *args[])
 			engineStart();
 		}
 
-		assets()->remove(hashString("grid/grid.pack"));
+		assets()->remove(hashString("degrid/degrid.pack"));
 		if (loadedLanguageHash)
 			assets()->remove(loadedLanguageHash);
 
@@ -144,11 +144,11 @@ int main(int argc, const char *args[])
 
 		try
 		{
-			configSaveIni("grid.ini", "grid");
+			configSaveIni("degrid.ini", "degrid");
 		}
 		catch (...)
 		{
-			CAGE_LOG(severityEnum::Warning, "grid", "failed to save game configuration");
+			CAGE_LOG(severityEnum::Warning, "degrid", "failed to save game configuration");
 		}
 
 		return 0;
@@ -156,16 +156,16 @@ int main(int argc, const char *args[])
 	catch (const cage::exception &e)
 	{
 		CAGE_LOG(severityEnum::Note, "exception", e.message);
-		CAGE_LOG(severityEnum::Error, "grid", "caught cage exception in main");
+		CAGE_LOG(severityEnum::Error, "degrid", "caught cage exception in main");
 	}
 	catch (const std::exception &e)
 	{
 		CAGE_LOG(severityEnum::Note, "exception", e.what());
-		CAGE_LOG(severityEnum::Error, "grid", "caught std exception in main");
+		CAGE_LOG(severityEnum::Error, "degrid", "caught std exception in main");
 	}
 	catch (...)
 	{
-		CAGE_LOG(severityEnum::Error, "grid", "caught unknown exception in main");
+		CAGE_LOG(severityEnum::Error, "degrid", "caught unknown exception in main");
 	}
 	return 1;
 }

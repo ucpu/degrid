@@ -29,7 +29,7 @@ namespace
 		for (entityClass *e : shielderComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, et, e);
-			GRID_GET_COMPONENT(shielder, es, e);
+			DEGRID_GET_COMPONENT(shielder, es, e);
 			entityClass *s = entities()->get(es.shieldEntity);
 			ENGINE_GET_COMPONENT(transform, st, s);
 			st = et;
@@ -38,7 +38,7 @@ namespace
 
 	void shielderEliminated(entityClass *e)
 	{
-		GRID_GET_COMPONENT(shielder, sh, e);
+		DEGRID_GET_COMPONENT(shielder, sh, e);
 		if (entities()->has(sh.shieldEntity))
 			entities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
@@ -61,11 +61,11 @@ namespace
 		for (entityClass *e : shielderComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			GRID_GET_COMPONENT(velocity, mv, e);
-			GRID_GET_COMPONENT(monster, ms, e);
-			GRID_GET_COMPONENT(shielder, sh, e);
+			DEGRID_GET_COMPONENT(velocity, mv, e);
+			DEGRID_GET_COMPONENT(monster, ms, e);
+			DEGRID_GET_COMPONENT(shielder, sh, e);
 			entityClass *se = entities()->get(sh.shieldEntity);
-			GRID_GET_COMPONENT(shield, sse, se);
+			DEGRID_GET_COMPONENT(shield, sse, se);
 
 			// update the monster
 			if (sse.active)
@@ -105,7 +105,7 @@ namespace
 			if (sse.active)
 			{
 				ENGINE_GET_COMPONENT(render, render, se);
-				render.object = hashString("grid/monster/shield.object");
+				render.object = hashString("degrid/monster/shield.object");
 			}
 			else
 			{
@@ -154,16 +154,16 @@ namespace
 void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	entityClass *shielder = initializeMonster(spawnPosition, color, 3, hashString("grid/monster/shielder.object"), hashString("grid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
+	entityClass *shielder = initializeMonster(spawnPosition, color, 3, hashString("degrid/monster/shielder.object"), hashString("degrid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
 	entityClass *shield = entities()->createUnique();
 	{
-		GRID_GET_COMPONENT(shielder, sh, shielder);
+		DEGRID_GET_COMPONENT(shielder, sh, shielder);
 		sh.shieldEntity = shield->name();
 		sh.movementSpeed = 0.8 + 0.2 * monsterMutation(special);
 		sh.turningSteps = randomRange(20u, 30u);
 		sh.chargingSteps = randomRange(60u, 180u);
 		sh.stepsLeft = sh.turningSteps;
-		GRID_GET_COMPONENT(monster, m, shielder);
+		DEGRID_GET_COMPONENT(monster, m, shielder);
 		m.dispersion = 0.2;
 		monsterReflectMutation(shielder, special);
 	}
@@ -171,7 +171,7 @@ void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 		ENGINE_GET_COMPONENT(transform, transformShielder, shielder);
 		ENGINE_GET_COMPONENT(transform, transform, shield);
 		transform = transformShielder;
-		GRID_GET_COMPONENT(shield, sh, shield);
+		DEGRID_GET_COMPONENT(shield, sh, shield);
 		sh.active = false;
 	}
 }

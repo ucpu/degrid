@@ -19,7 +19,7 @@ namespace
 			return;
 
 		ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
-		GRID_GET_COMPONENT(velocity, vl, game.playerEntity);
+		DEGRID_GET_COMPONENT(velocity, vl, game.playerEntity);
 
 		if (game.moveDirection != vec3())
 		{
@@ -39,10 +39,10 @@ namespace
 				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
 				transform.orientation = randomDirectionQuat();
 				ENGINE_GET_COMPONENT(render, render, spark);
-				render.object = hashString("grid/environment/spark.object");
-				GRID_GET_COMPONENT(velocity, vel, spark);
+				render.object = hashString("degrid/environment/spark.object");
+				DEGRID_GET_COMPONENT(velocity, vel, spark);
 				vel.velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
-				GRID_GET_COMPONENT(timeout, ttl, spark);
+				DEGRID_GET_COMPONENT(timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
 				ENGINE_GET_COMPONENT(animatedTexture, at, spark);
 				at.startTime = currentControlTime();
@@ -78,9 +78,9 @@ namespace
 		if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0)
 		{
 			ENGINE_GET_COMPONENT(render, render, game.shieldEntity);
-			render.object = hashString("grid/player/shield.object");
+			render.object = hashString("degrid/player/shield.object");
 			ENGINE_GET_COMPONENT(voice, sound, game.shieldEntity);
-			sound.name = hashString("grid/player/shield.ogg");
+			sound.name = hashString("degrid/player/shield.ogg");
 			sound.startTime = -1;
 		}
 		else
@@ -114,14 +114,14 @@ namespace
 			scorePreviousSound += ld * sg;
 
 			uint32 sounds[] = {
-				hashString("grid/speech/progress/doing-fine.wav"),
-				hashString("grid/speech/progress/doing-well.wav"),
-				hashString("grid/speech/progress/fantastic.wav"),
-				hashString("grid/speech/progress/go-on.wav"),
-				hashString("grid/speech/progress/i-hope-the-princess-is-worth-all-the-trouble.wav"),
-				hashString("grid/speech/progress/keep-going.wav"),
-				hashString("grid/speech/progress/lets-roll.wav"),
-				hashString("grid/speech/progress/they-say-the-princess-is-very-beautiful.wav"),
+				hashString("degrid/speech/progress/doing-fine.wav"),
+				hashString("degrid/speech/progress/doing-well.wav"),
+				hashString("degrid/speech/progress/fantastic.wav"),
+				hashString("degrid/speech/progress/go-on.wav"),
+				hashString("degrid/speech/progress/i-hope-the-princess-is-worth-all-the-trouble.wav"),
+				hashString("degrid/speech/progress/keep-going.wav"),
+				hashString("degrid/speech/progress/lets-roll.wav"),
+				hashString("degrid/speech/progress/they-say-the-princess-is-very-beautiful.wav"),
 				0
 			};
 			soundSpeech(sounds);
@@ -153,7 +153,7 @@ namespace
 			ENGINE_GET_COMPONENT(transform, transform, game.playerEntity);
 			transform.scale = playerScale;
 			ENGINE_GET_COMPONENT(render, render, game.playerEntity);
-			render.object = hashString("grid/player/player.object");
+			render.object = hashString("degrid/player/player.object");
 			game.monstersTarget = vec3();
 		}
 
@@ -169,7 +169,7 @@ namespace
 	void gameStop()
 	{
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, 20, playerScale);
 		for (uint32 i = 0; i < 10; i++)
 			environmentExplosion(playerTransform.position, randomDirection3() * vec3(1, 0.1, 1), playerDeathColor, 5, playerScale);

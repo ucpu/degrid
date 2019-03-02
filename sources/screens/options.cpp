@@ -3,18 +3,18 @@
 
 #include <cage-core/config.h>
 
-configUint32 confControlMovement("grid.control.movement", 0);
-configUint32 confControlFiring("grid.control.firing", 4);
-configUint32 confControlBomb("grid.control.bomb", 4 + 4);
-configUint32 confControlTurret("grid.control.turret", 2 + 4);
-configUint32 confControlDecoy("grid.control.decoy", 0 + 4);
-configString confPlayerName("grid.player.name", "player name");
-configFloat confPlayerShotColorR("grid.player.shotColorR", 1);
-configFloat confPlayerShotColorG("grid.player.shotColorG", 1);
-configFloat confPlayerShotColorB("grid.player.shotColorB", 1);
-configFloat confVolumeMusic("grid.volume.music", 0.5f);
-configFloat confVolumeEffects("grid.volume.effects", 0.5f);
-configFloat confVolumeSpeech("grid.volume.speech", 0.7f);
+configUint32 confControlMovement("degrid.control.movement", 0);
+configUint32 confControlFiring("degrid.control.firing", 4);
+configUint32 confControlBomb("degrid.control.bomb", 4 + 4);
+configUint32 confControlTurret("degrid.control.turret", 2 + 4);
+configUint32 confControlDecoy("degrid.control.decoy", 0 + 4);
+configString confPlayerName("degrid.player.name", "player name");
+configFloat confPlayerShotColorR("degrid.player.shotColorR", 1);
+configFloat confPlayerShotColorG("degrid.player.shotColorG", 1);
+configFloat confPlayerShotColorB("degrid.player.shotColorB", 1);
+configFloat confVolumeMusic("degrid.volume.music", 0.5f);
+configFloat confVolumeEffects("degrid.volume.effects", 0.5f);
+configFloat confVolumeSpeech("degrid.volume.speech", 0.7f);
 
 namespace
 {
@@ -27,7 +27,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = 0;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/arrowsAbsolute");
 		}
 		{
@@ -36,7 +36,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = 1;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/arrowsRelative");
 		}
 		{
@@ -45,7 +45,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = 2;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/lmb");
 		}
 		{
@@ -54,7 +54,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = 3;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/rmb");
 		}
 		{
@@ -63,7 +63,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = 4;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/cursor");
 		}
 	}
@@ -77,7 +77,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = -4;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/lmb");
 		}
 		{
@@ -86,7 +86,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = -3;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/mmb");
 		}
 		{
@@ -95,7 +95,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = -2;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/rmb");
 		}
 		{
@@ -104,7 +104,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = -1;
 			GUI_GET_COMPONENT(text, txt, opt);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/space");
 		}
 		for (sint32 i = 0; i < sizeof(letters); i++)
@@ -202,7 +202,7 @@ void setScreenOptions()
 			GUI_GET_COMPONENT(layoutTable, layout, panel);
 			layout.sections = 2;
 			GUI_GET_COMPONENT(text, txt, panel);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/controls");
 			GUI_GET_COMPONENT(scrollbars, sc, panel);
 		}
@@ -216,7 +216,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/movement");
 			}
 
@@ -239,7 +239,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/firing");
 			}
 
@@ -262,7 +262,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/bomb");
 			}
 
@@ -285,7 +285,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/turret");
 			}
 
@@ -308,7 +308,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/decoy");
 			}
 
@@ -334,7 +334,7 @@ void setScreenOptions()
 			GUI_GET_COMPONENT(layoutTable, layout, panel);
 			layout.sections = 2;
 			GUI_GET_COMPONENT(text, txt, panel);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/options/sounds");
 			GUI_GET_COMPONENT(scrollbars, sc, panel);
 		}
@@ -348,7 +348,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/musicVolume");
 			}
 
@@ -370,7 +370,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/effectsVolume");
 			}
 
@@ -392,7 +392,7 @@ void setScreenOptions()
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, lbl);
 				GUI_GET_COMPONENT(text, txt, lbl);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/options/speechVolume");
 			}
 

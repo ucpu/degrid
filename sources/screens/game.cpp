@@ -96,7 +96,7 @@ namespace
 			entityClass *but = ents->create(501);
 			GUI_GET_COMPONENT(button, control, but);
 			GUI_GET_COMPONENT(text, txt, but);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/paused/continue");
 			GUI_GET_COMPONENT(parent, parent, but);
 			parent.parent = 15;
@@ -109,7 +109,7 @@ namespace
 			entityClass *but = ents->create(500);
 			GUI_GET_COMPONENT(button, control, but);
 			GUI_GET_COMPONENT(text, txt, but);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/paused/giveup");
 			GUI_GET_COMPONENT(parent, parent, but);
 			parent.parent = 15;
@@ -140,7 +140,7 @@ namespace
 				parent.parent = layoutName;
 				parent.order = 1;
 				GUI_GET_COMPONENT(text, text, e);
-				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/paused/story");
 				GUI_GET_COMPONENT(scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
@@ -163,7 +163,7 @@ namespace
 				parent.order = idx;
 				GUI_GET_COMPONENT(label, lab, label);
 				GUI_GET_COMPONENT(text, txt, label);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = textNames[idx];
 				idx++;
 			}
@@ -181,7 +181,7 @@ namespace
 				parent.parent = layoutName;
 				parent.order = 2;
 				GUI_GET_COMPONENT(text, text, e);
-				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/paused/bosses");
 				GUI_GET_COMPONENT(scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
@@ -200,7 +200,7 @@ namespace
 					parent.parent = panelName;
 					parent.order = i;
 					GUI_GET_COMPONENT(text, text, e);
-					text.assetName = hashString("grid/languages/internationalized.textpack");
+					text.assetName = hashString("degrid/languages/internationalized.textpack");
 					text.textName = i < achievements.bosses ? hashString((string() + "achievement/boss-" + i).c_str()) : hashString("achievement/boss-unknown");
 				}
 				{
@@ -210,7 +210,7 @@ namespace
 					parent.parent = pn;
 					parent.order = 1;
 					GUI_GET_COMPONENT(image, img, e);
-					img.textureName = i < achievements.bosses ? hashString((string() + "grid/boss/icon/" + i + ".png").c_str()) : hashString("grid/boss/icon/unknown.png");
+					img.textureName = i < achievements.bosses ? hashString((string() + "degrid/boss/icon/" + i + ".png").c_str()) : hashString("degrid/boss/icon/unknown.png");
 				}
 				if (game.defeatedBosses > i)
 				{
@@ -220,7 +220,7 @@ namespace
 					parent.parent = pn;
 					parent.order = 2;
 					GUI_GET_COMPONENT(image, img, e);
-					img.textureName = hashString("grid/boss/icon/defeated.png");
+					img.textureName = hashString("degrid/boss/icon/defeated.png");
 				}
 			}
 		}
@@ -237,7 +237,7 @@ namespace
 				parent.parent = layoutName;
 				parent.order = 3;
 				GUI_GET_COMPONENT(text, text, e);
-				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/paused/market");
 				GUI_GET_COMPONENT(scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
@@ -251,7 +251,7 @@ namespace
 				parent.parent = marketName;
 				parent.order = 1;
 				GUI_GET_COMPONENT(text, text, e);
-				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/paused/permanentLimit");
 				text.value = string() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
 				GUI_GET_COMPONENT(label, but, e);
@@ -285,7 +285,7 @@ namespace
 					parent.order = -9;
 					GUI_GET_COMPONENT(label, but, e);
 					GUI_GET_COMPONENT(text, text, e);
-					text.assetName = hashString("grid/languages/internationalized.textpack");
+					text.assetName = hashString("degrid/languages/internationalized.textpack");
 					text.textName = hashString("gui/paused/count");
 				}
 				{ // sell
@@ -294,7 +294,7 @@ namespace
 					parent.parent = panelName;
 					parent.order = -8;
 					GUI_GET_COMPONENT(text, text, e);
-					text.assetName = hashString("grid/languages/internationalized.textpack");
+					text.assetName = hashString("degrid/languages/internationalized.textpack");
 					text.textName = hashString("gui/paused/sell");
 					GUI_GET_COMPONENT(label, but, e);
 					GUI_GET_COMPONENT(textFormat, tf, e);
@@ -306,7 +306,7 @@ namespace
 					parent.parent = panelName;
 					parent.order = -7;
 					GUI_GET_COMPONENT(text, text, e);
-					text.assetName = hashString("grid/languages/internationalized.textpack");
+					text.assetName = hashString("degrid/languages/internationalized.textpack");
 					text.textName = hashString("gui/paused/buy");
 					GUI_GET_COMPONENT(label, but, e);
 					GUI_GET_COMPONENT(textFormat, tf, e);
@@ -325,7 +325,7 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 0;
 						GUI_GET_COMPONENT(text, text, e);
-						text.assetName = hashString("grid/languages/internationalized.textpack");
+						text.assetName = hashString("degrid/languages/internationalized.textpack");
 						text.textName = textNames[i];
 						GUI_GET_COMPONENT(label, but, e);
 					}
@@ -407,7 +407,7 @@ namespace
 					parent.parent = layoutName;
 					parent.order = order++;
 					GUI_GET_COMPONENT(text, txt, panel);
-					txt.assetName = hashString("grid/languages/internationalized.textpack");
+					txt.assetName = hashString("degrid/languages/internationalized.textpack");
 					txt.textName = a.headingName;
 					GUI_GET_COMPONENT(textFormat, format, panel);
 					format.size = 20;
@@ -421,7 +421,7 @@ namespace
 					parent.parent = panel->name();
 					GUI_GET_COMPONENT(label, control, label);
 					GUI_GET_COMPONENT(text, txt, label);
-					txt.assetName = hashString("grid/languages/internationalized.textpack");
+					txt.assetName = hashString("degrid/languages/internationalized.textpack");
 					txt.textName = a.descriptionName;
 					GUI_GET_COMPONENT(textFormat, format, label);
 					format.size = 20;
@@ -459,7 +459,7 @@ namespace
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, label);
 				GUI_GET_COMPONENT(text, text, label);
-				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/life");
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.color = vec3(1, 0, 0);
@@ -486,7 +486,7 @@ namespace
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, label);
 				GUI_GET_COMPONENT(text, text, label);
-				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/money");
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.color = vec3(1, 1, 0);
@@ -513,7 +513,7 @@ namespace
 				parent.order = index++;
 				GUI_GET_COMPONENT(label, control, label);
 				GUI_GET_COMPONENT(text, text, label);
-				text.assetName = hashString("grid/languages/internationalized.textpack");
+				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/game/score");
 				GUI_GET_COMPONENT(textFormat, format, label);
 				format.color = vec3(0, 1, 0);
@@ -555,7 +555,7 @@ namespace
 						parent.order = index++;
 						GUI_GET_COMPONENT(label, control, label);
 						GUI_GET_COMPONENT(text, text, label);
-						text.assetName = hashString("grid/languages/internationalized.textpack");
+						text.assetName = hashString("degrid/languages/internationalized.textpack");
 						text.textName = textNames[i];
 					}
 
@@ -594,7 +594,7 @@ namespace
 						parent.order = index++;
 						GUI_GET_COMPONENT(label, control, label);
 						GUI_GET_COMPONENT(text, text, label);
-						text.assetName = hashString("grid/languages/internationalized.textpack");
+						text.assetName = hashString("degrid/languages/internationalized.textpack");
 						text.textName = textNames[i];
 					}
 

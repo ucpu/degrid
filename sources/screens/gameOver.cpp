@@ -44,7 +44,7 @@ void setScreenGameover()
 {
 	if (game.score > 0)
 	{
-#ifndef GRID_TESTING
+#ifndef DEGRID_TESTING
 		holder<fileClass> f = newFile("score.ini", fileMode(false, true, true, true));
 		f->writeLine("[]");
 		{
@@ -86,7 +86,7 @@ void setScreenGameover()
 		parent.order = 1;
 		GUI_GET_COMPONENT(label, control, empOver);
 		GUI_GET_COMPONENT(text, txt, empOver);
-		txt.assetName = hashString("grid/languages/internationalized.textpack");
+		txt.assetName = hashString("degrid/languages/internationalized.textpack");
 		txt.textName = hashString("gui/gameover/over");
 		GUI_GET_COMPONENT(textFormat, format, empOver);
 		format.align = textAlignEnum::Center;
@@ -112,7 +112,7 @@ void setScreenGameover()
 		entityClass *butSave = ents->create(100);
 		GUI_GET_COMPONENT(button, control, butSave);
 		GUI_GET_COMPONENT(text, txt, butSave);
-		txt.assetName = hashString("grid/languages/internationalized.textpack");
+		txt.assetName = hashString("degrid/languages/internationalized.textpack");
 		txt.textName = hashString("gui/gameover/continue");
 		GUI_GET_COMPONENT(parent, parent, butSave);
 		parent.parent = 15;

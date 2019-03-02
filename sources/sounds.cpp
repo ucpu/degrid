@@ -136,9 +136,9 @@ namespace
 		data->effectsVolume->volume = (float)confVolumeEffects;
 		data->speechVolume->volume = (float)confVolumeSpeech;
 
-		static const uint32 suspenseName = hashString("grid/music/fear-and-horror.ogg");
-		static const uint32 actionName = hashString("grid/music/chaotic-filth.ogg");
-		static const uint32 endName = hashString("grid/music/sad-song.ogg");
+		static const uint32 suspenseName = hashString("degrid/music/fear-and-horror.ogg");
+		static const uint32 actionName = hashString("degrid/music/chaotic-filth.ogg");
+		static const uint32 endName = hashString("degrid/music/sad-song.ogg");
 #define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded) && assets()->state(CAGE_JOIN(NAME, Name)) == assetStateEnum::Ready) { assets()->get<assetSchemeIndexSound, sourceClass>(CAGE_JOIN(NAME, Name))->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
@@ -202,16 +202,16 @@ namespace
 		if (!game.cinematic)
 		{
 			uint32 sounds[] = {
-				hashString("grid/speech/starts/a-princess-needs-our-help.wav"),
-				hashString("grid/speech/starts/enemy-is-approaching.wav"),
-				hashString("grid/speech/starts/its-a-trap.wav"),
-				hashString("grid/speech/starts/let-the-journey-begins.wav"),
-				hashString("grid/speech/starts/our-destiny-awaits.wav"),
-				hashString("grid/speech/starts/enemies-are-approaching.wav"),
-				hashString("grid/speech/starts/it-is-our-duty-to-save-the-princess.wav"),
-				hashString("grid/speech/starts/lets-do-this.wav"),
-				hashString("grid/speech/starts/let-us-kill-some-triangles.wav"),
-				hashString("grid/speech/starts/ready-set-go.wav"),
+				hashString("degrid/speech/starts/a-princess-needs-our-help.wav"),
+				hashString("degrid/speech/starts/enemy-is-approaching.wav"),
+				hashString("degrid/speech/starts/its-a-trap.wav"),
+				hashString("degrid/speech/starts/let-the-journey-begins.wav"),
+				hashString("degrid/speech/starts/our-destiny-awaits.wav"),
+				hashString("degrid/speech/starts/enemies-are-approaching.wav"),
+				hashString("degrid/speech/starts/it-is-our-duty-to-save-the-princess.wav"),
+				hashString("degrid/speech/starts/lets-do-this.wav"),
+				hashString("degrid/speech/starts/let-us-kill-some-triangles.wav"),
+				hashString("degrid/speech/starts/ready-set-go.wav"),
 				0
 			};
 			soundSpeech(sounds);
@@ -221,11 +221,11 @@ namespace
 	void gameStop()
 	{
 		uint32 sounds[] = {
-			hashString("grid/speech/gameover/game-over.wav"),
-			hashString("grid/speech/gameover/lets-try-again.wav"),
-			hashString("grid/speech/gameover/oh-no.wav"),
-			hashString("grid/speech/gameover/pitty.wav"),
-			hashString("grid/speech/gameover/thats-it.wav"),
+			hashString("degrid/speech/gameover/game-over.wav"),
+			hashString("degrid/speech/gameover/lets-try-again.wav"),
+			hashString("degrid/speech/gameover/oh-no.wav"),
+			hashString("degrid/speech/gameover/pitty.wav"),
+			hashString("degrid/speech/gameover/thats-it.wav"),
 			0
 		};
 		soundSpeech(sounds);
@@ -266,7 +266,7 @@ void soundEffect(uint32 sound, const vec3 &position)
 	ENGINE_GET_COMPONENT(voice, s, e);
 	s.name = sound;
 	s.startTime = currentControlTime();
-	GRID_GET_COMPONENT(timeout, ttl, e);
+	DEGRID_GET_COMPONENT(timeout, ttl, e);
 	ttl.ttl = numeric_cast<uint32>((src->getDuration() + 100000) / controlThread().timePerTick);
 	e->add(entitiesPhysicsEvenWhenPaused);
 }

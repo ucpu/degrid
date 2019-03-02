@@ -42,8 +42,8 @@ namespace
 		for (entityClass *e : snakeHeadComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			GRID_GET_COMPONENT(velocity, v, e);
-			GRID_GET_COMPONENT(snakeHead, snake, e);
+			DEGRID_GET_COMPONENT(velocity, v, e);
+			DEGRID_GET_COMPONENT(snakeHead, snake, e);
 			if (tr.position.distance(playerTransform.position) > 250)
 				v.velocity = (game.monstersTarget - tr.position).normalize() * (snake.speedMin + snake.speedMax) * 0.5;
 			else
@@ -62,9 +62,9 @@ namespace
 		for (entityClass *e : snakeTailComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			GRID_GET_COMPONENT(velocity, v, e);
-			GRID_GET_COMPONENT(monster, m, e);
-			GRID_GET_COMPONENT(snakeTail, snake, e);
+			DEGRID_GET_COMPONENT(velocity, v, e);
+			DEGRID_GET_COMPONENT(monster, m, e);
+			DEGRID_GET_COMPONENT(snakeTail, snake, e);
 
 			v.velocity = vec3();
 			if (snake.follow && entities()->has(snake.follow))
@@ -144,13 +144,13 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 	real groundLevel;
 	real scale;
 	{ // head
-		entityClass *head = initializeMonster(spawnPosition, color, 2, hashString("grid/monster/snakeHead.object"), hashString("grid/monster/bum-snake-head.ogg"), 5, 3 + monsterMutation(special));
-		GRID_GET_COMPONENT(snakeHead, snake, head);
+		entityClass *head = initializeMonster(spawnPosition, color, 2, hashString("degrid/monster/snakeHead.object"), hashString("degrid/monster/bum-snake-head.ogg"), 5, 3 + monsterMutation(special));
+		DEGRID_GET_COMPONENT(snakeHead, snake, head);
 		snake.speedMin = 0.3 + 0.1 * monsterMutation(special);
 		snake.speedMax = snake.speedMin + 0.6 + 0.2 * monsterMutation(special);
 		monsterReflectMutation(head, special);
 		prev = head->name();
-		GRID_GET_COMPONENT(monster, monster, head);
+		DEGRID_GET_COMPONENT(monster, monster, head);
 		monster.dispersion = 0.2;
 		groundLevel = monster.groundLevel;
 		ENGINE_GET_COMPONENT(transform, transform, head);
@@ -159,15 +159,15 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 	uint64 aniInitOff = randomRange(0, 10000000);
 	for (uint32 i = 0; i < pieces; i++)
 	{ // tail
-		entityClass *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, hashString("grid/monster/snakeTail.object"), hashString("grid/monster/bum-snake-tail.ogg"), 5, real::PositiveInfinity);
-		GRID_GET_COMPONENT(snakeTail, snake, tail);
+		entityClass *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, hashString("degrid/monster/snakeTail.object"), hashString("degrid/monster/bum-snake-tail.ogg"), 5, real::PositiveInfinity);
+		DEGRID_GET_COMPONENT(snakeTail, snake, tail);
 		snake.index = i + 1;
 		snake.follow = prev;
 		prev = tail->name();
 		ENGINE_GET_COMPONENT(animatedTexture, aniTex, tail);
 		aniTex.startTime = currentControlTime() + aniInitOff + i * 1000000;
 		aniTex.speed = 0.4;
-		GRID_GET_COMPONENT(monster, monster, tail);
+		DEGRID_GET_COMPONENT(monster, monster, tail);
 		monster.dispersion = 0.2;
 		ENGINE_GET_COMPONENT(transform, transform, tail);
 		transform.position[1] = monster.groundLevel = groundLevel;

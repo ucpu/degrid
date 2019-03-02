@@ -174,7 +174,7 @@ namespace
 		entityClass *logo = ents->createUnique();
 		GUI_GET_COMPONENT(label, label, logo);
 		GUI_GET_COMPONENT(image, image, logo);
-		image.textureName = hashString("grid/logo.gif");
+		image.textureName = hashString("degrid/logo.png");
 		GUI_GET_COMPONENT(parent, parent, logo);
 		parent.parent = 14;
 	}
@@ -185,7 +185,7 @@ namespace
 		entityClass *but = ents->create(20);
 		GUI_GET_COMPONENT(button, button, but);
 		GUI_GET_COMPONENT(text, txt, but);
-		txt.assetName = hashString("grid/languages/internationalized.textpack");
+		txt.assetName = hashString("degrid/languages/internationalized.textpack");
 		txt.textName = hashString("gui/mainmenu/back");
 		GUI_GET_COMPONENT(parent, parent, but);
 		parent.parent = 15;

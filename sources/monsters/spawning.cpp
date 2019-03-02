@@ -407,7 +407,7 @@ namespace
 		// testing
 		///////////////////////////////////////////////////////////////////////////
 
-#ifdef GRID_TESTING
+#ifdef DEGRID_TESTING
 		std::nth_element(definitions.begin(), definitions.begin(), definitions.end());
 		while (definitions[0].priorityCurrent < 50000)
 		{
@@ -419,13 +419,13 @@ namespace
 
 	void gameStop()
 	{
-#ifdef GRID_TESTING
+#ifdef DEGRID_TESTING
 		for (auto &d : definitions)
 		{
 			if (d.iteration > 0)
 				CAGE_LOG(severityEnum::Info, "statistics", string() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
 		}
-#endif // GRID_TESTING
+#endif // DEGRID_TESTING
 
 		definitions.clear();
 	}

@@ -71,7 +71,7 @@ namespace
 				parent.order = 1;
 				GUI_GET_COMPONENT(button, control, butScore);
 				GUI_GET_COMPONENT(text, txt, butScore);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/scores/date");
 			}
 
@@ -82,7 +82,7 @@ namespace
 				parent.order = 2;
 				GUI_GET_COMPONENT(button, control, butDate);
 				GUI_GET_COMPONENT(text, txt, butDate);
-				txt.assetName = hashString("grid/languages/internationalized.textpack");
+				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/scores/score");
 			}
 		}

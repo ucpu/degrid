@@ -34,11 +34,11 @@ namespace
 		t.position = c;
 		t.orientation = quat(v, vec3(0, 1, 0), true);
 		ENGINE_GET_COMPONENT(render, r, e);
-		r.object = hashString("grid/monster/shocker/lightning.object");
+		r.object = hashString("degrid/monster/shocker/lightning.object");
 		r.color = color;
 		ENGINE_GET_COMPONENT(animatedTexture, anim, e);
 		anim.offset = randomChance();
-		GRID_GET_COMPONENT(timeout, ttl, e);
+		DEGRID_GET_COMPONENT(timeout, ttl, e);
 		ttl.ttl = 3;
 		e->add(entitiesPhysicsEvenWhenPaused);
 		ENGINE_GET_COMPONENT(light, light, e);
@@ -57,19 +57,19 @@ namespace
 		}
 
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 
 		for (entityClass *e : shockerComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			GRID_GET_COMPONENT(shocker, sh, e);
+			DEGRID_GET_COMPONENT(shocker, sh, e);
 			vec3 v = tr.position - playerTransform.position;
 			real d = v.length();
 
 			// stay away from the player
 			if (d < sh.radius * 0.8 && d > 1e-7)
 			{
-				GRID_GET_COMPONENT(velocity, mv, e);
+				DEGRID_GET_COMPONENT(velocity, mv, e);
 				mv.velocity += v.normalize() * 0.3;
 			}
 
@@ -85,7 +85,7 @@ namespace
 				if (!e->has(voiceComponent::component))
 				{
 					ENGINE_GET_COMPONENT(voice, v, e);
-					v.name = hashString("grid/monster/shocker/lightning.flac");
+					v.name = hashString("degrid/monster/shocker/lightning.flac");
 					v.startTime = uint64(e->name()) * 10000;
 				}
 			}
@@ -112,8 +112,8 @@ namespace
 void spawnShocker(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	entityClass *shocker = initializeSimple(spawnPosition, color, 3, hashString("grid/monster/shocker/shocker.object"), hashString("grid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
-	GRID_GET_COMPONENT(shocker, sh, shocker);
+	entityClass *shocker = initializeSimple(spawnPosition, color, 3, hashString("degrid/monster/shocker/shocker.object"), hashString("degrid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
+	DEGRID_GET_COMPONENT(shocker, sh, shocker);
 	sh.radius = randomRange(70, 80) + 10 * monsterMutation(special);
 	sh.speedFactor = 3.2 / (monsterMutation(special) + 4);
 	monsterReflectMutation(shocker, special);

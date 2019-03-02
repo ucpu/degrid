@@ -36,24 +36,24 @@ namespace
 
 	void bodyEliminated(entityClass *e)
 	{
-		GRID_GET_COMPONENT(body, sh, e);
+		DEGRID_GET_COMPONENT(body, sh, e);
 		if (entities()->has(sh.shieldEntity))
 			entities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
 
 	void cannonEliminated(entityClass *e)
 	{
-		GRID_GET_COMPONENT(cannon, c, e);
+		DEGRID_GET_COMPONENT(cannon, c, e);
 		if (entities()->has(c.bodyEntity))
 		{
 			entityClass *body = entities()->get(c.bodyEntity);
-			GRID_GET_COMPONENT(body, b, body);
+			DEGRID_GET_COMPONENT(body, b, body);
 			b.cannonsKilled++;
 			if (b.cannonsSpawned < 24)
 				spawnCannon(body, c.index);
 			if (b.cannonsKilled == 24)
 			{
-				GRID_GET_COMPONENT(monster, m, body);
+				DEGRID_GET_COMPONENT(monster, m, body);
 				m.life = min(m.life, 10);
 				if (entities()->has(b.shieldEntity))
 				{
@@ -87,7 +87,7 @@ namespace
 
 		for (entityClass *e : bodyComponent::component->entities())
 		{
-			GRID_GET_COMPONENT(body, b, e);
+			DEGRID_GET_COMPONENT(body, b, e);
 			if (ents->has(b.shieldEntity))
 			{
 				entityClass *sh = ents->get(b.shieldEntity);
@@ -101,27 +101,27 @@ namespace
 
 		for (entityClass *e : cannonComponent::component->entities())
 		{
-			GRID_GET_COMPONENT(cannon, cannon, e);
+			DEGRID_GET_COMPONENT(cannon, cannon, e);
 			if (ents->has(cannon.bodyEntity))
 			{
-				GRID_GET_COMPONENT(monster, monster, e);
+				DEGRID_GET_COMPONENT(monster, monster, e);
 				monster.life = min(monster.life + 0.01, 20);
 				entityClass *body = ents->get(cannon.bodyEntity);
 				cannon.extension += 0.01;
 				if (cannon.extension >= 1)
 				{
-					GRID_GET_COMPONENT(body, b, body);
+					DEGRID_GET_COMPONENT(body, b, body);
 					cannon.loading += (pow(b.cannonsKilled / 20.0, 5) + 1.0) / 70.0;
 					if (cannon.loading >= 1)
 					{
 						cannon.loading -= 1;
 						ENGINE_GET_COMPONENT(transform, ct, e);
-						entityClass *bullet = initializeMonster(ct.position + ct.orientation * vec3(0, 0, -ct.scale - 1), vec3(), 2.0, hashString("grid/boss/cannoneer.obj?ball"), 0, 5, 10);
+						entityClass *bullet = initializeMonster(ct.position + ct.orientation * vec3(0, 0, -ct.scale - 1), vec3(), 2.0, hashString("degrid/boss/cannoneer.obj?ball"), 0, 5, 10);
 						ENGINE_GET_COMPONENT(transform, bt, bullet);
 						bt.orientation = randomDirectionQuat();
-						GRID_GET_COMPONENT(velocity, vel, bullet);
+						DEGRID_GET_COMPONENT(velocity, vel, bullet);
 						vel.velocity = ct.orientation * vec3(0, 0, -1.0);
-						GRID_GET_COMPONENT(timeout, ttl, bullet);
+						DEGRID_GET_COMPONENT(timeout, ttl, bullet);
 						ttl.ttl = shotsTtl;
 					}
 				}
@@ -140,7 +140,7 @@ namespace
 
 		for (entityClass *e : bodyComponent::component->entities())
 		{
-			GRID_GET_COMPONENT(body, b, e);
+			DEGRID_GET_COMPONENT(body, b, e);
 			if (ents->has(b.shieldEntity))
 			{
 				entityClass *sh = ents->get(b.shieldEntity);
@@ -152,12 +152,12 @@ namespace
 
 		for (entityClass *e : cannonComponent::component->entities())
 		{
-			GRID_GET_COMPONENT(cannon, c, e);
+			DEGRID_GET_COMPONENT(cannon, c, e);
 			if (ents->has(c.bodyEntity))
 			{
 				ENGINE_GET_COMPONENT(transform, bt, ents->get(c.bodyEntity));
 				ENGINE_GET_COMPONENT(transform, ct, e);
-				GRID_GET_COMPONENT(monster, m, e);
+				DEGRID_GET_COMPONENT(monster, m, e);
 				quat q = bt.orientation * quat(degs(), degs(c.index * 45 + 22.5), degs());
 				vec3 tp = normalize(game.monstersTarget - ct.position);
 				vec3 tc = q * vec3(0, 0, -1);
@@ -192,34 +192,34 @@ namespace
 	void spawnCannon(entityClass *body, uint32 index)
 	{
 		ENGINE_GET_COMPONENT(transform, bt, body);
-		entityClass *cannon = initializeMonster(bt.position, vec3(1), 5, hashString("grid/boss/cannoneerCannon.object"), hashString("grid/monster/boss/cannoneer-cannon-bum.ogg"), 30, real::PositiveInfinity);
-		GRID_GET_COMPONENT(cannon, c, cannon);
+		entityClass *cannon = initializeMonster(bt.position, vec3(1), 5, hashString("degrid/boss/cannoneerCannon.object"), hashString("degrid/monster/boss/cannoneer-cannon-bum.ogg"), 30, real::PositiveInfinity);
+		DEGRID_GET_COMPONENT(cannon, c, cannon);
 		c.bodyEntity = body->name();
 		c.index = index;
 		c.loading = randomRange(-0.2, 0.2);
 		c.firingOffset = degs(randomRange(-5.f, 5.f));
-		GRID_GET_COMPONENT(body, bb, body);
+		DEGRID_GET_COMPONENT(body, bb, body);
 		bb.cannonsSpawned++;
 	}
 }
 
 void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 {
-	entityClass *body = initializeMonster(spawnPosition, color, 15, hashString("grid/boss/cannoneerBody.object"), hashString("grid/monster/boss/cannoneer-bum.ogg"), real::PositiveInfinity, real::PositiveInfinity);
+	entityClass *body = initializeMonster(spawnPosition, color, 15, hashString("degrid/boss/cannoneerBody.object"), hashString("degrid/monster/boss/cannoneer-bum.ogg"), real::PositiveInfinity, real::PositiveInfinity);
 	ENGINE_GET_COMPONENT(transform, bt, body);
-	GRID_GET_COMPONENT(body, b, body);
+	DEGRID_GET_COMPONENT(body, b, body);
 	{ // body
-		GRID_GET_COMPONENT(boss, boss, body);
-		GRID_GET_COMPONENT(rotation, rotation, body);
+		DEGRID_GET_COMPONENT(boss, boss, body);
+		DEGRID_GET_COMPONENT(rotation, rotation, body);
 		rotation.rotation = quat(degs(), degs(0.55), degs());
-		GRID_GET_COMPONENT(simpleMonster, simple, body);
+		DEGRID_GET_COMPONENT(simpleMonster, simple, body);
 		simple.maxSpeed = 0.25;
 		simple.acceleration = 0.2;
 		simple.circling = 0.7;
 		simple.spiraling = 0.3;
 	}
 	{ // shield
-		entityClass *shield = initializeMonster(bt.position, color, bt.scale, hashString("grid/boss/cannoneer.obj?shield"), 0, real::PositiveInfinity, real::PositiveInfinity);
+		entityClass *shield = initializeMonster(bt.position, color, bt.scale, hashString("degrid/boss/cannoneer.obj?shield"), 0, real::PositiveInfinity, real::PositiveInfinity);
 		b.shieldEntity = shield->name();
 		ENGINE_GET_COMPONENT(transform, t, shield);
 		t.orientation = randomDirectionQuat();
@@ -227,7 +227,7 @@ void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 		aniTex.speed = 0.15;
 		aniTex.offset = randomChance();
 		ENGINE_GET_COMPONENT(voice, sound, shield);
-		sound.name = hashString("grid/player/shield.ogg");
+		sound.name = hashString("degrid/player/shield.ogg");
 		sound.startTime = randomRange(0, 100000000);
 	}
 	for (uint32 i = 0; i < 8; i++)

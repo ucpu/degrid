@@ -27,7 +27,7 @@ namespace
 		for (entityClass *e : turretComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			GRID_GET_COMPONENT(turret, tu, e);
+			DEGRID_GET_COMPONENT(turret, tu, e);
 			if (tu.shooting > 0)
 			{
 				tu.shooting--;
@@ -42,13 +42,13 @@ namespace
 				transform.orientation = quat(degs(), degs(i * 60), degs()) * tr.orientation;
 				transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
 				ENGINE_GET_COMPONENT(render, render, shot);
-				render.object = hashString("grid/player/shot.object");
+				render.object = hashString("degrid/player/shot.object");
 				render.color = game.shotsColor;
-				GRID_GET_COMPONENT(velocity, vel, shot);
+				DEGRID_GET_COMPONENT(velocity, vel, shot);
 				vel.velocity = transform.orientation * vec3(0, 0, -1) * 2.5;
-				GRID_GET_COMPONENT(shot, sh, shot);
+				DEGRID_GET_COMPONENT(shot, sh, shot);
 				sh.damage = 1;
-				GRID_GET_COMPONENT(timeout, ttl, shot);
+				DEGRID_GET_COMPONENT(timeout, ttl, shot);
 				ttl.ttl = shotsTtl;
 			}
 		}
@@ -59,7 +59,7 @@ namespace
 		for (entityClass *e : decoyComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, tr, e);
-			GRID_GET_COMPONENT(velocity, vel, e);
+			DEGRID_GET_COMPONENT(velocity, vel, e);
 			tr.position[1] = 0;
 			vel.velocity *= 0.97;
 			game.monstersTarget = tr.position;
@@ -70,16 +70,16 @@ namespace
 	{
 		statistics.powerupsWasted++;
 		game.money += 10;
-		soundSpeech(hashString("grid/speech/pickup/sold.wav"));
+		soundSpeech(hashString("degrid/speech/pickup/sold.wav"));
 	}
 
 	void powerupsUpdate()
 	{
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 		for (entityClass *e : powerupComponent::component->entities())
 		{
-			GRID_GET_COMPONENT(powerup, p, e);
+			DEGRID_GET_COMPONENT(powerup, p, e);
 			CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);
 
 			ENGINE_GET_COMPONENT(transform, tr, e);
@@ -102,9 +102,9 @@ namespace
 					game.powerups[(uint32)p.type]++;
 					switch (p.type)
 					{
-					case powerupTypeEnum::Bomb: soundSpeech(hashString("grid/speech/pickup/a-bomb.wav")); break;
-					case powerupTypeEnum::Decoy: soundSpeech(hashString("grid/speech/pickup/a-decoy.wav")); break;
-					case powerupTypeEnum::Turret: soundSpeech(hashString("grid/speech/pickup/a-turret.wav")); break;
+					case powerupTypeEnum::Bomb: soundSpeech(hashString("degrid/speech/pickup/a-bomb.wav")); break;
+					case powerupTypeEnum::Decoy: soundSpeech(hashString("degrid/speech/pickup/a-decoy.wav")); break;
+					case powerupTypeEnum::Turret: soundSpeech(hashString("degrid/speech/pickup/a-turret.wav")); break;
 					default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 					}
 					{ // achievement
@@ -127,9 +127,9 @@ namespace
 				game.powerups[(uint32)p.type] += duration;
 				switch (p.type)
 				{
-				case powerupTypeEnum::Shield: soundSpeech(hashString("grid/speech/pickup/shield-engaged.wav")); break;
-				case powerupTypeEnum::HomingShots: soundSpeech(hashString("grid/speech/pickup/homing-missiles.wav")); break;
-				case powerupTypeEnum::SuperDamage: soundSpeech(hashString("grid/speech/pickup/super-damage.wav")); break;
+				case powerupTypeEnum::Shield: soundSpeech(hashString("degrid/speech/pickup/shield-engaged.wav")); break;
+				case powerupTypeEnum::HomingShots: soundSpeech(hashString("degrid/speech/pickup/homing-missiles.wav")); break;
+				case powerupTypeEnum::SuperDamage: soundSpeech(hashString("degrid/speech/pickup/super-damage.wav")); break;
 				default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 				}
 				if (game.powerups[(uint32)p.type] > 2 * duration)
@@ -142,14 +142,14 @@ namespace
 					game.powerups[(uint32)p.type]++;
 					switch (p.type)
 					{
-					case powerupTypeEnum::Acceleration: soundSpeech(hashString("grid/speech/pickup/acceleration-improved.wav")); break;
-					case powerupTypeEnum::MaxSpeed: soundSpeech(hashString("grid/speech/pickup/movement-speed-improved.wav")); break;
-					case powerupTypeEnum::Multishot: soundSpeech(hashString("grid/speech/pickup/additional-cannon.wav")); break;
-					case powerupTypeEnum::ShotsSpeed: soundSpeech(hashString("grid/speech/pickup/missiles-speed-improved.wav")); break;
-					case powerupTypeEnum::ShotsDamage: soundSpeech(hashString("grid/speech/pickup/missiles-damage-improved.wav")); break;
-					case powerupTypeEnum::FiringSpeed: soundSpeech(hashString("grid/speech/pickup/firing-speed-improved.wav")); break;
-					case powerupTypeEnum::Armor: soundSpeech(hashString("grid/speech/pickup/improved-armor.wav")); break;
-					case powerupTypeEnum::Duration: soundSpeech(hashString("grid/speech/pickup/increased-powerup-duration.wav")); break;
+					case powerupTypeEnum::Acceleration: soundSpeech(hashString("degrid/speech/pickup/acceleration-improved.wav")); break;
+					case powerupTypeEnum::MaxSpeed: soundSpeech(hashString("degrid/speech/pickup/movement-speed-improved.wav")); break;
+					case powerupTypeEnum::Multishot: soundSpeech(hashString("degrid/speech/pickup/additional-cannon.wav")); break;
+					case powerupTypeEnum::ShotsSpeed: soundSpeech(hashString("degrid/speech/pickup/missiles-speed-improved.wav")); break;
+					case powerupTypeEnum::ShotsDamage: soundSpeech(hashString("degrid/speech/pickup/missiles-damage-improved.wav")); break;
+					case powerupTypeEnum::FiringSpeed: soundSpeech(hashString("degrid/speech/pickup/firing-speed-improved.wav")); break;
+					case powerupTypeEnum::Armor: soundSpeech(hashString("degrid/speech/pickup/improved-armor.wav")); break;
+					case powerupTypeEnum::Duration: soundSpeech(hashString("degrid/speech/pickup/increased-powerup-duration.wav")); break;
 					default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
 					}
 				}
@@ -161,7 +161,7 @@ namespace
 				game.powerups[(uint32)p.type]++; // count the coins (for statistics & achievement)
 				game.money += game.defeatedBosses + 1;
 				if (randomChance() > powerupIsCoin)
-					soundSpeech(hashString("grid/speech/pickup/a-coin.wav"));
+					soundSpeech(hashString("degrid/speech/pickup/a-coin.wav"));
 				if (game.powerups[(uint32)p.type] == 1000)
 					achievementFullfilled("vault-digger");
 			} break;
@@ -226,23 +226,23 @@ void powerupSpawn(const vec3 &position)
 	transform.position = position * vec3(1, 0, 1);
 	transform.orientation = randomDirectionQuat();
 	transform.scale = coin ? 1.5 : 2.5;
-	GRID_GET_COMPONENT(timeout, ttl, e);
+	DEGRID_GET_COMPONENT(timeout, ttl, e);
 	ttl.ttl = 120 * 30;
-	GRID_GET_COMPONENT(powerup, p, e);
+	DEGRID_GET_COMPONENT(powerup, p, e);
 	p.type = coin ? powerupTypeEnum::Coin : (powerupTypeEnum)randomRange(0u, (uint32)powerupTypeEnum::Coin);
-	GRID_GET_COMPONENT(rotation, rot, e);
+	DEGRID_GET_COMPONENT(rotation, rot, e);
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
-	GRID_GET_COMPONENT(velocity, velocity, e); // to make the powerup affected by gravity
+	DEGRID_GET_COMPONENT(velocity, velocity, e); // to make the powerup affected by gravity
 	ENGINE_GET_COMPONENT(render, render, e);
 	static const uint32 objectName[4] = {
-		hashString("grid/player/powerupCollectible.object"),
-		hashString("grid/player/powerupOnetime.object"),
-		hashString("grid/player/powerupPermanent.object"),
-		hashString("grid/player/coin.object")
+		hashString("degrid/player/powerupCollectible.object"),
+		hashString("degrid/player/powerupOnetime.object"),
+		hashString("degrid/player/powerupPermanent.object"),
+		hashString("degrid/player/coin.object")
 	};
 	render.object = objectName[powerupMode[(uint32)p.type]];
 	render.color = convertHsvToRgb(vec3(randomChance(), 1, 1));
-	soundEffect(coin ? hashString("grid/player/coin.ogg") : hashString("grid/player/powerup.ogg"), transform.position);
+	soundEffect(coin ? hashString("degrid/player/coin.ogg") : hashString("degrid/player/powerup.ogg"), transform.position);
 }
 
 void eventBomb()
@@ -255,7 +255,7 @@ void eventBomb()
 	uint32 count = monsterComponent::component->group()->count();
 	for (entityClass *e : monsterComponent::component->entities())
 	{
-		GRID_GET_COMPONENT(monster, m, e);
+		DEGRID_GET_COMPONENT(monster, m, e);
 		m.life -= 10;
 		if (m.life <= 1e-5)
 		{
@@ -272,7 +272,7 @@ void eventBomb()
 
 	{
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		for (entityClass *e : gridComponent::component->entities())
+		for (entityClass *e : degridComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
 			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
@@ -283,9 +283,9 @@ void eventBomb()
 		monstersSpawnInitial();
 
 	uint32 sounds[] = {
-		hashString("grid/speech/use/bomb-them-all.wav"),
-		hashString("grid/speech/use/burn-them-all.wav"),
-		hashString("grid/speech/use/let-them-burn.wav"),
+		hashString("degrid/speech/use/bomb-them-all.wav"),
+		hashString("degrid/speech/use/burn-them-all.wav"),
+		hashString("degrid/speech/use/let-them-burn.wav"),
 		0 };
 	soundSpeech(sounds);
 
@@ -302,23 +302,23 @@ void eventTurret()
 	entityClass *turret = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
 	ENGINE_GET_COMPONENT(transform, transform, turret);
-	GRID_GET_COMPONENT(velocity, vel, turret); // allow it to be affected by gravity
+	DEGRID_GET_COMPONENT(velocity, vel, turret); // allow it to be affected by gravity
 	transform.position = playerTransform.position;
 	transform.position[1] = 0;
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.scale = 3;
 	ENGINE_GET_COMPONENT(render, render, turret);
-	render.object = hashString("grid/player/turret.object");
-	GRID_GET_COMPONENT(turret, tr, turret);
+	render.object = hashString("degrid/player/turret.object");
+	DEGRID_GET_COMPONENT(turret, tr, turret);
 	tr.shooting = 2;
-	GRID_GET_COMPONENT(timeout, ttl, turret);
+	DEGRID_GET_COMPONENT(timeout, ttl, turret);
 	ttl.ttl = 60 * 30;
-	GRID_GET_COMPONENT(rotation, rot, turret);
+	DEGRID_GET_COMPONENT(rotation, rot, turret);
 	rot.rotation = quat(degs(), degs(1), degs());
 
 	uint32 sounds[] = {
-		hashString("grid/speech/use/engaging-a-turret.wav"),
-		hashString("grid/speech/use/turret-engaged.wav"),
+		hashString("degrid/speech/use/engaging-a-turret.wav"),
+		hashString("degrid/speech/use/turret-engaged.wav"),
 		0 };
 	soundSpeech(sounds);
 
@@ -338,19 +338,19 @@ void eventDecoy()
 	transform = playerTransform;
 	transform.scale *= 2;
 	ENGINE_GET_COMPONENT(render, render, decoy);
-	render.object = hashString("grid/player/player.object");
-	GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
-	GRID_GET_COMPONENT(velocity, vel, decoy);
+	render.object = hashString("degrid/player/player.object");
+	DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+	DEGRID_GET_COMPONENT(velocity, vel, decoy);
 	vel.velocity = -playerVelocity.velocity;
-	GRID_GET_COMPONENT(timeout, ttl, decoy);
+	DEGRID_GET_COMPONENT(timeout, ttl, decoy);
 	ttl.ttl = 60 * 30;
-	GRID_GET_COMPONENT(decoy, dec, decoy);
-	GRID_GET_COMPONENT(rotation, rot, decoy);
+	DEGRID_GET_COMPONENT(decoy, dec, decoy);
+	DEGRID_GET_COMPONENT(rotation, rot, decoy);
 	rot.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
 	uint32 sounds[] = {
-		hashString("grid/speech/use/decoy-launched.wav"),
-		hashString("grid/speech/use/launching-a-decoy.wav"),
+		hashString("degrid/speech/use/decoy-launched.wav"),
+		hashString("degrid/speech/use/launching-a-decoy.wav"),
 		0 };
 	soundSpeech(sounds);
 }

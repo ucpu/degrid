@@ -155,9 +155,9 @@ namespace
 		windowListeners.mouseRelease.attach(window()->events.mouseRelease, -1);
 		windowListeners.keyRelease.attach(window()->events.keyRelease, -1);
 
-#ifdef GRID_TESTING
-		CAGE_LOG(severityEnum::Info, "grid", string() + "TESTING GAME BUILD");
-#endif // GRID_TESTING
+#ifdef DEGRID_TESTING
+		CAGE_LOG(severityEnum::Info, "degrid", string() + "TESTING GAME BUILD");
+#endif // DEGRID_TESTING
 
 		game.cinematic = true;
 		gameStartEvent().dispatch();
@@ -272,7 +272,7 @@ namespace
 
 	void gameStart()
 	{
-		CAGE_LOG(severityEnum::Info, "grid", string() + "new game, cinematic: " + game.cinematic);
+		CAGE_LOG(severityEnum::Info, "degrid", string() + "new game, cinematic: " + game.cinematic);
 
 		for (uint32 i = 0; i < sizeof(keyMap); i++)
 			keyMap[i] = false;
@@ -291,7 +291,7 @@ namespace
 		game.money = achievements.acquired * 100;
 		game.powerupSpawnChance = 0.3;
 
-#ifdef GRID_TESTING
+#ifdef DEGRID_TESTING
 		if (!game.cinematic)
 		{
 			game.life = 1000000;
@@ -312,9 +312,9 @@ namespace
 	{
 		if (!game.cinematic)
 		{
-			CAGE_LOG(severityEnum::Info, "grid", string() + "game over");
-			CAGE_LOG(severityEnum::Info, "grid", string() + "score: " + game.score);
-			CAGE_LOG(severityEnum::Info, "grid", string() + "money: " + game.money);
+			CAGE_LOG(severityEnum::Info, "degrid", string() + "game over");
+			CAGE_LOG(severityEnum::Info, "degrid", string() + "score: " + game.score);
+			CAGE_LOG(severityEnum::Info, "degrid", string() + "money: " + game.money);
 		}
 		game.paused = game.gameOver = true;
 		setScreenGameover();

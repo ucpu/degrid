@@ -12,13 +12,13 @@ namespace
 			return;
 
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		GRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
 
 		for (entityClass *e : monsterComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
-			GRID_GET_COMPONENT(velocity, v, e);
-			GRID_GET_COMPONENT(monster, m, e);
+			DEGRID_GET_COMPONENT(velocity, v, e);
+			DEGRID_GET_COMPONENT(monster, m, e);
 
 			// monster dispersion
 			if (m.dispersion > 0)
@@ -66,18 +66,18 @@ namespace
 					if (game.life > 0 && !game.cinematic)
 					{
 						uint32 sounds[] = {
-							hashString("grid/speech/damage/better-to-avoid-next-time.wav"),
-							hashString("grid/speech/damage/beware.wav"),
-							hashString("grid/speech/damage/critical-damage.wav"),
-							hashString("grid/speech/damage/damaged.wav"),
-							hashString("grid/speech/damage/dont-do-this.wav"),
-							hashString("grid/speech/damage/evasive-maneuvers.wav"),
-							hashString("grid/speech/damage/hit.wav"),
-							hashString("grid/speech/damage/hull-is-breached.wav"),
-							hashString("grid/speech/damage/shields-are-failing.wav"),
-							hashString("grid/speech/damage/warning.wav"),
-							hashString("grid/speech/damage/we-are-doomed.wav"),
-							hashString("grid/speech/damage/we-have-been-hit.wav"),
+							hashString("degrid/speech/damage/better-to-avoid-next-time.wav"),
+							hashString("degrid/speech/damage/beware.wav"),
+							hashString("degrid/speech/damage/critical-damage.wav"),
+							hashString("degrid/speech/damage/damaged.wav"),
+							hashString("degrid/speech/damage/dont-do-this.wav"),
+							hashString("degrid/speech/damage/evasive-maneuvers.wav"),
+							hashString("degrid/speech/damage/hit.wav"),
+							hashString("degrid/speech/damage/hull-is-breached.wav"),
+							hashString("degrid/speech/damage/shields-are-failing.wav"),
+							hashString("degrid/speech/damage/warning.wav"),
+							hashString("degrid/speech/damage/we-are-doomed.wav"),
+							hashString("degrid/speech/damage/we-have-been-hit.wav"),
 							0
 						};
 						soundSpeech(sounds);
@@ -160,7 +160,7 @@ entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, rea
 	entityClass *m = entities()->createUnique();
 	ENGINE_GET_COMPONENT(transform, transform, m);
 	ENGINE_GET_COMPONENT(render, render, m);
-	GRID_GET_COMPONENT(monster, monster, m);
+	DEGRID_GET_COMPONENT(monster, monster, m);
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.position = spawnPosition;
 	transform.position[1] = monster.groundLevel = randomChance() * 2 - 1;
@@ -179,7 +179,7 @@ bool killMonster(entityClass *e, bool allowCallback)
 		return false;
 	e->add(entitiesToDestroy);
 	monsterExplosion(e);
-	GRID_GET_COMPONENT(monster, m, e);
+	DEGRID_GET_COMPONENT(monster, m, e);
 	m.life = 0;
 	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
 	if (m.defeatedSound)

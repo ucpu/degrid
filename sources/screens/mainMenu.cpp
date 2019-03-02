@@ -77,7 +77,7 @@ void setScreenMainmenu()
 			parent.order = 1;
 			GUI_GET_COMPONENT(button, control, butNewGame);
 			GUI_GET_COMPONENT(text, txt, butNewGame);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/newgame");
 			GUI_GET_COMPONENT(textFormat, format, butNewGame);
 			format.color = redPillColor;
@@ -90,7 +90,7 @@ void setScreenMainmenu()
 			parent.order = 2;
 			GUI_GET_COMPONENT(button, control, butOptions);
 			GUI_GET_COMPONENT(text, txt, butOptions);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/options");
 		}
 
@@ -102,7 +102,7 @@ void setScreenMainmenu()
 			parent.order = 3;
 			GUI_GET_COMPONENT(button, control, butScores);
 			GUI_GET_COMPONENT(text, txt, butScores);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/scores");
 		}
 
@@ -114,7 +114,7 @@ void setScreenMainmenu()
 			parent.order = 4;
 			GUI_GET_COMPONENT(button, control, butAchivs);
 			GUI_GET_COMPONENT(text, txt, butAchivs);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/achievements");
 		}
 
@@ -125,7 +125,7 @@ void setScreenMainmenu()
 			parent.order = 5;
 			GUI_GET_COMPONENT(button, control, butCredits);
 			GUI_GET_COMPONENT(text, txt, butCredits);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/credits");
 		}
 
@@ -136,7 +136,7 @@ void setScreenMainmenu()
 			parent.order = 6;
 			GUI_GET_COMPONENT(button, control, butQuit);
 			GUI_GET_COMPONENT(text, txt, butQuit);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/quit");
 			GUI_GET_COMPONENT(textFormat, format, butQuit);
 			format.color = bluePillColor;
@@ -153,8 +153,8 @@ void setScreenMainmenu()
 		}
 
 		static const uint32 flags[] = {
-			hashString("grid/languages/english.png"),
-			hashString("grid/languages/czech.png")
+			hashString("degrid/languages/english.png"),
+			hashString("degrid/languages/czech.png")
 		};
 
 		for (uint32 i = 0; i < sizeof(flags) / sizeof(flags[0]); i++)

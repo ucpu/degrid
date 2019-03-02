@@ -26,7 +26,7 @@ namespace
 			for (entityClass *e : gravityComponent::component->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, t, e);
-				GRID_GET_COMPONENT(gravity, g, e);
+				DEGRID_GET_COMPONENT(gravity, g, e);
 				for (entityClass *oe : velocityComponent::component->entities())
 				{
 					if (oe->has(gravityComponent::component))
@@ -46,7 +46,7 @@ namespace
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
 				ENGINE_GET_COMPONENT(transform, t, e);
-				GRID_GET_COMPONENT(velocity, v, e);
+				DEGRID_GET_COMPONENT(velocity, v, e);
 				t.position += v.velocity;
 			}
 		}
@@ -57,7 +57,7 @@ namespace
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
 				ENGINE_GET_COMPONENT(transform, t, e);
-				GRID_GET_COMPONENT(rotation, r, e);
+				DEGRID_GET_COMPONENT(rotation, r, e);
 				t.orientation = r.rotation * t.orientation;
 			}
 		}
@@ -67,7 +67,7 @@ namespace
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				GRID_GET_COMPONENT(timeout, t, e);
+				DEGRID_GET_COMPONENT(timeout, t, e);
 				if (t.ttl == 0)
 					e->add(entitiesToDestroy);
 				else

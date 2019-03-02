@@ -1,9 +1,0 @@
-
-[]
-scheme = pack
-grid.pack
-
-[]
-scheme = texture
-target = GL_TEXTURE_2D_ARRAY
-logo.gif

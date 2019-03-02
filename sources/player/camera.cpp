@@ -26,7 +26,7 @@ namespace
 		}
 
 		{ // secondaryCamera
-			static configBool secondaryCamera("grid.secondary-camera.enabled", false);
+			static configBool secondaryCamera("degrid.secondary-camera.enabled", false);
 			if (secondaryCamera)
 			{
 				ENGINE_GET_COMPONENT(transform, tp, game.playerEntity);

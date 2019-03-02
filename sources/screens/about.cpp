@@ -30,7 +30,7 @@ void setScreenCredits()
 		parent.order = idx;
 		GUI_GET_COMPONENT(label, lab, label);
 		GUI_GET_COMPONENT(text, txt, label);
-		txt.assetName = hashString("grid/languages/internationalized.textpack");
+		txt.assetName = hashString("degrid/languages/internationalized.textpack");
 		txt.textName = textNames[idx];
 		idx++;
 	}

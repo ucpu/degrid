@@ -138,7 +138,7 @@ namespace
 		}
 
 		{ // save achievements
-#ifndef GRID_TESTING
+#ifndef DEGRID_TESTING
 			holder<iniClass> ini = newIni();
 			for (const auto &a : data)
 			{
@@ -153,7 +153,7 @@ namespace
 			{
 				CAGE_LOG(severityEnum::Warning, "achievements", "failed to save achievements");
 			}
-#endif // !GRID_TESTING
+#endif // !DEGRID_TESTING
 		}
 	}
 
@@ -194,7 +194,7 @@ void setScreenAchievements()
 			parent.order = index++;
 			GUI_GET_COMPONENT(panel, panel, e);
 			GUI_GET_COMPONENT(text, txt, e);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString((string() + "achievement/" + it.first).c_str());
 			GUI_GET_COMPONENT(layoutLine, layout, e);
 			layout.vertical = true;
@@ -207,7 +207,7 @@ void setScreenAchievements()
 			parent.order = 1;
 			GUI_GET_COMPONENT(label, label, e);
 			GUI_GET_COMPONENT(text, txt, e);
-			txt.assetName = hashString("grid/languages/internationalized.textpack");
+			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString((string() + "achievement-desc/" + it.first).c_str());
 		}
 

@@ -1,4 +1,4 @@
-//#define GRID_TESTING
+//#define DEGRID_TESTING
 
 #include <cage-core/core.h>
 #include <cage-core/log.h>
@@ -197,7 +197,7 @@ struct timeoutComponent
 	timeoutComponent() : ttl(0) {}
 };
 
-struct gridComponent
+struct degridComponent
 {
 	static componentClass *component;
 	vec3 place;
@@ -236,4 +236,4 @@ struct bossComponent
 	static componentClass *component;
 };
 
-#define GRID_GET_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);
+#define DEGRID_GET_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);
