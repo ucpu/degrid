@@ -65,6 +65,8 @@ const real powerupIsCoin = 0.85;
 const uint32 bossesTotalCount = 5;
 const vec3 redPillColor = vec3(229, 101, 84) / 255;
 const vec3 bluePillColor = vec3(123, 198, 242) / 255;
+const uint32 basePermanentPowerupSellPrice = 20;
+const uint32 basePermanentPowerupBuyPrice = 100;
 
 extern groupClass *entitiesToDestroy;
 extern groupClass *entitiesPhysicsEvenWhenPaused;
@@ -99,7 +101,7 @@ struct globalGameStruct
 	real life;
 	real shootingCooldown;
 	vec3 shotsColor;
-	uint32 score;
+	uint64 score;
 	uint32 powerups[(uint32)powerupTypeEnum::Total];
 	uint32 money;
 	real powerupSpawnChance;

@@ -49,6 +49,9 @@ namespace
 
 bool achievementFullfilled(const string &name, bool bossKill)
 {
+	if (game.cinematic)
+		return false;
+
 	CAGE_LOG_DEBUG(severityEnum::Info, "achievements", string() + "fulfilled achievement: '" + name + "', boss: " + bossKill);
 
 	{

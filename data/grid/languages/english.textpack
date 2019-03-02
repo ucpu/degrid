@@ -1,12 +1,4 @@
 
-[boss]
-unknown = Unknown
-Cannoneer
-Gravitron
-Hydra
-Clockwork
-Queen
-
 [achievement]
 starting-kit = Starting Kit
 bronze = Bronze Medal
@@ -20,6 +12,12 @@ timelord = Timelord
 collector = Collector
 vault-digger = Vault Digger
 mutated = Mutated
+boss-unknown = Unknown
+boss-0 = Cannoneer
+boss-1 = Gravitron
+boss-2 = Hydra
+boss-3 = Clockwork
+boss-4 = Queen
 
 [achievement-desc]
 starting-kit = Reach 10,000 score. Every achievement you acquire gives you a bonus into the beginning of all future games.
@@ -34,6 +32,7 @@ timelord = Accumulate 3 timed powerups of same type.
 collector = Accumulate all collectible powerups to their limits.
 vault-digger = Pick up 1,000 coins.
 mutated = Face a mutated monster.
+boss-0 = Kill the first boss. Killing bosses increases capacity for active permanent powerups.
 
 [announcement]
 joke-map = Easter Map

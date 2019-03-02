@@ -7,6 +7,7 @@ boss.pack
 scheme = texture
 icon/unknown.png
 icon/defeated.png
+icon/0.png
 
 []
 scheme = object

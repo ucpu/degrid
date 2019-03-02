@@ -4,6 +4,8 @@
 
 namespace
 {
+	bool wasBoss = false;
+
 	void engineUpdate()
 	{
 		if (game.paused)
@@ -89,6 +91,22 @@ namespace
 			v.velocity[1] = 0;
 			t.position[1] = m.groundLevel;
 		}
+
+		bool hasBoss = bossComponent::component->group()->count() > 0;
+		if (!game.cinematic)
+		{
+			// finished a boss fight
+			if (wasBoss && !hasBoss)
+			{
+				CAGE_ASSERT_RUNTIME(game.defeatedBosses < bossesTotalCount);
+				achievementFullfilled(string("boss-") + game.defeatedBosses, true);
+				game.defeatedBosses++;
+				game.money += numeric_cast<uint32>(game.life) * 2;
+				game.life += (100 - game.life) * 0.5;
+				game.score *= 2;
+			}
+		}
+		wasBoss = hasBoss;
 	}
 
 	class callbacksClass

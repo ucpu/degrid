@@ -10,8 +10,8 @@ extern configUint32 confControlMovement;
 
 namespace
 {
-	uint32 scorePreviousSound;
-	uint32 scorePreviousAchievements;
+	uint64 scorePreviousSound;
+	uint64 scorePreviousAchievements;
 
 	void shipMovement()
 	{
@@ -106,9 +106,9 @@ namespace
 		checkScore(1250000, "gold");
 		scorePreviousAchievements = game.score;
 
-		uint32 lg = scorePreviousSound >= 20000 ? 10 : scorePreviousSound >= 2000 ? 2 : 1;
-		uint32 sg = lg * 500;
-		uint32 ld = (game.score - scorePreviousSound) / sg;
+		uint64 lg = scorePreviousSound >= 20000 ? 10 : scorePreviousSound >= 2000 ? 2 : 1;
+		uint64 sg = lg * 500;
+		uint64 ld = (game.score - scorePreviousSound) / sg;
 		if (ld)
 		{
 			scorePreviousSound += ld * sg;

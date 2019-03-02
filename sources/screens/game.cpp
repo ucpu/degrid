@@ -21,9 +21,6 @@ namespace
 
 	eventListener<bool(uint32)> guiEvent;
 
-	const uint32 basePermanentPowerupSellPrice = 20;
-	const uint32 basePermanentPowerupBuyPrice = 100;
-
 	void makeTheGui(uint32 mode = 0);
 
 	bool guiFunction(uint32 en)
@@ -204,7 +201,7 @@ namespace
 					parent.order = i;
 					GUI_GET_COMPONENT(text, text, e);
 					text.assetName = hashString("grid/languages/internationalized.textpack");
-					text.textName = i < achievements.bosses ? hashString((string() + "boss/" + i).c_str()) : hashString("boss/unknown");
+					text.textName = i < achievements.bosses ? hashString((string() + "achievement/boss-" + i).c_str()) : hashString("achievement/boss-unknown");
 				}
 				{
 					entityClass *e = ents->createUnique();

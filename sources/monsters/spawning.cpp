@@ -61,14 +61,10 @@ namespace
 
 	uint32 monstersLimit()
 	{
-#ifdef CAGE_DEBUG
-		return 50;
-#else
 		if (game.cinematic)
 			return 100;
 		uint32 t = statistics.updateIteration;
 		return 100 + min(t / 200, 50u) + min(t / 1000, 50u);
-#endif // CAGE_DEBUG
 	}
 
 	std::vector<spawnDefinitionStruct> definitions;

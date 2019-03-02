@@ -91,7 +91,7 @@ namespace
 				continue;
 			}
 
-			game.score += 10;
+			game.score += 20;
 			statistics.powerupsPicked++;
 			e->add(entitiesToDestroy);
 			switch (powerupMode[(uint32)p.type])
@@ -159,7 +159,7 @@ namespace
 			case 3: // coin
 			{
 				game.powerups[(uint32)p.type]++; // count the coins (for statistics & achievement)
-				game.money += 1;
+				game.money += game.defeatedBosses + 1;
 				if (randomChance() > powerupIsCoin)
 					soundSpeech(hashString("grid/speech/pickup/a-coin.wav"));
 				if (game.powerups[(uint32)p.type] == 1000)
