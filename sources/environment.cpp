@@ -149,7 +149,7 @@ namespace
 			transform.position = degrid.place = vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
 			transform.scale = 0.6;
 			ENGINE_GET_COMPONENT(render, render, e);
-			render.object = hashString("degrid/environment/degrid.object");
+			render.object = hashString("degrid/environment/grid.object");
 			degrid.originalColor = render.color = vec3(1);
 		}
 
