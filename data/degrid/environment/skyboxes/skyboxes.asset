@@ -5,40 +5,59 @@ skyboxes.pack
 
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = 0.cpm
 skybox.obj;0
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = 1.cpm
 skybox.obj;1
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = 2.cpm
 skybox.obj;2
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = 3.cpm
 skybox.obj;3
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = 4.cpm
 skybox.obj;4
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = 5.cpm
 skybox.obj;5
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = hurt.cpm
 skybox.obj;hurt
 []
 scheme = mesh
+export_normal = false
+export_tangent = false
 override_material = menu.cpm
 skybox.obj;menu
 
 []
 scheme = texture
+target = cube_map
+convert = skybox_to_cube
 srgb = true
+flip_v = true
 0.png
 1.png
 2.png

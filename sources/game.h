@@ -123,7 +123,6 @@ struct globalStatisticsStruct
 	uint64 timeRenderCurrent; // last frame render time [us]
 	uint32 shotsFired; // total number of shots fired by player's ship
 	uint32 shotsTurret; // total number of shots fired by turrets
-	uint32 shotsDissipated; // total number of shots that went too far away of the map
 	uint32 shotsHit; // total number of monsters hit by shots
 	uint32 shotsKill; // total number of monsters killed by shots
 	uint32 shotsCurrent;

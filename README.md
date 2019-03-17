@@ -1,4 +1,4 @@
-Grid is an example game made with Cage. See https://github.com/ucpu/cage for more information about Cage.
+Degrid is an example game made with Cage. See https://github.com/ucpu/cage for more information about Cage.
 
 # Screenshots
 

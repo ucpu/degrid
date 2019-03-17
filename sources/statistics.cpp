@@ -72,10 +72,9 @@ namespace
 			if (game.powerups[i] > 0)
 				CAGE_LOG(severityEnum::Info, "statistics", string() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
 
-		CAGE_LOG(severityEnum::Info, "statistics", string() + "shots dissipation ratio: " + (1.f * statistics.shotsDissipated / (statistics.shotsFired + statistics.shotsTurret - statistics.shotsCurrent)));
 #define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(severityEnum::Info, "statistics", string() + CAGE_STRINGIZE(N) ": " + statistics.N);
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
-			shotsFired, shotsTurret, shotsDissipated, shotsHit, shotsKill, shotsCurrent, shotsMax, \
+			shotsFired, shotsTurret, shotsHit, shotsKill, shotsCurrent, shotsMax, \
 			monstersSpawned, monstersMutated, monstersMutations, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersCurrentMutationIteration, monstersFirstHit, \
 			shielderStoppedShots, \
 			wormholesSpawned, wormholeJumps, \
@@ -90,6 +89,7 @@ namespace
 			soundEffectsCurrent, soundEffectsMax \
 		));
 #undef GCHL_GENERATE
+
 		uint64 duration = getApplicationTime() - statistics.timeStart;
 		CAGE_LOG(severityEnum::Info, "statistics", string() + "duration: " + (duration / 1e6) + " s");
 		CAGE_LOG(severityEnum::Info, "statistics", string() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));

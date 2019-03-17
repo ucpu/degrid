@@ -3,6 +3,7 @@
 #include <cage-core/config.h>
 #include <cage-core/entities.h>
 #include <cage-core/hashString.h>
+#include <cage-core/variableSmoothingBuffer.h>
 
 namespace
 {
@@ -12,6 +13,9 @@ namespace
 	entityClass *skyboxSecondaryCameraEntity;
 
 	const vec3 ambientLight = vec3(0.2);
+	const real cameraDistance = 220;
+
+	variableSmoothingBufferStruct<vec3, 8> cameraSmoother;
 
 	void engineUpdate()
 	{
@@ -21,8 +25,9 @@ namespace
 		{ // camera
 			ENGINE_GET_COMPONENT(transform, tr, primaryCameraEntity);
 			ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
-			tr.position[0] = p.position[0];
-			tr.position[2] = p.position[2];
+			cameraSmoother.add(p.position + vec3(0, cameraDistance, 0));
+			tr.position = cameraSmoother.oldest();
+			tr.orientation = quat(p.position - tr.position, vec3(0, 0, -1));
 		}
 
 		{ // secondaryCamera
@@ -87,7 +92,8 @@ namespace
 			primaryCameraEntity = entities()->createUnique();
 			ENGINE_GET_COMPONENT(transform, transform, primaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
-			transform.position = vec3(0, 220, 0);
+			transform.position = vec3(0, cameraDistance, 0);
+			cameraSmoother.seed(transform.position);
 			ENGINE_GET_COMPONENT(camera, c, primaryCameraEntity);
 			c.cameraOrder = 2;
 			c.renderMask = 1;

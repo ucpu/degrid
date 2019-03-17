@@ -5,14 +5,14 @@ monster.pack
 
 []
 scheme = texture
-target = GL_TEXTURE_2D_ARRAY
+target = 2d_array
 srgb = true
 snakeTail/_$$.png
 blackhole/baked$$$$.png
 
 []
 scheme = texture
-target = GL_TEXTURE_2D_ARRAY
+target = 2d_array
 srgb = true
 premultiply_alpha = true
 shocker/lightning_$$.png
