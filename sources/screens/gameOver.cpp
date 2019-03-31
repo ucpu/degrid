@@ -45,7 +45,10 @@ void setScreenGameover()
 	if (game.score > 0)
 	{
 #ifndef DEGRID_TESTING
-		holder<fileClass> f = newFile("score.ini", fileMode(false, true, true, true));
+		fileMode fm(false, true);
+		fm.textual = true;
+		fm.append = true;
+		holder<fileClass> f = newFile("score.ini", fm);
 		f->writeLine("[]");
 		{
 			uint32 y, m, d, h, mm, s;

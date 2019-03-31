@@ -123,7 +123,7 @@ void setScreenScores()
 	scores.clear();
 	scores.reserve(100);
 
-	if (newFilesystem()->exists("score.ini"))
+	if ((pathType("score.ini") & pathTypeFlags::File) == pathTypeFlags::File)
 	{
 		holder<iniClass> ini = newIni();
 		ini->load("score.ini");

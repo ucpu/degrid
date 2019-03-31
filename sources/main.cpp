@@ -18,24 +18,54 @@ namespace
 	uint32 loadedLanguageHash;
 	uint32 currentLanguageHash;
 
+	configUint32 confWindowLeft("degrid.window.left", 100);
+	configUint32 confWindowTop("degrid.window.top", 100);
+	configUint32 confWindowWidth("degrid.window.width", 0);
+	configUint32 confWindowHeight("degrid.window.height", 0);
+	configUint32 confFullscreenWidth("degrid.fullscreen.width", 0);
+	configUint32 confFullscreenHeight("degrid.fullscreen.height", 0);
+	configBool confFullscreenEnabled("degrid.fullscreen.enabled", true);
+
 	bool windowClose()
 	{
 		engineStop();
 		return true;
 	}
 
+	bool windowMove(const pointStruct &pos)
+	{
+		if (window()->isWindowed())
+		{
+			confWindowLeft = pos.x;
+			confWindowTop = pos.y;
+		}
+		return false;
+	}
+
+	bool windowResize(const pointStruct &size)
+	{
+		if (window()->isWindowed())
+		{
+			confWindowWidth = size.x;
+			confWindowHeight = size.y;
+		}
+		else if (window()->isMaximized())
+		{
+			confWindowWidth = 0;
+			confWindowHeight = 0;
+		}
+		return false;
+	}
+
 	void setWindowFullscreen(bool fullscreen)
 	{
-		static configUint32 ww("degrid.window.width", 1280);
-		static configUint32 wh("degrid.window.height", 720);
-		static configUint32 fw("degrid.fullscreen.width", 0);
-		static configUint32 fh("degrid.fullscreen.height", 0);
 		if (fullscreen)
 		{
 			try
 			{
 				detail::overrideBreakpoint ob;
-				window()->modeSetFullscreen(pointStruct(fw, fh));
+				window()->setFullscreen(pointStruct(confFullscreenWidth, confFullscreenHeight));
+				confFullscreenEnabled = true;
 			}
 			catch (...)
 			{
@@ -44,8 +74,15 @@ namespace
 		}
 		else
 		{
-			window()->modeSetWindowed(windowFlags::Border | windowFlags::Resizeable);
-			window()->windowedSize(pointStruct(ww, wh));
+			confFullscreenEnabled = false;
+			if (confWindowWidth == 0)
+				window()->setMaximized();
+			else
+			{
+				window()->setWindowed();
+				window()->windowedPosition(pointStruct(confWindowLeft, confWindowTop));
+				window()->windowedSize(pointStruct(confWindowWidth, confWindowHeight));
+			}
 		}
 	}
 
@@ -87,6 +124,8 @@ namespace
 	{
 		statistics.frameIteration++;
 	}
+
+	windowEventListeners listeners;
 }
 
 void reloadLanguage(uint32 index)
@@ -109,21 +148,20 @@ int main(int argc, const char *args[])
 
 		engineInitialize(engineCreateConfig());
 
+		listeners.attachAll(window(), 1000);
+		listeners.windowClose.bind<&windowClose>();
+		listeners.windowMove.bind<&windowMove>();
+		listeners.windowResize.bind<&windowResize>();
+		listeners.keyRelease.bind<&keyRelease>();
 		eventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
 		assetsUpdateListener.attach(controlThread().assets);
 		eventListener<void()> frameCounterListener;
 		frameCounterListener.bind<&frameCounter>();
 		frameCounterListener.attach(graphicsPrepareThread().prepare);
-		eventListener<bool()> windowCloseListener;
-		windowCloseListener.bind<&windowClose>();
-		windowCloseListener.attach(window()->events.windowClose);
-		eventListener<bool(uint32 key, uint32, modifiersFlags modifiers)> keyReleaseListener;
-		keyReleaseListener.bind<&keyRelease>();
-		keyReleaseListener.attach(window()->events.keyRelease);
 
 		window()->title("Degrid");
-		setWindowFullscreen(configGetBool("degrid.fullscreen.enabled"));
+		setWindowFullscreen(confFullscreenEnabled);
 		reloadLanguage(confLanguage);
 		assets()->add(hashString("degrid/degrid.pack"));
 

@@ -94,7 +94,7 @@ void setScreenMainmenu()
 			txt.textName = hashString("gui/mainmenu/options");
 		}
 
-		if (newFilesystem()->exists("score.ini"))
+		if ((pathType("score.ini") & pathTypeFlags::File) == pathTypeFlags::File)
 		{
 			entityClass *butScores = ents->create(105);
 			GUI_GET_COMPONENT(parent, parent, butScores);
