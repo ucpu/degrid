@@ -129,7 +129,7 @@ namespace
 				transform.position = degrid.place + randomDirection3() * vec3(10, 0.1, 10);
 				ENGINE_GET_COMPONENT(render, render, e);
 				render.object = hashString("degrid/environment/grid.object");
-				real ang = real(aTan2(x, y)) / real::TwoPi + 0.5;
+				real ang = real(aTan2(x, y)) / (real::Pi() * 2) + 0.5;
 				real dst = d / radius;
 				render.color = convertHsvToRgb(vec3(ang, 1, interpolate(real(0.5), real(0.2), sqr(dst))));
 				degrid.originalColor = render.color;

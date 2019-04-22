@@ -90,7 +90,7 @@ namespace
 		static const real distMin = 30;
 		static const real distMax = 60;
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		real closestMonsterToPlayer = real::PositiveInfinity;
+		real closestMonsterToPlayer = real::Infinity();
 		spatialQuery->intersection(sphere(playerTransform.position, distMax));
 		for (uint32 otherName : spatialQuery->result())
 		{

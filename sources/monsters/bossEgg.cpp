@@ -99,7 +99,7 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 	CAGE_ASSERT_RUNTIME(bossComponent::component->group()->count() == 0);
 	if (game.defeatedBosses >= bossesTotalCount)
 		return;
-	entityClass *e = initializeMonster(spawnPosition, color, 10, hashString("degrid/boss/egg.object"), 0, real::PositiveInfinity, real::PositiveInfinity);
+	entityClass *e = initializeMonster(spawnPosition, color, 10, hashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
 	DEGRID_GET_COMPONENT(boss, boss, e);
 	DEGRID_GET_COMPONENT(bossEgg, eggc, e);
 	DEGRID_GET_COMPONENT(rotation, rot, e);

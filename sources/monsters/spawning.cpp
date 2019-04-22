@@ -11,7 +11,7 @@ namespace
 
 	vec3 aroundPosition(real index, real radius, vec3 center)
 	{
-		rads angle = index * rads::Full;
+		rads angle = index * rads::Full();
 		vec3 dir = vec3(cos(angle), 0, sin(angle));
 		return center + dir * radius;
 	}

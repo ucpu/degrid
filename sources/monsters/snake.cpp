@@ -159,7 +159,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 	uint64 aniInitOff = randomRange(0, 10000000);
 	for (uint32 i = 0; i < pieces; i++)
 	{ // tail
-		entityClass *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, hashString("degrid/monster/snakeTail.object"), hashString("degrid/monster/bum-snake-tail.ogg"), 5, real::PositiveInfinity);
+		entityClass *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, hashString("degrid/monster/snakeTail.object"), hashString("degrid/monster/bum-snake-tail.ogg"), 5, real::Infinity());
 		DEGRID_GET_COMPONENT(snakeTail, snake, tail);
 		snake.index = i + 1;
 		snake.follow = prev;

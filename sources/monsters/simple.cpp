@@ -54,7 +54,7 @@ namespace
 
 				// circling
 				{
-					rads ang = real(e->name() % 2) * rads::Stright + real(((e->name() / 2) % 30) / 30.0) * rads::Full + rads(currentControlTime() * 1e-6);
+					rads ang = real(e->name() % 2) * rads::Stright() + real(((e->name() / 2) % 30) / 30.0) * rads::Full() + rads(currentControlTime() * 1e-6);
 					vec3 dir = quat(degs(), ang, degs()) * vec3(0, 0, -1);
 					will = interpolate(will, dir, sm.circling);
 				}
@@ -62,7 +62,7 @@ namespace
 				// closest shot
 				uint32 closestShot = 0;
 				{
-					real closestDistance = real::PositiveInfinity;
+					real closestDistance = real::Infinity();
 					uint32 myName = e->name();
 					spatialQuery->intersection(sphere(tr.position, 15));
 					for (uint32 otherName : spatialQuery->result())

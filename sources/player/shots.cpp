@@ -71,8 +71,8 @@ namespace
 
 			uint32 closestMonster = 0;
 			uint32 homingMonster = 0;
-			real closestDistance = real::PositiveInfinity;
-			real homingDistance = real::PositiveInfinity;
+			real closestDistance = real::Infinity();
+			real homingDistance = real::Infinity();
 			uint32 myName = e->name();
 			DEGRID_GET_COMPONENT(shot, sh, e);
 			DEGRID_GET_COMPONENT(velocity, vl, e);
@@ -160,7 +160,7 @@ namespace
 				else
 				{
 					// homing missiles are shivering
-					tr.position += vl.velocity.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full * statistics.updateIteration / 10 + degs(detail::hash(myName) % 360)) * (vl.velocity.length() * 0.3);
+					tr.position += vl.velocity.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full() * statistics.updateIteration / 10 + degs(detail::hash(myName) % 360)) * (vl.velocity.length() * 0.3);
 				}
 			}
 

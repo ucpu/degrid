@@ -47,7 +47,7 @@ namespace
 			// collision with player
 			if (collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
 			{
-				if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::PositiveInfinity)
+				if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::Infinity())
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
@@ -83,7 +83,7 @@ namespace
 						soundSpeech(sounds);
 					}
 				}
-				if (m.life < real::PositiveInfinity)
+				if (m.life < real::Infinity())
 					killMonster(e, false);
 			}
 

@@ -94,7 +94,7 @@ namespace
 				ENGINE_GET_COMPONENT(transform, st, sh);
 				ENGINE_GET_COMPONENT(transform, bt, e);
 				real se = clamp(statistics.updateIteration - b.lastHit, 0u, 30u) / 30.0;
-				se = sqrt(max(0, sin(se * rads::Stright)));
+				se = sqrt(max(0, sin(se * rads::Stright())));
 				st.scale = bt.scale + interpolate(0.1, 20.0, se);
 			}
 		}
@@ -192,7 +192,7 @@ namespace
 	void spawnCannon(entityClass *body, uint32 index)
 	{
 		ENGINE_GET_COMPONENT(transform, bt, body);
-		entityClass *cannon = initializeMonster(bt.position, vec3(1), 5, hashString("degrid/boss/cannoneerCannon.object"), hashString("degrid/monster/boss/cannoneer-cannon-bum.ogg"), 30, real::PositiveInfinity);
+		entityClass *cannon = initializeMonster(bt.position, vec3(1), 5, hashString("degrid/boss/cannoneerCannon.object"), hashString("degrid/monster/boss/cannoneer-cannon-bum.ogg"), 30, real::Infinity());
 		DEGRID_GET_COMPONENT(cannon, c, cannon);
 		c.bodyEntity = body->name();
 		c.index = index;
@@ -205,7 +205,7 @@ namespace
 
 void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 {
-	entityClass *body = initializeMonster(spawnPosition, color, 15, hashString("degrid/boss/cannoneerBody.object"), hashString("degrid/monster/boss/cannoneer-bum.ogg"), real::PositiveInfinity, real::PositiveInfinity);
+	entityClass *body = initializeMonster(spawnPosition, color, 15, hashString("degrid/boss/cannoneerBody.object"), hashString("degrid/monster/boss/cannoneer-bum.ogg"), real::Infinity(), real::Infinity());
 	ENGINE_GET_COMPONENT(transform, bt, body);
 	DEGRID_GET_COMPONENT(body, b, body);
 	{ // body
@@ -219,7 +219,7 @@ void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 		simple.spiraling = 0.3;
 	}
 	{ // shield
-		entityClass *shield = initializeMonster(bt.position, color, bt.scale, hashString("degrid/boss/cannoneer.obj?shield"), 0, real::PositiveInfinity, real::PositiveInfinity);
+		entityClass *shield = initializeMonster(bt.position, color, bt.scale, hashString("degrid/boss/cannoneer.obj?shield"), 0, real::Infinity(), real::Infinity());
 		b.shieldEntity = shield->name();
 		ENGINE_GET_COMPONENT(transform, t, shield);
 		t.orientation = randomDirectionQuat();

@@ -107,7 +107,7 @@ namespace
 				ENGINE_GET_COMPONENT(render, r, e);
 				DEGRID_GET_COMPONENT(monsterFlickering, m, e);
 				real l = (real)currentControlTime() * m.flickeringFrequency + m.flickeringOffset;
-				real s = sin(rads::Full * l) * 0.5 + 0.5;
+				real s = sin(rads::Full() * l) * 0.5 + 0.5;
 				r.color = convertHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
 			}
 		}
