@@ -127,7 +127,7 @@ void setScreenScores()
 	{
 		holder<iniClass> ini = newIni();
 		ini->load("score.ini");
-		for (uint32 i = 0, e = ini->sectionCount(); i < e; i++)
+		for (uint32 i = 0, e = ini->sectionsCount(); i < e; i++)
 		{
 			scoreStruct s;
 			s.score = ini->getUint32(i, "score");
