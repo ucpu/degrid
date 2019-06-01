@@ -1,4 +1,5 @@
 #include "screens.h"
+#include <cage-core/enumerate.h>
 
 void setScreenCredits()
 {
@@ -21,17 +22,15 @@ void setScreenCredits()
 #undef GCHL_GENERATE
 	};
 
-	uint32 idx = 0;
-	for (auto it : textNames)
+	for (auto it : enumerate(textNames))
 	{
 		entityClass *label = gui()->entities()->createUnique();
 		GUI_GET_COMPONENT(parent, parent, label);
 		parent.parent = panel->name();
-		parent.order = idx;
+		parent.order = numeric_cast<sint32>(it.cnt);
 		GUI_GET_COMPONENT(label, lab, label);
 		GUI_GET_COMPONENT(text, txt, label);
 		txt.assetName = hashString("degrid/languages/internationalized.textpack");
-		txt.textName = textNames[idx];
-		idx++;
+		txt.textName = *it;
 	}
 }

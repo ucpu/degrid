@@ -1,7 +1,7 @@
 #include "screens.h"
 #include "../game.h"
 
-#include <cage-core/filesystem.h>
+#include <cage-core/files.h>
 #include <cage-core/timer.h> // getSystemDateTime
 
 namespace

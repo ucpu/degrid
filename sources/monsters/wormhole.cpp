@@ -83,7 +83,7 @@ namespace
 				killMonster(ow, true);
 		}
 
-		// create temporary oposite gravity effect
+		// create temporary opposite gravity effect
 		entityClass *e = entities()->createUnique();
 		ENGINE_GET_COMPONENT(transform, et, e);
 		DEGRID_GET_COMPONENT(gravity, eg, e);
@@ -165,8 +165,8 @@ namespace
 							continue;
 					}
 
-					// degrids
-					if (oe->has(degridComponent::component))
+					// grids
+					if (oe->has(gridComponent::component))
 						teleport = true;
 
 					// monsters

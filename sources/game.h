@@ -196,7 +196,7 @@ struct timeoutComponent
 	timeoutComponent() : ttl(0) {}
 };
 
-struct degridComponent
+struct gridComponent
 {
 	static componentClass *component;
 	vec3 place;

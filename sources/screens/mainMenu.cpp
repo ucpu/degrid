@@ -2,7 +2,7 @@
 #include "../game.h"
 
 #include <cage-core/config.h>
-#include <cage-core/filesystem.h>
+#include <cage-core/files.h>
 
 void reloadLanguage(uint32 index);
 extern configUint32 confLanguage;

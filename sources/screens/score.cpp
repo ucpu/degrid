@@ -3,8 +3,9 @@
 
 #include "screens.h"
 
-#include <cage-core/filesystem.h>
+#include <cage-core/files.h>
 #include <cage-core/ini.h>
+#include <cage-core/enumerate.h>
 
 namespace
 {
@@ -87,18 +88,17 @@ namespace
 			}
 		}
 
-		uint32 index = 100;
 		std::sort(scores.begin(), scores.end(), scoreComparatorStruct(mode));
-		for (const auto &it : scores)
+		for (auto it : enumerate(scores))
 		{
 			{
 				entityClass *txtScore = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, txtScore);
 				parent.parent = panel->name();
-				parent.order = index++;
+				parent.order = numeric_cast<sint32>(it.cnt) * 2 + 100;
 				GUI_GET_COMPONENT(label, control, txtScore);
 				GUI_GET_COMPONENT(text, txt, txtScore);
-				txt.value = it.date;
+				txt.value = it->date;
 				GUI_GET_COMPONENT(textFormat, format, txtScore);
 				format.align = textAlignEnum::Center;
 			}
@@ -107,10 +107,10 @@ namespace
 				entityClass *txtDate = ents->createUnique();
 				GUI_GET_COMPONENT(parent, parent, txtDate);
 				parent.parent = panel->name();
-				parent.order = index++;
+				parent.order = numeric_cast<sint32>(it.cnt * 2 + 101);
 				GUI_GET_COMPONENT(label, control, txtDate);
 				GUI_GET_COMPONENT(text, txt, txtDate);
-				txt.value = it.score;
+				txt.value = it->score;
 				GUI_GET_COMPONENT(textFormat, format, txtDate);
 				format.align = textAlignEnum::Right;
 			}

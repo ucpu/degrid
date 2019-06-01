@@ -79,7 +79,9 @@ namespace
 			shielderStoppedShots, \
 			wormholesSpawned, wormholeJumps, \
 			powerupsSpawned, coinsSpawned, powerupsPicked, powerupsWasted, \
-			bombsUsed, bombsHitTotal, bombsKillTotal, bombsHitMax, bombsKillMax, \
+			bombsUsed, bombsHitTotal, bombsKillTotal, bombsHitMax, bombsKillMax \
+		));
+		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
 			shieldStoppedMonsters, shieldAbsorbedDamage, turretsPlaced, decoysUsed, \
 			entitiesCurrent, entitiesMax, \
 			environmentGridMarkers, environmentExplosions, \

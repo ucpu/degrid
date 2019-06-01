@@ -15,7 +15,7 @@ namespace
 	const vec3 ambientLight = vec3(0.2);
 	const real cameraDistance = 220;
 
-	variableSmoothingBufferStruct<vec3, 8> cameraSmoother;
+	variableSmoothingBuffer<vec3, 8> cameraSmoother;
 
 	void engineUpdate()
 	{

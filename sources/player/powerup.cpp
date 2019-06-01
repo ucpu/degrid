@@ -272,7 +272,7 @@ void eventBomb()
 
 	{
 		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		for (entityClass *e : degridComponent::component->entities())
+		for (entityClass *e : gridComponent::component->entities())
 		{
 			ENGINE_GET_COMPONENT(transform, t, e);
 			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);

@@ -86,7 +86,7 @@ namespace
 				entityClass *e = entities()->get(otherName);
 				ENGINE_GET_COMPONENT(transform, ot, e);
 				vec3 toOther = ot.position - tr.position;
-				if (e->has(degridComponent::component))
+				if (e->has(gridComponent::component))
 				{
 					DEGRID_GET_COMPONENT(velocity, og, e);
 					og.velocity += vl.velocity.normalize() * (0.2f / max(1, toOther.length()));

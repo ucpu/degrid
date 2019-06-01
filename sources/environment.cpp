@@ -2,7 +2,7 @@
 
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
-#include <cage-core/assets.h>
+#include <cage-core/assetManager.h>
 #include <cage-core/config.h>
 #include <cage-core/spatial.h>
 #include <cage-core/hashString.h>
@@ -69,12 +69,12 @@ namespace
 			return;
 
 		{ // update degrid markers
-			for (entityClass *e : degridComponent::component->entities())
+			for (entityClass *e : gridComponent::component->entities())
 			{
 				ENGINE_GET_COMPONENT(transform, t, e);
 				ENGINE_GET_COMPONENT(render, r, e);
 				DEGRID_GET_COMPONENT(velocity, v, e);
-				DEGRID_GET_COMPONENT(degrid, g, e);
+				DEGRID_GET_COMPONENT(grid, g, e);
 				v.velocity *= 0.95;
 				v.velocity += (g.place - t.position) * 0.005;
 				r.color = interpolate(r.color, g.originalColor, 0.002);
@@ -122,17 +122,17 @@ namespace
 				entityClass *e = entities()->createUnique();
 				DEGRID_GET_COMPONENT(velocity, velocity, e);
 				velocity.velocity = randomDirection3();
-				DEGRID_GET_COMPONENT(degrid, degrid, e);
-				degrid.place = vec3(x, -2, y) + vec3(randomChance(), randomChance() * 0.1, randomChance()) * 2 - 1;
+				DEGRID_GET_COMPONENT(grid, grid, e);
+				grid.place = vec3(x, -2, y) + vec3(randomChance(), randomChance() * 0.1, randomChance()) * 2 - 1;
 				ENGINE_GET_COMPONENT(transform, transform, e);
 				transform.scale = 0.6;
-				transform.position = degrid.place + randomDirection3() * vec3(10, 0.1, 10);
+				transform.position = grid.place + randomDirection3() * vec3(10, 0.1, 10);
 				ENGINE_GET_COMPONENT(render, render, e);
 				render.object = hashString("degrid/environment/grid.object");
 				real ang = real(aTan2(x, y)) / (real::Pi() * 2) + 0.5;
 				real dst = d / radius;
 				render.color = convertHsvToRgb(vec3(ang, 1, interpolate(real(0.5), real(0.2), sqr(dst))));
-				degrid.originalColor = render.color;
+				grid.originalColor = render.color;
 			}
 		}
 
@@ -144,16 +144,16 @@ namespace
 		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
 		{
 			entityClass *e = entities()->createUnique();
-			DEGRID_GET_COMPONENT(degrid, degrid, e);
+			DEGRID_GET_COMPONENT(grid, grid, e);
 			ENGINE_GET_COMPONENT(transform, transform, e);
-			transform.position = degrid.place = vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
+			transform.position = grid.place = vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
 			transform.scale = 0.6;
 			ENGINE_GET_COMPONENT(render, render, e);
 			render.object = hashString("degrid/environment/grid.object");
-			degrid.originalColor = render.color = vec3(1);
+			grid.originalColor = render.color = vec3(1);
 		}
 
-		statistics.environmentGridMarkers = degridComponent::component->group()->count();
+		statistics.environmentGridMarkers = gridComponent::component->group()->count();
 	}
 
 	class callbacksClass
@@ -208,7 +208,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		if (!entities()->has(otherName))
 			continue;
 		entityClass *e = entities()->get(otherName);
-		if (!e->has(degridComponent::component))
+		if (!e->has(gridComponent::component))
 			continue;
 		ENGINE_GET_COMPONENT(transform, ot, e);
 		ENGINE_GET_COMPONENT(render, orc, e);

@@ -1,5 +1,6 @@
 #include "screens.h"
 #include "../game.h"
+#include <cage-core/enumerate.h>
 
 #include <vector>
 #include <algorithm>
@@ -397,18 +398,17 @@ namespace
 		}
 
 		{ // announcements
-			uint32 order = 1;
-			for (const auto &a : announcements)
+			for (auto a : enumerate(announcements))
 			{
 				entityClass *panel = ents->createUnique();
 				{
 					GUI_GET_COMPONENT(panel, panel2, panel);
 					GUI_GET_COMPONENT(parent, parent, panel);
 					parent.parent = layoutName;
-					parent.order = order++;
+					parent.order = numeric_cast<sint32>(a.cnt) + 1;
 					GUI_GET_COMPONENT(text, txt, panel);
 					txt.assetName = hashString("degrid/languages/internationalized.textpack");
-					txt.textName = a.headingName;
+					txt.textName = a->headingName;
 					GUI_GET_COMPONENT(textFormat, format, panel);
 					format.size = 20;
 					GUI_GET_COMPONENT(layoutLine, ll, panel);
@@ -422,7 +422,7 @@ namespace
 					GUI_GET_COMPONENT(label, control, label);
 					GUI_GET_COMPONENT(text, txt, label);
 					txt.assetName = hashString("degrid/languages/internationalized.textpack");
-					txt.textName = a.descriptionName;
+					txt.textName = a->descriptionName;
 					GUI_GET_COMPONENT(textFormat, format, label);
 					format.size = 20;
 				}
