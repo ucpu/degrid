@@ -56,16 +56,26 @@ void setScreenMainmenu()
 
 	{ // main menu
 		{
-			entityClass *e = ents->get(12);
+			entityClass *e = ents->get(4);
+			GUI_GET_COMPONENT(layoutSplitter, ls, e);
+			ls.inverse = false;
+		}
+		{
+			entityClass *e = ents->get(5);
+			GUI_GET_COMPONENT(layoutSplitter, ls, e);
+			ls.inverse = false;
+		}
+		{
+			entityClass *e = ents->get(15);
 			GUI_GET_COMPONENT(scrollbars, sc, e);
-			sc.alignment = vec2(0.8, 0.66);
+			sc.alignment = vec2(0.8, 0.7);
 		}
 
 		entityClass *panel = ents->createUnique();
 		{
 			GUI_GET_COMPONENT(panel, panel2, panel);
 			GUI_GET_COMPONENT(parent, parent, panel);
-			parent.parent = 12;
+			parent.parent = 15;
 			GUI_GET_COMPONENT(layoutLine, layout, panel);
 			layout.vertical = true;
 		}

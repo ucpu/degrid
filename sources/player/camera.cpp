@@ -12,7 +12,8 @@ namespace
 	entityClass *secondaryCameraEntity;
 	entityClass *skyboxSecondaryCameraEntity;
 
-	const vec3 ambientLight = vec3(0.2);
+	const vec3 ambientLight = vec3(0.1);
+	const vec3 directionalLight = vec3(1);
 	const real cameraDistance = 220;
 
 	variableSmoothingBuffer<vec3, 8> cameraSmoother;
@@ -103,10 +104,13 @@ namespace
 			c.ambientLight = ambientLight;
 			c.clear = (cameraClearFlags)0;
 			c.effects = cameraEffectsFlags::CombinedPass & ~cameraEffectsFlags::AmbientOcclusion;
-			ENGINE_GET_COMPONENT(listener, l, primaryCameraEntity);
+			ENGINE_GET_COMPONENT(listener, ls, primaryCameraEntity);
 			static const float halfVolumeDistance = 30;
-			l.attenuation[1] = 2.0 / halfVolumeDistance;
-			l.attenuation[0] = l.attenuation[1] * transform.position[1] * -1;
+			ls.attenuation[1] = 2.0 / halfVolumeDistance;
+			ls.attenuation[0] = ls.attenuation[1] * transform.position[1] * -1;
+			ENGINE_GET_COMPONENT(light, l, primaryCameraEntity);
+			l.lightType = lightTypeEnum::Directional;
+			l.color = directionalLight;
 		}
 
 		{

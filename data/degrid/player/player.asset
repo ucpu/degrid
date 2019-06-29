@@ -31,21 +31,21 @@ coin.obj
 
 []
 scheme = mesh
-override_material = player.obj_powerupOnetime.cpm
+override_material = powerupOnetime.cpm
 export_uv = false
 export_tangent = false
 powerup.obj;onetime
 
 []
 scheme = mesh
-override_material = player.obj_powerupCollectible.cpm
+override_material = powerupCollectible.cpm
 export_uv = false
 export_tangent = false
 powerup.obj;collectible
 
 []
 scheme = mesh
-override_material = player.obj_powerupPermanent.cpm
+override_material = powerupPermanent.cpm
 export_uv = false
 export_tangent = false
 powerup.obj;permanent

@@ -3,7 +3,7 @@
 albedo = 0.08, 0.08, 0.02
 emissive = 0.05
 roughness = 0.4
-metalness = 0.9
+metalness = 0.7
 
 [mult]
 albedo = 0.1, 0.1, 0.1

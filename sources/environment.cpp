@@ -103,7 +103,7 @@ namespace
 			t.orientation = quat(degs(-55), degs(70), degs());
 			ENGINE_GET_COMPONENT(light, l, light);
 			l.lightType = lightTypeEnum::Directional;
-			l.color = vec3(2);
+			l.color = vec3(3);
 		}
 
 		const real radius = mapNoPullRadius * 1.5;

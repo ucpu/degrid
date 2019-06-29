@@ -92,13 +92,13 @@ namespace
 		uint32 splits[4];
 
 		{ // splitter 0
-			entityClass *e = ents->createUnique();
+			entityClass *e = ents->create(4);
 			splits[0] = e->name();
 			GUI_GET_COMPONENT(layoutSplitter, ls, e);
 			ls.inverse = true;
 		}
 		{ // splitter 1
-			entityClass *e = ents->createUnique();
+			entityClass *e = ents->create(5);
 			splits[1] = e->name();
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[0];
@@ -108,7 +108,7 @@ namespace
 			ls.inverse = true;
 		}
 		{ // splitter 2
-			entityClass *e = ents->createUnique();
+			entityClass *e = ents->create(6);
 			splits[2] = e->name();
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[0];
@@ -116,7 +116,7 @@ namespace
 			GUI_GET_COMPONENT(layoutSplitter, ls, e);
 		}
 		{ // splitter 3
-			entityClass *e = ents->createUnique();
+			entityClass *e = ents->create(7);
 			splits[3] = e->name();
 			GUI_GET_COMPONENT(parent, p, e);
 			p.parent = splits[2];
