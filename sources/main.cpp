@@ -32,7 +32,7 @@ namespace
 		return true;
 	}
 
-	bool windowMove(const pointStruct &pos)
+	bool windowMove(const ivec2 &pos)
 	{
 		if (window()->isWindowed())
 		{
@@ -42,7 +42,7 @@ namespace
 		return false;
 	}
 
-	bool windowResize(const pointStruct &size)
+	bool windowResize(const ivec2 &size)
 	{
 		if (window()->isWindowed())
 		{
@@ -64,7 +64,7 @@ namespace
 			try
 			{
 				detail::overrideBreakpoint ob;
-				window()->setFullscreen(pointStruct(confFullscreenWidth, confFullscreenHeight));
+				window()->setFullscreen(ivec2(confFullscreenWidth, confFullscreenHeight));
 				confFullscreenEnabled = true;
 			}
 			catch (...)
@@ -80,8 +80,8 @@ namespace
 			else
 			{
 				window()->setWindowed();
-				window()->windowedPosition(pointStruct(confWindowLeft, confWindowTop));
-				window()->windowedSize(pointStruct(confWindowWidth, confWindowHeight));
+				window()->windowedPosition(ivec2(confWindowLeft, confWindowTop));
+				window()->windowedSize(ivec2(confWindowWidth, confWindowHeight));
 			}
 		}
 	}
@@ -166,7 +166,7 @@ int main(int argc, const char *args[])
 		assets()->add(hashString("degrid/degrid.pack"));
 
 		{
-			holder<engineProfilingClass> engineProfiling = newEngineProfiling();
+			holder<engineProfiling> engineProfiling = newEngineProfiling();
 			engineProfiling->profilingScope = engineProfilingScopeEnum::None;
 			engineProfiling->keyToggleFullscreen = 0;
 			engineProfiling->screenPosition = vec2(0.5, 0.5);

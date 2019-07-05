@@ -14,9 +14,9 @@ void powerupSpawn(const vec3 &position);
 void monstersSpawnInitial();
 real lifeDamage(real damage); // how much life is taken by the damage (based on players armor)
 void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale);
-void monsterExplosion(entityClass *e);
-void shotExplosion(entityClass *e);
-bool killMonster(entityClass *e, bool allowCallback);
+void monsterExplosion(entity *e);
+void shotExplosion(entity *e);
+bool killMonster(entity *e, bool allowCallback);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(uint32 sounds[]);
@@ -68,10 +68,10 @@ const vec3 bluePillColor = vec3(123, 198, 242) / 255;
 const uint32 basePermanentPowerupSellPrice = 20;
 const uint32 basePermanentPowerupBuyPrice = 100;
 
-extern groupClass *entitiesToDestroy;
-extern groupClass *entitiesPhysicsEvenWhenPaused;
-extern holder<spatialDataClass> spatialData;
-extern holder<spatialQueryClass> spatialQuery;
+extern entityGroup *entitiesToDestroy;
+extern entityGroup *entitiesPhysicsEvenWhenPaused;
+extern holder<spatialData> spatialSearchData;
+extern holder<spatialQuery> spatialSearchQuery;
 
 struct achievementsStruct
 {
@@ -94,8 +94,8 @@ struct globalGameStruct
 	uint32 buyPriceMultiplier;
 
 	// entities
-	entityClass *playerEntity;
-	entityClass *shieldEntity;
+	entity *playerEntity;
+	entity *shieldEntity;
 
 	// player
 	real life;
@@ -173,39 +173,39 @@ extern globalStatisticsStruct statistics;
 
 struct gravityComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	real strength; // positive -> pull closer, negative -> push away
 };
 
 struct velocityComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	vec3 velocity;
 };
 
 struct rotationComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	quat rotation;
 };
 
 struct timeoutComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	uint32 ttl; // game updates (does not tick when paused)
 	timeoutComponent() : ttl(0) {}
 };
 
 struct gridComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	vec3 place;
 	vec3 originalColor;
 };
 
 struct shotComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	real damage;
 	bool homing;
 	shotComponent() : homing(false) {}
@@ -213,14 +213,14 @@ struct shotComponent
 
 struct powerupComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	powerupTypeEnum type;
 	powerupComponent() : type(powerupTypeEnum::Total) {}
 };
 
 struct monsterComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 	real life;
 	real damage;
 	real groundLevel;
@@ -232,7 +232,7 @@ struct monsterComponent
 
 struct bossComponent
 {
-	static componentClass *component;
+	static entityComponent *component;
 };
 
-#define DEGRID_GET_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);
+#define DEGRID_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);

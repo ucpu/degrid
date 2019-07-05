@@ -9,25 +9,25 @@ namespace
 {
 	struct turretComponent
 	{
-		static componentClass *component;
+		static entityComponent *component;
 		uint32 shooting;
 		turretComponent() : shooting(0) {}
 	};
 
 	struct decoyComponent
 	{
-		static componentClass *component;
+		static entityComponent *component;
 	};
 
-	componentClass *turretComponent::component;
-	componentClass *decoyComponent::component;
+	entityComponent *turretComponent::component;
+	entityComponent *decoyComponent::component;
 
 	void turretsUpdate()
 	{
-		for (entityClass *e : turretComponent::component->entities())
+		for (entity *e : turretComponent::component->entities())
 		{
-			ENGINE_GET_COMPONENT(transform, tr, e);
-			DEGRID_GET_COMPONENT(turret, tu, e);
+			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			DEGRID_COMPONENT(turret, tu, e);
 			if (tu.shooting > 0)
 			{
 				tu.shooting--;
@@ -37,18 +37,18 @@ namespace
 			for (uint32 i = 0; i < 6; i++)
 			{
 				statistics.shotsTurret++;
-				entityClass *shot = entities()->createUnique();
-				ENGINE_GET_COMPONENT(transform, transform, shot);
+				entity *shot = entities()->createUnique();
+				CAGE_COMPONENT_ENGINE(transform, transform, shot);
 				transform.orientation = quat(degs(), degs(i * 60), degs()) * tr.orientation;
 				transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
-				ENGINE_GET_COMPONENT(render, render, shot);
+				CAGE_COMPONENT_ENGINE(render, render, shot);
 				render.object = hashString("degrid/player/shot.object");
 				render.color = game.shotsColor;
-				DEGRID_GET_COMPONENT(velocity, vel, shot);
+				DEGRID_COMPONENT(velocity, vel, shot);
 				vel.velocity = transform.orientation * vec3(0, 0, -1) * 2.5;
-				DEGRID_GET_COMPONENT(shot, sh, shot);
+				DEGRID_COMPONENT(shot, sh, shot);
 				sh.damage = 1;
-				DEGRID_GET_COMPONENT(timeout, ttl, shot);
+				DEGRID_COMPONENT(timeout, ttl, shot);
 				ttl.ttl = shotsTtl;
 			}
 		}
@@ -56,10 +56,10 @@ namespace
 
 	void decoysUpdate()
 	{
-		for (entityClass *e : decoyComponent::component->entities())
+		for (entity *e : decoyComponent::component->entities())
 		{
-			ENGINE_GET_COMPONENT(transform, tr, e);
-			DEGRID_GET_COMPONENT(velocity, vel, e);
+			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			DEGRID_COMPONENT(velocity, vel, e);
 			tr.position[1] = 0;
 			vel.velocity *= 0.97;
 			game.monstersTarget = tr.position;
@@ -75,14 +75,14 @@ namespace
 
 	void powerupsUpdate()
 	{
-		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
-		for (entityClass *e : powerupComponent::component->entities())
+		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		for (entity *e : powerupComponent::component->entities())
 		{
-			DEGRID_GET_COMPONENT(powerup, p, e);
+			DEGRID_COMPONENT(powerup, p, e);
 			CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);
 
-			ENGINE_GET_COMPONENT(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(transform, tr, e);
 			if (!collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))
 			{
 				vec3 toPlayer = playerTransform.position - tr.position;
@@ -221,19 +221,19 @@ void powerupSpawn(const vec3 &position)
 	else
 		statistics.powerupsSpawned++;
 
-	entityClass *e = entities()->createUnique();
-	ENGINE_GET_COMPONENT(transform, transform, e);
+	entity *e = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(transform, transform, e);
 	transform.position = position * vec3(1, 0, 1);
 	transform.orientation = randomDirectionQuat();
 	transform.scale = coin ? 1.5 : 2.5;
-	DEGRID_GET_COMPONENT(timeout, ttl, e);
+	DEGRID_COMPONENT(timeout, ttl, e);
 	ttl.ttl = 120 * 30;
-	DEGRID_GET_COMPONENT(powerup, p, e);
+	DEGRID_COMPONENT(powerup, p, e);
 	p.type = coin ? powerupTypeEnum::Coin : (powerupTypeEnum)randomRange(0u, (uint32)powerupTypeEnum::Coin);
-	DEGRID_GET_COMPONENT(rotation, rot, e);
+	DEGRID_COMPONENT(rotation, rot, e);
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
-	DEGRID_GET_COMPONENT(velocity, velocity, e); // to make the powerup affected by gravity
-	ENGINE_GET_COMPONENT(render, render, e);
+	DEGRID_COMPONENT(velocity, velocity, e); // to make the powerup affected by gravity
+	CAGE_COMPONENT_ENGINE(render, render, e);
 	static const uint32 objectName[4] = {
 		hashString("degrid/player/powerupCollectible.object"),
 		hashString("degrid/player/powerupOnetime.object"),
@@ -253,9 +253,9 @@ void eventBomb()
 	game.powerups[(uint32)powerupTypeEnum::Bomb]--;
 	uint32 kills = 0;
 	uint32 count = monsterComponent::component->group()->count();
-	for (entityClass *e : monsterComponent::component->entities())
+	for (entity *e : monsterComponent::component->entities())
 	{
-		DEGRID_GET_COMPONENT(monster, m, e);
+		DEGRID_COMPONENT(monster, m, e);
 		m.life -= 10;
 		if (m.life <= 1e-5)
 		{
@@ -271,10 +271,10 @@ void eventBomb()
 	statistics.bombsUsed++;
 
 	{
-		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		for (entityClass *e : gridComponent::component->entities())
+		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		for (entity *e : gridComponent::component->entities())
 		{
-			ENGINE_GET_COMPONENT(transform, t, e);
+			CAGE_COMPONENT_ENGINE(transform, t, e);
 			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
 		}
 	}
@@ -299,21 +299,21 @@ void eventTurret()
 		return;
 	game.powerups[(uint32)powerupTypeEnum::Turret]--;
 	statistics.turretsPlaced++;
-	entityClass *turret = entities()->createUnique();
-	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-	ENGINE_GET_COMPONENT(transform, transform, turret);
-	DEGRID_GET_COMPONENT(velocity, vel, turret); // allow it to be affected by gravity
+	entity *turret = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+	CAGE_COMPONENT_ENGINE(transform, transform, turret);
+	DEGRID_COMPONENT(velocity, vel, turret); // allow it to be affected by gravity
 	transform.position = playerTransform.position;
 	transform.position[1] = 0;
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.scale = 3;
-	ENGINE_GET_COMPONENT(render, render, turret);
+	CAGE_COMPONENT_ENGINE(render, render, turret);
 	render.object = hashString("degrid/player/turret.object");
-	DEGRID_GET_COMPONENT(turret, tr, turret);
+	DEGRID_COMPONENT(turret, tr, turret);
 	tr.shooting = 2;
-	DEGRID_GET_COMPONENT(timeout, ttl, turret);
+	DEGRID_COMPONENT(timeout, ttl, turret);
 	ttl.ttl = 60 * 30;
-	DEGRID_GET_COMPONENT(rotation, rot, turret);
+	DEGRID_COMPONENT(rotation, rot, turret);
 	rot.rotation = quat(degs(), degs(1), degs());
 
 	uint32 sounds[] = {
@@ -332,20 +332,20 @@ void eventDecoy()
 		return;
 	game.powerups[(uint32)powerupTypeEnum::Decoy]--;
 	statistics.decoysUsed++;
-	entityClass *decoy = entities()->createUnique();
-	ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-	ENGINE_GET_COMPONENT(transform, transform, decoy);
+	entity *decoy = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+	CAGE_COMPONENT_ENGINE(transform, transform, decoy);
 	transform = playerTransform;
 	transform.scale *= 2;
-	ENGINE_GET_COMPONENT(render, render, decoy);
+	CAGE_COMPONENT_ENGINE(render, render, decoy);
 	render.object = hashString("degrid/player/player.object");
-	DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
-	DEGRID_GET_COMPONENT(velocity, vel, decoy);
+	DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
+	DEGRID_COMPONENT(velocity, vel, decoy);
 	vel.velocity = -playerVelocity.velocity;
-	DEGRID_GET_COMPONENT(timeout, ttl, decoy);
+	DEGRID_COMPONENT(timeout, ttl, decoy);
 	ttl.ttl = 60 * 30;
-	DEGRID_GET_COMPONENT(decoy, dec, decoy);
-	DEGRID_GET_COMPONENT(rotation, rot, decoy);
+	DEGRID_COMPONENT(decoy, dec, decoy);
+	DEGRID_COMPONENT(rotation, rot, decoy);
 	rot.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
 	uint32 sounds[] = {

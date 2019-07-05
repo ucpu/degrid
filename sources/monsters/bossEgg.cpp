@@ -4,7 +4,7 @@ namespace
 {
 	struct bossEggComponent
 	{
-		static componentClass *component;
+		static entityComponent *component;
 		
 		uint32 countdown;
 		
@@ -12,9 +12,9 @@ namespace
 		{}
 	};
 
-	componentClass *bossEggComponent::component;
+	entityComponent *bossEggComponent::component;
 
-	void hatchEgg(entityClass *e)
+	void hatchEgg(entity *e)
 	{
 		static const uint32 skyboxNames[] = {
 			#define GCHL_GENERATE(N) hashString("degrid/environment/skyboxes/skybox.obj;" CAGE_STRINGIZE(N)),
@@ -24,8 +24,8 @@ namespace
 		};
 		setSkybox(skyboxNames[game.defeatedBosses + 1]);
 		monsterExplosion(e);
-		ENGINE_GET_COMPONENT(transform, t, e);
-		ENGINE_GET_COMPONENT(render, r, e);
+		CAGE_COMPONENT_ENGINE(transform, t, e);
+		CAGE_COMPONENT_ENGINE(render, r, e);
 		switch (game.defeatedBosses)
 		{
 		case 0: return spawnBossCannoneer(t.position, r.color);
@@ -34,7 +34,7 @@ namespace
 		case 3: return spawnBossCannoneer(t.position, r.color);
 		case 4: return spawnBossCannoneer(t.position, r.color);
 		default:
-			CAGE_THROW_CRITICAL(notImplementedException, "hatchEgg");
+			CAGE_THROW_CRITICAL(notImplemented, "hatchEgg");
 		}
 	}
 
@@ -52,12 +52,12 @@ namespace
 		{
 			if (monsterComponent::component->group()->count() == bossEggComponent::component->group()->count())
 			{
-				for (entityClass *e : bossEggComponent::component->entities())
+				for (entity *e : bossEggComponent::component->entities())
 				{
-					ENGINE_GET_COMPONENT(transform, t, e);
+					CAGE_COMPONENT_ENGINE(transform, t, e);
 					if (length(game.monstersTarget - t.position) > 90)
 						continue;
-					DEGRID_GET_COMPONENT(bossEgg, m, e);
+					DEGRID_COMPONENT(bossEgg, m, e);
 					if (m.countdown-- == 0)
 					{
 						e->add(entitiesToDestroy);
@@ -69,10 +69,10 @@ namespace
 				makeAnnouncement(hashString("announcement/incoming-boss"), hashString("announcement-desc/incoming-boss"), 5);
 		}
 
-		for (entityClass *e : bossEggComponent::component->entities())
+		for (entity *e : bossEggComponent::component->entities())
 		{
-			ENGINE_GET_COMPONENT(transform, tr, e);
-			DEGRID_GET_COMPONENT(velocity, mv, e);
+			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			DEGRID_COMPONENT(velocity, mv, e);
 			vec3 v = game.monstersTarget - tr.position;
 			real l = v.length();
 			mv.velocity = normalize(v) * pow(max(l - 70, 0) * 0.03, 1.5);
@@ -99,9 +99,9 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 	CAGE_ASSERT_RUNTIME(bossComponent::component->group()->count() == 0);
 	if (game.defeatedBosses >= bossesTotalCount)
 		return;
-	entityClass *e = initializeMonster(spawnPosition, color, 10, hashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
-	DEGRID_GET_COMPONENT(boss, boss, e);
-	DEGRID_GET_COMPONENT(bossEgg, eggc, e);
-	DEGRID_GET_COMPONENT(rotation, rot, e);
+	entity *e = initializeMonster(spawnPosition, color, 10, hashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
+	DEGRID_COMPONENT(boss, boss, e);
+	DEGRID_COMPONENT(bossEgg, eggc, e);
+	DEGRID_COMPONENT(rotation, rot, e);
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.05);
 }

@@ -7,10 +7,10 @@
 
 namespace
 {
-	entityClass *primaryCameraEntity;
-	entityClass *skyboxPrimaryCameraEntity;
-	entityClass *secondaryCameraEntity;
-	entityClass *skyboxSecondaryCameraEntity;
+	entity *primaryCameraEntity;
+	entity *skyboxPrimaryCameraEntity;
+	entity *secondaryCameraEntity;
+	entity *skyboxSecondaryCameraEntity;
 
 	const vec3 ambientLight = vec3(0.1);
 	const vec3 directionalLight = vec3(1);
@@ -24,8 +24,8 @@ namespace
 			return;
 
 		{ // camera
-			ENGINE_GET_COMPONENT(transform, tr, primaryCameraEntity);
-			ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(transform, tr, primaryCameraEntity);
+			CAGE_COMPONENT_ENGINE(transform, p, game.playerEntity);
 			cameraSmoother.add(p.position + vec3(0, cameraDistance, 0));
 			tr.position = cameraSmoother.oldest();
 			tr.orientation = quat(p.position - tr.position, vec3(0, 0, -1));
@@ -35,11 +35,11 @@ namespace
 			static configBool secondaryCamera("degrid.secondary-camera.enabled", false);
 			if (secondaryCamera)
 			{
-				ENGINE_GET_COMPONENT(transform, tp, game.playerEntity);
+				CAGE_COMPONENT_ENGINE(transform, tp, game.playerEntity);
 				{
-					ENGINE_GET_COMPONENT(transform, ts, skyboxSecondaryCameraEntity);
+					CAGE_COMPONENT_ENGINE(transform, ts, skyboxSecondaryCameraEntity);
 					ts.orientation = tp.orientation;
-					ENGINE_GET_COMPONENT(camera, c, skyboxSecondaryCameraEntity);
+					CAGE_COMPONENT_ENGINE(camera, c, skyboxSecondaryCameraEntity);
 					c.cameraOrder = 3;
 					c.renderMask = 2;
 					c.near = 0.5;
@@ -50,10 +50,10 @@ namespace
 					c.viewportSize = vec2(0.3, 0.3);
 				}
 				{
-					ENGINE_GET_COMPONENT(transform, tc, secondaryCameraEntity);
+					CAGE_COMPONENT_ENGINE(transform, tc, secondaryCameraEntity);
 					tc.position = tp.position;
 					tc.orientation = tp.orientation;
-					ENGINE_GET_COMPONENT(camera, c, secondaryCameraEntity);
+					CAGE_COMPONENT_ENGINE(camera, c, secondaryCameraEntity);
 					c.cameraOrder = 4;
 					c.renderMask = 1;
 					c.near = 3;
@@ -78,9 +78,9 @@ namespace
 	{
 		{
 			skyboxPrimaryCameraEntity = entities()->createUnique();
-			ENGINE_GET_COMPONENT(transform, transform, skyboxPrimaryCameraEntity);
+			CAGE_COMPONENT_ENGINE(transform, transform, skyboxPrimaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
-			ENGINE_GET_COMPONENT(camera, c, skyboxPrimaryCameraEntity);
+			CAGE_COMPONENT_ENGINE(camera, c, skyboxPrimaryCameraEntity);
 			c.cameraOrder = 1;
 			c.renderMask = 2;
 			c.near = 0.5;
@@ -91,11 +91,11 @@ namespace
 
 		{
 			primaryCameraEntity = entities()->createUnique();
-			ENGINE_GET_COMPONENT(transform, transform, primaryCameraEntity);
+			CAGE_COMPONENT_ENGINE(transform, transform, primaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
 			transform.position = vec3(0, cameraDistance, 0);
 			cameraSmoother.seed(transform.position);
-			ENGINE_GET_COMPONENT(camera, c, primaryCameraEntity);
+			CAGE_COMPONENT_ENGINE(camera, c, primaryCameraEntity);
 			c.cameraOrder = 2;
 			c.renderMask = 1;
 			c.near = 150;
@@ -104,11 +104,11 @@ namespace
 			c.ambientLight = ambientLight;
 			c.clear = (cameraClearFlags)0;
 			c.effects = cameraEffectsFlags::CombinedPass & ~cameraEffectsFlags::AmbientOcclusion;
-			ENGINE_GET_COMPONENT(listener, ls, primaryCameraEntity);
+			CAGE_COMPONENT_ENGINE(listener, ls, primaryCameraEntity);
 			static const float halfVolumeDistance = 30;
 			ls.attenuation[1] = 2.0 / halfVolumeDistance;
 			ls.attenuation[0] = ls.attenuation[1] * transform.position[1] * -1;
-			ENGINE_GET_COMPONENT(light, l, primaryCameraEntity);
+			CAGE_COMPONENT_ENGINE(light, l, primaryCameraEntity);
 			l.lightType = lightTypeEnum::Directional;
 			l.color = directionalLight;
 		}
@@ -134,7 +134,7 @@ namespace
 	} callbacksInstance;
 }
 
-entityClass *getPrimaryCameraEntity()
+entity *getPrimaryCameraEntity()
 {
 	return primaryCameraEntity;
 }

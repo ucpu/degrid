@@ -4,14 +4,14 @@
 void setScreenCredits()
 {
 	regenerateGui(guiConfig());
-	entityManagerClass *ents = gui()->entities();
+	entityManager *ents = gui()->entities();
 
-	entityClass *panel = ents->createUnique();
+	entity *panel = ents->createUnique();
 	{
-		GUI_GET_COMPONENT(panel, panel2, panel);
-		GUI_GET_COMPONENT(parent, parent, panel);
+		CAGE_COMPONENT_GUI(panel, panel2, panel);
+		CAGE_COMPONENT_GUI(parent, parent, panel);
 		parent.parent = 12;
-		GUI_GET_COMPONENT(layoutLine, layout, panel);
+		CAGE_COMPONENT_GUI(layoutLine, layout, panel);
 		layout.vertical = true;
 	}
 
@@ -24,12 +24,12 @@ void setScreenCredits()
 
 	for (auto it : enumerate(textNames))
 	{
-		entityClass *label = gui()->entities()->createUnique();
-		GUI_GET_COMPONENT(parent, parent, label);
+		entity *label = gui()->entities()->createUnique();
+		CAGE_COMPONENT_GUI(parent, parent, label);
 		parent.parent = panel->name();
 		parent.order = numeric_cast<sint32>(it.cnt);
-		GUI_GET_COMPONENT(label, lab, label);
-		GUI_GET_COMPONENT(text, txt, label);
+		CAGE_COMPONENT_GUI(label, lab, label);
+		CAGE_COMPONENT_GUI(text, txt, label);
 		txt.assetName = hashString("degrid/languages/internationalized.textpack");
 		txt.textName = *it;
 	}

@@ -3,7 +3,7 @@
 
 #include <cage-core/config.h>
 #include <cage-core/timer.h>
-#include <cage-core/ini.h>
+#include <cage-core/configIni.h>
 #include <cage-core/hashString.h>
 
 #include <unordered_map>
@@ -101,7 +101,7 @@ namespace
 		// load achievements
 		try
 		{
-			holder<iniClass> ini = newIni();
+			holder<configIni> ini = newConfigIni();
 			{
 				detail::overrideBreakpoint ob;
 				ini->load("achievements.ini");
@@ -139,7 +139,7 @@ namespace
 
 		{ // save achievements
 #ifndef DEGRID_TESTING
-			holder<iniClass> ini = newIni();
+			holder<configIni> ini = newConfigIni();
 			for (const auto &a : data)
 			{
 				ini->setString(a.first, "date", a.second.date);
@@ -175,10 +175,10 @@ namespace
 void setScreenAchievements()
 {
 	regenerateGui(guiConfig());
-	entityManagerClass *ents = gui()->entities();
+	entityManager *ents = gui()->entities();
 
 	{
-		GUI_GET_COMPONENT(layoutLine, layout, ents->get(12));
+		CAGE_COMPONENT_GUI(layoutLine, layout, ents->get(12));
 		layout.vertical = true;
 	}
 
@@ -187,39 +187,39 @@ void setScreenAchievements()
 	{
 		uint32 panelName;
 		{ // panel
-			entityClass *e = ents->createUnique();
+			entity *e = ents->createUnique();
 			panelName = e->name();
-			GUI_GET_COMPONENT(parent, parent, e);
+			CAGE_COMPONENT_GUI(parent, parent, e);
 			parent.parent = 12;
 			parent.order = index++;
-			GUI_GET_COMPONENT(panel, panel, e);
-			GUI_GET_COMPONENT(text, txt, e);
+			CAGE_COMPONENT_GUI(panel, panel, e);
+			CAGE_COMPONENT_GUI(text, txt, e);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString((string() + "achievement/" + it.first).c_str());
-			GUI_GET_COMPONENT(layoutLine, layout, e);
+			CAGE_COMPONENT_GUI(layoutLine, layout, e);
 			layout.vertical = true;
 		}
 
 		{ // description
-			entityClass *e = ents->createUnique();
-			GUI_GET_COMPONENT(parent, parent, e);
+			entity *e = ents->createUnique();
+			CAGE_COMPONENT_GUI(parent, parent, e);
 			parent.parent = panelName;
 			parent.order = 1;
-			GUI_GET_COMPONENT(label, label, e);
-			GUI_GET_COMPONENT(text, txt, e);
+			CAGE_COMPONENT_GUI(label, label, e);
+			CAGE_COMPONENT_GUI(text, txt, e);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString((string() + "achievement-desc/" + it.first).c_str());
 		}
 
 		{ // date
-			entityClass *e = ents->createUnique();
-			GUI_GET_COMPONENT(parent, parent, e);
+			entity *e = ents->createUnique();
+			CAGE_COMPONENT_GUI(parent, parent, e);
 			parent.parent = panelName;
 			parent.order = 2;
-			GUI_GET_COMPONENT(label, label, e);
-			GUI_GET_COMPONENT(text, txt, e);
+			CAGE_COMPONENT_GUI(label, label, e);
+			CAGE_COMPONENT_GUI(text, txt, e);
 			txt.value = it.second.date;
-			GUI_GET_COMPONENT(textFormat, format, e);
+			CAGE_COMPONENT_GUI(textFormat, format, e);
 			format.align = textAlignEnum::Right;
 		}
 	}

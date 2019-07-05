@@ -93,7 +93,7 @@ namespace
 	void spawnDefinitionStruct::spawn()
 	{
 		{ // update player position
-			ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(transform, p, game.playerEntity);
 			playerPosition = p.position;
 		}
 

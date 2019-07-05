@@ -11,27 +11,27 @@ namespace
 		if (game.paused)
 			return;
 
-		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
 
-		for (entityClass *e : monsterComponent::component->entities())
+		for (entity *e : monsterComponent::component->entities())
 		{
-			ENGINE_GET_COMPONENT(transform, t, e);
-			DEGRID_GET_COMPONENT(velocity, v, e);
-			DEGRID_GET_COMPONENT(monster, m, e);
+			CAGE_COMPONENT_ENGINE(transform, t, e);
+			DEGRID_COMPONENT(velocity, v, e);
+			DEGRID_COMPONENT(monster, m, e);
 
 			// monster dispersion
 			if (m.dispersion > 0)
 			{
 				uint32 myName = e->name();
 				vec3 dispersion;
-				spatialQuery->intersection(sphere(t.position, t.scale + 1));
-				for (uint32 otherName : spatialQuery->result())
+				spatialSearchQuery->intersection(sphere(t.position, t.scale + 1));
+				for (uint32 otherName : spatialSearchQuery->result())
 				{
 					if (otherName == myName)
 						continue;
-					entityClass *e = entities()->get(otherName);
-					ENGINE_GET_COMPONENT(transform, ot, e);
+					entity *e = entities()->get(otherName);
+					CAGE_COMPONENT_ENGINE(transform, ot, e);
 					vec3 toMonster = t.position - ot.position;
 					if (e->has(monsterComponent::component))
 					{
@@ -143,24 +143,24 @@ uint32 monsterMutation(uint32 &special)
 	return res;
 }
 
-void monsterReflectMutation(entityClass *e, uint32 special)
+void monsterReflectMutation(entity *e, uint32 special)
 {
 	if (!special)
 		return;
-	ENGINE_GET_COMPONENT(transform, transform, e);
+	CAGE_COMPONENT_ENGINE(transform, transform, e);
 	transform.scale *= 1.3;
 	statistics.monstersMutated++;
 	statistics.monstersMutations += special;
 	achievementFullfilled("mutated");
 }
 
-entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
+entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
 {
 	statistics.monstersSpawned++;
-	entityClass *m = entities()->createUnique();
-	ENGINE_GET_COMPONENT(transform, transform, m);
-	ENGINE_GET_COMPONENT(render, render, m);
-	DEGRID_GET_COMPONENT(monster, monster, m);
+	entity *m = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(transform, transform, m);
+	CAGE_COMPONENT_ENGINE(render, render, m);
+	DEGRID_COMPONENT(monster, monster, m);
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.position = spawnPosition;
 	transform.position[1] = monster.groundLevel = randomChance() * 2 - 1;
@@ -173,18 +173,18 @@ entityClass *initializeMonster(const vec3 &spawnPosition, const vec3 &color, rea
 	return m;
 }
 
-bool killMonster(entityClass *e, bool allowCallback)
+bool killMonster(entity *e, bool allowCallback)
 {
 	if (e->has(entitiesToDestroy))
 		return false;
 	e->add(entitiesToDestroy);
 	monsterExplosion(e);
-	DEGRID_GET_COMPONENT(monster, m, e);
+	DEGRID_COMPONENT(monster, m, e);
 	m.life = 0;
 	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
 	if (m.defeatedSound)
 	{
-		ENGINE_GET_COMPONENT(transform, t, e);
+		CAGE_COMPONENT_ENGINE(transform, t, e);
 		soundEffect(m.defeatedSound, t.position);
 		m.defeatedSound = 0;
 	}

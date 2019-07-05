@@ -18,8 +18,8 @@ namespace
 		if (game.cinematic)
 			return;
 
-		ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
-		DEGRID_GET_COMPONENT(velocity, vl, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
+		DEGRID_COMPONENT(velocity, vl, game.playerEntity);
 
 		if (game.moveDirection != vec3())
 		{
@@ -33,18 +33,18 @@ namespace
 				vl.velocity = vl.velocity.normalize() * maxSpeed;
 			if (change.squaredLength() > 0.01)
 			{
-				entityClass *spark = entities()->createAnonymous();
-				ENGINE_GET_COMPONENT(transform, transform, spark);
+				entity *spark = entities()->createAnonymous();
+				CAGE_COMPONENT_ENGINE(transform, transform, spark);
 				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
 				transform.orientation = randomDirectionQuat();
-				ENGINE_GET_COMPONENT(render, render, spark);
+				CAGE_COMPONENT_ENGINE(render, render, spark);
 				render.object = hashString("degrid/environment/spark.object");
-				DEGRID_GET_COMPONENT(velocity, vel, spark);
+				DEGRID_COMPONENT(velocity, vel, spark);
 				vel.velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
-				DEGRID_GET_COMPONENT(timeout, ttl, spark);
+				DEGRID_COMPONENT(timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
-				ENGINE_GET_COMPONENT(animatedTexture, at, spark);
+				CAGE_COMPONENT_ENGINE(textureAnimation, at, spark);
 				at.startTime = currentControlTime();
 				at.speed = 30.f / ttl.ttl;
 				spark->add(entitiesPhysicsEvenWhenPaused);
@@ -71,15 +71,15 @@ namespace
 	{
 		if (!game.playerEntity || !game.shieldEntity)
 			return;
-		ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
-		ENGINE_GET_COMPONENT(transform, trs, game.shieldEntity);
+		CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(transform, trs, game.shieldEntity);
 		trs.position = tr.position;
 		trs.scale = tr.scale;
 		if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0)
 		{
-			ENGINE_GET_COMPONENT(render, render, game.shieldEntity);
+			CAGE_COMPONENT_ENGINE(render, render, game.shieldEntity);
 			render.object = hashString("degrid/player/shield.object");
-			ENGINE_GET_COMPONENT(voice, sound, game.shieldEntity);
+			CAGE_COMPONENT_ENGINE(voice, sound, game.shieldEntity);
 			sound.name = hashString("degrid/player/shield.ogg");
 			sound.startTime = -1;
 		}
@@ -150,26 +150,26 @@ namespace
 
 		{ // player ship entity
 			game.playerEntity = entities()->createUnique();
-			ENGINE_GET_COMPONENT(transform, transform, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(transform, transform, game.playerEntity);
 			transform.scale = playerScale;
-			ENGINE_GET_COMPONENT(render, render, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(render, render, game.playerEntity);
 			render.object = hashString("degrid/player/player.object");
 			game.monstersTarget = vec3();
 		}
 
 		{ // player shield entity
 			game.shieldEntity = entities()->createUnique();
-			ENGINE_GET_COMPONENT(transform, transform, game.shieldEntity);
+			CAGE_COMPONENT_ENGINE(transform, transform, game.shieldEntity);
 			(void)transform;
-			ENGINE_GET_COMPONENT(animatedTexture, aniTex, game.shieldEntity);
+			CAGE_COMPONENT_ENGINE(textureAnimation, aniTex, game.shieldEntity);
 			aniTex.speed = 0.05;
 		}
 	}
 
 	void gameStop()
 	{
-		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
-		DEGRID_GET_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
 		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, 20, playerScale);
 		for (uint32 i = 0; i < 10; i++)
 			environmentExplosion(playerTransform.position, randomDirection3() * vec3(1, 0.1, 1), playerDeathColor, 5, playerScale);

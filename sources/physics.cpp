@@ -4,10 +4,10 @@
 #include <cage-core/entities.h>
 #include <cage-core/spatial.h>
 
-groupClass *entitiesToDestroy;
-groupClass *entitiesPhysicsEvenWhenPaused;
-holder<spatialDataClass> spatialData;
-holder<spatialQueryClass> spatialQuery;
+entityGroup *entitiesToDestroy;
+entityGroup *entitiesPhysicsEvenWhenPaused;
+holder<spatialData> spatialSearchData;
+holder<spatialQuery> spatialSearchQuery;
 
 namespace
 {
@@ -15,23 +15,23 @@ namespace
 	{
 		entitiesToDestroy = entities()->defineGroup();
 		entitiesPhysicsEvenWhenPaused = entities()->defineGroup();
-		spatialData = newSpatialData(spatialDataCreateConfig());
-		spatialQuery = newSpatialQuery(spatialData.get());
+		spatialSearchData = newSpatialData(spatialDataCreateConfig());
+		spatialSearchQuery = newSpatialQuery(spatialSearchData.get());
 	}
 
 	void engineUpdate()
 	{
 		if (!game.paused)
 		{ // gravity
-			for (entityClass *e : gravityComponent::component->entities())
+			for (entity *e : gravityComponent::component->entities())
 			{
-				ENGINE_GET_COMPONENT(transform, t, e);
-				DEGRID_GET_COMPONENT(gravity, g, e);
-				for (entityClass *oe : velocityComponent::component->entities())
+				CAGE_COMPONENT_ENGINE(transform, t, e);
+				DEGRID_COMPONENT(gravity, g, e);
+				for (entity *oe : velocityComponent::component->entities())
 				{
 					if (oe->has(gravityComponent::component))
 						continue;
-					ENGINE_GET_COMPONENT(transform, ot, oe);
+					CAGE_COMPONENT_ENGINE(transform, ot, oe);
 					vec3 d = t.position - ot.position;
 					if (d.squaredLength() < 1e-3)
 						continue;
@@ -41,33 +41,33 @@ namespace
 		}
 
 		{ // velocity
-			for (entityClass *e : velocityComponent::component->entities())
+			for (entity *e : velocityComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				ENGINE_GET_COMPONENT(transform, t, e);
-				DEGRID_GET_COMPONENT(velocity, v, e);
+				CAGE_COMPONENT_ENGINE(transform, t, e);
+				DEGRID_COMPONENT(velocity, v, e);
 				t.position += v.velocity;
 			}
 		}
 
 		{ // rotation
-			for (entityClass *e : rotationComponent::component->entities())
+			for (entity *e : rotationComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				ENGINE_GET_COMPONENT(transform, t, e);
-				DEGRID_GET_COMPONENT(rotation, r, e);
+				CAGE_COMPONENT_ENGINE(transform, t, e);
+				DEGRID_COMPONENT(rotation, r, e);
 				t.orientation = r.rotation * t.orientation;
 			}
 		}
 
 		{ // timeout
-			for (entityClass *e : timeoutComponent::component->entities())
+			for (entity *e : timeoutComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				DEGRID_GET_COMPONENT(timeout, t, e);
+				DEGRID_COMPONENT(timeout, t, e);
 				if (t.ttl == 0)
 					e->add(entitiesToDestroy);
 				else
@@ -78,17 +78,17 @@ namespace
 		entitiesToDestroy->destroy();
 
 		{ // update spatial
-			spatialData->clear();
-			for (entityClass *e : transformComponent::component->entities())
+			spatialSearchData->clear();
+			for (entity *e : transformComponent::component->entities())
 			{
 				uint32 n = e->name();
 				if (n)
 				{
-					ENGINE_GET_COMPONENT(transform, tr, e);
-					spatialData->update(n, sphere(tr.position, tr.scale));
+					CAGE_COMPONENT_ENGINE(transform, tr, e);
+					spatialSearchData->update(n, sphere(tr.position, tr.scale));
 				}
 			}
-			spatialData->rebuild();
+			spatialSearchData->rebuild();
 		}
 	}
 

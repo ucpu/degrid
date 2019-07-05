@@ -2,15 +2,15 @@
 
 #include <cage-core/entities.h>
 
-componentClass *gravityComponent::component;
-componentClass *velocityComponent::component;
-componentClass *rotationComponent::component;
-componentClass *timeoutComponent::component;
-componentClass *gridComponent::component;
-componentClass *shotComponent::component;
-componentClass *powerupComponent::component;
-componentClass *monsterComponent::component;
-componentClass *bossComponent::component;
+entityComponent *gravityComponent::component;
+entityComponent *velocityComponent::component;
+entityComponent *rotationComponent::component;
+entityComponent *timeoutComponent::component;
+entityComponent *gridComponent::component;
+entityComponent *shotComponent::component;
+entityComponent *powerupComponent::component;
+entityComponent *monsterComponent::component;
+entityComponent *bossComponent::component;
 
 eventDispatcher<bool()> &gameStartEvent()
 {

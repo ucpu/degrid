@@ -4,7 +4,7 @@
 #include "screens.h"
 
 #include <cage-core/files.h>
-#include <cage-core/ini.h>
+#include <cage-core/configIni.h>
 #include <cage-core/enumerate.h>
 
 namespace
@@ -51,38 +51,38 @@ namespace
 	void buildGui(int mode)
 	{
 		regenerateGui(guiConfig());
-		entityManagerClass *ents = gui()->entities();
+		entityManager *ents = gui()->entities();
 		guiEvent.bind<&guiFunction>();
 		guiEvent.attach(gui()->widgetEvent);
 
-		entityClass *panel = ents->createUnique();
+		entity *panel = ents->createUnique();
 		{
-			GUI_GET_COMPONENT(panel, panel2, panel);
-			GUI_GET_COMPONENT(parent, parent, panel);
+			CAGE_COMPONENT_GUI(panel, panel2, panel);
+			CAGE_COMPONENT_GUI(parent, parent, panel);
 			parent.parent = 12;
-			GUI_GET_COMPONENT(layoutTable, layout, panel);
+			CAGE_COMPONENT_GUI(layoutTable, layout, panel);
 			layout.sections = 2;
 		}
 
 		{ // header
 			{
-				entityClass *butScore = ents->create(51);
-				GUI_GET_COMPONENT(parent, parent, butScore);
+				entity *butScore = ents->create(51);
+				CAGE_COMPONENT_GUI(parent, parent, butScore);
 				parent.parent = panel->name();
 				parent.order = 1;
-				GUI_GET_COMPONENT(button, control, butScore);
-				GUI_GET_COMPONENT(text, txt, butScore);
+				CAGE_COMPONENT_GUI(button, control, butScore);
+				CAGE_COMPONENT_GUI(text, txt, butScore);
 				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/scores/date");
 			}
 
 			{
-				entityClass *butDate = ents->create(52);
-				GUI_GET_COMPONENT(parent, parent, butDate);
+				entity *butDate = ents->create(52);
+				CAGE_COMPONENT_GUI(parent, parent, butDate);
 				parent.parent = panel->name();
 				parent.order = 2;
-				GUI_GET_COMPONENT(button, control, butDate);
-				GUI_GET_COMPONENT(text, txt, butDate);
+				CAGE_COMPONENT_GUI(button, control, butDate);
+				CAGE_COMPONENT_GUI(text, txt, butDate);
 				txt.assetName = hashString("degrid/languages/internationalized.textpack");
 				txt.textName = hashString("gui/scores/score");
 			}
@@ -92,26 +92,26 @@ namespace
 		for (auto it : enumerate(scores))
 		{
 			{
-				entityClass *txtScore = ents->createUnique();
-				GUI_GET_COMPONENT(parent, parent, txtScore);
+				entity *txtScore = ents->createUnique();
+				CAGE_COMPONENT_GUI(parent, parent, txtScore);
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.cnt) * 2 + 100;
-				GUI_GET_COMPONENT(label, control, txtScore);
-				GUI_GET_COMPONENT(text, txt, txtScore);
+				CAGE_COMPONENT_GUI(label, control, txtScore);
+				CAGE_COMPONENT_GUI(text, txt, txtScore);
 				txt.value = it->date;
-				GUI_GET_COMPONENT(textFormat, format, txtScore);
+				CAGE_COMPONENT_GUI(textFormat, format, txtScore);
 				format.align = textAlignEnum::Center;
 			}
 
 			{
-				entityClass *txtDate = ents->createUnique();
-				GUI_GET_COMPONENT(parent, parent, txtDate);
+				entity *txtDate = ents->createUnique();
+				CAGE_COMPONENT_GUI(parent, parent, txtDate);
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.cnt * 2 + 101);
-				GUI_GET_COMPONENT(label, control, txtDate);
-				GUI_GET_COMPONENT(text, txt, txtDate);
+				CAGE_COMPONENT_GUI(label, control, txtDate);
+				CAGE_COMPONENT_GUI(text, txt, txtDate);
 				txt.value = it->score;
-				GUI_GET_COMPONENT(textFormat, format, txtDate);
+				CAGE_COMPONENT_GUI(textFormat, format, txtDate);
 				format.align = textAlignEnum::Right;
 			}
 		}
@@ -125,7 +125,7 @@ void setScreenScores()
 
 	if ((pathType("score.ini") & pathTypeFlags::File) == pathTypeFlags::File)
 	{
-		holder<iniClass> ini = newIni();
+		holder<configIni> ini = newConfigIni();
 		ini->load("score.ini");
 		for (uint32 i = 0, e = ini->sectionsCount(); i < e; i++)
 		{

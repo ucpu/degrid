@@ -50,115 +50,115 @@ void setScreenMainmenu()
 		c.backButton = false;
 		regenerateGui(c);
 	}
-	entityManagerClass *ents = gui()->entities();
+	entityManager *ents = gui()->entities();
 	guiEvent.bind<&guiFunction>();
 	guiEvent.attach(gui()->widgetEvent);
 
 	{ // main menu
 		{
-			entityClass *e = ents->get(4);
-			GUI_GET_COMPONENT(layoutSplitter, ls, e);
+			entity *e = ents->get(4);
+			CAGE_COMPONENT_GUI(layoutSplitter, ls, e);
 			ls.inverse = false;
 		}
 		{
-			entityClass *e = ents->get(5);
-			GUI_GET_COMPONENT(layoutSplitter, ls, e);
+			entity *e = ents->get(5);
+			CAGE_COMPONENT_GUI(layoutSplitter, ls, e);
 			ls.inverse = false;
 		}
 		{
-			entityClass *e = ents->get(15);
-			GUI_GET_COMPONENT(scrollbars, sc, e);
+			entity *e = ents->get(15);
+			CAGE_COMPONENT_GUI(scrollbars, sc, e);
 			sc.alignment = vec2(0.8, 0.7);
 		}
 
-		entityClass *panel = ents->createUnique();
+		entity *panel = ents->createUnique();
 		{
-			GUI_GET_COMPONENT(panel, panel2, panel);
-			GUI_GET_COMPONENT(parent, parent, panel);
+			CAGE_COMPONENT_GUI(panel, panel2, panel);
+			CAGE_COMPONENT_GUI(parent, parent, panel);
 			parent.parent = 15;
-			GUI_GET_COMPONENT(layoutLine, layout, panel);
+			CAGE_COMPONENT_GUI(layoutLine, layout, panel);
 			layout.vertical = true;
 		}
 
 		{
-			entityClass *butNewGame = ents->create(103);
-			GUI_GET_COMPONENT(parent, parent, butNewGame);
+			entity *butNewGame = ents->create(103);
+			CAGE_COMPONENT_GUI(parent, parent, butNewGame);
 			parent.parent = panel->name();
 			parent.order = 1;
-			GUI_GET_COMPONENT(button, control, butNewGame);
-			GUI_GET_COMPONENT(text, txt, butNewGame);
+			CAGE_COMPONENT_GUI(button, control, butNewGame);
+			CAGE_COMPONENT_GUI(text, txt, butNewGame);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/newgame");
-			GUI_GET_COMPONENT(textFormat, format, butNewGame);
+			CAGE_COMPONENT_GUI(textFormat, format, butNewGame);
 			format.color = redPillColor;
 		}
 
 		{
-			entityClass *butOptions = ents->create(104);
-			GUI_GET_COMPONENT(parent, parent, butOptions);
+			entity *butOptions = ents->create(104);
+			CAGE_COMPONENT_GUI(parent, parent, butOptions);
 			parent.parent = panel->name();
 			parent.order = 2;
-			GUI_GET_COMPONENT(button, control, butOptions);
-			GUI_GET_COMPONENT(text, txt, butOptions);
+			CAGE_COMPONENT_GUI(button, control, butOptions);
+			CAGE_COMPONENT_GUI(text, txt, butOptions);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/options");
 		}
 
 		if ((pathType("score.ini") & pathTypeFlags::File) == pathTypeFlags::File)
 		{
-			entityClass *butScores = ents->create(105);
-			GUI_GET_COMPONENT(parent, parent, butScores);
+			entity *butScores = ents->create(105);
+			CAGE_COMPONENT_GUI(parent, parent, butScores);
 			parent.parent = panel->name();
 			parent.order = 3;
-			GUI_GET_COMPONENT(button, control, butScores);
-			GUI_GET_COMPONENT(text, txt, butScores);
+			CAGE_COMPONENT_GUI(button, control, butScores);
+			CAGE_COMPONENT_GUI(text, txt, butScores);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/scores");
 		}
 
 		if (achievements.acquired > 0)
 		{
-			entityClass *butAchivs = ents->create(108);
-			GUI_GET_COMPONENT(parent, parent, butAchivs);
+			entity *butAchivs = ents->create(108);
+			CAGE_COMPONENT_GUI(parent, parent, butAchivs);
 			parent.parent = panel->name();
 			parent.order = 4;
-			GUI_GET_COMPONENT(button, control, butAchivs);
-			GUI_GET_COMPONENT(text, txt, butAchivs);
+			CAGE_COMPONENT_GUI(button, control, butAchivs);
+			CAGE_COMPONENT_GUI(text, txt, butAchivs);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/achievements");
 		}
 
 		{
-			entityClass *butCredits = ents->create(106);
-			GUI_GET_COMPONENT(parent, parent, butCredits);
+			entity *butCredits = ents->create(106);
+			CAGE_COMPONENT_GUI(parent, parent, butCredits);
 			parent.parent = panel->name();
 			parent.order = 5;
-			GUI_GET_COMPONENT(button, control, butCredits);
-			GUI_GET_COMPONENT(text, txt, butCredits);
+			CAGE_COMPONENT_GUI(button, control, butCredits);
+			CAGE_COMPONENT_GUI(text, txt, butCredits);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/credits");
 		}
 
 		{
-			entityClass *butQuit = ents->create(107);
-			GUI_GET_COMPONENT(parent, parent, butQuit);
+			entity *butQuit = ents->create(107);
+			CAGE_COMPONENT_GUI(parent, parent, butQuit);
 			parent.parent = panel->name();
 			parent.order = 6;
-			GUI_GET_COMPONENT(button, control, butQuit);
-			GUI_GET_COMPONENT(text, txt, butQuit);
+			CAGE_COMPONENT_GUI(button, control, butQuit);
+			CAGE_COMPONENT_GUI(text, txt, butQuit);
 			txt.assetName = hashString("degrid/languages/internationalized.textpack");
 			txt.textName = hashString("gui/mainmenu/quit");
-			GUI_GET_COMPONENT(textFormat, format, butQuit);
+			CAGE_COMPONENT_GUI(textFormat, format, butQuit);
 			format.color = bluePillColor;
 		}
 	}
 
 	{ // languages
-		entityClass *column = ents->createUnique();
+		entity *column = ents->createUnique();
 		{
-			GUI_GET_COMPONENT(parent, parent, column);
+			CAGE_COMPONENT_GUI(parent, parent, column);
 			parent.parent = 10;
-			GUI_GET_COMPONENT(layoutLine, layout, column);
+			CAGE_COMPONENT_GUI(layoutLine, layout, column);
 			layout.vertical = true;
 		}
 
@@ -169,14 +169,14 @@ void setScreenMainmenu()
 
 		for (uint32 i = 0; i < sizeof(flags) / sizeof(flags[0]); i++)
 		{
-			entityClass *but = ents->create(200 + i);
-			GUI_GET_COMPONENT(parent, parent, but);
+			entity *but = ents->create(200 + i);
+			CAGE_COMPONENT_GUI(parent, parent, but);
 			parent.parent = column->name();
 			parent.order = i;
-			GUI_GET_COMPONENT(button, control, but);
-			GUI_GET_COMPONENT(image, img, but);
+			CAGE_COMPONENT_GUI(button, control, but);
+			CAGE_COMPONENT_GUI(image, img, but);
 			img.textureName = flags[i];
-			GUI_GET_COMPONENT(explicitSize, size, but);
+			CAGE_COMPONENT_GUI(explicitSize, size, but);
 			size.size = vec2(80, 40);
 		}
 	}

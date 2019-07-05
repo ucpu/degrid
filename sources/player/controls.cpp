@@ -14,7 +14,7 @@ void eventBomb();
 void eventTurret();
 void eventDecoy();
 
-entityClass *getPrimaryCameraEntity();
+entity *getPrimaryCameraEntity();
 
 globalGameStruct game;
 
@@ -41,14 +41,14 @@ namespace
 	{
 		if (!window()->isFocused())
 			return;
-		pointStruct point = window()->mousePosition();
-		pointStruct res = window()->resolution();
+		ivec2 point = window()->mousePosition();
+		ivec2 res = window()->resolution();
 		vec2 p = vec2(point.x, point.y);
 		p /= vec2(res.x, res.y);
 		p = p * 2 - 1;
 		real px = p[0], py = -p[1];
-		ENGINE_GET_COMPONENT(transform, ts, getPrimaryCameraEntity());
-		ENGINE_GET_COMPONENT(camera, cs, getPrimaryCameraEntity());
+		CAGE_COMPONENT_ENGINE(transform, ts, getPrimaryCameraEntity());
+		CAGE_COMPONENT_ENGINE(camera, cs, getPrimaryCameraEntity());
 		mat4 view = mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)).inverse();
 		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res.x) / real(res.y), cs.near, cs.far);
 		mat4 inv = (proj * view).inverse();
@@ -76,7 +76,7 @@ namespace
 				eventAction(o + 4);
 	}
 
-	bool mousePress(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
+	bool mousePress(mouseButtonsFlags buttons, modifiersFlags modifiers, const ivec2 &point)
 	{
 		if (game.paused)
 			return false;
@@ -87,7 +87,7 @@ namespace
 		return false;
 	}
 
-	bool mouseRelease(mouseButtonsFlags buttons, modifiersFlags modifiers, const pointStruct &point)
+	bool mouseRelease(mouseButtonsFlags buttons, modifiersFlags modifiers, const ivec2 &point)
 	{
 		buttonMap &= ~buttons;
 
@@ -185,12 +185,12 @@ namespace
 			else
 			{
 				cnt = randomRange(0u, cnt);
-				for (entityClass *e : monsterComponent::component->entities())
+				for (entity *e : monsterComponent::component->entities())
 				{
 					if (cnt-- == 0)
 					{
-						ENGINE_GET_COMPONENT(transform, p, game.playerEntity);
-						ENGINE_GET_COMPONENT(transform, t, e);
+						CAGE_COMPONENT_ENGINE(transform, p, game.playerEntity);
+						CAGE_COMPONENT_ENGINE(transform, t, e);
 						game.fireDirection = t.position - p.position;
 						game.fireDirection[1] = 0;
 						return;
@@ -219,7 +219,7 @@ namespace
 				arrowsDirection += vec3(1, 0, 0);
 		}
 
-		ENGINE_GET_COMPONENT(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
 
 		switch (confControlMovement)
 		{
@@ -228,7 +228,7 @@ namespace
 			break;
 		case 1: // arrows (relative)
 		{
-			ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
 			game.moveDirection = tr.orientation * arrowsDirection;
 		} break;
 		case 2: // lmb
@@ -255,7 +255,7 @@ namespace
 			break;
 		case 1: // arrows (relative)
 		{
-			ENGINE_GET_COMPONENT(transform, tr, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
 			game.fireDirection = tr.orientation * arrowsDirection;
 		} break;
 		case 2: // lmb
@@ -278,7 +278,7 @@ namespace
 			keyMap[i] = false;
 		buttonMap = (mouseButtonsFlags)0;
 
-		for (entityClass *e : entities()->group()->entities())
+		for (entity *e : entities()->group()->entities())
 			e->add(entitiesToDestroy);
 
 		{
