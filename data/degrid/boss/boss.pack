@@ -9,6 +9,7 @@ egg.object
 
 []
 cannoneerBody.object
+cannoneerBulb.object
 cannoneerCannon.object
 cannoneer.obj?ball
 cannoneer.obj?shield

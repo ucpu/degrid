@@ -1,4 +1,5 @@
 #include "monsters.h"
+#include <cage-core/enumerate.h>
 
 namespace
 {
@@ -6,13 +7,17 @@ namespace
 	{
 		static entityComponent *component;
 
+		uint32 bulbs[24];
 		uint32 shieldEntity;
 		uint32 lastHit;
 		uint8 cannonsSpawned;
 		uint8 cannonsKilled;
 
 		bodyComponent() : shieldEntity(0), lastHit(0), cannonsSpawned(0), cannonsKilled(0)
-		{}
+		{
+			for (uint32 &it : bulbs)
+				it = 0;
+		}
 	};
 
 	struct cannonComponent
@@ -36,9 +41,14 @@ namespace
 
 	void bodyEliminated(entity *e)
 	{
-		DEGRID_COMPONENT(body, sh, e);
-		if (entities()->has(sh.shieldEntity))
-			entities()->get(sh.shieldEntity)->add(entitiesToDestroy);
+		DEGRID_COMPONENT(body, b, e);
+		if (entities()->has(b.shieldEntity))
+			entities()->get(b.shieldEntity)->add(entitiesToDestroy);
+		for (uint32 it : b.bulbs)
+		{
+			if (entities()->has(it))
+				entities()->get(it)->add(entitiesToDestroy);
+		}
 	}
 
 	void cannonEliminated(entity *e)
@@ -48,6 +58,14 @@ namespace
 		{
 			entity *body = entities()->get(c.bodyEntity);
 			DEGRID_COMPONENT(body, b, body);
+			if (entities()->has(b.bulbs[b.cannonsKilled]))
+			{
+				entity *e = entities()->get(b.bulbs[b.cannonsKilled]);
+				CAGE_COMPONENT_ENGINE(render, r, e);
+				r.color = vec3(r.color[1], r.color[0], r.color[2]);
+				CAGE_COMPONENT_ENGINE(light, l, e);
+				l.color = vec3(l.color[1], l.color[0], l.color[2]);
+			}
 			b.cannonsKilled++;
 			if (b.cannonsSpawned < 24)
 				spawnCannon(body, c.index);
@@ -91,8 +109,8 @@ namespace
 			if (ents->has(b.shieldEntity))
 			{
 				entity *sh = ents->get(b.shieldEntity);
-				CAGE_COMPONENT_ENGINE(transform, st, sh);
 				CAGE_COMPONENT_ENGINE(transform, bt, e);
+				CAGE_COMPONENT_ENGINE(transform, st, sh);
 				real se = clamp(statistics.updateIteration - b.lastHit, 0u, 30u) / 30.0;
 				se = sqrt(max(0, sin(se * rads::Stright())));
 				st.scale = bt.scale + interpolate(0.1, 20.0, se);
@@ -116,7 +134,7 @@ namespace
 					{
 						cannon.loading -= 1;
 						CAGE_COMPONENT_ENGINE(transform, ct, e);
-						entity *bullet = initializeMonster(ct.position + ct.orientation * vec3(0, 0, -ct.scale - 1), vec3(), 2.0, hashString("degrid/boss/cannoneer.obj?ball"), 0, 5, 10);
+						entity *bullet = initializeMonster(ct.position + ct.orientation * vec3(0, 0, -ct.scale - 1), vec3(0.304, 0.067, 0.294), 2.0, hashString("degrid/boss/cannoneer.obj?ball"), 0, 5, 10);
 						CAGE_COMPONENT_ENGINE(transform, bt, bullet);
 						bt.orientation = randomDirectionQuat();
 						DEGRID_COMPONENT(velocity, vel, bullet);
@@ -141,12 +159,25 @@ namespace
 		for (entity *e : bodyComponent::component->entities())
 		{
 			DEGRID_COMPONENT(body, b, e);
+			CAGE_COMPONENT_ENGINE(transform, bt, e);
 			if (ents->has(b.shieldEntity))
 			{
 				entity *sh = ents->get(b.shieldEntity);
 				CAGE_COMPONENT_ENGINE(transform, st, sh);
-				CAGE_COMPONENT_ENGINE(transform, bt, e);
 				st.position = bt.position;
+			}
+			for (auto it : enumerate(b.bulbs))
+			{
+				if (ents->has(*it))
+				{
+					CAGE_COMPONENT_ENGINE(transform, t, ents->get(*it));
+					uint32 octet = numeric_cast<uint32>(it.cnt) / 3;
+					sint32 sub = (numeric_cast<sint32>(it.cnt) % 3) - 1;
+					quat o = quat(rads(), degs(octet * 45 + 22.5), rads());
+					vec3 p = o * vec3(0.8, 0.34, sub * -0.15) * bt.scale;
+					t.position = bt.position + bt.orientation * p;
+					t.scale = 0.2;
+				}
 			}
 		}
 
@@ -165,7 +196,9 @@ namespace
 				ct.orientation = dot(tp, tc) >= 0 ? quat(tp, vec3(0, 1, 0)) : q * quat(degs(), degs(-90 * sign(dot(tp, ts))), degs());
 				ct.orientation = interpolate(q, ct.orientation, min(c.extension, 1));
 				ct.orientation = ct.orientation * quat(degs(), c.firingOffset, degs());
-				ct.position = bt.position + tc * interpolate(bt.scale * 0.5, bt.scale, smoothstep(clamp(c.extension, 0, 1)));
+				ct.position = bt.position
+					+ tc * interpolate(bt.scale * 0.5, bt.scale, smoothstep(clamp(c.extension, 0, 1)))
+					+ (ct.orientation * vec3(0, 0, -1)) * ((clamp(c.loading, 0, 1) - 0.5) * ct.scale * 0.5);
 			}
 			else
 				e->add(entitiesToDestroy);
@@ -192,7 +225,7 @@ namespace
 	void spawnCannon(entity *body, uint32 index)
 	{
 		CAGE_COMPONENT_ENGINE(transform, bt, body);
-		entity *cannon = initializeMonster(bt.position, vec3(1), 5, hashString("degrid/boss/cannoneerCannon.object"), hashString("degrid/monster/boss/cannoneer-cannon-bum.ogg"), 30, real::Infinity());
+		entity *cannon = initializeMonster(bt.position, vec3(0.188, 0.08, 0.076), 5, hashString("degrid/boss/cannoneerCannon.object"), hashString("degrid/monster/boss/cannoneer-cannon-bum.ogg"), 30, real::Infinity());
 		DEGRID_COMPONENT(cannon, c, cannon);
 		c.bodyEntity = body->name();
 		c.index = index;
@@ -205,7 +238,7 @@ namespace
 
 void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 {
-	entity *body = initializeMonster(spawnPosition, color, 15, hashString("degrid/boss/cannoneerBody.object"), hashString("degrid/monster/boss/cannoneer-bum.ogg"), real::Infinity(), real::Infinity());
+	entity *body = initializeMonster(spawnPosition, vec3(0.487, 0.146, 0.05), 15, hashString("degrid/boss/cannoneerBody.object"), hashString("degrid/monster/boss/cannoneer-bum.ogg"), real::Infinity(), real::Infinity());
 	CAGE_COMPONENT_ENGINE(transform, bt, body);
 	DEGRID_COMPONENT(body, b, body);
 	{ // body
@@ -217,6 +250,20 @@ void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 		simple.acceleration = 0.2;
 		simple.circling = 0.7;
 		simple.spiraling = 0.3;
+	}
+	{ // light bulbs
+		for (uint32 &it : b.bulbs)
+		{
+			entity *e = entities()->createUnique();
+			it = e->name();
+			CAGE_COMPONENT_ENGINE(render, r, e);
+			r.object = hashString("degrid/boss/cannoneerBulb.object");
+			r.color = vec3(0.022, 0.428, 0.025);
+			CAGE_COMPONENT_ENGINE(light, l, e);
+			l.color = r.color * 50;
+			l.lightType = lightTypeEnum::Point;
+			l.attenuation = vec3(1, 0, 1);
+		}
 	}
 	{ // shield
 		entity *shield = initializeMonster(bt.position, color, bt.scale, hashString("degrid/boss/cannoneer.obj?shield"), 0, real::Infinity(), real::Infinity());

@@ -131,20 +131,15 @@ namespace
 
 void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 {
-	uint32 special = 0;
-	uint32 pieces = 0;
-	if (randomRange(0u, 1000u) == 42)
-	{
-		pieces = randomRange(80, 100);
+	bool snakeJoke = randomRange(0u, 1000u) == 42;
+	if (snakeJoke)
 		makeAnnouncement(hashString("announcement/joke-snake"), hashString("announcement-desc/joke-snake"));
-	}
-	else
-		pieces = randomRange(10, 13) + monsterMutation(special) * 2;
+	uint32 special = 0;
 	uint32 prev = 0;
 	real groundLevel;
 	real scale;
 	{ // head
-		entity *head = initializeMonster(spawnPosition, color, 2, hashString("degrid/monster/snakeHead.object"), hashString("degrid/monster/bum-snake-head.ogg"), 5, 3 + monsterMutation(special));
+		entity *head = initializeMonster(spawnPosition, color, 2, hashString("degrid/monster/snakeHead.object"), hashString("degrid/monster/bum-snake-head.ogg"), 5, (snakeJoke ? 100 : 3) + monsterMutation(special));
 		DEGRID_COMPONENT(snakeHead, snake, head);
 		snake.speedMin = 0.3 + 0.1 * monsterMutation(special);
 		snake.speedMax = snake.speedMin + 0.6 + 0.2 * monsterMutation(special);
@@ -156,6 +151,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		CAGE_COMPONENT_ENGINE(transform, transform, head);
 		scale = transform.scale;
 	}
+	uint32 pieces = (snakeJoke ? randomRange(80, 100) : randomRange(10, 13)) + monsterMutation(special) * 2;
 	uint64 aniInitOff = randomRange(0, 10000000);
 	for (uint32 i = 0; i < pieces; i++)
 	{ // tail
