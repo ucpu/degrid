@@ -49,6 +49,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("shocker");
+
 		if (game.paused)
 		{
 			for (entity *e : shockerComponent::component->entities())

@@ -55,6 +55,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("shielder");
+
 		if (game.paused)
 			return;
 

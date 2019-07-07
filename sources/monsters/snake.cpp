@@ -33,6 +33,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("snake");
+
 		if (game.paused)
 			return;
 

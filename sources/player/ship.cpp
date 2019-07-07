@@ -128,7 +128,7 @@ namespace
 		}
 	}
 
-	bool engineUpdate()
+	void engineUpdate()
 	{
 		OPTICK_EVENT("ship");
 
@@ -140,10 +140,8 @@ namespace
 			{
 				game.life = 0;
 				gameStopEvent().dispatch();
-				return true;
 			}
 		}
-		return false;
 	}
 
 	void gameStart()
@@ -183,7 +181,7 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<bool()> engineUpdateListener1;
+		eventListener<void()> engineUpdateListener1;
 		eventListener<void()> engineUpdateListener2;
 		eventListener<void()> gameStartListener;
 		eventListener<void()> gameStopListener;

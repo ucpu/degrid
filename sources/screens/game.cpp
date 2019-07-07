@@ -393,10 +393,6 @@ namespace
 			ll.vertical = true;
 		}
 
-		{ // boss healthbar
-			// todo
-		}
-
 		{ // announcements
 			for (auto a : enumerate(announcements))
 			{
@@ -641,6 +637,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("gui");
+
 		if (game.gameOver || game.cinematic)
 			return;
 

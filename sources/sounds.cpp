@@ -111,7 +111,7 @@ namespace
 
 	void speechCallback(const mixingFilterApi &api)
 	{
-		// this function is called in another threadHandle!
+		// this function is called in another thread!
 		data->speechBus3->clear();
 		if (!data->speechName)
 			return;
@@ -242,15 +242,15 @@ namespace
 	public:
 		callbacksClass()
 		{
-			engineInitListener.attach(controlThread().initialize, 55);
+			engineInitListener.attach(controlThread().initialize, -55);
 			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update, 55);
+			engineUpdateListener.attach(controlThread().update, -55);
 			engineUpdateListener.bind<&engineUpdate>();
-			engineFinListener.attach(controlThread().finalize, 55);
+			engineFinListener.attach(controlThread().finalize, -55);
 			engineFinListener.bind<&engineFin>();
-			gameStartListener.attach(gameStartEvent(), 55);
+			gameStartListener.attach(gameStartEvent(), -55);
 			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent(), 55);
+			gameStopListener.attach(gameStopEvent(), -55);
 			gameStopListener.bind<&gameStop>();
 		}
 	} callbacksInstance;

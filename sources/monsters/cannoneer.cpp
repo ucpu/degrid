@@ -98,6 +98,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("cannoneer boss");
+
 		if (game.paused)
 			return;
 
