@@ -188,6 +188,7 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("sound");
 		musicUpdate();
 		soundUpdate();
 	}

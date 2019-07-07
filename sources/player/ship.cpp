@@ -130,6 +130,8 @@ namespace
 
 	bool engineUpdate()
 	{
+		OPTICK_EVENT("ship");
+
 		if (!game.paused)
 		{
 			shipMovement();

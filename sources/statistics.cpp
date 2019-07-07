@@ -20,6 +20,8 @@ namespace
 {
 	void engineUpdate()
 	{
+		OPTICK_EVENT("statistics");
+
 		statistics.updateIterationIgnorePause++;
 		if (!game.paused)
 			statistics.updateIteration++;

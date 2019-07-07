@@ -34,6 +34,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("environment");
+
 		{ // update skybox
 			skyboxOrientation = skyboxRotation * skyboxOrientation;
 

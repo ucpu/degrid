@@ -165,6 +165,7 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("controls");
 		CAGE_ASSERT_RUNTIME(!game.gameOver || game.paused, game.gameOver, game.paused, game.cinematic);
 
 		if (game.paused)

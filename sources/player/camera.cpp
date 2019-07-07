@@ -20,6 +20,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("camera");
+
 		if (game.gameOver)
 			return;
 

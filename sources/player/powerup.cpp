@@ -179,6 +179,8 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("powerups");
+
 		if (game.paused)
 			return;
 

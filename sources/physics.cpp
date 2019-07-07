@@ -21,8 +21,11 @@ namespace
 
 	void engineUpdate()
 	{
+		OPTICK_EVENT("physics");
+
 		if (!game.paused)
 		{ // gravity
+			OPTICK_EVENT("gravity");
 			for (entity *e : gravityComponent::component->entities())
 			{
 				CAGE_COMPONENT_ENGINE(transform, t, e);
@@ -41,6 +44,7 @@ namespace
 		}
 
 		{ // velocity
+			OPTICK_EVENT("velocity");
 			for (entity *e : velocityComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
@@ -52,6 +56,7 @@ namespace
 		}
 
 		{ // rotation
+			OPTICK_EVENT("rotation");
 			for (entity *e : rotationComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
@@ -63,6 +68,7 @@ namespace
 		}
 
 		{ // timeout
+			OPTICK_EVENT("timeout");
 			for (entity *e : timeoutComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
@@ -75,9 +81,13 @@ namespace
 			}
 		}
 
-		entitiesToDestroy->destroy();
+		{
+			OPTICK_EVENT("destroy entities");
+			entitiesToDestroy->destroy();
+		}
 
 		{ // update spatial
+			OPTICK_EVENT("spatial");
 			spatialSearchData->clear();
 			for (entity *e : transformComponent::component->entities())
 			{
