@@ -245,6 +245,8 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 	g.strength = 10 + 3 * monsterMutation(special);
 	if (positive > 0 && (negative == 0 || randomChance() < 0.5))
 		g.strength *= -1;
+	CAGE_COMPONENT_ENGINE(render, render, wormhole);
+	render.color = vec3(g.strength < 0 ? 1 : 0);
 	CAGE_COMPONENT_ENGINE(textureAnimation, at, wormhole);
 	at.speed *= (randomChance() + 0.5) * 0.05 * sign(g.strength);
 	DEGRID_COMPONENT(rotation, rotation, wormhole);
