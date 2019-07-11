@@ -103,9 +103,9 @@ namespace
 				CAGE_ASSERT_RUNTIME(game.defeatedBosses < bossesTotalCount);
 				achievementFullfilled(string("boss-") + game.defeatedBosses, true);
 				game.defeatedBosses++;
-				game.money += numeric_cast<uint32>(game.life) * 2;
+				game.money += numeric_cast<uint32>(game.life * 2);
+				game.score += numeric_cast<uint64>(game.score * (double)game.life.value / 100);
 				game.life += (100 - game.life) * 0.5;
-				game.score *= 2;
 			}
 		}
 		wasBoss = hasBoss;
@@ -133,14 +133,11 @@ uint32 monsterMutation(uint32 &special)
 {
 	if (game.cinematic)
 		return 0;
-
-	statistics.monstersCurrentMutationIteration++;
-	real c = statistics.monstersCurrentMutationIteration / 100000.0;
-	c = pow(c, 1.2);
-	uint32 m = numeric_cast<uint32>(c);
-	real p = pow(c - m, 3.0);
-	uint32 res = randomChance() < p;
-	res *= m;
+	static const real probabilities[] = { real(), real(), real(1e-4), real(1e-3), real(0.1), real(0.5) };
+	uint32 res = 0;
+	real probability = probabilities[min(game.defeatedBosses, numeric_cast<uint32>(sizeof(probabilities) / sizeof(probabilities[0]) - 1))];
+	while (randomChance() < probability)
+		res++;
 	special += res ? 1 : 0;
 	return res;
 }

@@ -45,7 +45,7 @@ namespace
 				{
 					CAGE_ASSERT_RUNTIME(game.powerups[i] > 0);
 					game.powerups[i]--;
-					game.money += basePermanentPowerupSellPrice;
+					game.money += powerupSellPrice;
 					gui()->skipAllEventsUntilNextUpdate();
 					makeTheGui(3);
 					return true;
@@ -53,9 +53,9 @@ namespace
 				if (en == 1000 + i * 4 + 3) // buy
 				{
 					CAGE_ASSERT_RUNTIME(canAddPermanentPowerup());
-					CAGE_ASSERT_RUNTIME(game.money >= basePermanentPowerupBuyPrice * game.buyPriceMultiplier);
+					CAGE_ASSERT_RUNTIME(game.money >= powerupBuyPriceBase * game.buyPriceMultiplier);
 					game.powerups[i]++;
-					game.money -= basePermanentPowerupBuyPrice * game.buyPriceMultiplier;
+					game.money -= powerupBuyPriceBase * game.buyPriceMultiplier;
 					game.buyPriceMultiplier++;
 					gui()->skipAllEventsUntilNextUpdate();
 					makeTheGui(3);
@@ -347,7 +347,7 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 2;
 						CAGE_COMPONENT_GUI(text, text, e);
-						text.value = basePermanentPowerupSellPrice;
+						text.value = powerupSellPrice;
 						CAGE_COMPONENT_GUI(button, but, e);
 						if (game.powerups[i] == 0)
 						{
@@ -361,9 +361,9 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 3;
 						CAGE_COMPONENT_GUI(text, text, e);
-						text.value = basePermanentPowerupBuyPrice * game.buyPriceMultiplier;
+						text.value = powerupBuyPriceBase * game.buyPriceMultiplier;
 						CAGE_COMPONENT_GUI(button, but, e);
-						if (!anyBuy || game.money < basePermanentPowerupBuyPrice * game.buyPriceMultiplier)
+						if (!anyBuy || game.money < powerupBuyPriceBase * game.buyPriceMultiplier)
 						{
 							CAGE_COMPONENT_GUI(widgetState, ws, e);
 							ws.disabled = true;

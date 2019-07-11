@@ -77,7 +77,7 @@ namespace
 #define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(severityEnum::Info, "statistics", string() + CAGE_STRINGIZE(N) ": " + statistics.N);
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
 			shotsFired, shotsTurret, shotsHit, shotsKill, shotsCurrent, shotsMax, \
-			monstersSpawned, monstersMutated, monstersMutations, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersCurrentMutationIteration, monstersFirstHit, \
+			monstersSpawned, monstersMutated, monstersMutations, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersFirstHit, \
 			shielderStoppedShots, \
 			wormholesSpawned, wormholeJumps, \
 			powerupsSpawned, coinsSpawned, powerupsPicked, powerupsWasted, \

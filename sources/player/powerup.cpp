@@ -69,7 +69,7 @@ namespace
 	void wastedPowerup()
 	{
 		statistics.powerupsWasted++;
-		game.money += 10;
+		game.money += powerupSellPrice;
 		soundSpeech(hashString("degrid/speech/pickup/sold.wav"));
 	}
 
@@ -160,8 +160,7 @@ namespace
 			{
 				game.powerups[(uint32)p.type]++; // count the coins (for statistics & achievement)
 				game.money += game.defeatedBosses + 1;
-				if (randomChance() > powerupIsCoin)
-					soundSpeech(hashString("degrid/speech/pickup/a-coin.wav"));
+				soundSpeech(hashString("degrid/speech/pickup/a-coin.wav"));
 				if (game.powerups[(uint32)p.type] == 1000)
 					achievementFullfilled("vault-digger");
 			} break;
@@ -210,6 +209,20 @@ namespace
 			engineUpdateListener.bind<&engineUpdate>();
 		}
 	} callbacksInstance;
+
+	powerupTypeEnum powerupSpawnType()
+	{
+		real p = randomChance();
+		uint32 c = 0;
+		while (true)
+		{
+			CAGE_ASSERT_RUNTIME(c < sizeof(powerupChances) / sizeof(powerupChances[0]));
+			p -= powerupChances[c];
+			if (p < 0)
+				return (powerupTypeEnum)c;
+			c++;
+		}
+	}
 }
 
 void powerupSpawn(const vec3 &position)
@@ -217,7 +230,13 @@ void powerupSpawn(const vec3 &position)
 	if (game.cinematic)
 		return;
 
-	bool coin = randomChance() < powerupIsCoin;
+	powerupTypeEnum type = powerupSpawnType();
+	if (statistics.powerupsSpawned == 0)
+	{
+		while (powerupMode[(uint32)type] != 2)
+			type = powerupSpawnType();
+	}
+	bool coin = type == powerupTypeEnum::Coin;
 	if (coin)
 		statistics.coinsSpawned++;
 	else
@@ -231,7 +250,7 @@ void powerupSpawn(const vec3 &position)
 	DEGRID_COMPONENT(timeout, ttl, e);
 	ttl.ttl = 120 * 30;
 	DEGRID_COMPONENT(powerup, p, e);
-	p.type = coin ? powerupTypeEnum::Coin : (powerupTypeEnum)randomRange(0u, (uint32)powerupTypeEnum::Coin);
+	p.type = type;
 	DEGRID_COMPONENT(rotation, rot, e);
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
 	DEGRID_COMPONENT(velocity, velocity, e); // to make the powerup affected by gravity

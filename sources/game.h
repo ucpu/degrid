@@ -57,18 +57,29 @@ enum class powerupTypeEnum
 	Total
 };
 
-const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3 };
+const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = {
+	0, 0, 0,
+	1, 1, 1,
+	2, 2, 2, 2, 2, 2, 2, 2,
+	3
+};
+const real powerupChances[(uint32)powerupTypeEnum::Total] = {
+	0.05 / 3, 0.05 / 3, 0.05 / 3,
+	0.05 / 3, 0.05 / 3, 0.05 / 3,
+	0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8,
+	0.85
+};
 const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 const real playerScale = 3;
 const real mapNoPullRadius = 200;
 const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
 const uint32 shotsTtl = 300;
-const real powerupIsCoin = 0.85;
+//const real powerupIsCoin = 0.85;
 const uint32 bossesTotalCount = 5;
 const vec3 redPillColor = vec3(229, 101, 84) / 255;
 const vec3 bluePillColor = vec3(123, 198, 242) / 255;
-const uint32 basePermanentPowerupSellPrice = 20;
-const uint32 basePermanentPowerupBuyPrice = 100;
+const uint32 powerupSellPrice = 5;
+const uint32 powerupBuyPriceBase = 50;
 
 extern entityGroup *entitiesToDestroy;
 extern entityGroup *entitiesPhysicsEvenWhenPaused;
@@ -136,7 +147,6 @@ struct globalStatisticsStruct
 	uint32 monstersCurrent;
 	uint32 monstersMax; // maximum number of monsters at any single moment
 	real monstersCurrentSpawningPriority; // current value of variable, that controls monsters spawning
-	uint64 monstersCurrentMutationIteration;
 	uint32 monstersFirstHit; // the time (in relation to updateIteration) in which the player was first hit by a monster
 	uint32 monstersLastHit;
 	uint32 shielderStoppedShots; // the number of shots eliminated by shielder

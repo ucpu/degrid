@@ -134,7 +134,7 @@ namespace
 							CAGE_COMPONENT_ENGINE(transform, mtr, m);
 							powerupSpawn(mtr.position);
 						}
-						game.powerupSpawnChance += interpolate(1.f / 50, 1.f / 400, clamp((statistics.powerupsSpawned + 5) / 30.f, 0.f, 1.f)) / (1 - powerupIsCoin);
+						game.powerupSpawnChance += 0.02;
 					}
 				}
 				if (sh.damage <= 1e-5)

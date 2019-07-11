@@ -21,6 +21,7 @@ namespace
 		Random,
 		Around,
 		Grouped,
+		Line,
 	};
 
 	struct spawnDefinitionStruct
@@ -32,7 +33,7 @@ namespace
 		placingPolicyEnum placingPolicy;
 
 		// priority
-		real priorityCurrent;
+		real priorityCurrent; // lowest priority goes first
 		real priorityChange;
 		real priorityAdditive;
 		real priorityMultiplier;
@@ -63,8 +64,7 @@ namespace
 	{
 		if (game.cinematic)
 			return 100;
-		uint32 t = statistics.updateIteration;
-		return 100 + min(t / 200, 50u) + min(t / 1000, 50u);
+		return 150 + 20 * game.defeatedBosses;
 	}
 
 	std::vector<spawnDefinitionStruct> definitions;
@@ -87,7 +87,8 @@ namespace
 	void spawnDefinitionStruct::performSimulation()
 	{
 		updatePriority();
-		statistics.monstersCurrentMutationIteration += 2; // simulate average mutation growth
+		if (any(spawnTypes & monsterTypeFlags::BossEgg))
+			game.defeatedBosses++;
 	}
 
 	void spawnDefinitionStruct::spawn()
@@ -135,6 +136,14 @@ namespace
 			vec3 center = aroundPosition(randomChance(), distanceMin + radius, playerPosition);
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
+		} break;
+		case placingPolicyEnum::Line:
+		{
+			vec3 origin = aroundPosition(randomChance(), randomRange(distanceMin, distanceMax), playerPosition);
+			vec3 span = cross(normalize(origin - playerPosition), vec3(0, 1, 0)) * 10;
+			origin -= span * spawnCount * 0.5;
+			for (uint32 i = 0; i < spawnCount; i++)
+				spawnGeneral(allowed[randomRange(0u, alSiz)], origin + i * span, color);
 		} break;
 		default: CAGE_THROW_CRITICAL(exception, "invalid placing policy");
 		}
@@ -276,7 +285,7 @@ namespace
 		}
 
 		///////////////////////////////////////////////////////////////////////////
-		// groups and circles
+		// groups
 		///////////////////////////////////////////////////////////////////////////
 
 		{ // circle groups
@@ -318,7 +327,7 @@ namespace
 		{ // pin wheel groups
 			spawnDefinitionStruct d("pinwheel groups");
 			d.spawnCountMin = 2;
-			d.spawnCountMax = 3;
+			d.spawnCountMax = 4;
 			d.spawnTypes = (monsterTypeFlags::PinWheel);
 			d.placingPolicy = placingPolicyEnum::Grouped;
 			d.priorityCurrent = 2500;
@@ -340,6 +349,76 @@ namespace
 		}
 
 		///////////////////////////////////////////////////////////////////////////
+		// formations (after first boss)
+		///////////////////////////////////////////////////////////////////////////
+
+		{ // mixed group
+			spawnDefinitionStruct d("mixed group");
+			d.spawnCountMin = 20;
+			d.spawnCountMax = 25;
+			d.spawnTypes = (monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube | monsterTypeFlags::Diamond);
+			d.placingPolicy = placingPolicyEnum::Grouped;
+			d.priorityCurrent = randomRange(4000, 6000);
+			d.priorityChange = randomRange(200, 300);
+			d.priorityAdditive = randomRange(5, 15);
+			definitions.push_back(d);
+		}
+
+		{ // mixed around
+			spawnDefinitionStruct d("mixed around");
+			d.spawnCountMin = 5;
+			d.spawnCountMax = 10;
+			d.spawnTypes = (monsterTypeFlags::PinWheel | monsterTypeFlags::Snake | monsterTypeFlags::Shielder | monsterTypeFlags::Shocker);
+			d.placingPolicy = placingPolicyEnum::Around;
+			d.distanceMin = 160;
+			d.distanceMax = 190;
+			d.priorityCurrent = randomRange(5000, 7000);
+			d.priorityChange = randomRange(200, 300);
+			d.priorityAdditive = randomRange(5, 15);
+			definitions.push_back(d);
+		}
+
+		{ // shielders wall
+			spawnDefinitionStruct d("shielders wall");
+			d.spawnCountMin = 10;
+			d.spawnCountMax = 15;
+			d.spawnTypes = (monsterTypeFlags::Shielder);
+			d.placingPolicy = placingPolicyEnum::Line;
+			d.priorityCurrent = randomRange(6000, 8000);
+			d.priorityChange = randomRange(800, 1200);
+			d.priorityAdditive = randomRange(20, 60);
+			definitions.push_back(d);
+		}
+
+		{ // saturated simple
+			spawnDefinitionStruct d("saturated circles");
+			d.spawnCountMin = 100;
+			d.spawnCountMax = 200;
+			d.spawnTypes = (monsterTypeFlags::Circle | monsterTypeFlags::SmallCube | monsterTypeFlags::SmallTriangle);
+			d.placingPolicy = placingPolicyEnum::Random;
+			d.distanceMin = 120;
+			d.distanceMax = 180;
+			d.priorityCurrent = randomRange(7000, 9000);
+			d.priorityChange = randomRange(1000, 1500);
+			d.priorityAdditive = randomRange(25, 75);
+			definitions.push_back(d);
+		}
+
+		{ // wormholes
+			spawnDefinitionStruct d("wormholes");
+			d.spawnCountMin = 1;
+			d.spawnCountMax = 3;
+			d.spawnTypes = (monsterTypeFlags::Wormhole);
+			d.placingPolicy = placingPolicyEnum::Around;
+			d.distanceMin = 160;
+			d.distanceMax = 190;
+			d.priorityCurrent = randomRange(5000, 7000);
+			d.priorityChange = randomRange(4000, 6000);
+			d.priorityAdditive = randomRange(100, 300);
+			definitions.push_back(d);
+		}
+
+		///////////////////////////////////////////////////////////////////////////
 		// bosses
 		///////////////////////////////////////////////////////////////////////////
 
@@ -355,53 +434,9 @@ namespace
 			d.priorityChange = 1;
 #else
 			d.priorityCurrent = 4000;
-			d.priorityChange = 20000;
-			d.priorityMultiplier = 2;
+			d.priorityChange = 10000;
+			d.priorityMultiplier = 1.5;
 #endif
-			definitions.push_back(d);
-		}
-
-		///////////////////////////////////////////////////////////////////////////
-		// final stage
-		///////////////////////////////////////////////////////////////////////////
-
-		{ // mixed group
-			spawnDefinitionStruct d("mixed group");
-			d.spawnCountMin = 20;
-			d.spawnCountMax = 25;
-			d.spawnTypes = (monsterTypeFlags::LargeTriangle | monsterTypeFlags::LargeCube | monsterTypeFlags::Diamond);
-			d.placingPolicy = placingPolicyEnum::Grouped;
-			d.priorityCurrent = 5000;
-			d.priorityChange = randomRange(200, 300);
-			d.priorityAdditive = randomRange(5, 15);
-			definitions.push_back(d);
-		}
-
-		{ // mixed around
-			spawnDefinitionStruct d("mixed around");
-			d.spawnCountMin = 5;
-			d.spawnCountMax = 15;
-			d.spawnTypes = (monsterTypeFlags::PinWheel | monsterTypeFlags::Snake | monsterTypeFlags::Shielder | monsterTypeFlags::Shocker);
-			d.placingPolicy = placingPolicyEnum::Around;
-			d.distanceMin = 160;
-			d.distanceMax = 190;
-			d.priorityCurrent = 5500;
-			d.priorityChange = randomRange(200, 300);
-			d.priorityAdditive = randomRange(5, 15);
-			definitions.push_back(d);
-		}
-
-		{ // wormholes
-			spawnDefinitionStruct d("wormholes");
-			d.spawnCountMin = 1;
-			d.spawnCountMax = 3;
-			d.spawnTypes = (monsterTypeFlags::Wormhole);
-			d.placingPolicy = placingPolicyEnum::Around;
-			d.distanceMin = 160;
-			d.distanceMax = 190;
-			d.priorityCurrent = 7000;
-			d.priorityChange = randomRange(6000, 8000);
-			d.priorityAdditive = randomRange(300, 500);
 			definitions.push_back(d);
 		}
 
@@ -409,7 +444,7 @@ namespace
 		// testing
 		///////////////////////////////////////////////////////////////////////////
 
-#ifdef DEGRID_TESTING
+#if 0
 		std::nth_element(definitions.begin(), definitions.begin(), definitions.end());
 		while (definitions[0].priorityCurrent < 50000)
 		{
@@ -467,14 +502,14 @@ void monstersSpawnInitial()
 {
 	{
 		spawnDefinitionStruct d("initial 1");
-		d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
+		d.spawnTypes = monsterTypeFlags::Circle;
 		d.spawnCountMin = monstersLimit();
 		d.spawnCountMax = d.spawnCountMin + 10;
 		d.spawn();
 	}
 	{
 		spawnDefinitionStruct d("initial 2");
-		d.spawnTypes = (monsterTypeFlags)(monsterTypeFlags::Circle);
+		d.spawnTypes = monsterTypeFlags::Circle;
 		d.placingPolicy = placingPolicyEnum::Grouped;
 		d.distanceMin = 80;
 		d.distanceMax = 100;

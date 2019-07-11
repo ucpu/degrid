@@ -57,7 +57,7 @@ namespace
 				for (entity *e : bossEggComponent::component->entities())
 				{
 					CAGE_COMPONENT_ENGINE(transform, t, e);
-					if (length(game.monstersTarget - t.position) > 90)
+					if (length(game.monstersTarget - t.position) > 100)
 						continue;
 					DEGRID_COMPONENT(bossEgg, m, e);
 					if (m.countdown-- == 0)

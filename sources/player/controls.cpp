@@ -289,7 +289,7 @@ namespace
 		}
 
 		game.life = 100;
-		game.money = achievements.acquired * 100;
+		game.money = achievements.acquired * powerupBuyPriceBase;
 		game.powerupSpawnChance = 0.3;
 
 #ifdef DEGRID_TESTING
