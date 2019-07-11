@@ -53,6 +53,37 @@ override_material = menu.cpm
 skybox.obj;menu
 
 []
+scheme = mesh
+export_normal = false
+export_tangent = false
+override_material = 1p.cpm
+portal.obj;1
+[]
+scheme = mesh
+export_normal = false
+export_tangent = false
+override_material = 2p.cpm
+portal.obj;2
+[]
+scheme = mesh
+export_normal = false
+export_tangent = false
+override_material = 3p.cpm
+portal.obj;3
+[]
+scheme = mesh
+export_normal = false
+export_tangent = false
+override_material = 4p.cpm
+portal.obj;4
+[]
+scheme = mesh
+export_normal = false
+export_tangent = false
+override_material = 5p.cpm
+portal.obj;5
+
+[]
 scheme = texture
 target = cube_map
 convert = skybox_to_cube

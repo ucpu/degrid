@@ -7,8 +7,9 @@ namespace
 		static entityComponent *component;
 		
 		uint32 countdown;
+		uint32 portal;
 		
-		bossEggComponent() : countdown(10)
+		bossEggComponent() : countdown(10), portal(0)
 		{}
 	};
 
@@ -38,9 +39,19 @@ namespace
 		}
 	}
 
+	void eggDestroyed(entity *e)
+	{
+		DEGRID_COMPONENT(bossEgg, egg, e);
+		if (entities()->has(egg.portal))
+			entities()->get(egg.portal)->destroy();
+	}
+
+	eventListener<void(entity *e)> eggDestroyedListener;
 	void engineInit()
 	{
 		bossEggComponent::component = entities()->defineComponent(bossEggComponent(), true);
+		eggDestroyedListener.attach(bossEggComponent::component->group()->entityRemoved);
+		eggDestroyedListener.bind<&eggDestroyed>();
 	}
 
 	void engineUpdate()
@@ -81,10 +92,23 @@ namespace
 		}
 	}
 
+	void lateUpdate()
+	{
+		for (entity *e : bossEggComponent::component->entities())
+		{
+			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			DEGRID_COMPONENT(bossEgg, egg, e);
+			CAGE_COMPONENT_ENGINE(transform, portal, entities()->get(egg.portal));
+			portal = tr;
+			portal.scale *= 0.87;
+		}
+	}
+
 	class callbacksClass
 	{
 		eventListener<void()> engineInitListener;
 		eventListener<void()> engineUpdateListener;
+		eventListener<void()> engineLateUpdateListener;
 	public:
 		callbacksClass()
 		{
@@ -92,6 +116,8 @@ namespace
 			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
+			engineLateUpdateListener.attach(controlThread().update, 42); // after physics
+			engineLateUpdateListener.bind<&lateUpdate>();
 		}
 	} callbacksInstance;
 }
@@ -106,4 +132,19 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 	DEGRID_COMPONENT(bossEgg, eggc, e);
 	DEGRID_COMPONENT(rotation, rot, e);
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.05);
+	DEGRID_COMPONENT(gravity, grav, e);
+	grav.strength = -10;
+
+	{ // portal
+		entity *p = entities()->createUnique();
+		eggc.portal = p->name();
+		CAGE_COMPONENT_ENGINE(render, r, p);
+		static const uint32 portalNames[] = {
+			#define GCHL_GENERATE(N) hashString("degrid/environment/skyboxes/portal.obj;" CAGE_STRINGIZE(N)),
+					GCHL_GENERATE(0)
+					CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
+			#undef GCHL_GENERATE
+		};
+		r.object = portalNames[game.defeatedBosses + 1];
+	}
 }
