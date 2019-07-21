@@ -45,6 +45,7 @@ namespace
 			else
 			{
 				vec3 will;
+
 				// spiraling
 				{
 					vec3 direct = normalize(game.monstersTarget - tr.position);
@@ -111,6 +112,8 @@ namespace
 				if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed)
 					mv.velocity = mv.velocity.normalize() * sm.maxSpeed;
 			}
+
+			CAGE_ASSERT_RUNTIME(mv.velocity.valid(), mv.velocity, tr.position, tr.orientation, tr.scale);
 		}
 	}
 
@@ -187,4 +190,3 @@ void spawnSimple(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &c
 	}
 	monsterReflectMutation(e, special);
 }
-

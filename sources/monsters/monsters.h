@@ -19,6 +19,8 @@ enum class monsterTypeFlags
 	Shielder = 1 << 8,
 	Shocker = 1 << 9,
 	Wormhole = 1 << 10,
+	Rocket = 1 << 11,
+	Spawner = 1 << 12,
 	BossEgg = 1 << 29,
 	BossBody = 1 << 30,
 	BossExtension = 1 << 31,
@@ -34,6 +36,8 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color);
 void spawnShielder(const vec3 &spawnPosition, const vec3 &color);
 void spawnShocker(const vec3 &spawnPosition, const vec3 &color);
 void spawnWormhole(const vec3 &spawnPosition, const vec3 &color);
+void spawnRocket(const vec3 &spawnPosition, const vec3 &color);
+void spawnSpawner(const vec3 &spawnPosition, const vec3 &color);
 void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color);
 void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color);
 

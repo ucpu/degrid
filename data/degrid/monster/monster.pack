@@ -14,6 +14,8 @@ shield.object
 wormhole.object
 shocker/shocker.object
 shocker/lightning.object
+spawner.object
+rocket.object
 
 []
 bum-circle.ogg
@@ -28,3 +30,6 @@ bum-wormhole.ogg
 wormhole.ogg
 shocker/bum-shocker.ogg
 shocker/lightning.flac
+
+[]
+spawner.fbx;loop

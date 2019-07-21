@@ -99,8 +99,8 @@ namespace
 			CAGE_COMPONENT_ENGINE(transform, tr, e);
 			DEGRID_COMPONENT(bossEgg, egg, e);
 			CAGE_COMPONENT_ENGINE(transform, portal, entities()->get(egg.portal));
-			portal = tr;
-			portal.scale *= 0.87;
+			portal.position = tr.position;
+			portal.scale = tr.scale * 0.88;
 		}
 	}
 
@@ -128,12 +128,14 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 	if (game.defeatedBosses >= bossesTotalCount)
 		return;
 	entity *e = initializeMonster(spawnPosition, color, 10, hashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
-	DEGRID_COMPONENT(boss, boss, e);
 	DEGRID_COMPONENT(bossEgg, eggc, e);
-	DEGRID_COMPONENT(rotation, rot, e);
-	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.05);
-	DEGRID_COMPONENT(gravity, grav, e);
-	grav.strength = -10;
+	{
+		DEGRID_COMPONENT(boss, boss, e);
+		DEGRID_COMPONENT(rotation, rot, e);
+		rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.03);
+		DEGRID_COMPONENT(gravity, grav, e);
+		grav.strength = -10;
+	}
 
 	{ // portal
 		entity *p = entities()->createUnique();
@@ -146,5 +148,9 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 			#undef GCHL_GENERATE
 		};
 		r.object = portalNames[game.defeatedBosses + 1];
+		DEGRID_COMPONENT(rotation, rotp, p);
+		rotp.rotation = interpolate(quat(), randomDirectionQuat(), 0.003);
+		CAGE_COMPONENT_ENGINE(transform, t, p);
+		t.orientation = randomDirectionQuat();
 	}
 }

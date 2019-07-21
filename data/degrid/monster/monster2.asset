@@ -1,0 +1,32 @@
+
+[]
+scheme = mesh
+export_uv = false
+export_tangent = false
+override_material = rocket.cpm
+rocket.obj
+
+[]
+scheme = mesh
+export_uv = false
+export_tangent = false
+export_bones = true
+spawner.fbx
+
+[]
+scheme = skeleton
+spawner.fbx;skeleton
+
+[]
+scheme = animation
+spawner.fbx;loop
+
+[]
+scheme = object
+spawner.object
+rocket.object
+
+[]
+scheme = sound
+before = discard
+after = discard

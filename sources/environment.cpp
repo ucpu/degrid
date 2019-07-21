@@ -58,9 +58,11 @@ namespace
 				{
 					entity *e = entities()->createUnique();
 					CAGE_COMPONENT_ENGINE(transform, t, e);
+					t.orientation = skyboxOrientation;
 					CAGE_COMPONENT_ENGINE(render, r, e);
 					r.renderMask = 2;
 					r.object = hashString("degrid/environment/skyboxes/skybox.obj;hurt");
+					r.opacity = 1;
 					DEGRID_COMPONENT(skybox, s, e);
 					s.dissipating = true;
 				}

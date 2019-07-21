@@ -284,6 +284,16 @@ namespace
 			definitions.push_back(d);
 		}
 
+		{ // rockets individually
+			spawnDefinitionStruct d("individual rockets");
+			d.spawnTypes = (monsterTypeFlags::Rocket);
+			d.priorityCurrent = 3500;
+			d.priorityChange = 111;
+			d.priorityAdditive = 1;
+			d.priorityMultiplier = 1.02;
+			definitions.push_back(d);
+		}
+
 		///////////////////////////////////////////////////////////////////////////
 		// groups
 		///////////////////////////////////////////////////////////////////////////
@@ -368,13 +378,25 @@ namespace
 			spawnDefinitionStruct d("mixed around");
 			d.spawnCountMin = 5;
 			d.spawnCountMax = 10;
-			d.spawnTypes = (monsterTypeFlags::PinWheel | monsterTypeFlags::Snake | monsterTypeFlags::Shielder | monsterTypeFlags::Shocker);
+			d.spawnTypes = (monsterTypeFlags::PinWheel | monsterTypeFlags::Snake | monsterTypeFlags::Shielder | monsterTypeFlags::Shocker | monsterTypeFlags::Rocket);
 			d.placingPolicy = placingPolicyEnum::Around;
 			d.distanceMin = 160;
 			d.distanceMax = 190;
 			d.priorityCurrent = randomRange(5000, 7000);
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(5, 15);
+			definitions.push_back(d);
+		}
+
+		{ // rockets wall
+			spawnDefinitionStruct d("rockets wall");
+			d.spawnCountMin = 10;
+			d.spawnCountMax = 15;
+			d.spawnTypes = (monsterTypeFlags::Rocket);
+			d.placingPolicy = placingPolicyEnum::Line;
+			d.priorityCurrent = randomRange(5000, 7000);
+			d.priorityChange = randomRange(800, 1200);
+			d.priorityAdditive = randomRange(20, 60);
 			definitions.push_back(d);
 		}
 
@@ -385,6 +407,18 @@ namespace
 			d.spawnTypes = (monsterTypeFlags::Shielder);
 			d.placingPolicy = placingPolicyEnum::Line;
 			d.priorityCurrent = randomRange(6000, 8000);
+			d.priorityChange = randomRange(800, 1200);
+			d.priorityAdditive = randomRange(20, 60);
+			definitions.push_back(d);
+		}
+
+		{ // rockets circle
+			spawnDefinitionStruct d("rockets circle");
+			d.spawnCountMin = 30;
+			d.spawnCountMax = 50;
+			d.spawnTypes = (monsterTypeFlags::Rocket);
+			d.placingPolicy = placingPolicyEnum::Around;
+			d.priorityCurrent = randomRange(7000, 9000);
 			d.priorityChange = randomRange(800, 1200);
 			d.priorityAdditive = randomRange(20, 60);
 			definitions.push_back(d);
@@ -493,6 +527,8 @@ void spawnGeneral(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &
 	case monsterTypeFlags::Shielder: return spawnShielder(spawnPosition, color);
 	case monsterTypeFlags::Shocker: return spawnShocker(spawnPosition, color);
 	case monsterTypeFlags::Wormhole: return spawnWormhole(spawnPosition, color);
+	case monsterTypeFlags::Rocket: return spawnRocket(spawnPosition, color);
+	case monsterTypeFlags::Spawner: return spawnSpawner(spawnPosition, color);
 	case monsterTypeFlags::BossEgg: return spawnBossEgg(spawnPosition, color);
 	default: return spawnSimple(type, spawnPosition, color);
 	}
