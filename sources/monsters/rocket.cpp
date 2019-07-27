@@ -51,7 +51,7 @@ namespace
 void spawnRocket(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	entity *e = initializeMonster(spawnPosition, color, 3, hashString("degrid/monster/rocket.object"), hashString("degrid/monster/bum-rocket.ogg"), 6, 2 + monsterMutation(special));
+	entity *e = initializeMonster(spawnPosition, color, 2.5, hashString("degrid/monster/rocket.object"), hashString("degrid/monster/bum-rocket.ogg"), 6, 2 + monsterMutation(special));
 	DEGRID_COMPONENT(rocketMonster, r, e);
 	DEGRID_COMPONENT(velocity, v, e);
 	v.velocity = game.monstersTarget - spawnPosition;

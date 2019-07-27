@@ -200,7 +200,6 @@ namespace
 			CAGE_LOG(severityEnum::Info, "joke", "JOKE: snakes only map");
 			spawnDefinitionStruct d("snakes only");
 			d.spawnTypes = (monsterTypeFlags::Snake);
-			d.priorityCurrent = 0;
 			definitions.push_back(d);
 			announceJokeMap();
 			return;
@@ -237,8 +236,8 @@ namespace
 		{ // pin wheels individually
 			spawnDefinitionStruct d("individual pinwheels");
 			d.spawnTypes = (monsterTypeFlags::PinWheel);
-			d.priorityCurrent = 300;
-			d.priorityChange = 23;
+			d.priorityCurrent = randomRange(200, 400);
+			d.priorityChange = 27;
 			d.priorityAdditive = 0.01;
 			d.priorityMultiplier = 1.02;
 			definitions.push_back(d);
@@ -247,8 +246,8 @@ namespace
 		{ // diamonds individually
 			spawnDefinitionStruct d("individual diamonds");
 			d.spawnTypes = (monsterTypeFlags::Diamond);
-			d.priorityCurrent = 500;
-			d.priorityChange = 37;
+			d.priorityCurrent = randomRange(300, 500);
+			d.priorityChange = 42;
 			d.priorityAdditive = 0.1;
 			d.priorityMultiplier = 1.02;
 			definitions.push_back(d);
@@ -257,7 +256,7 @@ namespace
 		{ // snakes individually
 			spawnDefinitionStruct d("individual snakes");
 			d.spawnTypes = (monsterTypeFlags::Snake);
-			d.priorityCurrent = 2000;
+			d.priorityCurrent = randomRange(1000, 2500);
 			d.priorityChange = 133;
 			d.priorityAdditive = 1;
 			d.priorityMultiplier = 1.02;
@@ -267,7 +266,7 @@ namespace
 		{ // shielders individually
 			spawnDefinitionStruct d("individual shielders");
 			d.spawnTypes = (monsterTypeFlags::Shielder);
-			d.priorityCurrent = 2500;
+			d.priorityCurrent = randomRange(1000, 2500);
 			d.priorityChange = 127;
 			d.priorityAdditive = 1;
 			d.priorityMultiplier = 1.02;
@@ -277,7 +276,7 @@ namespace
 		{ // shockers individually
 			spawnDefinitionStruct d("individual shockers");
 			d.spawnTypes = (monsterTypeFlags::Shocker);
-			d.priorityCurrent = 3000;
+			d.priorityCurrent = randomRange(2500, 3500);
 			d.priorityChange = 143;
 			d.priorityAdditive = 1;
 			d.priorityMultiplier = 1.02;
@@ -287,8 +286,18 @@ namespace
 		{ // rockets individually
 			spawnDefinitionStruct d("individual rockets");
 			d.spawnTypes = (monsterTypeFlags::Rocket);
-			d.priorityCurrent = 3500;
+			d.priorityCurrent = randomRange(2500, 3500);
 			d.priorityChange = 111;
+			d.priorityAdditive = 1;
+			d.priorityMultiplier = 1.02;
+			definitions.push_back(d);
+		}
+
+		{ // spawners individually
+			spawnDefinitionStruct d("individual spawners");
+			d.spawnTypes = (monsterTypeFlags::Spawner);
+			d.priorityCurrent = randomRange(2500, 3500);
+			d.priorityChange = 122;
 			d.priorityAdditive = 1;
 			d.priorityMultiplier = 1.02;
 			definitions.push_back(d);
@@ -304,7 +313,7 @@ namespace
 			d.spawnCountMax = 20;
 			d.spawnTypes = (monsterTypeFlags::Circle);
 			d.placingPolicy = placingPolicyEnum::Grouped;
-			d.priorityCurrent = 700;
+			d.priorityCurrent = randomRange(400, 600);
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(1, 10);
 			definitions.push_back(d);
@@ -316,7 +325,7 @@ namespace
 			d.spawnCountMax = 15;
 			d.spawnTypes = (monsterTypeFlags::LargeTriangle);
 			d.placingPolicy = placingPolicyEnum::Grouped;
-			d.priorityCurrent = 1500;
+			d.priorityCurrent = randomRange(1000, 1500);
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(1, 10);
 			definitions.push_back(d);
@@ -328,7 +337,7 @@ namespace
 			d.spawnCountMax = 15;
 			d.spawnTypes = (monsterTypeFlags::LargeCube);
 			d.placingPolicy = placingPolicyEnum::Grouped;
-			d.priorityCurrent = 1500;
+			d.priorityCurrent = randomRange(1000, 1500);
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(1, 10);
 			definitions.push_back(d);
@@ -340,7 +349,7 @@ namespace
 			d.spawnCountMax = 4;
 			d.spawnTypes = (monsterTypeFlags::PinWheel);
 			d.placingPolicy = placingPolicyEnum::Grouped;
-			d.priorityCurrent = 2500;
+			d.priorityCurrent = randomRange(2000, 3000);
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(5, 15);
 			definitions.push_back(d);
@@ -352,7 +361,7 @@ namespace
 			d.spawnCountMax = 7;
 			d.spawnTypes = (monsterTypeFlags::Diamond);
 			d.placingPolicy = placingPolicyEnum::Grouped;
-			d.priorityCurrent = 3000;
+			d.priorityCurrent = randomRange(2000, 3000);
 			d.priorityChange = randomRange(200, 300);
 			d.priorityAdditive = randomRange(5, 15);
 			definitions.push_back(d);
@@ -449,6 +458,20 @@ namespace
 			d.priorityCurrent = randomRange(5000, 7000);
 			d.priorityChange = randomRange(4000, 6000);
 			d.priorityAdditive = randomRange(100, 300);
+			definitions.push_back(d);
+		}
+
+		{ // spawners
+			spawnDefinitionStruct d("spawners");
+			d.spawnCountMin = 2;
+			d.spawnCountMax = 4;
+			d.spawnTypes = (monsterTypeFlags::Spawner);
+			d.placingPolicy = placingPolicyEnum::Around;
+			d.distanceMin = 160;
+			d.distanceMax = 190;
+			d.priorityCurrent = randomRange(6000, 8000);
+			d.priorityChange = randomRange(1000, 1500);
+			d.priorityAdditive = randomRange(25, 75);
 			definitions.push_back(d);
 		}
 

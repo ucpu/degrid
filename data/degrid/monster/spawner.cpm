@@ -1,0 +1,5 @@
+
+[base]
+roughness = 0.1
+metalness = 0.7
+mask = 1

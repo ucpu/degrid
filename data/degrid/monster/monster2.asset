@@ -11,15 +11,18 @@ scheme = mesh
 export_uv = false
 export_tangent = false
 export_bones = true
-spawner.fbx
+override_material = spawner.cpm
+axes = +x-z+y
+spawner.x
 
 []
 scheme = skeleton
-spawner.fbx;skeleton
+axes = +x-z+y
+spawner.x;skeleton
 
 []
 scheme = animation
-spawner.fbx;loop
+spawner.x?looping
 
 []
 scheme = object
