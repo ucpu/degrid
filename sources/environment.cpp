@@ -114,7 +114,7 @@ namespace
 #ifdef CAGE_DEBUG
 		const real step = 50;
 #else
-		const real step = 8;
+		const real step = 12;
 #endif
 		for (real y = -radius; y < radius + 1e-3; y += step)
 		{
@@ -143,7 +143,7 @@ namespace
 #ifdef CAGE_DEBUG
 		const real angStep = 5;
 #else
-		const real angStep = 1;
+		const real angStep = 2;
 #endif
 		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
 		{
@@ -205,7 +205,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 {
 	statistics.environmentExplosions++;
 
-	// colorize nearby degrids
+	// colorize nearby grids
 	spatialSearchQuery->intersection(sphere(position, size));
 	for (uint32 otherName : spatialSearchQuery->result())
 	{

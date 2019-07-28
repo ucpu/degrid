@@ -29,7 +29,26 @@ namespace
 			if (tr.position.squaredLength() > disapearDistance2)
 				e->add(entitiesToDestroy);
 			else
+			{
 				tr.orientation = tr.orientation * quat(degs(), degs(), degs(3));
+
+				entity *spark = entities()->createAnonymous();
+				CAGE_COMPONENT_ENGINE(transform, transform, spark);
+				transform.scale = randomChance() * 0.2 + 0.3;
+				transform.position = tr.position + (tr.orientation * vec3(0, 0, 1.2) + randomDirection3() * 0.3) * tr.scale;
+				transform.orientation = randomDirectionQuat();
+				CAGE_COMPONENT_ENGINE(render, render, spark);
+				render.object = hashString("degrid/environment/spark.object");
+				DEGRID_COMPONENT(velocity, v, e);
+				DEGRID_COMPONENT(velocity, vel, spark);
+				vel.velocity = (v.velocity + randomDirection3() * 0.05) * randomChance() * -0.5;
+				DEGRID_COMPONENT(timeout, ttl, spark);
+				ttl.ttl = randomRange(10, 15);
+				CAGE_COMPONENT_ENGINE(textureAnimation, at, spark);
+				at.startTime = currentControlTime();
+				at.speed = 30.f / ttl.ttl;
+				spark->add(entitiesPhysicsEvenWhenPaused);
+			}
 		}
 	}
 

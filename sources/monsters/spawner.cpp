@@ -98,7 +98,7 @@ void spawnSpawner(const vec3 &spawnPosition, const vec3 &color)
 	CAGE_COMPONENT_ENGINE(transform, transform, spawner);
 	transform.orientation = randomDirectionQuat();
 	CAGE_COMPONENT_ENGINE(skeletalAnimation, sa, spawner);
-	sa.name = hashString("degrid/monster/spawner.x?looping");
+	sa.startTime = getApplicationTime();
 	DEGRID_COMPONENT(monster, m, spawner);
 	DEGRID_COMPONENT(spawner, s, spawner);
 	s.type = pickOne(types[game.defeatedBosses]);

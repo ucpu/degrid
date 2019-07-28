@@ -1,3 +1,6 @@
 
+[texture_animation]
+speed = 0.4
+
 []
 monster.obj?snakeTail

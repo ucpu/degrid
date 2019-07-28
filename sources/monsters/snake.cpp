@@ -164,7 +164,6 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		prev = tail->name();
 		CAGE_COMPONENT_ENGINE(textureAnimation, aniTex, tail);
 		aniTex.startTime = currentControlTime() + aniInitOff + i * 1000000;
-		aniTex.speed = 0.4;
 		DEGRID_COMPONENT(monster, monster, tail);
 		monster.dispersion = 0.2;
 		CAGE_COMPONENT_ENGINE(transform, transform, tail);

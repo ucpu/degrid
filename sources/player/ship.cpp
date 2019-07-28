@@ -98,12 +98,12 @@ namespace
 
 	void scoreUpdate()
 	{
-		if (game.jokeMap && game.score >= 10000 && scorePreviousAchievements < 10000)
+		if (game.jokeMap && game.score >= 5000 && scorePreviousAchievements < 5000)
 			achievementFullfilled("joke-map");
-		checkScore(  10000, "starting-kit");
-		checkScore(  50000, "bronze");
-		checkScore( 250000, "silver");
-		checkScore(1250000, "gold");
+		checkScore(   5000, "starting-kit");
+		checkScore(  20000, "bronze");
+		checkScore( 100000, "silver");
+		checkScore(1000000, "gold");
 		scorePreviousAchievements = game.score;
 
 		uint64 lg = scorePreviousSound >= 20000 ? 10 : scorePreviousSound >= 2000 ? 2 : 1;
