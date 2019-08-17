@@ -38,12 +38,12 @@ namespace
 					if (e->has(monsterComponent::component))
 					{
 						real d = ot.scale + t.scale;
-						if (toMonster.squaredLength() < d*d)
-							dispersion += toMonster.normalize() / toMonster.length();
+						if (squaredLength(toMonster) < d*d)
+							dispersion += normalize(toMonster) / length(toMonster);
 					}
 				}
 				if (dispersion != vec3())
-					v.velocity += dispersion.normalize() * m.dispersion;
+					v.velocity += normalize(dispersion) * m.dispersion;
 			}
 
 			// collision with player
@@ -53,7 +53,7 @@ namespace
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
-					vec3 shieldDirection = (t.position - playerTransform.position).normalize();
+					vec3 shieldDirection = normalize(t.position - playerTransform.position);
 					vec3 shieldPosition = playerTransform.position + shieldDirection * (playerScale * 1.1);
 					environmentExplosion(shieldPosition, shieldDirection * 0.5, vec3(1, 1, 1), min(m.damage, 5) * 2 + 2, 3); // shield sparks
 				}
@@ -100,7 +100,7 @@ namespace
 			// finished a boss fight
 			if (wasBoss && !hasBoss)
 			{
-				CAGE_ASSERT_RUNTIME(game.defeatedBosses < bossesTotalCount);
+				CAGE_ASSERT(game.defeatedBosses < bossesTotalCount);
 				achievementFullfilled(string("boss-") + game.defeatedBosses, true);
 				game.defeatedBosses++;
 				game.money += numeric_cast<uint32>(game.life * 2);

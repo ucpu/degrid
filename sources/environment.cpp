@@ -120,7 +120,7 @@ namespace
 		{
 			for (real x = -radius; x < radius + 1e-3; x += step)
 			{
-				const real d = vec3(x, 0, y).length();
+				const real d = length(vec3(x, 0, y));
 				if (d > radius || d < 1e-7)
 					continue;
 				entity *e = entities()->createUnique();
@@ -133,7 +133,7 @@ namespace
 				transform.position = grid.place + randomDirection3() * vec3(10, 0.1, 10);
 				CAGE_COMPONENT_ENGINE(render, render, e);
 				render.object = hashString("degrid/environment/grid.object");
-				real ang = real(aTan2(x, y)) / (real::Pi() * 2) + 0.5;
+				real ang = real(atan2(x, y)) / (real::Pi() * 2) + 0.5;
 				real dst = d / radius;
 				render.color = convertHsvToRgb(vec3(ang, 1, interpolate(real(0.5), real(0.2), sqr(dst))));
 				grid.originalColor = render.color;
@@ -180,20 +180,20 @@ namespace
 
 void setSkybox(uint32 objectName)
 {
-	{ // initiate dissapearing of old skyboxes
+	{ // initiate disappearing of old sky-boxes
 		for (entity *e : skyboxComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(transform, t, e);
-			t.position[2] *= 0.9; // move the skybox closer to camera
+			t.position[2] *= 0.9; // move the sky-box closer to the camera
 			DEGRID_COMPONENT(skybox, s, e);
 			s.dissipating = true;
 		}
 	}
 
-	{ // create new skybox
+	{ // create new sky-box
 		entity *e = entities()->createUnique();
 		CAGE_COMPONENT_ENGINE(transform, t, e);
-		t.position[2] = -1e-5; // semitransparent objects are rendered back-to-front; this makes the skybox the furthest
+		t.position[2] = -1e-5; // semitransparent objects are rendered back-to-front; this makes the sky-box the furthest
 		CAGE_COMPONENT_ENGINE(render, r, e);
 		r.renderMask = 2;
 		r.object = objectName;
@@ -218,10 +218,10 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		CAGE_COMPONENT_ENGINE(render, orc, e);
 		DEGRID_COMPONENT(velocity, og, e);
 		vec3 toOther = ot.position - position;
-		vec3 change = toOther.normalize() * (size / max(2, toOther.squaredLength())) * 2;
+		vec3 change = normalize(toOther) * (size / max(2, squaredLength(toOther))) * 2;
 		og.velocity += change;
 		ot.position += change * 2;
-		orc.color = interpolate(color, orc.color, toOther.length() / size);
+		orc.color = interpolate(color, orc.color, length(toOther) / size);
 	}
 
 	// create some debris
@@ -233,8 +233,8 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		timeout.ttl = numeric_cast<uint32>(randomChance() * 5 + 10);
 		DEGRID_COMPONENT(velocity, vel, e);
 		vel.velocity = randomDirection3();
-		if (velocity.squaredLength() > 0)
-			vel.velocity = normalize(vel.velocity + velocity.normalize() * velocity.length().sqrt());
+		if (squaredLength(velocity) > 0)
+			vel.velocity = normalize(vel.velocity + normalize(velocity) * sqrt(length(velocity)));
 		vel.velocity *= randomChance() + 0.5;
 		CAGE_COMPONENT_ENGINE(transform, transform, e);
 		transform.scale = scale * (randomRange(0.8, 1.2) * 0.35);

@@ -87,7 +87,7 @@ namespace
 			CAGE_COMPONENT_ENGINE(transform, tr, e);
 			DEGRID_COMPONENT(velocity, mv, e);
 			vec3 v = game.monstersTarget - tr.position;
-			real l = v.length();
+			real l = length(v);
 			mv.velocity = normalize(v) * pow(max(l - 70, 0) * 0.03, 1.5);
 		}
 	}
@@ -124,7 +124,7 @@ namespace
 
 void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 {
-	CAGE_ASSERT_RUNTIME(bossComponent::component->group()->count() == 0);
+	CAGE_ASSERT(bossComponent::component->group()->count() == 0);
 	if (game.defeatedBosses >= bossesTotalCount)
 		return;
 	entity *e = initializeMonster(spawnPosition, color, 10, hashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());

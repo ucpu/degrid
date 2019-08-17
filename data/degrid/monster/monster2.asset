@@ -12,12 +12,12 @@ export_uv = false
 export_tangent = false
 export_bones = true
 override_material = spawner.cpm
-axes = +x-z+y
+#axes = +x-z+y
 spawner.x
 
 []
 scheme = skeleton
-axes = +x-z+y
+#axes = +x-z+y
 spawner.x;skeleton
 
 []

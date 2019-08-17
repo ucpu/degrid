@@ -26,7 +26,7 @@ namespace
 		for (entity *e : rocketMonsterComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(transform, tr, e);
-			if (tr.position.squaredLength() > disapearDistance2)
+			if (squaredLength(tr.position) > disapearDistance2)
 				e->add(entitiesToDestroy);
 			else
 			{

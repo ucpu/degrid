@@ -43,7 +43,7 @@ namespace
 			{
 				if (en == 1000 + i * 4 + 2) // sell
 				{
-					CAGE_ASSERT_RUNTIME(game.powerups[i] > 0);
+					CAGE_ASSERT(game.powerups[i] > 0);
 					game.powerups[i]--;
 					game.money += powerupSellPrice;
 					gui()->skipAllEventsUntilNextUpdate();
@@ -52,8 +52,8 @@ namespace
 				}
 				if (en == 1000 + i * 4 + 3) // buy
 				{
-					CAGE_ASSERT_RUNTIME(canAddPermanentPowerup());
-					CAGE_ASSERT_RUNTIME(game.money >= powerupBuyPriceBase * game.buyPriceMultiplier);
+					CAGE_ASSERT(canAddPermanentPowerup());
+					CAGE_ASSERT(game.money >= powerupBuyPriceBase * game.buyPriceMultiplier);
 					game.powerups[i]++;
 					game.money -= powerupBuyPriceBase * game.buyPriceMultiplier;
 					game.buyPriceMultiplier++;

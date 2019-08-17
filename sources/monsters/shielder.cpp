@@ -100,7 +100,7 @@ namespace
 				}
 			}
 
-			CAGE_ASSERT_RUNTIME(sh.stepsLeft > 0);
+			CAGE_ASSERT(sh.stepsLeft > 0);
 			sh.stepsLeft--;
 
 			// update shield rendering
@@ -125,8 +125,8 @@ namespace
 					continue;
 				CAGE_COMPONENT_ENGINE(transform, ot, e);
 				vec3 toShot = ot.position - tr.position;
-				vec3 dirShot = toShot.normalize();
-				if (dirShot.dot(forward) < cos(degs(45)))
+				vec3 dirShot = normalize(toShot);
+				if (dot(dirShot, forward) < cos(degs(45)))
 					continue;
 				e->add(entitiesToDestroy);
 				statistics.shielderStoppedShots++;

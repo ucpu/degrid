@@ -86,7 +86,7 @@ namespace
 			}
 		}
 		uint32 alSiz = numeric_cast<uint32>(allowed.size());
-		CAGE_ASSERT_RUNTIME(alSiz > 0);
+		CAGE_ASSERT(alSiz > 0);
 		return allowed[randomRange(0u, alSiz)];
 	}
 }

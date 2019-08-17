@@ -40,8 +40,8 @@ namespace
 			DEGRID_COMPONENT(velocity, mv, e);
 			DEGRID_COMPONENT(simpleMonster, sm, e);
 
-			if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed + 1e-4)
-				mv.velocity = mv.velocity.normalize() * max(sm.maxSpeed, mv.velocity.length() - sm.acceleration);
+			if (squaredLength(mv.velocity) > sm.maxSpeed * sm.maxSpeed + 1e-4)
+				mv.velocity = normalize(mv.velocity) * max(sm.maxSpeed, length(mv.velocity) - sm.acceleration);
 			else
 			{
 				vec3 will;
@@ -57,7 +57,7 @@ namespace
 
 				// circling
 				{
-					rads ang = real(e->name() % 2) * rads::Stright() + real(((e->name() / 2) % 30) / 30.0) * rads::Full() + rads(currentControlTime() * 1e-6);
+					rads ang = real(e->name() % 2) * rads::Full() * 0.5 + real(((e->name() / 2) % 30) / 30.0) * rads::Full() + rads(currentControlTime() * 1e-6);
 					vec3 dir = quat(degs(), ang, degs()) * vec3(0, 0, -1);
 					will = interpolate(will, dir, sm.circling);
 				}
@@ -82,17 +82,17 @@ namespace
 						vec3 toMonster = tr.position - ot.position;
 
 						// test whether other is closer
-						if (toMonster.squaredLength() >= closestDistance * closestDistance)
+						if (squaredLength(toMonster) >= closestDistance * closestDistance)
 							continue;
 
 						DEGRID_COMPONENT(velocity, ov, e);
 
 						// test its direction
-						if (dot(toMonster.normalize(), ov.velocity.normalize()) < 0)
+						if (dot(normalize(toMonster), normalize(ov.velocity)) < 0)
 							continue;
 
 						closestShot = otherName;
-						closestDistance = toMonster.length();
+						closestDistance = length(toMonster);
 					}
 				}
 
@@ -103,17 +103,17 @@ namespace
 					CAGE_COMPONENT_ENGINE(transform, ot, s);
 					DEGRID_COMPONENT(velocity, ov, s);
 					vec3 a = tr.position - ot.position;
-					vec3 b = ov.velocity.normalize();
+					vec3 b = normalize(ov.velocity);
 					vec3 avoid = normalize(a - dot(a, b) * b);
 					will = interpolate(will, avoid, sm.avoidance);
 				}
 
 				mv.velocity += will * sm.acceleration;
-				if (mv.velocity.squaredLength() > sm.maxSpeed * sm.maxSpeed)
-					mv.velocity = mv.velocity.normalize() * sm.maxSpeed;
+				if (squaredLength(mv.velocity) > sm.maxSpeed * sm.maxSpeed)
+					mv.velocity = normalize(mv.velocity) * sm.maxSpeed;
 			}
 
-			CAGE_ASSERT_RUNTIME(mv.velocity.valid(), mv.velocity, tr.position, tr.orientation, tr.scale);
+			CAGE_ASSERT(mv.velocity.valid(), mv.velocity, tr.position, tr.orientation, tr.scale);
 		}
 	}
 

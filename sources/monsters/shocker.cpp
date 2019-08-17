@@ -18,8 +18,8 @@ namespace
 
 	void lightning(const vec3 &a, const vec3 &b, const vec3 &color)
 	{
-		real d = a.distance(b);
-		vec3 v = (b - a).normalize();
+		real d = distance(a, b);
+		vec3 v = normalize(b - a);
 		vec3 c = (a + b) * 0.5;
 		if (d > 25)
 		{
@@ -66,13 +66,13 @@ namespace
 			CAGE_COMPONENT_ENGINE(transform, tr, e);
 			DEGRID_COMPONENT(shocker, sh, e);
 			vec3 v = tr.position - playerTransform.position;
-			real d = v.length();
+			real d = length(v);
 
 			// stay away from the player
 			if (d < sh.radius * 0.8 && d > 1e-7)
 			{
 				DEGRID_COMPONENT(velocity, mv, e);
-				mv.velocity += v.normalize() * 0.3;
+				mv.velocity += normalize(v) * 0.3;
 			}
 
 			// lightning

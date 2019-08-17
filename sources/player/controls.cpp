@@ -49,9 +49,9 @@ namespace
 		real px = p[0], py = -p[1];
 		CAGE_COMPONENT_ENGINE(transform, ts, getPrimaryCameraEntity());
 		CAGE_COMPONENT_ENGINE(camera, cs, getPrimaryCameraEntity());
-		mat4 view = mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)).inverse();
+		mat4 view = inverse(mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)));
 		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res.x) / real(res.y), cs.near, cs.far);
-		mat4 inv = (proj * view).inverse();
+		mat4 inv = inverse(proj * view);
 		vec4 pn = inv * vec4(px, py, -1, 1);
 		vec4 pf = inv * vec4(px, py, 1, 1);
 		vec3 near = vec3(pn) / pn[3];
@@ -166,7 +166,7 @@ namespace
 	void engineUpdate()
 	{
 		OPTICK_EVENT("controls");
-		CAGE_ASSERT_RUNTIME(!game.gameOver || game.paused, game.gameOver, game.paused, game.cinematic);
+		CAGE_ASSERT(!game.gameOver || game.paused, game.gameOver, game.paused, game.cinematic);
 
 		if (game.paused)
 			return;
@@ -234,17 +234,17 @@ namespace
 		} break;
 		case 2: // lmb
 			game.moveDirection = mouseLeftPosition - playerTransform.position;
-			if (game.moveDirection.squaredLength() < 100)
+			if (squaredLength(game.moveDirection) < 100)
 				game.moveDirection = vec3();
 			break;
 		case 3: // rmb
 			game.moveDirection = mouseRightPosition - playerTransform.position;
-			if (game.moveDirection.squaredLength() < 100)
+			if (squaredLength(game.moveDirection) < 100)
 				game.moveDirection = vec3();
 			break;
 		case 4: // cursor position
 			game.moveDirection = mouseCurrentPosition - playerTransform.position;
-			if (game.moveDirection.squaredLength() < 100)
+			if (squaredLength(game.moveDirection) < 100)
 				game.moveDirection = vec3();
 			break;
 		}

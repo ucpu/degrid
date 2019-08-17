@@ -98,8 +98,8 @@ namespace
 			playerPosition = p.position;
 		}
 
-		CAGE_ASSERT_RUNTIME(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
-		CAGE_ASSERT_RUNTIME(distanceMin <= distanceMax && distanceMin > 0, distanceMin, distanceMax);
+		CAGE_ASSERT(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
+		CAGE_ASSERT(distanceMin <= distanceMax && distanceMin > 0, distanceMin, distanceMax);
 		std::vector<monsterTypeFlags> allowed;
 		allowed.reserve(32);
 		{
@@ -112,7 +112,7 @@ namespace
 			}
 		}
 		uint32 alSiz = numeric_cast<uint32>(allowed.size());
-		CAGE_ASSERT_RUNTIME(alSiz > 0);
+		CAGE_ASSERT(alSiz > 0);
 		uint32 spawnCount = randomRange(spawnCountMin, spawnCountMax + 1);
 		spawned += spawnCount;
 		vec3 color = convertHsvToRgb(vec3(randomChance(), sqrt(randomChance()) * 0.5 + 0.5, sqrt(randomChance()) * 0.5 + 0.5));

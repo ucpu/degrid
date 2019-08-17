@@ -31,7 +31,7 @@ namespace
 		if (game.fireDirection == vec3())
 			return;
 
-		game.shootingCooldown += real(4) * real(1.3).pow(game.powerups[(uint32)powerupTypeEnum::Multishot]) * real(0.7).pow(game.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
+		game.shootingCooldown += real(4) * pow(1.3, game.powerups[(uint32)powerupTypeEnum::Multishot]) * pow(0.7, game.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
 
 		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
@@ -41,7 +41,7 @@ namespace
 			statistics.shotsFired++;
 			entity *shot = entities()->createUnique();
 			CAGE_COMPONENT_ENGINE(transform, transform, shot);
-			rads dir = aTan2(-game.fireDirection[2], -game.fireDirection[0]);
+			rads dir = atan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += degs(i * 10);
 			vec3 dirv = vec3(-sin(dir), 0, -cos(dir));
 			transform.position = playerTransform.position + dirv * 2;
@@ -77,7 +77,7 @@ namespace
 			DEGRID_COMPONENT(shot, sh, e);
 			DEGRID_COMPONENT(velocity, vl, e);
 
-			spatialSearchQuery->intersection(sphere(tr.position, vl.velocity.length() + tr.scale + (sh.homing ? 20 : 10)));
+			spatialSearchQuery->intersection(sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
 			for (uint32 otherName : spatialSearchQuery->result())
 			{
 				if (otherName == myName)
@@ -89,7 +89,7 @@ namespace
 				if (e->has(gridComponent::component))
 				{
 					DEGRID_COMPONENT(velocity, og, e);
-					og.velocity += vl.velocity.normalize() * (0.2f / max(1, toOther.length()));
+					og.velocity += normalize(vl.velocity) * (0.2f / max(1, length(toOther)));
 					continue;
 				}
 				if (!e->has(monsterComponent::component))
@@ -97,7 +97,7 @@ namespace
 				DEGRID_COMPONENT(monster, om, e);
 				if (om.life <= 0)
 					continue;
-				real dist = toOther.length();
+				real dist = length(toOther);
 				if (dist < closestDistance)
 				{
 					DEGRID_COMPONENT(velocity, ov, e);
@@ -153,14 +153,14 @@ namespace
 					entity *m = entities()->get(homingMonster);
 					CAGE_COMPONENT_ENGINE(transform, mtr, m);
 					vec3 toOther = normalize(mtr.position - tr.position);
-					real spd = vl.velocity.length();
+					real spd = length(vl.velocity);
 					vl.velocity = toOther * spd;
-					tr.orientation = quat(degs(), aTan2(-toOther[2], -toOther[0]), degs());
+					tr.orientation = quat(degs(), atan2(-toOther[2], -toOther[0]), degs());
 				}
 				else
 				{
 					// homing missiles are shivering
-					tr.position += vl.velocity.normalize() * quat(degs(), degs(90), degs()) * sin(rads::Full() * statistics.updateIteration / 10 + degs(detail::hash(myName) % 360)) * (vl.velocity.length() * 0.3);
+					tr.position += normalize(vl.velocity) * quat(degs(), degs(90), degs()) * sin(rads::Full() * statistics.updateIteration / 10 + degs(detail::hash(myName) % 360)) * (length(vl.velocity) * 0.3);
 				}
 			}
 

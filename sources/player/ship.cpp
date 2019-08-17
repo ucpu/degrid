@@ -24,14 +24,14 @@ namespace
 		if (game.moveDirection != vec3())
 		{
 			real maxSpeed = game.powerups[(uint32)powerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
-			vec3 change = game.moveDirection.normalize() * (game.powerups[(uint32)powerupTypeEnum::Acceleration] + 1) * 0.1;
-			if (confControlMovement == 1 && ((tr.orientation * vec3(0, 0, -1)).dot(normalize(vl.velocity + change)) < 1e-5))
+			vec3 change = normalize(game.moveDirection) * (game.powerups[(uint32)powerupTypeEnum::Acceleration] + 1) * 0.1;
+			if (confControlMovement == 1 && dot(tr.orientation * vec3(0, 0, -1), normalize(vl.velocity + change)) < 1e-5)
 				vl.velocity = vec3();
 			else
 				vl.velocity += change;
-			if (vl.velocity.squaredLength() > maxSpeed * maxSpeed)
-				vl.velocity = vl.velocity.normalize() * maxSpeed;
-			if (change.squaredLength() > 0.01)
+			if (squaredLength(vl.velocity) > maxSpeed * maxSpeed)
+				vl.velocity = normalize(vl.velocity) * maxSpeed;
+			if (squaredLength(change) > 0.01)
 			{
 				entity *spark = entities()->createAnonymous();
 				CAGE_COMPONENT_ENGINE(transform, transform, spark);
@@ -54,17 +54,17 @@ namespace
 			vl.velocity *= 0.97;
 
 		// pull to center
-		if (tr.position.length() > mapNoPullRadius)
+		if (length(tr.position) > mapNoPullRadius)
 		{
-			vec3 pullToCenter = -tr.position.normalize() * pow((tr.position.length() - mapNoPullRadius) / mapNoPullRadius, 2);
+			vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - mapNoPullRadius) / mapNoPullRadius, 2);
 			vl.velocity += pullToCenter;
 		}
 
 		vl.velocity[1] = 0;
 		tr.position[1] = 0.5;
 		game.monstersTarget = tr.position + vl.velocity * 3;
-		if (vl.velocity.squaredLength() > 1e-5)
-			tr.orientation = quat(degs(), aTan2(-vl.velocity[2], -vl.velocity[0]), degs());
+		if (squaredLength(vl.velocity) > 1e-5)
+			tr.orientation = quat(degs(), atan2(-vl.velocity[2], -vl.velocity[0]), degs());
 	}
 
 	void shipShield()

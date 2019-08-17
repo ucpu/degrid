@@ -114,7 +114,7 @@ namespace
 				CAGE_COMPONENT_ENGINE(transform, bt, e);
 				CAGE_COMPONENT_ENGINE(transform, st, sh);
 				real se = clamp(statistics.updateIteration - b.lastHit, 0u, 30u) / 30.0;
-				se = sqrt(max(0, sin(se * rads::Stright())));
+				se = sqrt(max(real(), sin(se * rads::Full() * 0.5)));
 				st.scale = bt.scale + interpolate(0.1, 20.0, se);
 			}
 		}

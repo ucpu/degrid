@@ -58,7 +58,7 @@ bool achievementFullfilled(const string &name, bool bossKill)
 		auto it = data.find(name);
 		if (it != data.end())
 		{
-			CAGE_ASSERT_RUNTIME(it->second.boss == bossKill);
+			CAGE_ASSERT(it->second.boss == bossKill);
 			return false;
 		}
 	}
@@ -133,8 +133,8 @@ namespace
 		{ // validation
 			uint32 a, b;
 			summaries(a, b);
-			CAGE_ASSERT_RUNTIME(a == achievements.acquired);
-			CAGE_ASSERT_RUNTIME(b == achievements.bosses);
+			CAGE_ASSERT(a == achievements.acquired);
+			CAGE_ASSERT(b == achievements.bosses);
 		}
 
 		{ // save achievements

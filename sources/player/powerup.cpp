@@ -80,13 +80,13 @@ namespace
 		for (entity *e : powerupComponent::component->entities())
 		{
 			DEGRID_COMPONENT(powerup, p, e);
-			CAGE_ASSERT_RUNTIME(p.type < powerupTypeEnum::Total, p.type);
+			CAGE_ASSERT(p.type < powerupTypeEnum::Total, p.type);
 
 			CAGE_COMPONENT_ENGINE(transform, tr, e);
 			if (!collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))
 			{
 				vec3 toPlayer = playerTransform.position - tr.position;
-				real dist = max(toPlayer.length() - playerScale - tr.scale, 1);
+				real dist = max(length(toPlayer) - playerScale - tr.scale, 1);
 				tr.position += normalize(toPlayer) * (2 / dist);
 				continue;
 			}
@@ -216,7 +216,7 @@ namespace
 		uint32 c = 0;
 		while (true)
 		{
-			CAGE_ASSERT_RUNTIME(c < sizeof(powerupChances) / sizeof(powerupChances[0]));
+			CAGE_ASSERT(c < sizeof(powerupChances) / sizeof(powerupChances[0]));
 			p -= powerupChances[c];
 			if (p < 0)
 				return (powerupTypeEnum)c;

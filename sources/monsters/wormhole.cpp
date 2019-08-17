@@ -131,7 +131,7 @@ namespace
 				DEGRID_COMPONENT(wormhole, w, e);
 				DEGRID_COMPONENT(velocity, v, e);
 				v.velocity += normalize(game.monstersTarget - t.position) * w.acceleration;
-				v.velocity = v.velocity.normalize() * min(v.velocity.length(), w.maxSpeed);
+				v.velocity = normalize(v.velocity) * min(length(v.velocity), w.maxSpeed);
 			}
 
 			if (g.strength > 0)

@@ -46,12 +46,12 @@ namespace
 			CAGE_COMPONENT_ENGINE(transform, tr, e);
 			DEGRID_COMPONENT(velocity, v, e);
 			DEGRID_COMPONENT(snakeHead, snake, e);
-			if (tr.position.distance(playerTransform.position) > 250)
-				v.velocity = (game.monstersTarget - tr.position).normalize() * (snake.speedMin + snake.speedMax) * 0.5;
+			if (distance(tr.position, playerTransform.position) > 250)
+				v.velocity = normalize(game.monstersTarget - tr.position) * (snake.speedMin + snake.speedMax) * 0.5;
 			else
 			{
 				v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
-				real s = v.velocity.length();
+				real s = length(v.velocity);
 				if (s < snake.speedMin || s > snake.speedMax)
 					v.velocity = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
 			}
@@ -75,7 +75,7 @@ namespace
 				CAGE_COMPONENT_ENGINE(transform, trp, p);
 				vec3 toPrev = trp.position - tr.position;
 				real r = tr.scale * 2;
-				real d2 = toPrev.squaredLength();
+				real d2 = squaredLength(toPrev);
 				if (d2 > sqr(r) + 0.01)
 				{
 					if (d2 > sqr(r + 20))
@@ -85,7 +85,7 @@ namespace
 					}
 					else
 					{ // move
-						v.velocity = toPrev.normalize() * (toPrev.length() - r);
+						v.velocity = normalize(toPrev) * (length(toPrev) - r);
 						tr.orientation = quat(toPrev, vec3(0, 1, 0));
 					}
 				}
@@ -168,6 +168,6 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		monster.dispersion = 0.2;
 		CAGE_COMPONENT_ENGINE(transform, transform, tail);
 		transform.position[1] = monster.groundLevel = groundLevel;
-		CAGE_ASSERT_RUNTIME(transform.scale == scale);
+		CAGE_ASSERT(transform.scale == scale);
 	}
 }

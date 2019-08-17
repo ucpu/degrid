@@ -98,7 +98,7 @@ namespace
 			if (e->has(monsterComponent::component))
 			{
 				CAGE_COMPONENT_ENGINE(transform, p, e);
-				real d = p.position.distance(playerTransform.position);
+				real d = distance(p.position, playerTransform.position);
 				closestMonsterToPlayer = min(closestMonsterToPlayer, d);
 			}
 		}
