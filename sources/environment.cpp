@@ -60,7 +60,7 @@ namespace
 					CAGE_COMPONENT_ENGINE(transform, t, e);
 					t.orientation = skyboxOrientation;
 					CAGE_COMPONENT_ENGINE(render, r, e);
-					r.renderMask = 2;
+					r.sceneMask = 2;
 					r.object = hashString("degrid/environment/skyboxes/skybox.obj;hurt");
 					r.opacity = 1;
 					DEGRID_COMPONENT(skybox, s, e);
@@ -195,7 +195,7 @@ void setSkybox(uint32 objectName)
 		CAGE_COMPONENT_ENGINE(transform, t, e);
 		t.position[2] = -1e-5; // semitransparent objects are rendered back-to-front; this makes the sky-box the furthest
 		CAGE_COMPONENT_ENGINE(render, r, e);
-		r.renderMask = 2;
+		r.sceneMask = 2;
 		r.object = objectName;
 		DEGRID_COMPONENT(skybox, s, e);
 	}
@@ -218,7 +218,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		CAGE_COMPONENT_ENGINE(render, orc, e);
 		DEGRID_COMPONENT(velocity, og, e);
 		vec3 toOther = ot.position - position;
-		vec3 change = normalize(toOther) * (size / max(2, squaredLength(toOther))) * 2;
+		vec3 change = normalize(toOther) * (size / max(2, lengthSquared(toOther))) * 2;
 		og.velocity += change;
 		ot.position += change * 2;
 		orc.color = interpolate(color, orc.color, length(toOther) / size);
@@ -233,7 +233,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		timeout.ttl = numeric_cast<uint32>(randomChance() * 5 + 10);
 		DEGRID_COMPONENT(velocity, vel, e);
 		vel.velocity = randomDirection3();
-		if (squaredLength(velocity) > 0)
+		if (lengthSquared(velocity) > 0)
 			vel.velocity = normalize(vel.velocity + normalize(velocity) * sqrt(length(velocity)));
 		vel.velocity *= randomChance() + 0.5;
 		CAGE_COMPONENT_ENGINE(transform, transform, e);

@@ -36,7 +36,7 @@ namespace
 						continue;
 					CAGE_COMPONENT_ENGINE(transform, ot, oe);
 					vec3 d = t.position - ot.position;
-					if (squaredLength(d) < 1e-3)
+					if (lengthSquared(d) < 1e-3)
 						continue;
 					ot.position += normalize(d) * (g.strength / max(length(d) - t.scale, 1));
 				}
@@ -124,7 +124,7 @@ namespace
 bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, const vec3 &positionB, real radiusB, const vec3 &velocityB)
 {
 	vec3 m = velocityB - velocityA;
-	if (squaredLength(m) > 1e-7)
+	if (lengthSquared(m) > 1e-7)
 		return intersects(makeSegment(positionB, positionB + m), sphere(positionA, radiusA + radiusB));
 	return intersects(positionB, sphere(positionA, radiusA + radiusB));
 }

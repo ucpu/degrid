@@ -29,9 +29,9 @@ namespace
 				vl.velocity = vec3();
 			else
 				vl.velocity += change;
-			if (squaredLength(vl.velocity) > maxSpeed * maxSpeed)
+			if (lengthSquared(vl.velocity) > maxSpeed * maxSpeed)
 				vl.velocity = normalize(vl.velocity) * maxSpeed;
-			if (squaredLength(change) > 0.01)
+			if (lengthSquared(change) > 0.01)
 			{
 				entity *spark = entities()->createAnonymous();
 				CAGE_COMPONENT_ENGINE(transform, transform, spark);
@@ -63,7 +63,7 @@ namespace
 		vl.velocity[1] = 0;
 		tr.position[1] = 0.5;
 		game.monstersTarget = tr.position + vl.velocity * 3;
-		if (squaredLength(vl.velocity) > 1e-5)
+		if (lengthSquared(vl.velocity) > 1e-5)
 			tr.orientation = quat(degs(), atan2(-vl.velocity[2], -vl.velocity[0]), degs());
 	}
 

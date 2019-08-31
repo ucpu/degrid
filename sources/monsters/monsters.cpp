@@ -38,7 +38,7 @@ namespace
 					if (e->has(monsterComponent::component))
 					{
 						real d = ot.scale + t.scale;
-						if (squaredLength(toMonster) < d*d)
+						if (lengthSquared(toMonster) < d*d)
 							dispersion += normalize(toMonster) / length(toMonster);
 					}
 				}

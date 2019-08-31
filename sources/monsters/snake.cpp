@@ -75,7 +75,7 @@ namespace
 				CAGE_COMPONENT_ENGINE(transform, trp, p);
 				vec3 toPrev = trp.position - tr.position;
 				real r = tr.scale * 2;
-				real d2 = squaredLength(toPrev);
+				real d2 = lengthSquared(toPrev);
 				if (d2 > sqr(r) + 0.01)
 				{
 					if (d2 > sqr(r + 20))

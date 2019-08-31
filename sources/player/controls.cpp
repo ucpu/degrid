@@ -2,6 +2,7 @@
 #include "../screens/screens.h"
 
 #include <cage-core/config.h>
+#include <cage-core/camera.h>
 
 extern configUint32 confControlMovement;
 extern configUint32 confControlFiring;
@@ -234,17 +235,17 @@ namespace
 		} break;
 		case 2: // lmb
 			game.moveDirection = mouseLeftPosition - playerTransform.position;
-			if (squaredLength(game.moveDirection) < 100)
+			if (lengthSquared(game.moveDirection) < 100)
 				game.moveDirection = vec3();
 			break;
 		case 3: // rmb
 			game.moveDirection = mouseRightPosition - playerTransform.position;
-			if (squaredLength(game.moveDirection) < 100)
+			if (lengthSquared(game.moveDirection) < 100)
 				game.moveDirection = vec3();
 			break;
 		case 4: // cursor position
 			game.moveDirection = mouseCurrentPosition - playerTransform.position;
-			if (squaredLength(game.moveDirection) < 100)
+			if (lengthSquared(game.moveDirection) < 100)
 				game.moveDirection = vec3();
 			break;
 		}

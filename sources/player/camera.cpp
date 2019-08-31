@@ -43,7 +43,7 @@ namespace
 					ts.orientation = tp.orientation;
 					CAGE_COMPONENT_ENGINE(camera, c, skyboxSecondaryCameraEntity);
 					c.cameraOrder = 3;
-					c.renderMask = 2;
+					c.sceneMask = 2;
 					c.near = 0.5;
 					c.far = 3;
 					c.ambientLight = vec3(1);
@@ -57,7 +57,7 @@ namespace
 					tc.orientation = tp.orientation;
 					CAGE_COMPONENT_ENGINE(camera, c, secondaryCameraEntity);
 					c.cameraOrder = 4;
-					c.renderMask = 1;
+					c.sceneMask = 1;
 					c.near = 3;
 					c.far = 500;
 					c.ambientLight = ambientLight;
@@ -84,7 +84,7 @@ namespace
 			transform.orientation = quat(degs(-90), degs(), degs());
 			CAGE_COMPONENT_ENGINE(camera, c, skyboxPrimaryCameraEntity);
 			c.cameraOrder = 1;
-			c.renderMask = 2;
+			c.sceneMask = 2;
 			c.near = 0.5;
 			c.far = 3;
 			c.camera.perspectiveFov = degs(40);
@@ -99,7 +99,7 @@ namespace
 			cameraSmoother.seed(transform.position);
 			CAGE_COMPONENT_ENGINE(camera, c, primaryCameraEntity);
 			c.cameraOrder = 2;
-			c.renderMask = 1;
+			c.sceneMask = 1;
 			c.near = 150;
 			c.far = 1000;
 			c.camera.perspectiveFov = degs(40);

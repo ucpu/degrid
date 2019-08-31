@@ -40,7 +40,7 @@ namespace
 			DEGRID_COMPONENT(velocity, mv, e);
 			DEGRID_COMPONENT(simpleMonster, sm, e);
 
-			if (squaredLength(mv.velocity) > sm.maxSpeed * sm.maxSpeed + 1e-4)
+			if (lengthSquared(mv.velocity) > sm.maxSpeed * sm.maxSpeed + 1e-4)
 				mv.velocity = normalize(mv.velocity) * max(sm.maxSpeed, length(mv.velocity) - sm.acceleration);
 			else
 			{
@@ -82,7 +82,7 @@ namespace
 						vec3 toMonster = tr.position - ot.position;
 
 						// test whether other is closer
-						if (squaredLength(toMonster) >= closestDistance * closestDistance)
+						if (lengthSquared(toMonster) >= closestDistance * closestDistance)
 							continue;
 
 						DEGRID_COMPONENT(velocity, ov, e);
@@ -109,7 +109,7 @@ namespace
 				}
 
 				mv.velocity += will * sm.acceleration;
-				if (squaredLength(mv.velocity) > sm.maxSpeed * sm.maxSpeed)
+				if (lengthSquared(mv.velocity) > sm.maxSpeed * sm.maxSpeed)
 					mv.velocity = normalize(mv.velocity) * sm.maxSpeed;
 			}
 
