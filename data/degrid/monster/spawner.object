@@ -1,5 +1,5 @@
 
-[skeletal_animation]
+[skeletalAnimation]
 name = spawner.x?looping
 speed = 1
 offset = 0

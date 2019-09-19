@@ -49,7 +49,7 @@ namespace
 			CAGE_COMPONENT_ENGINE(render, render, shot);
 			render.object = hashString("degrid/player/shot.object");
 			if (game.powerups[(uint32)powerupTypeEnum::SuperDamage] > 0)
-				render.color = convertHsvToRgb(vec3(randomChance(), 1, 1));
+				render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
 			else
 				render.color = game.shotsColor;
 			DEGRID_COMPONENT(velocity, vel, shot);
@@ -182,7 +182,7 @@ namespace
 
 	void gameStart()
 	{
-		game.shotsColor = game.cinematic ? convertHsvToRgb(vec3(randomChance(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
+		game.shotsColor = game.cinematic ? colorHsvToRgb(vec3(randomChance(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
 	}
 
 	class callbacksClass

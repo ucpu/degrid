@@ -17,7 +17,7 @@ explosion.object
 
 []
 scheme = texture
-target = 2d_array
+target = 2dArray
 srgb = true
-animation_loop = false
+animationLoop = false
 spark_$.png

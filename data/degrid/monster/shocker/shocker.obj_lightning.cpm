@@ -1,14 +1,14 @@
 
 [base]
 mask = 0.5
-emissive = 10
+emission = 10
 
 [textures]
 albedo = lightning_$$.png
 
 [flags]
-no-lighting
-no-shadow-cast
-no-velocity-write
-no-depth-write
+noLighting
+noShadowCast
+noVelocityWrite
+noDepthWrite
 transparency

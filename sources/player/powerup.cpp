@@ -262,7 +262,7 @@ void powerupSpawn(const vec3 &position)
 		hashString("degrid/player/coin.object")
 	};
 	render.object = objectName[powerupMode[(uint32)p.type]];
-	render.color = convertHsvToRgb(vec3(randomChance(), 1, 1));
+	render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
 	soundEffect(coin ? hashString("degrid/player/coin.ogg") : hashString("degrid/player/powerup.ogg"), transform.position);
 }
 

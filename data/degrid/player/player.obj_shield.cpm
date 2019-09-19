@@ -1,9 +1,9 @@
 
 [base]
 albedo = 0.08, 0.08, 0.02
-emissive = 0.05
+emission = 0.05
 roughness = 0.4
-metalness = 0.7
+metallic = 0.7
 
 [mult]
 albedo = 0.1, 0.1, 0.1
@@ -12,8 +12,8 @@ albedo = 0.1, 0.1, 0.1
 albedo = shield/baked$$$$.png
 
 [flags]
-no-shadow-cast
-no-velocity-write
-no-depth-write
-opacity-texture
+noShadowCast
+noVelocityWrite
+noDepthWrite
+opacityTexture
 translucency

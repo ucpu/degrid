@@ -2,4 +2,4 @@
 [base]
 mask = 1
 roughness = 0.6
-metalness = 0.01
+metallic = 0.01

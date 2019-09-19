@@ -16,9 +16,9 @@ player_special.png
 
 []
 scheme = texture
-target = 2d_array
+target = 2dArray
 srgb = true
-premultiply_alpha = true
+premultiplyAlpha = true
 shield/baked$$$$.png
 
 []
@@ -31,23 +31,23 @@ coin.obj
 
 []
 scheme = mesh
-override_material = powerupOnetime.cpm
-export_uv = false
-export_tangent = false
+material = powerupOnetime.cpm
+uvs = false
+
 powerup.obj;onetime
 
 []
 scheme = mesh
-override_material = powerupCollectible.cpm
-export_uv = false
-export_tangent = false
+material = powerupCollectible.cpm
+uvs = false
+
 powerup.obj;collectible
 
 []
 scheme = mesh
-override_material = powerupPermanent.cpm
-export_uv = false
-export_tangent = false
+material = powerupPermanent.cpm
+uvs = false
+
 powerup.obj;permanent
 
 []
@@ -63,13 +63,13 @@ coin.object
 
 []
 scheme = sound
-before = discard
-after = discard
+loopBefore = false
+loopAfter = false
 powerup.ogg
 coin.ogg
 
 []
 scheme = sound
-before = repeat
-after = repeat
+loopBefore = true
+loopAfter = true
 shield.ogg

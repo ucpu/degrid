@@ -1,13 +1,13 @@
 
 [base]
 albedo = 0.15, 0.15, 0.15
-emissive = 0.05
+emission = 0.05
 roughness = 0.4
-metalness = 0.9
+metallic = 0.9
 opacity = 0.5
 
 [flags]
-no-shadow-cast
-no-velocity-write
-no-depth-write
+noShadowCast
+noVelocityWrite
+noDepthWrite
 translucency

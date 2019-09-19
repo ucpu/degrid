@@ -5,16 +5,16 @@ monster.pack
 
 []
 scheme = texture
-target = 2d_array
+target = 2dArray
 srgb = true
 snakeTail/_$$.png
 blackhole/baked$$$$.png
 
 []
 scheme = texture
-target = 2d_array
+target = 2dArray
 srgb = true
-premultiply_alpha = true
+premultiplyAlpha = true
 shocker/lightning_$$.png
 
 []
@@ -53,8 +53,8 @@ shocker/lightning.object
 
 []
 scheme = sound
-before = discard
-after = discard
+loopBefore = false
+loopAfter = false
 bum-circle.ogg
 bum-triangle.ogg
 bum-cube.ogg
@@ -69,7 +69,7 @@ shocker/bum-shocker.ogg
 
 []
 scheme = sound
-before = repeat
-after = repeat
+loopBefore = true
+loopAfter = true
 shocker/lightning.flac
 

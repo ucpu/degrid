@@ -5,9 +5,9 @@ music.pack
 
 []
 scheme = sound
-type = stream
-before = repeat
-after = repeat
+stream = true
+loopBefore = true
+loopAfter = true
 fear-and-horror.ogg
 chaotic-filth.ogg
 sad-song.ogg

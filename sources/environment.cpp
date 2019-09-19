@@ -135,7 +135,7 @@ namespace
 				render.object = hashString("degrid/environment/grid.object");
 				real ang = real(atan2(x, y)) / (real::Pi() * 2) + 0.5;
 				real dst = d / radius;
-				render.color = convertHsvToRgb(vec3(ang, 1, interpolate(real(0.5), real(0.2), sqr(dst))));
+				render.color = colorHsvToRgb(vec3(ang, 1, interpolate(real(0.5), real(0.2), sqr(dst))));
 				grid.originalColor = render.color;
 			}
 		}
@@ -271,7 +271,7 @@ void shotExplosion(entity *e)
 vec3 colorVariation(const vec3 &color)
 {
 	vec3 dev = randomChance3() * 0.1 - 0.05;
-	vec3 hsv = convertRgbToHsv(color) + dev;
+	vec3 hsv = colorRgbToHsv(color) + dev;
 	hsv[0] = (hsv[0] + 1) % 1;
-	return convertHsvToRgb(clamp(hsv, vec3(0), vec3(1)));
+	return colorHsvToRgb(clamp(hsv, vec3(0), vec3(1)));
 }

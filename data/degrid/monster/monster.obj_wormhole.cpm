@@ -1,7 +1,7 @@
 
 [base]
 mask = 0.5
-emissive = 5
+emission = 5
 
 [mult]
 albedo = 0.01, 0.01, 0.01
@@ -10,4 +10,4 @@ albedo = 0.01, 0.01, 0.01
 albedo = blackhole/baked$$$$.png
 
 [flags]
-no-lighting
+noLighting

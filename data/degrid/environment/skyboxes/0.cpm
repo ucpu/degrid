@@ -6,8 +6,8 @@ albedo = 0.3, 0.3, 0.3
 albedo = 0.png
 
 [flags]
-no-depth-test
-no-depth-write
-no-lighting
-no-shadow-cast
-no-velocity-write
+noDepthTest
+noDepthWrite
+noLighting
+noShadowCast
+noVelocityWrite

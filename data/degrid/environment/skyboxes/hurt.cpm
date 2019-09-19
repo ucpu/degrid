@@ -6,8 +6,8 @@ albedo = 1.5, 0.5, 0.5
 albedo = hurt.png
 
 [flags]
-no-depth-test
-no-depth-write
-no-lighting
-no-shadow-cast
-no-velocity-write
+noDepthTest
+noDepthWrite
+noLighting
+noShadowCast
+noVelocityWrite

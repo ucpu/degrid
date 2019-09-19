@@ -5,9 +5,9 @@ speech.pack
 
 []
 scheme = sound
-type = stream
-before = discard
-after = discard
+stream = true
+loopBefore = false
+loopAfter = false
 
 damage/better-to-avoid-next-time.wav
 damage/beware.wav

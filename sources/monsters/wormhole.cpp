@@ -62,7 +62,7 @@ namespace
 			if (!hadFlickering)
 			{
 				CAGE_COMPONENT_ENGINE(render, render, oe);
-				mof.baseColorHsv = convertRgbToHsv(render.color);
+				mof.baseColorHsv = colorRgbToHsv(render.color);
 			}
 			mof.flickeringFrequency += 1e-6;
 			mof.flickeringOffset += randomChance();
@@ -110,7 +110,7 @@ namespace
 				DEGRID_COMPONENT(monsterFlickering, m, e);
 				real l = (real)currentControlTime() * m.flickeringFrequency + m.flickeringOffset;
 				real s = sin(rads::Full() * l) * 0.5 + 0.5;
-				r.color = convertHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
+				r.color = colorHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
 			}
 		}
 

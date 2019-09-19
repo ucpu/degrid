@@ -115,7 +115,7 @@ namespace
 		CAGE_ASSERT(alSiz > 0);
 		uint32 spawnCount = randomRange(spawnCountMin, spawnCountMax + 1);
 		spawned += spawnCount;
-		vec3 color = convertHsvToRgb(vec3(randomChance(), sqrt(randomChance()) * 0.5 + 0.5, sqrt(randomChance()) * 0.5 + 0.5));
+		vec3 color = colorHsvToRgb(vec3(randomChance(), sqrt(randomChance()) * 0.5 + 0.5, sqrt(randomChance()) * 0.5 + 0.5));
 		switch (placingPolicy)
 		{
 		case placingPolicyEnum::Random:
