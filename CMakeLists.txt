@@ -10,7 +10,7 @@ add_subdirectory(externals/cage)
 
 file(GLOB_RECURSE degrid-sources "sources/*")
 add_executable(degrid ${degrid-sources})
-target_link_libraries(degrid cage-client)
+target_link_libraries(degrid cage-engine)
 cage_ide_category(degrid degrid)
 cage_ide_sort_files(degrid)
 cage_ide_working_dir_in_place(degrid)

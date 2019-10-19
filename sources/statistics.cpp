@@ -5,8 +5,8 @@
 #include <cage-core/spatial.h>
 #include <cage-core/hashString.h>
 
-#include <cage-client/window.h>
-#include <cage-client/engineProfiling.h>
+#include <cage-engine/window.h>
+#include <cage-engine/engineProfiling.h>
 
 globalStatisticsStruct statistics;
 

@@ -11,14 +11,6 @@ extern configFloat confPlayerShotColorR;
 extern configFloat confPlayerShotColorG;
 extern configFloat confPlayerShotColorB;
 
-namespace cage
-{
-	namespace detail
-	{
-		CAGE_API uint32 hash(uint32);
-	}
-}
-
 namespace
 {
 	void shipFiring()
@@ -160,7 +152,7 @@ namespace
 				else
 				{
 					// homing missiles are shivering
-					tr.position += normalize(vl.velocity) * quat(degs(), degs(90), degs()) * sin(rads::Full() * statistics.updateIteration / 10 + degs(detail::hash(myName) % 360)) * (length(vl.velocity) * 0.3);
+					tr.position += normalize(vl.velocity) * quat(degs(), degs(90), degs()) * sin(rads::Full() * statistics.updateIteration / 10 + degs(hash(myName) % 360)) * (length(vl.velocity) * 0.3);
 				}
 			}
 

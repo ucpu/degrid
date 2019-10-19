@@ -9,7 +9,7 @@
 #include <cage-core/spatial.h>
 #include <cage-core/hashString.h>
 
-#include <cage-client/sound.h>
+#include <cage-engine/sound.h>
 
 extern configFloat confVolumeMusic;
 extern configFloat confVolumeEffects;

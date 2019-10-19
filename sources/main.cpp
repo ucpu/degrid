@@ -6,8 +6,8 @@
 #include <cage-core/config.h>
 #include <cage-core/assetManager.h>
 
-#include <cage-client/engineProfiling.h>
-#include <cage-client/highPerformanceGpuHint.h>
+#include <cage-engine/engineProfiling.h>
+#include <cage-engine/highPerformanceGpuHint.h>
 
 configUint32 confLanguage("degrid.language.language", 0);
 
