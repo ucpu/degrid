@@ -240,7 +240,7 @@ namespace
 		eventListener<void()> gameStartListener;
 		eventListener<void()> gameStopListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineInitListener("sounds"), engineUpdateListener("sounds"), engineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
 		{
 			engineInitListener.attach(controlThread().initialize, -55);
 			engineInitListener.bind<&engineInit>();

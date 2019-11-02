@@ -106,7 +106,7 @@ namespace
 		eventListener<void()> gameStartListener;
 		eventListener<void()> gameStopListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineUpdateListener("statistics"), gameStartListener("statistics"), gameStopListener("statistics")
 		{
 			engineUpdateListener.attach(controlThread().update, -60);
 			engineUpdateListener.bind<&engineUpdate>();

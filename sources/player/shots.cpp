@@ -182,7 +182,7 @@ namespace
 		eventListener<void()> engineUpdateListener;
 		eventListener<void()> gameStartListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineUpdateListener("shots"), gameStartListener("shots")
 		{
 			engineUpdateListener.attach(controlThread().update, -10);
 			engineUpdateListener.bind<&engineUpdate>();

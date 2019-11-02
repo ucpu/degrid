@@ -162,7 +162,7 @@ namespace
 		eventListener<void()> engineInitListener;
 		eventListener<void()> engineFinishListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineInitListener("achievements"), engineFinishListener("achievements")
 		{
 			engineInitListener.attach(controlThread().initialize, -60);
 			engineInitListener.bind<&engineInit>();

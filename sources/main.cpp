@@ -7,6 +7,7 @@
 #include <cage-core/assetManager.h>
 
 #include <cage-engine/engineProfiling.h>
+#include <cage-engine/fullscreenSwitcher.h>
 #include <cage-engine/highPerformanceGpuHint.h>
 
 configUint32 confLanguage("degrid.language.language", 0);
@@ -18,72 +19,10 @@ namespace
 	uint32 loadedLanguageHash;
 	uint32 currentLanguageHash;
 
-	configUint32 confWindowLeft("degrid.window.left", 100);
-	configUint32 confWindowTop("degrid.window.top", 100);
-	configUint32 confWindowWidth("degrid.window.width", 0);
-	configUint32 confWindowHeight("degrid.window.height", 0);
-	configUint32 confFullscreenWidth("degrid.fullscreen.width", 0);
-	configUint32 confFullscreenHeight("degrid.fullscreen.height", 0);
-	configBool confFullscreenEnabled("degrid.fullscreen.enabled", true);
-
 	bool windowClose()
 	{
 		engineStop();
 		return true;
-	}
-
-	bool windowMove(const ivec2 &pos)
-	{
-		if (window()->isWindowed())
-		{
-			confWindowLeft = pos.x;
-			confWindowTop = pos.y;
-		}
-		return false;
-	}
-
-	bool windowResize(const ivec2 &size)
-	{
-		if (window()->isWindowed())
-		{
-			confWindowWidth = size.x;
-			confWindowHeight = size.y;
-		}
-		else if (window()->isMaximized())
-		{
-			confWindowWidth = 0;
-			confWindowHeight = 0;
-		}
-		return false;
-	}
-
-	void setWindowFullscreen(bool fullscreen)
-	{
-		if (fullscreen)
-		{
-			try
-			{
-				detail::overrideBreakpoint ob;
-				window()->setFullscreen(ivec2(confFullscreenWidth, confFullscreenHeight));
-				confFullscreenEnabled = true;
-			}
-			catch (...)
-			{
-				setWindowFullscreen(false);
-			}
-		}
-		else
-		{
-			confFullscreenEnabled = false;
-			if (confWindowWidth == 0)
-				window()->setMaximized();
-			else
-			{
-				window()->setWindowed();
-				window()->windowedPosition(ivec2(confWindowLeft, confWindowTop));
-				window()->windowedSize(ivec2(confWindowWidth, confWindowHeight));
-			}
-		}
 	}
 
 	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
@@ -99,9 +38,6 @@ namespace
 		{
 		case 298: // F9
 			secondaryCamera = !(bool)secondaryCamera;
-			return true;
-		case 300: // F11
-			setWindowFullscreen(!window()->isFullscreen());
 			return true;
 		}
 
@@ -144,14 +80,12 @@ int main(int argc, const char *args[])
 {
 	try
 	{
+		configSetBool("cage.config.autoSave", true);
 		controlThread().timePerTick = 1000000 / 30;
-
 		engineInitialize(engineCreateConfig());
 
 		listeners.attachAll(window(), 1000);
 		listeners.windowClose.bind<&windowClose>();
-		listeners.windowMove.bind<&windowMove>();
-		listeners.windowResize.bind<&windowResize>();
 		listeners.keyRelease.bind<&keyRelease>();
 		eventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
@@ -161,15 +95,14 @@ int main(int argc, const char *args[])
 		frameCounterListener.attach(graphicsPrepareThread().prepare);
 
 		window()->title("Degrid");
-		setWindowFullscreen(confFullscreenEnabled);
 		reloadLanguage(confLanguage);
 		assets()->add(hashString("degrid/degrid.pack"));
 
 		{
+			holder<fullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
 			holder<engineProfiling> engineProfiling = newEngineProfiling();
 			engineProfiling->profilingScope = engineProfilingScopeEnum::None;
-			engineProfiling->keyToggleFullscreen = 0;
-			engineProfiling->screenPosition = vec2(0.5, 0.5);
+			engineProfiling->screenPosition = vec2(0.5);
 
 			engineStart();
 		}
@@ -179,16 +112,6 @@ int main(int argc, const char *args[])
 			assets()->remove(loadedLanguageHash);
 
 		engineFinalize();
-
-		try
-		{
-			configSaveIni("degrid.ini", "degrid");
-		}
-		catch (...)
-		{
-			CAGE_LOG(severityEnum::Warning, "degrid", "failed to save game configuration");
-		}
-
 		return 0;
 	}
 	catch (const cage::exception &e)

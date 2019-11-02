@@ -43,7 +43,7 @@ namespace
 	{
 		eventListener<void()> engineInitListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineInitListener("globals")
 		{
 			engineInitListener.attach(controlThread().initialize, -50);
 			engineInitListener.bind<&engineInit>();

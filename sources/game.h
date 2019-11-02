@@ -1,7 +1,6 @@
 //#define DEGRID_TESTING
 
 #include <cage-core/core.h>
-#include <cage-core/log.h>
 #include <cage-core/math.h>
 
 #include <cage-engine/core.h>

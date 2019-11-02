@@ -329,7 +329,7 @@ namespace
 		eventListener<void()> gameStartListener;
 		eventListener<void()> gameStopListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineInitListener("controls"), engineUpdateListener("controls"), gameStartListener("controls"), gameStopListener("controls")
 		{
 			engineInitListener.attach(controlThread().initialize, -30);
 			engineInitListener.bind<&engineInit>();

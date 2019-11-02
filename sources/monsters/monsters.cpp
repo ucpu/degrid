@@ -115,7 +115,7 @@ namespace
 	{
 		eventListener<void()> engineUpdateListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineUpdateListener("monsters")
 		{
 			engineUpdateListener.attach(controlThread().update, 1);
 			engineUpdateListener.bind<&engineUpdate>();

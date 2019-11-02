@@ -47,6 +47,7 @@ namespace
 				if (s.dissipating)
 				{
 					CAGE_COMPONENT_ENGINE(render, r, e);
+					CAGE_ASSERT(r.opacity.valid());
 					r.opacity -= 0.05;
 					if (r.opacity < 1e-5)
 						e->add(entitiesToDestroy);
@@ -92,8 +93,7 @@ namespace
 		{
 			// prevent the skyboxes to be destroyed so that they can dissipate properly
 			DEGRID_COMPONENT(skybox, s, e);
-			if (!s.dissipating)
-				e->remove(entitiesToDestroy);
+			e->remove(entitiesToDestroy);
 		}
 
 		if (game.cinematic)
@@ -166,7 +166,7 @@ namespace
 		eventListener<void()> engineUpdateListener;
 		eventListener<void()> gameStartListener;
 	public:
-		callbacksClass()
+		callbacksClass() : engineInitListener("environment"), engineUpdateListener("environment"), gameStartListener("environment")
 		{
 			engineInitListener.attach(controlThread().initialize, -35);
 			engineInitListener.bind<&engineInit>();
@@ -197,6 +197,7 @@ void setSkybox(uint32 objectName)
 		CAGE_COMPONENT_ENGINE(render, r, e);
 		r.sceneMask = 2;
 		r.object = objectName;
+		r.opacity = 1;
 		DEGRID_COMPONENT(skybox, s, e);
 	}
 }
