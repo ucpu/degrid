@@ -1,7 +1,7 @@
 
 []
 scheme = textpack
-internationalName = internationalized.textpack
+alias = internationalized.textpack
 czech.textpack
 english.textpack
 
