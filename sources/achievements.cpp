@@ -52,7 +52,7 @@ bool achievementFullfilled(const string &name, bool bossKill)
 	if (game.cinematic)
 		return false;
 
-	CAGE_LOG_DEBUG(severityEnum::Info, "achievements", string() + "fulfilled achievement: '" + name + "', boss: " + bossKill);
+	CAGE_LOG_DEBUG(severityEnum::Info, "achievements", stringizer() + "fulfilled achievement: '" + name + "', boss: " + bossKill);
 
 	{
 		auto it = data.find(name);
@@ -119,9 +119,9 @@ namespace
 			data.clear();
 		}
 		summaries(achievements.acquired, achievements.bosses);
-		CAGE_LOG(severityEnum::Info, "achievements", string() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
+		CAGE_LOG(severityEnum::Info, "achievements", stringizer() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
 		for (const auto &a : data)
-			CAGE_LOG_CONTINUE(severityEnum::Note, "achievements", string() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
+			CAGE_LOG_CONTINUE(severityEnum::Note, "achievements", stringizer() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
 		if (achievements.bosses > bossesTotalCount)
 		{
 			CAGE_LOG(severityEnum::Warning, "achievements", "are you cheating? there is not that many bosses in the game");

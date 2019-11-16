@@ -53,12 +53,12 @@ void setScreenGameover()
 		{
 			uint32 y, m, d, h, mm, s;
 			detail::getSystemDateTime(y, m, d, h, mm, s);
-			f->writeLine(string() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
+			f->writeLine(stringizer() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
 		}
-		f->writeLine(string() + "bosses = " + game.defeatedBosses + " / " + achievements.bosses);
-		f->writeLine(string() + "achievements = " + achievements.acquired);
-		f->writeLine(string() + "duration = " + statistics.updateIteration);
-		f->writeLine(string() + "score = " + game.score);
+		f->writeLine(stringizer() + "bosses = " + game.defeatedBosses + " / " + achievements.bosses);
+		f->writeLine(stringizer() + "achievements = " + achievements.acquired);
+		f->writeLine(stringizer() + "duration = " + statistics.updateIteration);
+		f->writeLine(stringizer() + "score = " + game.score);
 #endif
 	}
 

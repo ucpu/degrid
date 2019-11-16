@@ -274,7 +274,7 @@ namespace
 
 	void gameStart()
 	{
-		CAGE_LOG(severityEnum::Info, "degrid", string() + "new game, cinematic: " + game.cinematic);
+		CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "new game, cinematic: " + game.cinematic);
 
 		for (uint32 i = 0; i < sizeof(keyMap); i++)
 			keyMap[i] = false;
@@ -314,9 +314,9 @@ namespace
 	{
 		if (!game.cinematic)
 		{
-			CAGE_LOG(severityEnum::Info, "degrid", string() + "game over");
-			CAGE_LOG(severityEnum::Info, "degrid", string() + "score: " + game.score);
-			CAGE_LOG(severityEnum::Info, "degrid", string() + "money: " + game.money);
+			CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "game over");
+			CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "score: " + game.score);
+			CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "money: " + game.money);
 		}
 		game.paused = game.gameOver = true;
 		setScreenGameover();

@@ -202,7 +202,7 @@ namespace
 					parent.order = i;
 					CAGE_COMPONENT_GUI(text, text, e);
 					text.assetName = hashString("degrid/languages/internationalized.textpack");
-					text.textName = i < achievements.bosses ? hashString((string() + "achievement/boss-" + i).c_str()) : hashString("achievement/boss-unknown");
+					text.textName = i < achievements.bosses ? hashString(string(stringizer() + "achievement/boss-" + i)) : hashString("achievement/boss-unknown");
 				}
 				{
 					entity *e = ents->createUnique();
@@ -211,7 +211,7 @@ namespace
 					parent.parent = pn;
 					parent.order = 1;
 					CAGE_COMPONENT_GUI(image, img, e);
-					img.textureName = i < achievements.bosses ? hashString((string() + "degrid/boss/icon/" + i + ".png").c_str()) : hashString("degrid/boss/icon/unknown.png");
+					img.textureName = i < achievements.bosses ? hashString(string(stringizer() + "degrid/boss/icon/" + i + ".png")) : hashString("degrid/boss/icon/unknown.png");
 				}
 				if (game.defeatedBosses > i)
 				{
@@ -254,7 +254,7 @@ namespace
 				CAGE_COMPONENT_GUI(text, text, e);
 				text.assetName = hashString("degrid/languages/internationalized.textpack");
 				text.textName = hashString("gui/paused/permanentLimit");
-				text.value = string() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
+				text.value = stringizer() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
 				CAGE_COMPONENT_GUI(label, but, e);
 				CAGE_COMPONENT_GUI(textFormat, tf, e);
 				tf.align = textAlignEnum::Center;
@@ -336,7 +336,7 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 1;
 						CAGE_COMPONENT_GUI(text, text, e);
-						text.value = game.powerups[i];
+						text.value = stringizer() + game.powerups[i];
 						CAGE_COMPONENT_GUI(label, but, e);
 						CAGE_COMPONENT_GUI(textFormat, format, e);
 						format.align = textAlignEnum::Center;
@@ -347,7 +347,7 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 2;
 						CAGE_COMPONENT_GUI(text, text, e);
-						text.value = powerupSellPrice;
+						text.value = stringizer() + powerupSellPrice;
 						CAGE_COMPONENT_GUI(button, but, e);
 						if (game.powerups[i] == 0)
 						{
@@ -361,7 +361,7 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 3;
 						CAGE_COMPONENT_GUI(text, text, e);
-						text.value = powerupBuyPriceBase * game.buyPriceMultiplier;
+						text.value = stringizer() + (powerupBuyPriceBase * game.buyPriceMultiplier);
 						CAGE_COMPONENT_GUI(button, but, e);
 						if (!anyBuy || game.money < powerupBuyPriceBase * game.buyPriceMultiplier)
 						{
@@ -656,15 +656,15 @@ namespace
 
 		{ // life
 			CAGE_COMPONENT_GUI(text, txt, gui()->entities()->get(100));
-			txt.value = numeric_cast<uint32>(max(0, game.life));
+			txt.value = stringizer() + numeric_cast<uint32>(max(0, game.life));
 		}
 		{ // money
 			CAGE_COMPONENT_GUI(text, txt, gui()->entities()->get(101));
-			txt.value = game.money;
+			txt.value = stringizer() + game.money;
 		}
 		{ // score
 			CAGE_COMPONENT_GUI(text, txt, gui()->entities()->get(102));
-			txt.value = game.score;
+			txt.value = stringizer() + game.score;
 		}
 
 		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
@@ -675,13 +675,13 @@ namespace
 			switch (powerupMode[i])
 			{
 			case 0: // collectibles
-				txt.value = game.powerups[i];
+				txt.value = stringizer() + game.powerups[i];
 				break;
 			case 1: // timed
-				txt.value = game.powerups[i] / 30;
+				txt.value = stringizer() + game.powerups[i] / 30;
 				break;
 			case 2: // permanent
-				txt.value = game.powerups[i];
+				txt.value = stringizer() + game.powerups[i];
 				break;
 			}
 		}

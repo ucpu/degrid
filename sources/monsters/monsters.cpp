@@ -101,7 +101,7 @@ namespace
 			if (wasBoss && !hasBoss)
 			{
 				CAGE_ASSERT(game.defeatedBosses < bossesTotalCount);
-				achievementFullfilled(string("boss-") + game.defeatedBosses, true);
+				achievementFullfilled(stringizer() + "boss-" + game.defeatedBosses, true);
 				game.defeatedBosses++;
 				game.money += numeric_cast<uint32>(game.life * 2);
 				game.score += numeric_cast<uint64>(game.score * (double)game.life.value / 100);

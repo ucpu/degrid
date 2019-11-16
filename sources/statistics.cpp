@@ -72,9 +72,9 @@ namespace
 		};
 		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			if (game.powerups[i] > 0)
-				CAGE_LOG(severityEnum::Info, "statistics", string() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
+				CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
 
-#define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(severityEnum::Info, "statistics", string() + CAGE_STRINGIZE(N) ": " + statistics.N);
+#define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(severityEnum::Info, "statistics", stringizer() + CAGE_STRINGIZE(N) ": " + statistics.N);
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
 			shotsFired, shotsTurret, shotsHit, shotsKill, shotsCurrent, shotsMax, \
 			monstersSpawned, monstersMutated, monstersMutations, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersFirstHit, \
@@ -95,9 +95,9 @@ namespace
 #undef GCHL_GENERATE
 
 		uint64 duration = getApplicationTime() - statistics.timeStart;
-		CAGE_LOG(severityEnum::Info, "statistics", string() + "duration: " + (duration / 1e6) + " s");
-		CAGE_LOG(severityEnum::Info, "statistics", string() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
-		CAGE_LOG(severityEnum::Info, "statistics", string() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
+		CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "duration: " + (duration / 1e6) + " s");
+		CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
+		CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
 	}
 
 	class callbacksClass

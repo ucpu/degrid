@@ -110,7 +110,7 @@ namespace
 				parent.order = numeric_cast<sint32>(it.cnt * 2 + 101);
 				CAGE_COMPONENT_GUI(label, control, txtDate);
 				CAGE_COMPONENT_GUI(text, txt, txtDate);
-				txt.value = it->score;
+				txt.value = stringizer() + it->score;
 				CAGE_COMPONENT_GUI(textFormat, format, txtDate);
 				format.align = textAlignEnum::Right;
 			}
@@ -130,8 +130,8 @@ void setScreenScores()
 		for (uint32 i = 0, e = ini->sectionsCount(); i < e; i++)
 		{
 			scoreStruct s;
-			s.score = ini->getUint32(i, "score");
-			s.date = ini->getString(i, "date");
+			s.score = ini->getUint32(stringizer() + i, "score");
+			s.date = ini->getString(stringizer() + i, "date");
 			scores.push_back(s);
 		}
 	}

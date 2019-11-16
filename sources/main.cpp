@@ -32,7 +32,7 @@ namespace
 
 		static configBool secondaryCamera("degrid.secondary-camera.enabled", false);
 
-		CAGE_LOG_DEBUG(severityEnum::Info, "keyboard", string() + "key: " + key);
+		CAGE_LOG_DEBUG(severityEnum::Info, "keyboard", stringizer() + "key: " + key);
 
 		switch (key)
 		{
