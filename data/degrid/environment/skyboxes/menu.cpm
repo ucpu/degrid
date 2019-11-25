@@ -1,4 +1,7 @@
 
+[base]
+emission = 1
+
 [textures]
 albedo = menu.png
 

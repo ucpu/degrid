@@ -46,7 +46,6 @@ namespace
 					c.sceneMask = 2;
 					c.near = 0.5;
 					c.far = 3;
-					c.ambientLight = vec3(1);
 					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
@@ -61,6 +60,7 @@ namespace
 					c.near = 3;
 					c.far = 500;
 					c.ambientLight = ambientLight;
+					c.ambientDirectionalLight = directionalLight;
 					c.clear = (cameraClearFlags)0;
 					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
@@ -88,7 +88,6 @@ namespace
 			c.near = 0.5;
 			c.far = 3;
 			c.camera.perspectiveFov = degs(40);
-			c.ambientLight = vec3(1);
 		}
 
 		{
@@ -104,15 +103,13 @@ namespace
 			c.far = 1000;
 			c.camera.perspectiveFov = degs(40);
 			c.ambientLight = ambientLight;
+			c.ambientDirectionalLight = directionalLight;
 			c.clear = (cameraClearFlags)0;
 			c.effects = cameraEffectsFlags::CombinedPass & ~cameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(listener, ls, primaryCameraEntity);
 			static const float halfVolumeDistance = 30;
 			ls.attenuation[1] = 2.0 / halfVolumeDistance;
 			ls.attenuation[0] = ls.attenuation[1] * transform.position[1] * -1;
-			CAGE_COMPONENT_ENGINE(light, l, primaryCameraEntity);
-			l.lightType = lightTypeEnum::Directional;
-			l.color = directionalLight;
 		}
 
 		{

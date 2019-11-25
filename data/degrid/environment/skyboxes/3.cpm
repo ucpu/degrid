@@ -1,4 +1,7 @@
 
+[base]
+emission = 1
+
 [mult]
 albedo = 0.3, 0.3, 0.3
 
