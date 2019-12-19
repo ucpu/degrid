@@ -10,7 +10,7 @@
 #include <cage-engine/fullscreenSwitcher.h>
 #include <cage-engine/highPerformanceGpuHint.h>
 
-configUint32 confLanguage("degrid.language.language", 0);
+configUint32 confLanguage("degrid/language/language", 0);
 
 void reloadLanguage(uint32 index);
 
@@ -30,7 +30,7 @@ namespace
 		if (modifiers != modifiersFlags::None)
 			return false;
 
-		static configBool secondaryCamera("degrid.secondary-camera.enabled", false);
+		static configBool secondaryCamera("degrid/secondaryCamera/enabled", false);
 
 		CAGE_LOG_DEBUG(severityEnum::Info, "keyboard", stringizer() + "key: " + key);
 
@@ -80,7 +80,7 @@ int main(int argc, const char *args[])
 {
 	try
 	{
-		configSetBool("cage.config.autoSave", true);
+		configSetBool("cage/config/autoSave", true);
 		controlThread().timePerTick = 1000000 / 30;
 		engineInitialize(engineCreateConfig());
 

@@ -34,7 +34,7 @@ namespace
 		}
 
 		{ // secondaryCamera
-			static configBool secondaryCamera("degrid.secondary-camera.enabled", false);
+			static configBool secondaryCamera("degrid/secondaryCamera/enabled", false);
 			if (secondaryCamera)
 			{
 				CAGE_COMPONENT_ENGINE(transform, tp, game.playerEntity);

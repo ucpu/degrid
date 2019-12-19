@@ -3,18 +3,18 @@
 
 #include <cage-core/config.h>
 
-configUint32 confControlMovement("degrid.control.movement", 0);
-configUint32 confControlFiring("degrid.control.firing", 4);
-configUint32 confControlBomb("degrid.control.bomb", 4 + 4);
-configUint32 confControlTurret("degrid.control.turret", 2 + 4);
-configUint32 confControlDecoy("degrid.control.decoy", 0 + 4);
-configString confPlayerName("degrid.player.name", "player name");
-configFloat confPlayerShotColorR("degrid.player.shotColorR", 1);
-configFloat confPlayerShotColorG("degrid.player.shotColorG", 1);
-configFloat confPlayerShotColorB("degrid.player.shotColorB", 1);
-configFloat confVolumeMusic("degrid.volume.music", 0.5f);
-configFloat confVolumeEffects("degrid.volume.effects", 0.5f);
-configFloat confVolumeSpeech("degrid.volume.speech", 0.7f);
+configUint32 confControlMovement("degrid/control/movement", 0);
+configUint32 confControlFiring("degrid/control/firing", 4);
+configUint32 confControlBomb("degrid/control/bomb", 4 + 4);
+configUint32 confControlTurret("degrid/control/turret", 2 + 4);
+configUint32 confControlDecoy("degrid/control/decoy", 0 + 4);
+configString confPlayerName("degrid/player/name", "player name");
+configFloat confPlayerShotColorR("degrid/player/shotColorR", 1);
+configFloat confPlayerShotColorG("degrid/player/shotColorG", 1);
+configFloat confPlayerShotColorB("degrid/player/shotColorB", 1);
+configFloat confVolumeMusic("degrid/volume/music", 0.5f);
+configFloat confVolumeEffects("degrid/volume/effects", 0.5f);
+configFloat confVolumeSpeech("degrid/volume/speech", 0.7f);
 
 namespace
 {
