@@ -38,23 +38,17 @@ namespace
 		if (game.paused)
 			return;
 
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
-
 		// snake heads
 		for (entity *e : snakeHeadComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(transform, tr, e);
 			DEGRID_COMPONENT(velocity, v, e);
 			DEGRID_COMPONENT(snakeHead, snake, e);
-			if (distance(tr.position, playerTransform.position) > 250)
-				v.velocity = normalize(game.monstersTarget - tr.position) * (snake.speedMin + snake.speedMax) * 0.5;
-			else
-			{
-				v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
-				real s = length(v.velocity);
-				if (s < snake.speedMin || s > snake.speedMax)
-					v.velocity = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
-			}
+			v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
+			real s = length(v.velocity);
+			if (s < snake.speedMin || s > snake.speedMax)
+				v.velocity = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
+			v.velocity += (game.monstersTarget - tr.position) * 0.0001;
 			v.velocity[1] = 0;
 			tr.orientation = quat(v.velocity, vec3(0, 1, 0));
 			snakeSideMove(tr.position, tr.orientation, 0, tr.scale * 2);
