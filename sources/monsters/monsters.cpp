@@ -49,17 +49,16 @@ namespace
 			// collision with player
 			if (collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
 			{
+				vec3 enemyDir = normalize(t.position - playerTransform.position);
 				if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::Infinity())
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
-					vec3 shieldDirection = normalize(t.position - playerTransform.position);
-					vec3 shieldPosition = playerTransform.position + shieldDirection * (playerScale * 1.1);
-					environmentExplosion(shieldPosition, shieldDirection * 0.5, vec3(1, 1, 1), min(m.damage, 5) * 2 + 2, 3); // shield sparks
+					environmentExplosion(playerTransform.position + enemyDir * (playerScale * 1.1), playerVelocity.velocity + enemyDir * 0.5, vec3(1), 1); // shield sparks
 				}
 				else
 				{
-					environmentExplosion(interpolate(t.position, playerTransform.position, 0.5), interpolate(playerVelocity.velocity, v.velocity, 0.5), playerDeathColor, min(m.damage, 5) * 2 + 2, 3); // hull sparks
+					environmentExplosion(playerTransform.position + enemyDir * playerScale, playerVelocity.velocity + enemyDir * 0.5, playerDeathColor, 1); // hull sparks
 					statistics.monstersSucceded++;
 					game.life -= lifeDamage(m.damage);
 					if (statistics.monstersFirstHit == 0)

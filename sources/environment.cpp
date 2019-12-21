@@ -202,12 +202,12 @@ void setSkybox(uint32 objectName)
 	}
 }
 
-void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale)
+void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size)
 {
 	statistics.environmentExplosions++;
 
 	// colorize nearby grids
-	spatialSearchQuery->intersection(sphere(position, size));
+	spatialSearchQuery->intersection(sphere(position, size * 2));
 	for (uint32 otherName : spatialSearchQuery->result())
 	{
 		if (!entities()->has(otherName))
@@ -219,36 +219,56 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		CAGE_COMPONENT_ENGINE(render, orc, e);
 		DEGRID_COMPONENT(velocity, og, e);
 		vec3 toOther = ot.position - position;
-		vec3 change = normalize(toOther) * (size / max(2, lengthSquared(toOther))) * 2;
+		real dist = length(toOther);
+		real intpr = smoothstep(((size - dist) / size + 1) * 0.5);
+		vec3 dir = normalize(toOther);
+		vec3 change = dir * intpr;
 		og.velocity += change;
 		ot.position += change * 2;
-		orc.color = interpolate(color, orc.color, length(toOther) / size);
+		orc.color = interpolate(color, orc.color, intpr);
 	}
 
 	// create some debris
-	uint32 cnt = numeric_cast<uint32>(clamp(size, 2, 40));
+	uint32 cnt = numeric_cast<uint32>(size * size * 0.5 + 2);
 	for (uint32 i = 0; i < cnt; i++)
 	{
+		real scale = randomChance();
 		entity *e = entities()->createAnonymous();
 		DEGRID_COMPONENT(timeout, timeout, e);
-		timeout.ttl = numeric_cast<uint32>(randomChance() * 5 + 10);
+		timeout.ttl = randomRange(5, 25);
 		DEGRID_COMPONENT(velocity, vel, e);
-		vel.velocity = randomDirection3();
-		if (lengthSquared(velocity) > 0)
-			vel.velocity = normalize(vel.velocity + normalize(velocity) * sqrt(length(velocity)));
-		vel.velocity *= randomChance() + 0.5;
+		vel.velocity = velocity * 0.5 + randomDirection3() * (1.1 - scale);
 		CAGE_COMPONENT_ENGINE(transform, transform, e);
-		transform.scale = scale * (randomRange(0.8, 1.2) * 0.35);
-		transform.position = position + randomRange3(-1, 1) * scale;
+		transform.scale = randomRange(1.0, 1.3) * (scale * 0.4 + 0.8);
+		transform.position = position + randomDirection3() * (randomChance() * size);
 		transform.orientation = randomDirectionQuat();
 		CAGE_COMPONENT_ENGINE(render, render, e);
 		render.object = hashString("degrid/environment/explosion.object");
-		render.color = colorVariation(color) * 2;
+		render.color = colorVariation(color);
+		e->add(entitiesPhysicsEvenWhenPaused);
+	}
+
+	// create light
+	{
+		entity *e = entities()->createAnonymous();
+		DEGRID_COMPONENT(timeout, timeout, e);
+		timeout.ttl = randomRange(5, 10);
+		DEGRID_COMPONENT(velocity, vel, e);
+		vel.velocity = velocity * 0.3 + randomDirection3() * 0.02;
+		CAGE_COMPONENT_ENGINE(transform, transform, e);
+		transform.position = position + randomDirection3() * vec3(1, 0.1, 1) * size * randomChance();
+		transform.position[1] = abs(transform.position[1]); // make the light always above the game plane (closer to camera)
 		e->add(entitiesPhysicsEvenWhenPaused);
 		CAGE_COMPONENT_ENGINE(light, light, e);
-		light.color = render.color;
+		vec3 colorinv = colorRgbToHsv(color);
+		colorinv[0] = (colorinv[0] + 0.5) % 1;
+		colorinv = colorHsvToRgb(colorinv);
+		light.color = colorVariation(colorinv) * randomRange(2.0, 3.0);
 		light.lightType = lightTypeEnum::Point;
-		light.attenuation = vec3(0, 0, 0.02);
+		light.attenuation = vec3(0, 0, 0.005);
+
+		//CAGE_COMPONENT_ENGINE(render, render, e);
+		//render.object = hashString("cage/mesh/fake.obj");
 	}
 }
 
@@ -258,7 +278,7 @@ void monsterExplosion(entity *e)
 	CAGE_COMPONENT_ENGINE(render, r, e);
 	DEGRID_COMPONENT(velocity, v, e);
 	DEGRID_COMPONENT(monster, m, e);
-	environmentExplosion(t.position, v.velocity, r.color, min(m.damage, 10) + 2, t.scale);
+	environmentExplosion(t.position, v.velocity, r.color, t.scale);
 }
 
 void shotExplosion(entity *e)
@@ -266,7 +286,7 @@ void shotExplosion(entity *e)
 	CAGE_COMPONENT_ENGINE(transform, t, e);
 	CAGE_COMPONENT_ENGINE(render, r, e);
 	DEGRID_COMPONENT(velocity, v, e);
-	environmentExplosion(t.position, v.velocity, r.color, 5, t.scale * 2);
+	environmentExplosion(t.position, v.velocity, r.color, t.scale);
 }
 
 vec3 colorVariation(const vec3 &color)

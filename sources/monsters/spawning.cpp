@@ -517,7 +517,7 @@ namespace
 		for (auto &d : definitions)
 		{
 			if (d.iteration > 0)
-				CAGE_LOG(severityEnum::Info, "statistics", string() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
+				CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
 		}
 #endif // DEGRID_TESTING
 

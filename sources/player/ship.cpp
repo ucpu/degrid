@@ -170,9 +170,7 @@ namespace
 	{
 		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
-		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, 20, playerScale);
-		for (uint32 i = 0; i < 10; i++)
-			environmentExplosion(playerTransform.position, randomDirection3() * vec3(1, 0.1, 1), playerDeathColor, 5, playerScale);
+		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, playerScale);
 		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;
 		game.shieldEntity->add(entitiesToDestroy);

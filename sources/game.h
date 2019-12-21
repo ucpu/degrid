@@ -14,7 +14,7 @@ bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, c
 void powerupSpawn(const vec3 &position);
 void monstersSpawnInitial();
 real lifeDamage(real damage); // how much life is taken by the damage (based on players armor)
-void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size, real scale);
+void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size);
 void monsterExplosion(entity *e);
 void shotExplosion(entity *e);
 bool killMonster(entity *e, bool allowCallback);
