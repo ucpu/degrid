@@ -13,12 +13,12 @@ namespace
 		if (game.paused)
 			return;
 
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
 
-		for (entity *e : monsterComponent::component->entities())
+		for (Entity *e : monsterComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, t, e);
+			CAGE_COMPONENT_ENGINE(Transform, t, e);
 			DEGRID_COMPONENT(velocity, v, e);
 			DEGRID_COMPONENT(monster, m, e);
 
@@ -27,13 +27,13 @@ namespace
 			{
 				uint32 myName = e->name();
 				vec3 dispersion;
-				spatialSearchQuery->intersection(sphere(t.position, t.scale + 1));
-				for (uint32 otherName : spatialSearchQuery->result())
+				SpatialSearchQuery->intersection(sphere(t.position, t.scale + 1));
+				for (uint32 otherName : SpatialSearchQuery->result())
 				{
 					if (otherName == myName)
 						continue;
-					entity *e = entities()->get(otherName);
-					CAGE_COMPONENT_ENGINE(transform, ot, e);
+					Entity *e = entities()->get(otherName);
+					CAGE_COMPONENT_ENGINE(Transform, ot, e);
 					vec3 toMonster = t.position - ot.position;
 					if (e->has(monsterComponent::component))
 					{
@@ -67,18 +67,18 @@ namespace
 					if (game.life > 0 && !game.cinematic)
 					{
 						uint32 sounds[] = {
-							hashString("degrid/speech/damage/better-to-avoid-next-time.wav"),
-							hashString("degrid/speech/damage/beware.wav"),
-							hashString("degrid/speech/damage/critical-damage.wav"),
-							hashString("degrid/speech/damage/damaged.wav"),
-							hashString("degrid/speech/damage/dont-do-this.wav"),
-							hashString("degrid/speech/damage/evasive-maneuvers.wav"),
-							hashString("degrid/speech/damage/hit.wav"),
-							hashString("degrid/speech/damage/hull-is-breached.wav"),
-							hashString("degrid/speech/damage/shields-are-failing.wav"),
-							hashString("degrid/speech/damage/warning.wav"),
-							hashString("degrid/speech/damage/we-are-doomed.wav"),
-							hashString("degrid/speech/damage/we-have-been-hit.wav"),
+							HashString("degrid/speech/damage/better-to-avoid-next-time.wav"),
+							HashString("degrid/speech/damage/beware.wav"),
+							HashString("degrid/speech/damage/critical-damage.wav"),
+							HashString("degrid/speech/damage/damaged.wav"),
+							HashString("degrid/speech/damage/dont-do-this.wav"),
+							HashString("degrid/speech/damage/evasive-maneuvers.wav"),
+							HashString("degrid/speech/damage/hit.wav"),
+							HashString("degrid/speech/damage/hull-is-breached.wav"),
+							HashString("degrid/speech/damage/shields-are-failing.wav"),
+							HashString("degrid/speech/damage/warning.wav"),
+							HashString("degrid/speech/damage/we-are-doomed.wav"),
+							HashString("degrid/speech/damage/we-have-been-hit.wav"),
 							0
 						};
 						soundSpeech(sounds);
@@ -112,7 +112,7 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass() : engineUpdateListener("monsters")
 		{
@@ -141,23 +141,23 @@ uint32 monsterMutation(uint32 &special)
 	return res;
 }
 
-void monsterReflectMutation(entity *e, uint32 special)
+void monsterReflectMutation(Entity *e, uint32 special)
 {
 	if (!special)
 		return;
-	CAGE_COMPONENT_ENGINE(transform, transform, e);
+	CAGE_COMPONENT_ENGINE(Transform, transform, e);
 	transform.scale *= 1.3;
 	statistics.monstersMutated++;
 	statistics.monstersMutations += special;
 	achievementFullfilled("mutated");
 }
 
-entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
+Entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
 {
 	statistics.monstersSpawned++;
-	entity *m = entities()->createUnique();
-	CAGE_COMPONENT_ENGINE(transform, transform, m);
-	CAGE_COMPONENT_ENGINE(render, render, m);
+	Entity *m = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(Transform, transform, m);
+	CAGE_COMPONENT_ENGINE(Render, render, m);
 	DEGRID_COMPONENT(monster, monster, m);
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.position = spawnPosition;
@@ -171,7 +171,7 @@ entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real sca
 	return m;
 }
 
-bool killMonster(entity *e, bool allowCallback)
+bool killMonster(Entity *e, bool allowCallback)
 {
 	if (e->has(entitiesToDestroy))
 		return false;
@@ -182,7 +182,7 @@ bool killMonster(entity *e, bool allowCallback)
 	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
 	if (m.defeatedSound)
 	{
-		CAGE_COMPONENT_ENGINE(transform, t, e);
+		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		soundEffect(m.defeatedSound, t.position);
 		m.defeatedSound = 0;
 	}

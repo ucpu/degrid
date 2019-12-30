@@ -2,12 +2,12 @@
 
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
-#include <cage-core/spatial.h>
+#include <cage-core/Spatial.h>
 
-entityGroup *entitiesToDestroy;
-entityGroup *entitiesPhysicsEvenWhenPaused;
-holder<spatialData> spatialSearchData;
-holder<spatialQuery> spatialSearchQuery;
+EntityGroup *entitiesToDestroy;
+EntityGroup *entitiesPhysicsEvenWhenPaused;
+Holder<SpatialData> SpatialSearchData;
+Holder<SpatialQuery> SpatialSearchQuery;
 
 namespace
 {
@@ -15,8 +15,8 @@ namespace
 	{
 		entitiesToDestroy = entities()->defineGroup();
 		entitiesPhysicsEvenWhenPaused = entities()->defineGroup();
-		spatialSearchData = newSpatialData(spatialDataCreateConfig());
-		spatialSearchQuery = newSpatialQuery(spatialSearchData.get());
+		SpatialSearchData = newSpatialData(SpatialDataCreateConfig());
+		SpatialSearchQuery = newSpatialQuery(SpatialSearchData.get());
 	}
 
 	void engineUpdate()
@@ -26,15 +26,15 @@ namespace
 		if (!game.paused)
 		{ // gravity
 			OPTICK_EVENT("gravity");
-			for (entity *e : gravityComponent::component->entities())
+			for (Entity *e : gravityComponent::component->entities())
 			{
-				CAGE_COMPONENT_ENGINE(transform, t, e);
+				CAGE_COMPONENT_ENGINE(Transform, t, e);
 				DEGRID_COMPONENT(gravity, g, e);
-				for (entity *oe : velocityComponent::component->entities())
+				for (Entity *oe : velocityComponent::component->entities())
 				{
 					if (oe->has(gravityComponent::component))
 						continue;
-					CAGE_COMPONENT_ENGINE(transform, ot, oe);
+					CAGE_COMPONENT_ENGINE(Transform, ot, oe);
 					vec3 d = t.position - ot.position;
 					if (lengthSquared(d) < 1e-3)
 						continue;
@@ -45,11 +45,11 @@ namespace
 
 		{ // velocity
 			OPTICK_EVENT("velocity");
-			for (entity *e : velocityComponent::component->entities())
+			for (Entity *e : velocityComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				CAGE_COMPONENT_ENGINE(transform, t, e);
+				CAGE_COMPONENT_ENGINE(Transform, t, e);
 				DEGRID_COMPONENT(velocity, v, e);
 				t.position += v.velocity;
 			}
@@ -57,11 +57,11 @@ namespace
 
 		{ // rotation
 			OPTICK_EVENT("rotation");
-			for (entity *e : rotationComponent::component->entities())
+			for (Entity *e : rotationComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				CAGE_COMPONENT_ENGINE(transform, t, e);
+				CAGE_COMPONENT_ENGINE(Transform, t, e);
 				DEGRID_COMPONENT(rotation, r, e);
 				t.orientation = r.rotation * t.orientation;
 			}
@@ -69,7 +69,7 @@ namespace
 
 		{ // timeout
 			OPTICK_EVENT("timeout");
-			for (entity *e : timeoutComponent::component->entities())
+			for (Entity *e : timeoutComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
@@ -87,29 +87,29 @@ namespace
 		}
 
 		{
-			OPTICK_EVENT("spatial update");
-			spatialSearchData->clear();
-			for (entity *e : transformComponent::component->entities())
+			OPTICK_EVENT("Spatial update");
+			SpatialSearchData->clear();
+			for (Entity *e : TransformComponent::component->entities())
 			{
 				uint32 n = e->name();
 				if (n)
 				{
-					CAGE_COMPONENT_ENGINE(transform, tr, e);
-					spatialSearchData->update(n, sphere(tr.position, tr.scale));
+					CAGE_COMPONENT_ENGINE(Transform, tr, e);
+					SpatialSearchData->update(n, sphere(tr.position, tr.scale));
 				}
 			}
 		}
 
 		{
-			OPTICK_EVENT("spatial rebuild");
-			spatialSearchData->rebuild();
+			OPTICK_EVENT("Spatial rebuild");
+			SpatialSearchData->rebuild();
 		}
 	}
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass() : engineInitListener("physics"), engineUpdateListener("physics")
 		{

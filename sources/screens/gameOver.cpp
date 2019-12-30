@@ -6,8 +6,8 @@
 
 namespace
 {
-	eventListener<bool(uint32)> guiEvent;
-	eventListener<bool(uint32, uint32, modifiersFlags)> keyReleaseListener;
+	EventListener<bool(uint32)> guiEvent;
+	EventListener<bool(uint32, uint32, ModifiersFlags)> keyReleaseListener;
 
 	void endScreen()
 	{
@@ -21,7 +21,7 @@ namespace
 			setScreenMainmenu();
 	}
 
-	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
+	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
 	{
 		if (key == 256) // esc
 		{
@@ -45,10 +45,10 @@ void setScreenGameover()
 	if (game.score > 0)
 	{
 #ifndef DEGRID_TESTING
-		fileMode fm(false, true);
+		FileMode fm(false, true);
 		fm.textual = true;
 		fm.append = true;
-		holder<fileHandle> f = newFile("score.ini", fm);
+		Holder<File> f = newFile("score.ini", fm);
 		f->writeLine("[]");
 		{
 			uint32 y, m, d, h, mm, s;
@@ -67,57 +67,57 @@ void setScreenGameover()
 		c.backButton = false;
 		regenerateGui(c);
 	}
-	entityManager *ents = gui()->entities();
+	EntityManager *ents = gui()->entities();
 	guiEvent.bind<&buttonContinue>();
 	guiEvent.attach(gui()->widgetEvent);
 	keyReleaseListener.attach(window()->events.keyRelease);
 	keyReleaseListener.bind<&keyRelease>();
 
-	entity *panel = ents->createUnique();
+	Entity *panel = ents->createUnique();
 	{
-		CAGE_COMPONENT_GUI(panel, panel2, panel);
-		CAGE_COMPONENT_GUI(parent, parent, panel);
+		CAGE_COMPONENT_GUI(Panel, panel2, panel);
+		CAGE_COMPONENT_GUI(Parent, parent, panel);
 		parent.parent = 12;
-		CAGE_COMPONENT_GUI(layoutLine, layout, panel);
+		CAGE_COMPONENT_GUI(LayoutLine, layout, panel);
 		layout.vertical = true;
 	}
 
 	{
-		entity *empOver = ents->createUnique();
-		CAGE_COMPONENT_GUI(parent, parent, empOver);
+		Entity *empOver = ents->createUnique();
+		CAGE_COMPONENT_GUI(Parent, parent, empOver);
 		parent.parent = panel->name();
 		parent.order = 1;
-		CAGE_COMPONENT_GUI(label, control, empOver);
-		CAGE_COMPONENT_GUI(text, txt, empOver);
-		txt.assetName = hashString("degrid/languages/internationalized.textpack");
-		txt.textName = hashString("gui/gameover/over");
-		CAGE_COMPONENT_GUI(textFormat, format, empOver);
-		format.align = textAlignEnum::Center;
+		CAGE_COMPONENT_GUI(Label, control, empOver);
+		CAGE_COMPONENT_GUI(Text, txt, empOver);
+		txt.assetName = HashString("degrid/languages/internationalized.textpack");
+		txt.textName = HashString("gui/gameover/over");
+		CAGE_COMPONENT_GUI(TextFormat, format, empOver);
+		format.align = TextAlignEnum::Center;
 		format.color = vec3(1, 0, 0);
 		format.size = 30;
 	}
 
 	{
-		entity *empScore = ents->createUnique();
-		CAGE_COMPONENT_GUI(parent, parent, empScore);
+		Entity *empScore = ents->createUnique();
+		CAGE_COMPONENT_GUI(Parent, parent, empScore);
 		parent.parent = panel->name();
 		parent.order = 2;
-		CAGE_COMPONENT_GUI(label, control, empScore);
-		CAGE_COMPONENT_GUI(text, txt, empScore);
+		CAGE_COMPONENT_GUI(Label, control, empScore);
+		CAGE_COMPONENT_GUI(Text, txt, empScore);
 		txt.value = string(game.score);
-		CAGE_COMPONENT_GUI(textFormat, format, empScore);
-		format.align = textAlignEnum::Center;
+		CAGE_COMPONENT_GUI(TextFormat, format, empScore);
+		format.align = TextAlignEnum::Center;
 		format.color = vec3(0, 1, 0);
 		format.size = 50;
 	}
 
 	{
-		entity *butSave = ents->create(100);
-		CAGE_COMPONENT_GUI(button, control, butSave);
-		CAGE_COMPONENT_GUI(text, txt, butSave);
-		txt.assetName = hashString("degrid/languages/internationalized.textpack");
-		txt.textName = hashString("gui/gameover/continue");
-		CAGE_COMPONENT_GUI(parent, parent, butSave);
+		Entity *butSave = ents->create(100);
+		CAGE_COMPONENT_GUI(Button, control, butSave);
+		CAGE_COMPONENT_GUI(Text, txt, butSave);
+		txt.assetName = HashString("degrid/languages/internationalized.textpack");
+		txt.textName = HashString("gui/gameover/continue");
+		CAGE_COMPONENT_GUI(Parent, parent, butSave);
 		parent.parent = 15;
 	}
 }

@@ -2,25 +2,25 @@
 
 #include <cage-core/entities.h>
 
-entityComponent *gravityComponent::component;
-entityComponent *velocityComponent::component;
-entityComponent *rotationComponent::component;
-entityComponent *timeoutComponent::component;
-entityComponent *gridComponent::component;
-entityComponent *shotComponent::component;
-entityComponent *powerupComponent::component;
-entityComponent *monsterComponent::component;
-entityComponent *bossComponent::component;
+EntityComponent *gravityComponent::component;
+EntityComponent *velocityComponent::component;
+EntityComponent *rotationComponent::component;
+EntityComponent *timeoutComponent::component;
+EntityComponent *gridComponent::component;
+EntityComponent *shotComponent::component;
+EntityComponent *powerupComponent::component;
+EntityComponent *monsterComponent::component;
+EntityComponent *bossComponent::component;
 
-eventDispatcher<bool()> &gameStartEvent()
+EventDispatcher<bool()> &gameStartEvent()
 {
-	static eventDispatcher<bool()> inst;
+	static EventDispatcher<bool()> inst;
 	return inst;
 }
 
-eventDispatcher<bool()> &gameStopEvent()
+EventDispatcher<bool()> &gameStopEvent()
 {
-	static eventDispatcher<bool()> inst;
+	static EventDispatcher<bool()> inst;
 	return inst;
 }
 
@@ -41,7 +41,7 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
+		EventListener<void()> engineInitListener;
 	public:
 		callbacksClass() : engineInitListener("globals")
 		{

@@ -8,26 +8,26 @@ namespace
 {
 	struct wormholeComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 		real maxSpeed;
 		real acceleration;
 	};
 
 	struct monsterFlickeringComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 		vec3 baseColorHsv;
 		real flickeringFrequency;
 		real flickeringOffset;
 	};
 
-	entityComponent *wormholeComponent::component;
-	entityComponent *monsterFlickeringComponent::component;
+	EntityComponent *wormholeComponent::component;
+	EntityComponent *monsterFlickeringComponent::component;
 
 	void countWormholes(uint32 &positive, uint32 &negative)
 	{
 		positive = negative = 0;
-		for (entity *e : wormholeComponent::component->entities())
+		for (Entity *e : wormholeComponent::component->entities())
 		{
 			DEGRID_COMPONENT(gravity, g, e);
 			if (g.strength > 0)
@@ -37,10 +37,10 @@ namespace
 		}
 	}
 
-	entity *pickWormhole(sint32 sgn)
+	Entity *pickWormhole(sint32 sgn)
 	{
-		std::vector<entity*> candidates;
-		for (entity *e : wormholeComponent::component->entities())
+		std::vector<Entity*> candidates;
+		for (Entity *e : wormholeComponent::component->entities())
 		{
 			DEGRID_COMPONENT(gravity, g, e);
 			if (sign(g.strength) == sgn)
@@ -51,7 +51,7 @@ namespace
 		return candidates[randomRange(0u, numeric_cast<uint32>(candidates.size()))];
 	}
 
-	void updateMonsterFlickering(entity *oe)
+	void updateMonsterFlickering(Entity *oe)
 	{
 		DEGRID_COMPONENT(monster, om, oe);
 		if (om.damage < 100)
@@ -61,7 +61,7 @@ namespace
 			DEGRID_COMPONENT(monsterFlickering, mof, oe);
 			if (!hadFlickering)
 			{
-				CAGE_COMPONENT_ENGINE(render, render, oe);
+				CAGE_COMPONENT_ENGINE(Render, render, oe);
 				mof.baseColorHsv = colorRgbToHsv(render.color);
 			}
 			mof.flickeringFrequency += 1e-6;
@@ -71,21 +71,21 @@ namespace
 
 	void wormholeKilled(uint32 name)
 	{
-		entity *w = entities()->get(name);
-		CAGE_COMPONENT_ENGINE(transform, wt, w);
+		Entity *w = entities()->get(name);
+		CAGE_COMPONENT_ENGINE(Transform, wt, w);
 		DEGRID_COMPONENT(gravity, wg, w);
 
 		// kill one pushing wormhole
 		if (wg.strength > 0)
 		{
-			entity *ow = pickWormhole(-1);
+			Entity *ow = pickWormhole(-1);
 			if (ow)
 				killMonster(ow, true);
 		}
 
 		// create temporary opposite gravity effect
-		entity *e = entities()->createUnique();
-		CAGE_COMPONENT_ENGINE(transform, et, e);
+		Entity *e = entities()->createUnique();
+		CAGE_COMPONENT_ENGINE(Transform, et, e);
 		DEGRID_COMPONENT(gravity, eg, e);
 		et.position = wt.position;
 		eg.strength = -wg.strength * 5;
@@ -104,9 +104,9 @@ namespace
 		OPTICK_EVENT("wormhole");
 
 		{ // flickering
-			for (entity *e : monsterFlickeringComponent::component->entities())
+			for (Entity *e : monsterFlickeringComponent::component->entities())
 			{
-				CAGE_COMPONENT_ENGINE(render, r, e);
+				CAGE_COMPONENT_ENGINE(Render, r, e);
 				DEGRID_COMPONENT(monsterFlickering, m, e);
 				real l = (real)currentControlTime() * m.flickeringFrequency + m.flickeringOffset;
 				real s = sin(rads::Full() * l) * 0.5 + 0.5;
@@ -120,10 +120,10 @@ namespace
 		uint32 positive, negative;
 		countWormholes(positive, negative);
 
-		for (entity *e : wormholeComponent::component->entities())
+		for (Entity *e : wormholeComponent::component->entities())
 		{
 			uint32 myName = e->name();
-			CAGE_COMPONENT_ENGINE(transform, t, e);
+			CAGE_COMPONENT_ENGINE(Transform, t, e);
 			DEGRID_COMPONENT(gravity, g, e);
 
 			// move the wormhole
@@ -136,13 +136,13 @@ namespace
 
 			if (g.strength > 0)
 			{ // this is sucking wormhole
-				CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
-				spatialSearchQuery->intersection(sphere(t.position, t.scale + 0.1));
-				for (uint32 otherName : spatialSearchQuery->result())
+				CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
+				SpatialSearchQuery->intersection(sphere(t.position, t.scale + 0.1));
+				for (uint32 otherName : SpatialSearchQuery->result())
 				{
 					if (otherName == myName)
 						continue;
-					entity *oe = entities()->get(otherName);
+					Entity *oe = entities()->get(otherName);
 
 					// gravity irrelevant entities
 					if (!oe->has(velocityComponent::component))
@@ -180,18 +180,18 @@ namespace
 
 					if (teleport)
 					{
-						CAGE_COMPONENT_ENGINE(transform, ot, oe);
+						CAGE_COMPONENT_ENGINE(Transform, ot, oe);
 						rads angle = randomAngle();
 						vec3 dir = vec3(cos(angle), 0, sin(angle));
-						entity *target = pickWormhole(-1);
+						Entity *target = pickWormhole(-1);
 						if (target)
 						{
-							CAGE_COMPONENT_ENGINE(transform, tt, target);
+							CAGE_COMPONENT_ENGINE(Transform, tt, target);
 							ot.position = tt.position + dir * tt.scale;
 						}
 						else
 							ot.position = playerTransform.position + dir * randomRange(200, 250);
-						oe->remove(transformComponent::componentHistory);
+						oe->remove(TransformComponent::componentHistory);
 					}
 					else
 						oe->add(entitiesToDestroy);
@@ -213,8 +213,8 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
@@ -232,8 +232,8 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 	countWormholes(positive, negative);
 	statistics.wormholesSpawned++;
 	uint32 special = 0;
-	entity *wormhole = initializeMonster(spawnPosition, color, 5, hashString("degrid/monster/wormhole.object"), hashString("degrid/monster/bum-wormhole.ogg"), 200, randomRange(200, 300) + 100 * monsterMutation(special));
-	CAGE_COMPONENT_ENGINE(transform, transform, wormhole);
+	Entity *wormhole = initializeMonster(spawnPosition, color, 5, HashString("degrid/monster/wormhole.object"), HashString("degrid/monster/bum-wormhole.ogg"), 200, randomRange(200, 300) + 100 * monsterMutation(special));
+	CAGE_COMPONENT_ENGINE(Transform, transform, wormhole);
 	transform.orientation = randomDirectionQuat();
 	DEGRID_COMPONENT(monster, m, wormhole);
 	m.dispersion = 0.001;
@@ -245,13 +245,13 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 	g.strength = 10 + 3 * monsterMutation(special);
 	if (positive > 0 && (negative == 0 || randomChance() < 0.5))
 		g.strength *= -1;
-	CAGE_COMPONENT_ENGINE(render, render, wormhole);
+	CAGE_COMPONENT_ENGINE(Render, render, wormhole);
 	render.color = vec3(g.strength < 0 ? 1 : 0);
-	CAGE_COMPONENT_ENGINE(textureAnimation, at, wormhole);
+	CAGE_COMPONENT_ENGINE(TextureAnimation, at, wormhole);
 	at.speed *= (randomChance() + 0.5) * 0.05 * sign(g.strength);
 	DEGRID_COMPONENT(rotation, rotation, wormhole);
 	rotation.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
 	monsterReflectMutation(wormhole, special);
-	soundEffect(hashString("degrid/monster/wormhole.ogg"), spawnPosition);
+	soundEffect(HashString("degrid/monster/wormhole.ogg"), spawnPosition);
 }
 

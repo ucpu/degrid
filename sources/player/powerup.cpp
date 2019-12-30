@@ -3,30 +3,30 @@
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
 #include <cage-core/color.h>
-#include <cage-core/hashString.h>
+#include <cage-core/HashString.h>
 
 namespace
 {
 	struct turretComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 		uint32 shooting;
 		turretComponent() : shooting(0) {}
 	};
 
 	struct decoyComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 	};
 
-	entityComponent *turretComponent::component;
-	entityComponent *decoyComponent::component;
+	EntityComponent *turretComponent::component;
+	EntityComponent *decoyComponent::component;
 
 	void turretsUpdate()
 	{
-		for (entity *e : turretComponent::component->entities())
+		for (Entity *e : turretComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(turret, tu, e);
 			if (tu.shooting > 0)
 			{
@@ -37,12 +37,12 @@ namespace
 			for (uint32 i = 0; i < 6; i++)
 			{
 				statistics.shotsTurret++;
-				entity *shot = entities()->createUnique();
-				CAGE_COMPONENT_ENGINE(transform, transform, shot);
+				Entity *shot = entities()->createUnique();
+				CAGE_COMPONENT_ENGINE(Transform, transform, shot);
 				transform.orientation = quat(degs(), degs(i * 60), degs()) * tr.orientation;
 				transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
-				CAGE_COMPONENT_ENGINE(render, render, shot);
-				render.object = hashString("degrid/player/shot.object");
+				CAGE_COMPONENT_ENGINE(Render, render, shot);
+				render.object = HashString("degrid/player/shot.object");
 				render.color = game.shotsColor;
 				DEGRID_COMPONENT(velocity, vel, shot);
 				vel.velocity = transform.orientation * vec3(0, 0, -1) * 2.5;
@@ -56,9 +56,9 @@ namespace
 
 	void decoysUpdate()
 	{
-		for (entity *e : decoyComponent::component->entities())
+		for (Entity *e : decoyComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(velocity, vel, e);
 			tr.position[1] = 0;
 			vel.velocity *= 0.97;
@@ -70,19 +70,19 @@ namespace
 	{
 		statistics.powerupsWasted++;
 		game.money += powerupSellPrice;
-		soundSpeech(hashString("degrid/speech/pickup/sold.wav"));
+		soundSpeech(HashString("degrid/speech/pickup/sold.wav"));
 	}
 
 	void powerupsUpdate()
 	{
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
-		for (entity *e : powerupComponent::component->entities())
+		for (Entity *e : powerupComponent::component->entities())
 		{
 			DEGRID_COMPONENT(powerup, p, e);
 			CAGE_ASSERT(p.type < powerupTypeEnum::Total, p.type);
 
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			if (!collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))
 			{
 				vec3 toPlayer = playerTransform.position - tr.position;
@@ -102,10 +102,10 @@ namespace
 					game.powerups[(uint32)p.type]++;
 					switch (p.type)
 					{
-					case powerupTypeEnum::Bomb: soundSpeech(hashString("degrid/speech/pickup/a-bomb.wav")); break;
-					case powerupTypeEnum::Decoy: soundSpeech(hashString("degrid/speech/pickup/a-decoy.wav")); break;
-					case powerupTypeEnum::Turret: soundSpeech(hashString("degrid/speech/pickup/a-turret.wav")); break;
-					default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
+					case powerupTypeEnum::Bomb: soundSpeech(HashString("degrid/speech/pickup/a-bomb.wav")); break;
+					case powerupTypeEnum::Decoy: soundSpeech(HashString("degrid/speech/pickup/a-decoy.wav")); break;
+					case powerupTypeEnum::Turret: soundSpeech(HashString("degrid/speech/pickup/a-turret.wav")); break;
+					default: CAGE_THROW_CRITICAL(Exception, "invalid powerup type");
 					}
 					{ // achievement
 						bool ok = true;
@@ -127,10 +127,10 @@ namespace
 				game.powerups[(uint32)p.type] += duration;
 				switch (p.type)
 				{
-				case powerupTypeEnum::Shield: soundSpeech(hashString("degrid/speech/pickup/shield-engaged.wav")); break;
-				case powerupTypeEnum::HomingShots: soundSpeech(hashString("degrid/speech/pickup/homing-missiles.wav")); break;
-				case powerupTypeEnum::SuperDamage: soundSpeech(hashString("degrid/speech/pickup/super-damage.wav")); break;
-				default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
+				case powerupTypeEnum::Shield: soundSpeech(HashString("degrid/speech/pickup/shield-engaged.wav")); break;
+				case powerupTypeEnum::HomingShots: soundSpeech(HashString("degrid/speech/pickup/homing-missiles.wav")); break;
+				case powerupTypeEnum::SuperDamage: soundSpeech(HashString("degrid/speech/pickup/super-damage.wav")); break;
+				default: CAGE_THROW_CRITICAL(Exception, "invalid powerup type");
 				}
 				if (game.powerups[(uint32)p.type] > 2 * duration)
 					achievementFullfilled("timelord");
@@ -142,15 +142,15 @@ namespace
 					game.powerups[(uint32)p.type]++;
 					switch (p.type)
 					{
-					case powerupTypeEnum::Acceleration: soundSpeech(hashString("degrid/speech/pickup/acceleration-improved.wav")); break;
-					case powerupTypeEnum::MaxSpeed: soundSpeech(hashString("degrid/speech/pickup/movement-speed-improved.wav")); break;
-					case powerupTypeEnum::Multishot: soundSpeech(hashString("degrid/speech/pickup/additional-cannon.wav")); break;
-					case powerupTypeEnum::ShotsSpeed: soundSpeech(hashString("degrid/speech/pickup/missiles-speed-improved.wav")); break;
-					case powerupTypeEnum::ShotsDamage: soundSpeech(hashString("degrid/speech/pickup/missiles-damage-improved.wav")); break;
-					case powerupTypeEnum::FiringSpeed: soundSpeech(hashString("degrid/speech/pickup/firing-speed-improved.wav")); break;
-					case powerupTypeEnum::Armor: soundSpeech(hashString("degrid/speech/pickup/improved-armor.wav")); break;
-					case powerupTypeEnum::Duration: soundSpeech(hashString("degrid/speech/pickup/increased-powerup-duration.wav")); break;
-					default: CAGE_THROW_CRITICAL(exception, "invalid powerup type");
+					case powerupTypeEnum::Acceleration: soundSpeech(HashString("degrid/speech/pickup/acceleration-improved.wav")); break;
+					case powerupTypeEnum::MaxSpeed: soundSpeech(HashString("degrid/speech/pickup/movement-speed-improved.wav")); break;
+					case powerupTypeEnum::Multishot: soundSpeech(HashString("degrid/speech/pickup/additional-cannon.wav")); break;
+					case powerupTypeEnum::ShotsSpeed: soundSpeech(HashString("degrid/speech/pickup/missiles-speed-improved.wav")); break;
+					case powerupTypeEnum::ShotsDamage: soundSpeech(HashString("degrid/speech/pickup/missiles-damage-improved.wav")); break;
+					case powerupTypeEnum::FiringSpeed: soundSpeech(HashString("degrid/speech/pickup/firing-speed-improved.wav")); break;
+					case powerupTypeEnum::Armor: soundSpeech(HashString("degrid/speech/pickup/improved-armor.wav")); break;
+					case powerupTypeEnum::Duration: soundSpeech(HashString("degrid/speech/pickup/increased-powerup-duration.wav")); break;
+					default: CAGE_THROW_CRITICAL(Exception, "invalid powerup type");
 					}
 				}
 				else
@@ -160,12 +160,12 @@ namespace
 			{
 				game.powerups[(uint32)p.type]++; // count the coins (for statistics & achievement)
 				game.money += game.defeatedBosses + 1;
-				soundSpeech(hashString("degrid/speech/pickup/a-coin.wav"));
+				soundSpeech(HashString("degrid/speech/pickup/a-coin.wav"));
 				if (game.powerups[(uint32)p.type] == 1000)
 					achievementFullfilled("vault-digger");
 			} break;
 			default:
-				CAGE_THROW_CRITICAL(exception, "invalid powerup mode");
+				CAGE_THROW_CRITICAL(Exception, "invalid powerup mode");
 			}
 		}
 	}
@@ -198,8 +198,8 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass() : engineInitListener("powerup"), engineUpdateListener("powerup")
 		{
@@ -242,8 +242,8 @@ void powerupSpawn(const vec3 &position)
 	else
 		statistics.powerupsSpawned++;
 
-	entity *e = entities()->createUnique();
-	CAGE_COMPONENT_ENGINE(transform, transform, e);
+	Entity *e = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(Transform, transform, e);
 	transform.position = position * vec3(1, 0, 1);
 	transform.orientation = randomDirectionQuat();
 	transform.scale = coin ? 1.5 : 2.5;
@@ -254,16 +254,16 @@ void powerupSpawn(const vec3 &position)
 	DEGRID_COMPONENT(rotation, rot, e);
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
 	DEGRID_COMPONENT(velocity, velocity, e); // to make the powerup affected by gravity
-	CAGE_COMPONENT_ENGINE(render, render, e);
+	CAGE_COMPONENT_ENGINE(Render, render, e);
 	static const uint32 objectName[4] = {
-		hashString("degrid/player/powerupCollectible.object"),
-		hashString("degrid/player/powerupOnetime.object"),
-		hashString("degrid/player/powerupPermanent.object"),
-		hashString("degrid/player/coin.object")
+		HashString("degrid/player/powerupCollectible.object"),
+		HashString("degrid/player/powerupOnetime.object"),
+		HashString("degrid/player/powerupPermanent.object"),
+		HashString("degrid/player/coin.object")
 	};
 	render.object = objectName[powerupMode[(uint32)p.type]];
 	render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
-	soundEffect(coin ? hashString("degrid/player/coin.ogg") : hashString("degrid/player/powerup.ogg"), transform.position);
+	soundEffect(coin ? HashString("degrid/player/coin.ogg") : HashString("degrid/player/powerup.ogg"), transform.position);
 }
 
 void eventBomb()
@@ -274,7 +274,7 @@ void eventBomb()
 	game.powerups[(uint32)powerupTypeEnum::Bomb]--;
 	uint32 kills = 0;
 	uint32 count = monsterComponent::component->group()->count();
-	for (entity *e : monsterComponent::component->entities())
+	for (Entity *e : monsterComponent::component->entities())
 	{
 		DEGRID_COMPONENT(monster, m, e);
 		m.life -= 10;
@@ -292,10 +292,10 @@ void eventBomb()
 	statistics.bombsUsed++;
 
 	{
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
-		for (entity *e : gridComponent::component->entities())
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
+		for (Entity *e : gridComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, t, e);
+			CAGE_COMPONENT_ENGINE(Transform, t, e);
 			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
 		}
 	}
@@ -304,9 +304,9 @@ void eventBomb()
 		monstersSpawnInitial();
 
 	uint32 sounds[] = {
-		hashString("degrid/speech/use/bomb-them-all.wav"),
-		hashString("degrid/speech/use/burn-them-all.wav"),
-		hashString("degrid/speech/use/let-them-burn.wav"),
+		HashString("degrid/speech/use/bomb-them-all.wav"),
+		HashString("degrid/speech/use/burn-them-all.wav"),
+		HashString("degrid/speech/use/let-them-burn.wav"),
 		0 };
 	soundSpeech(sounds);
 
@@ -320,16 +320,16 @@ void eventTurret()
 		return;
 	game.powerups[(uint32)powerupTypeEnum::Turret]--;
 	statistics.turretsPlaced++;
-	entity *turret = entities()->createUnique();
-	CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
-	CAGE_COMPONENT_ENGINE(transform, transform, turret);
+	Entity *turret = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
+	CAGE_COMPONENT_ENGINE(Transform, transform, turret);
 	DEGRID_COMPONENT(velocity, vel, turret); // allow it to be affected by gravity
 	transform.position = playerTransform.position;
 	transform.position[1] = 0;
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.scale = 3;
-	CAGE_COMPONENT_ENGINE(render, render, turret);
-	render.object = hashString("degrid/player/turret.object");
+	CAGE_COMPONENT_ENGINE(Render, render, turret);
+	render.object = HashString("degrid/player/turret.object");
 	DEGRID_COMPONENT(turret, tr, turret);
 	tr.shooting = 2;
 	DEGRID_COMPONENT(timeout, ttl, turret);
@@ -338,8 +338,8 @@ void eventTurret()
 	rot.rotation = quat(degs(), degs(1), degs());
 
 	uint32 sounds[] = {
-		hashString("degrid/speech/use/engaging-a-turret.wav"),
-		hashString("degrid/speech/use/turret-engaged.wav"),
+		HashString("degrid/speech/use/engaging-a-turret.wav"),
+		HashString("degrid/speech/use/turret-engaged.wav"),
 		0 };
 	soundSpeech(sounds);
 
@@ -353,13 +353,13 @@ void eventDecoy()
 		return;
 	game.powerups[(uint32)powerupTypeEnum::Decoy]--;
 	statistics.decoysUsed++;
-	entity *decoy = entities()->createUnique();
-	CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
-	CAGE_COMPONENT_ENGINE(transform, transform, decoy);
+	Entity *decoy = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
+	CAGE_COMPONENT_ENGINE(Transform, transform, decoy);
 	transform = playerTransform;
 	transform.scale *= 2;
-	CAGE_COMPONENT_ENGINE(render, render, decoy);
-	render.object = hashString("degrid/player/player.object");
+	CAGE_COMPONENT_ENGINE(Render, render, decoy);
+	render.object = HashString("degrid/player/player.object");
 	DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
 	DEGRID_COMPONENT(velocity, vel, decoy);
 	vel.velocity = -playerVelocity.velocity;
@@ -370,8 +370,8 @@ void eventDecoy()
 	rot.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
 	uint32 sounds[] = {
-		hashString("degrid/speech/use/decoy-launched.wav"),
-		hashString("degrid/speech/use/launching-a-decoy.wav"),
+		HashString("degrid/speech/use/decoy-launched.wav"),
+		HashString("degrid/speech/use/launching-a-decoy.wav"),
 		0 };
 	soundSpeech(sounds);
 }

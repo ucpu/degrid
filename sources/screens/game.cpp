@@ -20,7 +20,7 @@ namespace
 	std::vector<announcementStruct> announcements;
 	bool needToRemakeGui;
 
-	eventListener<bool(uint32)> guiEvent;
+	EventListener<bool(uint32)> guiEvent;
 
 	void makeTheGui(uint32 mode = 0);
 
@@ -68,89 +68,89 @@ namespace
 	}
 
 	static const uint32 textNames[(uint32)powerupTypeEnum::Total] = {
-		hashString("gui/game/puBomb"),
-		hashString("gui/game/puTurret"),
-		hashString("gui/game/puDecoy"),
-		hashString("gui/game/puHomingShots"),
-		hashString("gui/game/puSuperDamage"),
-		hashString("gui/game/puShield"),
-		hashString("gui/game/puMaxSpeed"),
-		hashString("gui/game/puAcceleration"),
-		hashString("gui/game/puShotsDamage"),
-		hashString("gui/game/puShotsSpeed"),
-		hashString("gui/game/puShooting"),
-		hashString("gui/game/puMultishot"),
-		hashString("gui/game/puArmor"),
-		hashString("gui/game/puDuration")
+		HashString("gui/game/puBomb"),
+		HashString("gui/game/puTurret"),
+		HashString("gui/game/puDecoy"),
+		HashString("gui/game/puHomingShots"),
+		HashString("gui/game/puSuperDamage"),
+		HashString("gui/game/puShield"),
+		HashString("gui/game/puMaxSpeed"),
+		HashString("gui/game/puAcceleration"),
+		HashString("gui/game/puShotsDamage"),
+		HashString("gui/game/puShotsSpeed"),
+		HashString("gui/game/puShooting"),
+		HashString("gui/game/puMultishot"),
+		HashString("gui/game/puArmor"),
+		HashString("gui/game/puDuration")
 	};
 
 	void makeTheGuiPaused(uint32 openPanel)
 	{
-		entityManager *ents = gui()->entities();
+		EntityManager *ents = gui()->entities();
 
 		{
-			CAGE_COMPONENT_GUI(layoutLine, ll, ents->get(15));
+			CAGE_COMPONENT_GUI(LayoutLine, ll, ents->get(15));
 			ll.vertical = true;
 		}
 
 		{ // continue button
-			entity *but = ents->create(501);
-			CAGE_COMPONENT_GUI(button, control, but);
-			CAGE_COMPONENT_GUI(text, txt, but);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/paused/continue");
-			CAGE_COMPONENT_GUI(parent, parent, but);
+			Entity *but = ents->create(501);
+			CAGE_COMPONENT_GUI(Button, control, but);
+			CAGE_COMPONENT_GUI(Text, txt, but);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/paused/continue");
+			CAGE_COMPONENT_GUI(Parent, parent, but);
 			parent.parent = 15;
 			parent.order = 1;
-			CAGE_COMPONENT_GUI(textFormat, format, but);
+			CAGE_COMPONENT_GUI(TextFormat, format, but);
 			format.color = redPillColor;
 		}
 
 		{ // end game button
-			entity *but = ents->create(500);
-			CAGE_COMPONENT_GUI(button, control, but);
-			CAGE_COMPONENT_GUI(text, txt, but);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/paused/giveup");
-			CAGE_COMPONENT_GUI(parent, parent, but);
+			Entity *but = ents->create(500);
+			CAGE_COMPONENT_GUI(Button, control, but);
+			CAGE_COMPONENT_GUI(Text, txt, but);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/paused/giveup");
+			CAGE_COMPONENT_GUI(Parent, parent, but);
 			parent.parent = 15;
 			parent.order = 2;
-			CAGE_COMPONENT_GUI(textFormat, format, but);
+			CAGE_COMPONENT_GUI(TextFormat, format, but);
 			format.color = bluePillColor;
 		}
 
 		uint32 layoutName;
 		{ // layout
-			entity *e = ents->createUnique();
+			Entity *e = ents->createUnique();
 			layoutName = e->name();
-			CAGE_COMPONENT_GUI(parent, parent, e);
+			CAGE_COMPONENT_GUI(Parent, parent, e);
 			parent.parent = 12;
-			CAGE_COMPONENT_GUI(layoutLine, ll, e);
+			CAGE_COMPONENT_GUI(LayoutLine, ll, e);
 			ll.vertical = true;
 		}
 
 		{ // story
 			uint32 panelName;
 			{ // panel
-				entity *e = ents->createUnique();
+				Entity *e = ents->createUnique();
 				panelName = e->name();
-				CAGE_COMPONENT_GUI(spoiler, spoiler, e);
+				CAGE_COMPONENT_GUI(Spoiler, spoiler, e);
 				spoiler.collapsed = openPanel != 1;
 				spoiler.collapsesSiblings = true;
-				CAGE_COMPONENT_GUI(parent, parent, e);
+				CAGE_COMPONENT_GUI(Parent, parent, e);
 				parent.parent = layoutName;
 				parent.order = 1;
-				CAGE_COMPONENT_GUI(text, text, e);
-				text.assetName = hashString("degrid/languages/internationalized.textpack");
-				text.textName = hashString("gui/paused/story");
-				CAGE_COMPONENT_GUI(scrollbars, sc, e);
+				CAGE_COMPONENT_GUI(Text, text, e);
+				text.assetName = HashString("degrid/languages/internationalized.textpack");
+				text.textName = HashString("gui/paused/story");
+				CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
-				CAGE_COMPONENT_GUI(layoutLine, ll, e);
+				CAGE_COMPONENT_GUI(LayoutLine, ll, e);
 				ll.vertical = true;
 			}
 
 			static const uint32 textNames[] = {
-				#define GCHL_GENERATE(N) hashString("gui/story/" CAGE_STRINGIZE(N)),
+				#define GCHL_GENERATE(N) HashString("gui/story/" CAGE_STRINGIZE(N)),
 						GCHL_GENERATE(0)
 						CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
 				#undef GCHL_GENERATE
@@ -158,13 +158,13 @@ namespace
 
 			for (uint32 idx = 0; idx < game.defeatedBosses + 1; idx++)
 			{
-				entity *label = gui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, label);
+				Entity *label = gui()->entities()->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = panelName;
 				parent.order = idx;
-				CAGE_COMPONENT_GUI(label, lab, label);
-				CAGE_COMPONENT_GUI(text, txt, label);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
+				CAGE_COMPONENT_GUI(Label, lab, label);
+				CAGE_COMPONENT_GUI(Text, txt, label);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = textNames[idx];
 				idx++;
 			}
@@ -173,20 +173,20 @@ namespace
 		{ // bosses
 			uint32 panelName;
 			{ // panel
-				entity *e = ents->createUnique();
+				Entity *e = ents->createUnique();
 				panelName = e->name();
-				CAGE_COMPONENT_GUI(spoiler, spoiler, e);
+				CAGE_COMPONENT_GUI(Spoiler, spoiler, e);
 				spoiler.collapsed = openPanel != 2;
 				spoiler.collapsesSiblings = true;
-				CAGE_COMPONENT_GUI(parent, parent, e);
+				CAGE_COMPONENT_GUI(Parent, parent, e);
 				parent.parent = layoutName;
 				parent.order = 2;
-				CAGE_COMPONENT_GUI(text, text, e);
-				text.assetName = hashString("degrid/languages/internationalized.textpack");
-				text.textName = hashString("gui/paused/bosses");
-				CAGE_COMPONENT_GUI(scrollbars, sc, e);
+				CAGE_COMPONENT_GUI(Text, text, e);
+				text.assetName = HashString("degrid/languages/internationalized.textpack");
+				text.textName = HashString("gui/paused/bosses");
+				CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
-				CAGE_COMPONENT_GUI(layoutLine, ll, e);
+				CAGE_COMPONENT_GUI(LayoutLine, ll, e);
 				ll.vertical = false;
 			}
 
@@ -194,34 +194,34 @@ namespace
 			{
 				uint32 pn;
 				{
-					entity *e = ents->createUnique();
+					Entity *e = ents->createUnique();
 					pn = e->name();
-					CAGE_COMPONENT_GUI(panel, panel, e);
-					CAGE_COMPONENT_GUI(parent, parent, e);
+					CAGE_COMPONENT_GUI(Panel, panel, e);
+					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = panelName;
 					parent.order = i;
-					CAGE_COMPONENT_GUI(text, text, e);
-					text.assetName = hashString("degrid/languages/internationalized.textpack");
-					text.textName = i < achievements.bosses ? hashString(string(stringizer() + "achievement/boss-" + i)) : hashString("achievement/boss-unknown");
+					CAGE_COMPONENT_GUI(Text, text, e);
+					text.assetName = HashString("degrid/languages/internationalized.textpack");
+					text.textName = i < achievements.bosses ? HashString(string(stringizer() + "achievement/boss-" + i)) : HashString("achievement/boss-unknown");
 				}
 				{
-					entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(label, label, e);
-					CAGE_COMPONENT_GUI(parent, parent, e);
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Label, label, e);
+					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = pn;
 					parent.order = 1;
-					CAGE_COMPONENT_GUI(image, img, e);
-					img.textureName = i < achievements.bosses ? hashString(string(stringizer() + "degrid/boss/icon/" + i + ".png")) : hashString("degrid/boss/icon/unknown.png");
+					CAGE_COMPONENT_GUI(Image, img, e);
+					img.textureName = i < achievements.bosses ? HashString(string(stringizer() + "degrid/boss/icon/" + i + ".png")) : HashString("degrid/boss/icon/unknown.png");
 				}
 				if (game.defeatedBosses > i)
 				{
-					entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(label, label, e);
-					CAGE_COMPONENT_GUI(parent, parent, e);
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Label, label, e);
+					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = pn;
 					parent.order = 2;
-					CAGE_COMPONENT_GUI(image, img, e);
-					img.textureName = hashString("degrid/boss/icon/defeated.png");
+					CAGE_COMPONENT_GUI(Image, img, e);
+					img.textureName = HashString("degrid/boss/icon/defeated.png");
 				}
 			}
 		}
@@ -229,89 +229,89 @@ namespace
 		{ // market
 			uint32 marketName;
 			{ // panel
-				entity *e = ents->createUnique();
+				Entity *e = ents->createUnique();
 				marketName = e->name();
-				CAGE_COMPONENT_GUI(spoiler, spoiler, e);
+				CAGE_COMPONENT_GUI(Spoiler, spoiler, e);
 				spoiler.collapsed = openPanel != 3;
 				spoiler.collapsesSiblings = true;
-				CAGE_COMPONENT_GUI(parent, parent, e);
+				CAGE_COMPONENT_GUI(Parent, parent, e);
 				parent.parent = layoutName;
 				parent.order = 3;
-				CAGE_COMPONENT_GUI(text, text, e);
-				text.assetName = hashString("degrid/languages/internationalized.textpack");
-				text.textName = hashString("gui/paused/market");
-				CAGE_COMPONENT_GUI(scrollbars, sc, e);
+				CAGE_COMPONENT_GUI(Text, text, e);
+				text.assetName = HashString("degrid/languages/internationalized.textpack");
+				text.textName = HashString("gui/paused/market");
+				CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 				sc.alignment = vec2(0.5, 0.5);
-				CAGE_COMPONENT_GUI(layoutLine, ll, e);
+				CAGE_COMPONENT_GUI(LayoutLine, ll, e);
 				ll.vertical = true;
 			}
 
 			{ // permanent powerup limit
-				entity *e = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, e);
+				Entity *e = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, e);
 				parent.parent = marketName;
 				parent.order = 1;
-				CAGE_COMPONENT_GUI(text, text, e);
-				text.assetName = hashString("degrid/languages/internationalized.textpack");
-				text.textName = hashString("gui/paused/permanentLimit");
+				CAGE_COMPONENT_GUI(Text, text, e);
+				text.assetName = HashString("degrid/languages/internationalized.textpack");
+				text.textName = HashString("gui/paused/permanentLimit");
 				text.value = stringizer() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
-				CAGE_COMPONENT_GUI(label, but, e);
-				CAGE_COMPONENT_GUI(textFormat, tf, e);
-				tf.align = textAlignEnum::Center;
+				CAGE_COMPONENT_GUI(Label, but, e);
+				CAGE_COMPONENT_GUI(TextFormat, tf, e);
+				tf.align = TextAlignEnum::Center;
 			}
 
 			uint32 panelName;
 			{ // permanent powerup market
 
-				entity *e = ents->createUnique();
+				Entity *e = ents->createUnique();
 				panelName = e->name();
-				CAGE_COMPONENT_GUI(parent, parent, e);
+				CAGE_COMPONENT_GUI(Parent, parent, e);
 				parent.parent = marketName;
 				parent.order = 2;
-				CAGE_COMPONENT_GUI(layoutTable, lt, e);
+				CAGE_COMPONENT_GUI(LayoutTable, lt, e);
 				lt.sections = 4;
 			}
 
 			{ // header
 				{ // label
-					entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(parent, parent, e);
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = panelName;
 					parent.order = -10;
 				}
 				{ // count
-					entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(parent, parent, e);
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = panelName;
 					parent.order = -9;
-					CAGE_COMPONENT_GUI(label, but, e);
-					CAGE_COMPONENT_GUI(text, text, e);
-					text.assetName = hashString("degrid/languages/internationalized.textpack");
-					text.textName = hashString("gui/paused/count");
+					CAGE_COMPONENT_GUI(Label, but, e);
+					CAGE_COMPONENT_GUI(Text, text, e);
+					text.assetName = HashString("degrid/languages/internationalized.textpack");
+					text.textName = HashString("gui/paused/count");
 				}
 				{ // sell
-					entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(parent, parent, e);
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = panelName;
 					parent.order = -8;
-					CAGE_COMPONENT_GUI(text, text, e);
-					text.assetName = hashString("degrid/languages/internationalized.textpack");
-					text.textName = hashString("gui/paused/sell");
-					CAGE_COMPONENT_GUI(label, but, e);
-					CAGE_COMPONENT_GUI(textFormat, tf, e);
-					tf.align = textAlignEnum::Center;
+					CAGE_COMPONENT_GUI(Text, text, e);
+					text.assetName = HashString("degrid/languages/internationalized.textpack");
+					text.textName = HashString("gui/paused/sell");
+					CAGE_COMPONENT_GUI(Label, but, e);
+					CAGE_COMPONENT_GUI(TextFormat, tf, e);
+					tf.align = TextAlignEnum::Center;
 				}
 				{ // buy
-					entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(parent, parent, e);
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = panelName;
 					parent.order = -7;
-					CAGE_COMPONENT_GUI(text, text, e);
-					text.assetName = hashString("degrid/languages/internationalized.textpack");
-					text.textName = hashString("gui/paused/buy");
-					CAGE_COMPONENT_GUI(label, but, e);
-					CAGE_COMPONENT_GUI(textFormat, tf, e);
-					tf.align = textAlignEnum::Center;
+					CAGE_COMPONENT_GUI(Text, text, e);
+					text.assetName = HashString("degrid/languages/internationalized.textpack");
+					text.textName = HashString("gui/paused/buy");
+					CAGE_COMPONENT_GUI(Label, but, e);
+					CAGE_COMPONENT_GUI(TextFormat, tf, e);
+					tf.align = TextAlignEnum::Center;
 				}
 			}
 
@@ -321,51 +321,51 @@ namespace
 				if (powerupMode[i] == 2)
 				{
 					{ // label
-						entity *e = ents->create(1000 + i * 4 + 0);
-						CAGE_COMPONENT_GUI(parent, parent, e);
+						Entity *e = ents->create(1000 + i * 4 + 0);
+						CAGE_COMPONENT_GUI(Parent, parent, e);
 						parent.parent = panelName;
 						parent.order = i * 4 + 0;
-						CAGE_COMPONENT_GUI(text, text, e);
-						text.assetName = hashString("degrid/languages/internationalized.textpack");
+						CAGE_COMPONENT_GUI(Text, text, e);
+						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = textNames[i];
-						CAGE_COMPONENT_GUI(label, but, e);
+						CAGE_COMPONENT_GUI(Label, but, e);
 					}
 					{ // count
-						entity *e = ents->create(1000 + i * 4 + 1);
-						CAGE_COMPONENT_GUI(parent, parent, e);
+						Entity *e = ents->create(1000 + i * 4 + 1);
+						CAGE_COMPONENT_GUI(Parent, parent, e);
 						parent.parent = panelName;
 						parent.order = i * 4 + 1;
-						CAGE_COMPONENT_GUI(text, text, e);
+						CAGE_COMPONENT_GUI(Text, text, e);
 						text.value = stringizer() + game.powerups[i];
-						CAGE_COMPONENT_GUI(label, but, e);
-						CAGE_COMPONENT_GUI(textFormat, format, e);
-						format.align = textAlignEnum::Center;
+						CAGE_COMPONENT_GUI(Label, but, e);
+						CAGE_COMPONENT_GUI(TextFormat, format, e);
+						format.align = TextAlignEnum::Center;
 					}
 					{ // sell
-						entity *e = ents->create(1000 + i * 4 + 2);
-						CAGE_COMPONENT_GUI(parent, parent, e);
+						Entity *e = ents->create(1000 + i * 4 + 2);
+						CAGE_COMPONENT_GUI(Parent, parent, e);
 						parent.parent = panelName;
 						parent.order = i * 4 + 2;
-						CAGE_COMPONENT_GUI(text, text, e);
+						CAGE_COMPONENT_GUI(Text, text, e);
 						text.value = stringizer() + powerupSellPrice;
-						CAGE_COMPONENT_GUI(button, but, e);
+						CAGE_COMPONENT_GUI(Button, but, e);
 						if (game.powerups[i] == 0)
 						{
-							CAGE_COMPONENT_GUI(widgetState, ws, e);
+							CAGE_COMPONENT_GUI(WidgetState, ws, e);
 							ws.disabled = true;
 						}
 					}
 					{ // buy
-						entity *e = ents->create(1000 + i * 4 + 3);
-						CAGE_COMPONENT_GUI(parent, parent, e);
+						Entity *e = ents->create(1000 + i * 4 + 3);
+						CAGE_COMPONENT_GUI(Parent, parent, e);
 						parent.parent = panelName;
 						parent.order = i * 4 + 3;
-						CAGE_COMPONENT_GUI(text, text, e);
+						CAGE_COMPONENT_GUI(Text, text, e);
 						text.value = stringizer() + (powerupBuyPriceBase * game.buyPriceMultiplier);
-						CAGE_COMPONENT_GUI(button, but, e);
+						CAGE_COMPONENT_GUI(Button, but, e);
 						if (!anyBuy || game.money < powerupBuyPriceBase * game.buyPriceMultiplier)
 						{
-							CAGE_COMPONENT_GUI(widgetState, ws, e);
+							CAGE_COMPONENT_GUI(WidgetState, ws, e);
 							ws.disabled = true;
 						}
 					}
@@ -376,50 +376,50 @@ namespace
 
 	void makeTheGuiPlaying()
 	{
-		entityManager *ents = gui()->entities();
+		EntityManager *ents = gui()->entities();
 
 		{
-			CAGE_COMPONENT_GUI(scrollbars, sc, ents->get(12));
+			CAGE_COMPONENT_GUI(Scrollbars, sc, ents->get(12));
 			sc.alignment = vec2(0.5, 0);
 		}
 
 		uint32 layoutName;
 		{ // layout
-			entity *e = ents->createUnique();
+			Entity *e = ents->createUnique();
 			layoutName = e->name();
-			CAGE_COMPONENT_GUI(parent, parent, e);
+			CAGE_COMPONENT_GUI(Parent, parent, e);
 			parent.parent = 12;
-			CAGE_COMPONENT_GUI(layoutLine, ll, e);
+			CAGE_COMPONENT_GUI(LayoutLine, ll, e);
 			ll.vertical = true;
 		}
 
 		{ // announcements
 			for (auto a : enumerate(announcements))
 			{
-				entity *panel = ents->createUnique();
+				Entity *panel = ents->createUnique();
 				{
-					CAGE_COMPONENT_GUI(panel, panel2, panel);
-					CAGE_COMPONENT_GUI(parent, parent, panel);
+					CAGE_COMPONENT_GUI(Panel, panel2, panel);
+					CAGE_COMPONENT_GUI(Parent, parent, panel);
 					parent.parent = layoutName;
 					parent.order = numeric_cast<sint32>(a.cnt) + 1;
-					CAGE_COMPONENT_GUI(text, txt, panel);
-					txt.assetName = hashString("degrid/languages/internationalized.textpack");
+					CAGE_COMPONENT_GUI(Text, txt, panel);
+					txt.assetName = HashString("degrid/languages/internationalized.textpack");
 					txt.textName = a->headingName;
-					CAGE_COMPONENT_GUI(textFormat, format, panel);
+					CAGE_COMPONENT_GUI(TextFormat, format, panel);
 					format.size = 20;
-					CAGE_COMPONENT_GUI(layoutLine, ll, panel);
+					CAGE_COMPONENT_GUI(LayoutLine, ll, panel);
 					ll.vertical = true;
 				}
 
 				{ // description
-					entity *label = ents->createUnique();
-					CAGE_COMPONENT_GUI(parent, parent, label);
+					Entity *label = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, label);
 					parent.parent = panel->name();
-					CAGE_COMPONENT_GUI(label, control, label);
-					CAGE_COMPONENT_GUI(text, txt, label);
-					txt.assetName = hashString("degrid/languages/internationalized.textpack");
+					CAGE_COMPONENT_GUI(Label, control, label);
+					CAGE_COMPONENT_GUI(Text, txt, label);
+					txt.assetName = HashString("degrid/languages/internationalized.textpack");
 					txt.textName = a->descriptionName;
-					CAGE_COMPONENT_GUI(textFormat, format, label);
+					CAGE_COMPONENT_GUI(TextFormat, format, label);
 					format.size = 20;
 				}
 			}
@@ -434,109 +434,109 @@ namespace
 			c.backButton = false;
 			regenerateGui(c);
 		}
-		entityManager *ents = gui()->entities();
+		EntityManager *ents = gui()->entities();
 		guiEvent.bind<&guiFunction>();
 		guiEvent.attach(gui()->widgetEvent);
 
 		{ // base stats
-			entity *table = ents->createUnique();
+			Entity *table = ents->createUnique();
 			{
-				CAGE_COMPONENT_GUI(parent, parent, table);
+				CAGE_COMPONENT_GUI(Parent, parent, table);
 				parent.parent = 10;
-				CAGE_COMPONENT_GUI(layoutTable, layout, table);
-				CAGE_COMPONENT_GUI(panel, gb, table);
+				CAGE_COMPONENT_GUI(LayoutTable, layout, table);
+				CAGE_COMPONENT_GUI(Panel, gb, table);
 			}
 			uint32 index = 1;
 
 			{ // life label
-				entity *label = gui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, label);
+				Entity *label = gui()->entities()->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, label);
-				CAGE_COMPONENT_GUI(text, text, label);
-				text.assetName = hashString("degrid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/life");
-				CAGE_COMPONENT_GUI(textFormat, format, label);
+				CAGE_COMPONENT_GUI(Label, control, label);
+				CAGE_COMPONENT_GUI(Text, text, label);
+				text.assetName = HashString("degrid/languages/internationalized.textpack");
+				text.textName = HashString("gui/game/life");
+				CAGE_COMPONENT_GUI(TextFormat, format, label);
 				format.color = vec3(1, 0, 0);
 				format.size = 20;
 			}
 
 			{ // life value
-				entity *label = gui()->entities()->create(100);
-				CAGE_COMPONENT_GUI(parent, parent, label);
+				Entity *label = gui()->entities()->create(100);
+				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, label);
-				CAGE_COMPONENT_GUI(text, text, label);
-				CAGE_COMPONENT_GUI(textFormat, format, label);
-				format.align = textAlignEnum::Right;
+				CAGE_COMPONENT_GUI(Label, control, label);
+				CAGE_COMPONENT_GUI(Text, text, label);
+				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				format.align = TextAlignEnum::Right;
 				format.color = vec3(1, 0, 0);
 				format.size = 20;
 			}
 
 			{ // money label
-				entity *label = gui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, label);
+				Entity *label = gui()->entities()->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, label);
-				CAGE_COMPONENT_GUI(text, text, label);
-				text.assetName = hashString("degrid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/money");
-				CAGE_COMPONENT_GUI(textFormat, format, label);
+				CAGE_COMPONENT_GUI(Label, control, label);
+				CAGE_COMPONENT_GUI(Text, text, label);
+				text.assetName = HashString("degrid/languages/internationalized.textpack");
+				text.textName = HashString("gui/game/money");
+				CAGE_COMPONENT_GUI(TextFormat, format, label);
 				format.color = vec3(1, 1, 0);
 				format.size = 20;
 			}
 
 			{ // money value
-				entity *label = gui()->entities()->create(101);
-				CAGE_COMPONENT_GUI(parent, parent, label);
+				Entity *label = gui()->entities()->create(101);
+				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, label);
-				CAGE_COMPONENT_GUI(text, text, label);
-				CAGE_COMPONENT_GUI(textFormat, format, label);
-				format.align = textAlignEnum::Right;
+				CAGE_COMPONENT_GUI(Label, control, label);
+				CAGE_COMPONENT_GUI(Text, text, label);
+				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				format.align = TextAlignEnum::Right;
 				format.color = vec3(1, 1, 0);
 				format.size = 20;
 			}
 
 			{ // score label
-				entity *label = gui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, label);
+				Entity *label = gui()->entities()->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, label);
-				CAGE_COMPONENT_GUI(text, text, label);
-				text.assetName = hashString("degrid/languages/internationalized.textpack");
-				text.textName = hashString("gui/game/score");
-				CAGE_COMPONENT_GUI(textFormat, format, label);
+				CAGE_COMPONENT_GUI(Label, control, label);
+				CAGE_COMPONENT_GUI(Text, text, label);
+				text.assetName = HashString("degrid/languages/internationalized.textpack");
+				text.textName = HashString("gui/game/score");
+				CAGE_COMPONENT_GUI(TextFormat, format, label);
 				format.color = vec3(0, 1, 0);
 				format.size = 20;
 			}
 
 			{ // score value
-				entity *label = gui()->entities()->create(102);
-				CAGE_COMPONENT_GUI(parent, parent, label);
+				Entity *label = gui()->entities()->create(102);
+				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, label);
-				CAGE_COMPONENT_GUI(text, text, label);
-				CAGE_COMPONENT_GUI(textFormat, format, label);
-				format.align = textAlignEnum::Right;
+				CAGE_COMPONENT_GUI(Label, control, label);
+				CAGE_COMPONENT_GUI(Text, text, label);
+				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				format.align = TextAlignEnum::Right;
 				format.color = vec3(0, 1, 0);
 				format.size = 20;
 			}
 		}
 
 		{ // collectible powerups
-			entity *table = ents->createUnique();
+			Entity *table = ents->createUnique();
 			{
-				CAGE_COMPONENT_GUI(parent, parent, table);
+				CAGE_COMPONENT_GUI(Parent, parent, table);
 				parent.parent = 14;
-				CAGE_COMPONENT_GUI(layoutTable, layout, table);
-				CAGE_COMPONENT_GUI(panel, gb, table);
+				CAGE_COMPONENT_GUI(LayoutTable, layout, table);
+				CAGE_COMPONENT_GUI(Panel, gb, table);
 			}
 			uint32 index = 1;
 
@@ -545,37 +545,37 @@ namespace
 				if (powerupMode[i] == 0)
 				{
 					{ // label
-						entity *label = gui()->entities()->createUnique();
-						CAGE_COMPONENT_GUI(parent, parent, label);
+						Entity *label = gui()->entities()->createUnique();
+						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(label, control, label);
-						CAGE_COMPONENT_GUI(text, text, label);
-						text.assetName = hashString("degrid/languages/internationalized.textpack");
+						CAGE_COMPONENT_GUI(Label, control, label);
+						CAGE_COMPONENT_GUI(Text, text, label);
+						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = textNames[i];
 					}
 
 					{ // value
-						entity *label = gui()->entities()->create(200 + i);
-						CAGE_COMPONENT_GUI(parent, parent, label);
+						Entity *label = gui()->entities()->create(200 + i);
+						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(label, control, label);
-						CAGE_COMPONENT_GUI(text, text, label);
-						CAGE_COMPONENT_GUI(textFormat, format, label);
-						format.align = textAlignEnum::Right;
+						CAGE_COMPONENT_GUI(Label, control, label);
+						CAGE_COMPONENT_GUI(Text, text, label);
+						CAGE_COMPONENT_GUI(TextFormat, format, label);
+						format.align = TextAlignEnum::Right;
 					}
 				}
 			}
 		}
 
 		{ // timed
-			entity *table = ents->createUnique();
+			Entity *table = ents->createUnique();
 			{
-				CAGE_COMPONENT_GUI(parent, parent, table);
+				CAGE_COMPONENT_GUI(Parent, parent, table);
 				parent.parent = 11;
-				CAGE_COMPONENT_GUI(layoutTable, layout, table);
-				CAGE_COMPONENT_GUI(panel, gb, table);
+				CAGE_COMPONENT_GUI(LayoutTable, layout, table);
+				CAGE_COMPONENT_GUI(Panel, gb, table);
 			}
 			uint32 index = 1;
 
@@ -584,25 +584,25 @@ namespace
 				if (powerupMode[i] == 1)
 				{
 					{ // label
-						entity *label = gui()->entities()->createUnique();
-						CAGE_COMPONENT_GUI(parent, parent, label);
+						Entity *label = gui()->entities()->createUnique();
+						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(label, control, label);
-						CAGE_COMPONENT_GUI(text, text, label);
-						text.assetName = hashString("degrid/languages/internationalized.textpack");
+						CAGE_COMPONENT_GUI(Label, control, label);
+						CAGE_COMPONENT_GUI(Text, text, label);
+						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = textNames[i];
 					}
 
 					{ // value
-						entity *label = gui()->entities()->create(200 + i);
-						CAGE_COMPONENT_GUI(parent, parent, label);
+						Entity *label = gui()->entities()->create(200 + i);
+						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(label, control, label);
-						CAGE_COMPONENT_GUI(text, text, label);
-						CAGE_COMPONENT_GUI(textFormat, format, label);
-						format.align = textAlignEnum::Right;
+						CAGE_COMPONENT_GUI(Label, control, label);
+						CAGE_COMPONENT_GUI(Text, text, label);
+						CAGE_COMPONENT_GUI(TextFormat, format, label);
+						format.align = TextAlignEnum::Right;
 					}
 				}
 			}
@@ -655,15 +655,15 @@ namespace
 		}
 
 		{ // life
-			CAGE_COMPONENT_GUI(text, txt, gui()->entities()->get(100));
+			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(100));
 			txt.value = stringizer() + numeric_cast<uint32>(max(0, game.life));
 		}
 		{ // money
-			CAGE_COMPONENT_GUI(text, txt, gui()->entities()->get(101));
+			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(101));
 			txt.value = stringizer() + game.money;
 		}
 		{ // score
-			CAGE_COMPONENT_GUI(text, txt, gui()->entities()->get(102));
+			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(102));
 			txt.value = stringizer() + game.score;
 		}
 
@@ -671,7 +671,7 @@ namespace
 		{
 			if (!gui()->entities()->has(200 + i))
 				continue;
-			CAGE_COMPONENT_GUI(text, txt, gui()->entities()->get(200 + i));
+			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(200 + i));
 			switch (powerupMode[i])
 			{
 			case 0: // collectibles
@@ -689,7 +689,7 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{

@@ -6,14 +6,14 @@
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
 #include <cage-core/assetManager.h>
-#include <cage-core/spatial.h>
-#include <cage-core/hashString.h>
+#include <cage-core/Spatial.h>
+#include <cage-core/HashString.h>
 
-#include <cage-engine/sound.h>
+#include <cage-Engine/sound.h>
 
-extern configFloat confVolumeMusic;
-extern configFloat confVolumeEffects;
-extern configFloat confVolumeSpeech;
+extern ConfigFloat confVolumeMusic;
+extern ConfigFloat confVolumeEffects;
+extern ConfigFloat confVolumeSpeech;
 
 namespace
 {
@@ -21,30 +21,30 @@ namespace
 
 	struct soundDataStruct
 	{
-		holder<mixingBus> suspenseBus;
-		holder<mixingBus> actionBus;
-		holder<mixingBus> endBus;
+		Holder<MixingBus> suspenseBus;
+		Holder<MixingBus> actionBus;
+		Holder<MixingBus> endBus;
 
-		holder<volumeFilter> suspenseVolume;
-		holder<volumeFilter> actionVolume;
-		holder<volumeFilter> endVolume;
+		Holder<VolumeFilter> suspenseVolume;
+		Holder<VolumeFilter> actionVolume;
+		Holder<VolumeFilter> endVolume;
 
 		bool suspenseLoaded;
 		bool actionLoaded;
 		bool endLoaded;
 
-		holder<volumeFilter> musicVolume;
-		holder<volumeFilter> effectsVolume;
+		Holder<VolumeFilter> musicVolume;
+		Holder<VolumeFilter> effectsVolume;
 
-		// this is a bit of a hack. the engine will have to be improved to handle situations like these
-		// engine master bus <- bus 1 <- volume filter <- filter (speechCallback) <- bus 2 <- bus 3 <- source
+		// this is a bit of a hack. the Engine will have to be improved to handle situations like these
+		// Engine master bus <- bus 1 <- volume filter <- filter (speechCallback) <- bus 2 <- bus 3 <- source
 		// problem is, that the filter cannot modify its inputs (bus 2) of its own bus (bus 1)
 		// but it may modify bus 3 :D
-		holder<mixingBus> speechBus1;
-		holder<mixingBus> speechBus2;
-		holder<mixingBus> speechBus3;
-		holder<volumeFilter> speechVolume;
-		holder<mixingFilter> speechFilter;
+		Holder<MixingBus> speechBus1;
+		Holder<MixingBus> speechBus2;
+		Holder<MixingBus> speechBus3;
+		Holder<VolumeFilter> speechVolume;
+		Holder<MixingFilter> speechFilter;
 		uint64 speechStart;
 		std::atomic<uint32> speechName;
 
@@ -69,7 +69,7 @@ namespace
 		current = target;
 	}
 
-	void alterVolume(holder<volumeFilter> &current, real target)
+	void alterVolume(Holder<VolumeFilter> &current, real target)
 	{
 		alterVolume(current->volume, target);
 	}
@@ -89,15 +89,15 @@ namespace
 
 		static const real distMin = 30;
 		static const real distMax = 60;
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		real closestMonsterToPlayer = real::Infinity();
-		spatialSearchQuery->intersection(sphere(playerTransform.position, distMax));
-		for (uint32 otherName : spatialSearchQuery->result())
+		SpatialSearchQuery->intersection(sphere(playerTransform.position, distMax));
+		for (uint32 otherName : SpatialSearchQuery->result())
 		{
-			entity *e = entities()->get(otherName);
+			Entity *e = entities()->get(otherName);
 			if (e->has(monsterComponent::component))
 			{
-				CAGE_COMPONENT_ENGINE(transform, p, e);
+				CAGE_COMPONENT_ENGINE(Transform, p, e);
 				real d = distance(p.position, playerTransform.position);
 				closestMonsterToPlayer = min(closestMonsterToPlayer, d);
 			}
@@ -109,7 +109,7 @@ namespace
 			suspense = 1;
 	}
 
-	void speechCallback(const mixingFilterApi &api)
+	void speechCallback(const MixingFilterApi &api)
 	{
 		// this function is called in another thread!
 		data->speechBus3->clear();
@@ -117,7 +117,7 @@ namespace
 			return;
 		if (!assets()->ready(data->speechName))
 			return;
-		soundSource *src = assets()->get<assetSchemeIndexSoundSource, soundSource>(data->speechName);
+		SoundSource *src = assets()->get<assetSchemeIndexSoundSource, SoundSource>(data->speechName);
 		if (data->speechStart + src->getDuration() + 100000 < currentControlTime())
 		{
 			data->speechName = 0;
@@ -125,7 +125,7 @@ namespace
 		}
 		src->addOutput(data->speechBus3.get());
 		data->speechBus3->addOutput(data->speechBus2.get());
-		soundDataBufferStruct s = api.output;
+		SoundDataBuffer s = api.output;
 		s.time -= (sint64)data->speechStart;
 		api.input(s);
 	}
@@ -136,10 +136,10 @@ namespace
 		data->effectsVolume->volume = (float)confVolumeEffects;
 		data->speechVolume->volume = (float)confVolumeSpeech;
 
-		static const uint32 suspenseName = hashString("degrid/music/fear-and-horror.ogg");
-		static const uint32 actionName = hashString("degrid/music/chaotic-filth.ogg");
-		static const uint32 endName = hashString("degrid/music/sad-song.ogg");
-#define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded) && assets()->state(CAGE_JOIN(NAME, Name)) == assetStateEnum::Ready) { assets()->get<assetSchemeIndexSoundSource, soundSource>(CAGE_JOIN(NAME, Name))->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
+		static const uint32 suspenseName = HashString("degrid/music/fear-and-horror.ogg");
+		static const uint32 actionName = HashString("degrid/music/chaotic-filth.ogg");
+		static const uint32 endName = HashString("degrid/music/sad-song.ogg");
+#define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded) && assets()->state(CAGE_JOIN(NAME, Name)) == AssetStateEnum::Ready) { assets()->get<assetSchemeIndexSoundSource, SoundSource>(CAGE_JOIN(NAME, Name))->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
 
@@ -193,7 +193,7 @@ namespace
 		soundUpdate();
 	}
 
-	void engineFin()
+	void EngineFin()
 	{
 		detail::systemArena().destroy<soundDataStruct>(data);
 	}
@@ -203,16 +203,16 @@ namespace
 		if (!game.cinematic)
 		{
 			uint32 sounds[] = {
-				hashString("degrid/speech/starts/a-princess-needs-our-help.wav"),
-				hashString("degrid/speech/starts/enemy-is-approaching.wav"),
-				hashString("degrid/speech/starts/its-a-trap.wav"),
-				hashString("degrid/speech/starts/let-the-journey-begins.wav"),
-				hashString("degrid/speech/starts/our-destiny-awaits.wav"),
-				hashString("degrid/speech/starts/enemies-are-approaching.wav"),
-				hashString("degrid/speech/starts/it-is-our-duty-to-save-the-princess.wav"),
-				hashString("degrid/speech/starts/lets-do-this.wav"),
-				hashString("degrid/speech/starts/let-us-kill-some-triangles.wav"),
-				hashString("degrid/speech/starts/ready-set-go.wav"),
+				HashString("degrid/speech/starts/a-princess-needs-our-help.wav"),
+				HashString("degrid/speech/starts/enemy-is-approaching.wav"),
+				HashString("degrid/speech/starts/its-a-trap.wav"),
+				HashString("degrid/speech/starts/let-the-journey-begins.wav"),
+				HashString("degrid/speech/starts/our-destiny-awaits.wav"),
+				HashString("degrid/speech/starts/enemies-are-approaching.wav"),
+				HashString("degrid/speech/starts/it-is-our-duty-to-save-the-princess.wav"),
+				HashString("degrid/speech/starts/lets-do-this.wav"),
+				HashString("degrid/speech/starts/let-us-kill-some-triangles.wav"),
+				HashString("degrid/speech/starts/ready-set-go.wav"),
 				0
 			};
 			soundSpeech(sounds);
@@ -222,11 +222,11 @@ namespace
 	void gameStop()
 	{
 		uint32 sounds[] = {
-			hashString("degrid/speech/gameover/game-over.wav"),
-			hashString("degrid/speech/gameover/lets-try-again.wav"),
-			hashString("degrid/speech/gameover/oh-no.wav"),
-			hashString("degrid/speech/gameover/pitty.wav"),
-			hashString("degrid/speech/gameover/thats-it.wav"),
+			HashString("degrid/speech/gameover/game-over.wav"),
+			HashString("degrid/speech/gameover/lets-try-again.wav"),
+			HashString("degrid/speech/gameover/oh-no.wav"),
+			HashString("degrid/speech/gameover/pitty.wav"),
+			HashString("degrid/speech/gameover/thats-it.wav"),
 			0
 		};
 		soundSpeech(sounds);
@@ -234,20 +234,20 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
-		eventListener<void()> engineFinListener;
-		eventListener<void()> gameStartListener;
-		eventListener<void()> gameStopListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
+		EventListener<void()> EngineFinListener;
+		EventListener<void()> gameStartListener;
+		EventListener<void()> gameStopListener;
 	public:
-		callbacksClass() : engineInitListener("sounds"), engineUpdateListener("sounds"), engineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
+		callbacksClass() : engineInitListener("sounds"), engineUpdateListener("sounds"), EngineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
 		{
 			engineInitListener.attach(controlThread().initialize, -55);
 			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update, -55);
 			engineUpdateListener.bind<&engineUpdate>();
-			engineFinListener.attach(controlThread().finalize, -55);
-			engineFinListener.bind<&engineFin>();
+			EngineFinListener.attach(controlThread().finalize, -55);
+			EngineFinListener.bind<&EngineFin>();
 			gameStartListener.attach(gameStartEvent(), -55);
 			gameStartListener.bind<&gameStart>();
 			gameStopListener.attach(gameStopEvent(), -55);
@@ -260,11 +260,11 @@ void soundEffect(uint32 sound, const vec3 &position)
 {
 	if (!assets()->ready(sound))
 		return;
-	soundSource *src = assets()->get<assetSchemeIndexSoundSource, soundSource>(sound);
-	entity *e = entities()->createUnique();
-	CAGE_COMPONENT_ENGINE(transform, t, e);
+	SoundSource *src = assets()->get<assetSchemeIndexSoundSource, SoundSource>(sound);
+	Entity *e = entities()->createUnique();
+	CAGE_COMPONENT_ENGINE(Transform, t, e);
 	t.position = position;
-	CAGE_COMPONENT_ENGINE(voice, s, e);
+	CAGE_COMPONENT_ENGINE(Sound, s, e);
 	s.name = sound;
 	s.startTime = currentControlTime();
 	DEGRID_COMPONENT(timeout, ttl, e);
@@ -288,4 +288,3 @@ void soundSpeech(uint32 sounds[])
 		count++;
 	soundSpeech(sounds[randomRange(0u, count)]);
 }
-

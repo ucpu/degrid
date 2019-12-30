@@ -4,7 +4,7 @@
 #include "screens.h"
 
 #include <cage-core/files.h>
-#include <cage-core/configIni.h>
+#include <cage-core/Ini.h>
 #include <cage-core/enumerate.h>
 
 namespace
@@ -25,7 +25,7 @@ namespace
 			{
 			case 0: return a.date > b.date;
 			case 1: return a.score > b.score;
-			default: CAGE_THROW_CRITICAL(exception, "invalid comparison mode");
+			default: CAGE_THROW_CRITICAL(Exception, "invalid comparison mode");
 			}
 		}
 	};
@@ -34,7 +34,7 @@ namespace
 
 	void buildGui(int mode);
 
-	eventListener<bool(uint32)> guiEvent;
+	EventListener<bool(uint32)> guiEvent;
 
 	bool guiFunction(uint32 en)
 	{
@@ -51,40 +51,40 @@ namespace
 	void buildGui(int mode)
 	{
 		regenerateGui(guiConfig());
-		entityManager *ents = gui()->entities();
+		EntityManager *ents = gui()->entities();
 		guiEvent.bind<&guiFunction>();
 		guiEvent.attach(gui()->widgetEvent);
 
-		entity *panel = ents->createUnique();
+		Entity *panel = ents->createUnique();
 		{
-			CAGE_COMPONENT_GUI(panel, panel2, panel);
-			CAGE_COMPONENT_GUI(parent, parent, panel);
+			CAGE_COMPONENT_GUI(Panel, panel2, panel);
+			CAGE_COMPONENT_GUI(Parent, parent, panel);
 			parent.parent = 12;
-			CAGE_COMPONENT_GUI(layoutTable, layout, panel);
+			CAGE_COMPONENT_GUI(LayoutTable, layout, panel);
 			layout.sections = 2;
 		}
 
 		{ // header
 			{
-				entity *butScore = ents->create(51);
-				CAGE_COMPONENT_GUI(parent, parent, butScore);
+				Entity *butScore = ents->create(51);
+				CAGE_COMPONENT_GUI(Parent, parent, butScore);
 				parent.parent = panel->name();
 				parent.order = 1;
-				CAGE_COMPONENT_GUI(button, control, butScore);
-				CAGE_COMPONENT_GUI(text, txt, butScore);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/scores/date");
+				CAGE_COMPONENT_GUI(Button, control, butScore);
+				CAGE_COMPONENT_GUI(Text, txt, butScore);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/scores/date");
 			}
 
 			{
-				entity *butDate = ents->create(52);
-				CAGE_COMPONENT_GUI(parent, parent, butDate);
+				Entity *butDate = ents->create(52);
+				CAGE_COMPONENT_GUI(Parent, parent, butDate);
 				parent.parent = panel->name();
 				parent.order = 2;
-				CAGE_COMPONENT_GUI(button, control, butDate);
-				CAGE_COMPONENT_GUI(text, txt, butDate);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/scores/score");
+				CAGE_COMPONENT_GUI(Button, control, butDate);
+				CAGE_COMPONENT_GUI(Text, txt, butDate);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/scores/score");
 			}
 		}
 
@@ -92,27 +92,27 @@ namespace
 		for (auto it : enumerate(scores))
 		{
 			{
-				entity *txtScore = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, txtScore);
+				Entity *txtScore = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, txtScore);
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.cnt) * 2 + 100;
-				CAGE_COMPONENT_GUI(label, control, txtScore);
-				CAGE_COMPONENT_GUI(text, txt, txtScore);
+				CAGE_COMPONENT_GUI(Label, control, txtScore);
+				CAGE_COMPONENT_GUI(Text, txt, txtScore);
 				txt.value = it->date;
-				CAGE_COMPONENT_GUI(textFormat, format, txtScore);
-				format.align = textAlignEnum::Center;
+				CAGE_COMPONENT_GUI(TextFormat, format, txtScore);
+				format.align = TextAlignEnum::Center;
 			}
 
 			{
-				entity *txtDate = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, txtDate);
+				Entity *txtDate = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, txtDate);
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.cnt * 2 + 101);
-				CAGE_COMPONENT_GUI(label, control, txtDate);
-				CAGE_COMPONENT_GUI(text, txt, txtDate);
+				CAGE_COMPONENT_GUI(Label, control, txtDate);
+				CAGE_COMPONENT_GUI(Text, txt, txtDate);
 				txt.value = stringizer() + it->score;
-				CAGE_COMPONENT_GUI(textFormat, format, txtDate);
-				format.align = textAlignEnum::Right;
+				CAGE_COMPONENT_GUI(TextFormat, format, txtDate);
+				format.align = TextAlignEnum::Right;
 			}
 		}
 	}
@@ -123,9 +123,9 @@ void setScreenScores()
 	scores.clear();
 	scores.reserve(100);
 
-	if ((pathType("score.ini") & pathTypeFlags::File) == pathTypeFlags::File)
+	if ((pathType("score.ini") & PathTypeFlags::File) == PathTypeFlags::File)
 	{
-		holder<configIni> ini = newConfigIni();
+		Holder<Ini> ini = newIni();
 		ini->load("score.ini");
 		for (uint32 i = 0, e = ini->sectionsCount(); i < e; i++)
 		{

@@ -6,11 +6,11 @@
 #include <cage-core/config.h>
 #include <cage-core/assetManager.h>
 
-#include <cage-engine/engineProfiling.h>
-#include <cage-engine/fullscreenSwitcher.h>
-#include <cage-engine/highPerformanceGpuHint.h>
+#include <cage-Engine/EngineProfiling.h>
+#include <cage-Engine/FullscreenSwitcher.h>
+#include <cage-Engine/highPerformanceGpuHint.h>
 
-configUint32 confLanguage("degrid/language/language", 0);
+ConfigUint32 confLanguage("degrid/language/language", 0);
 
 void reloadLanguage(uint32 index);
 
@@ -25,14 +25,14 @@ namespace
 		return true;
 	}
 
-	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
+	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
 	{
-		if (modifiers != modifiersFlags::None)
+		if (modifiers != ModifiersFlags::None)
 			return false;
 
-		static configBool secondaryCamera("degrid/secondaryCamera/enabled", false);
+		static ConfigBool secondaryCamera("degrid/secondaryCamera/enabled", false);
 
-		CAGE_LOG_DEBUG(severityEnum::Info, "keyboard", stringizer() + "key: " + key);
+		CAGE_LOG_DEBUG(SeverityEnum::Info, "keyboard", stringizer() + "key: " + key);
 
 		switch (key)
 		{
@@ -61,14 +61,14 @@ namespace
 		statistics.frameIteration++;
 	}
 
-	windowEventListeners listeners;
+	WindowEventListeners listeners;
 }
 
 void reloadLanguage(uint32 index)
 {
 	static const uint32 languages[] = {
-		hashString("degrid/languages/english.textpack"),
-		hashString("degrid/languages/czech.textpack")
+		HashString("degrid/languages/english.textpack"),
+		HashString("degrid/languages/czech.textpack")
 	};
 	if (index < sizeof(languages) / sizeof(languages[0]))
 		currentLanguageHash = languages[index];
@@ -82,51 +82,51 @@ int main(int argc, const char *args[])
 	{
 		configSetBool("cage/config/autoSave", true);
 		controlThread().timePerTick = 1000000 / 30;
-		engineInitialize(engineCreateConfig());
+		engineInitialize(EngineCreateConfig());
 
 		listeners.attachAll(window(), 1000);
 		listeners.windowClose.bind<&windowClose>();
 		listeners.keyRelease.bind<&keyRelease>();
-		eventListener<void()> assetsUpdateListener;
+		EventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
 		assetsUpdateListener.attach(controlThread().assets);
-		eventListener<void()> frameCounterListener;
+		EventListener<void()> frameCounterListener;
 		frameCounterListener.bind<&frameCounter>();
 		frameCounterListener.attach(graphicsPrepareThread().prepare);
 
 		window()->title("Degrid");
 		reloadLanguage(confLanguage);
-		assets()->add(hashString("degrid/degrid.pack"));
+		assets()->add(HashString("degrid/degrid.pack"));
 
 		{
-			holder<fullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
-			holder<engineProfiling> engineProfiling = newEngineProfiling();
-			engineProfiling->profilingScope = engineProfilingScopeEnum::None;
-			engineProfiling->screenPosition = vec2(0.5);
+			Holder<FullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
+			Holder<EngineProfiling> EngineProfiling = newEngineProfiling();
+			EngineProfiling->profilingScope = EngineProfilingScopeEnum::None;
+			EngineProfiling->screenPosition = vec2(0.5);
 
 			engineStart();
 		}
 
-		assets()->remove(hashString("degrid/degrid.pack"));
+		assets()->remove(HashString("degrid/degrid.pack"));
 		if (loadedLanguageHash)
 			assets()->remove(loadedLanguageHash);
 
 		engineFinalize();
 		return 0;
 	}
-	catch (const cage::exception &e)
+	catch (const cage::Exception &e)
 	{
-		CAGE_LOG(severityEnum::Note, "exception", e.message);
-		CAGE_LOG(severityEnum::Error, "degrid", "caught cage exception in main");
+		CAGE_LOG(SeverityEnum::Note, "exception", e.message);
+		CAGE_LOG(SeverityEnum::Error, "degrid", "caught cage exception in main");
 	}
 	catch (const std::exception &e)
 	{
-		CAGE_LOG(severityEnum::Note, "exception", e.what());
-		CAGE_LOG(severityEnum::Error, "degrid", "caught std exception in main");
+		CAGE_LOG(SeverityEnum::Note, "exception", e.what());
+		CAGE_LOG(SeverityEnum::Error, "degrid", "caught std exception in main");
 	}
 	catch (...)
 	{
-		CAGE_LOG(severityEnum::Error, "degrid", "caught unknown exception in main");
+		CAGE_LOG(SeverityEnum::Error, "degrid", "caught unknown exception in main");
 	}
 	return 1;
 }

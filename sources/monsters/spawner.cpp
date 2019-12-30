@@ -8,7 +8,7 @@ namespace
 {
 	struct spawnerComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 		uint32 count;
 		uint32 period;
 		monsterTypeFlags type;
@@ -17,7 +17,7 @@ namespace
 		{}
 	};
 
-	entityComponent *spawnerComponent::component;
+	EntityComponent *spawnerComponent::component;
 
 	void engineInit()
 	{
@@ -31,7 +31,7 @@ namespace
 		if (game.paused)
 			return;
 
-		for (entity *e : spawnerComponent::component->entities())
+		for (Entity *e : spawnerComponent::component->entities())
 		{
 			DEGRID_COMPONENT(spawner, s, e);
 			if (s.count == 0)
@@ -41,8 +41,8 @@ namespace
 			}
 			else if ((statistics.updateIteration % s.period) == 0)
 			{
-				CAGE_COMPONENT_ENGINE(transform, t, e);
-				CAGE_COMPONENT_ENGINE(render, r, e);
+				CAGE_COMPONENT_ENGINE(Transform, t, e);
+				CAGE_COMPONENT_ENGINE(Render, r, e);
 				spawnGeneral(s.type, t.position, r.color);
 				s.count--;
 			}
@@ -51,8 +51,8 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
@@ -94,10 +94,10 @@ namespace
 void spawnSpawner(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	entity *spawner = initializeMonster(spawnPosition, color, 4, hashString("degrid/monster/spawner.object"), hashString("degrid/monster/bum-spawner.ogg"), 10, 20 + 5 * monsterMutation(special));
-	CAGE_COMPONENT_ENGINE(transform, transform, spawner);
+	Entity *spawner = initializeMonster(spawnPosition, color, 4, HashString("degrid/monster/spawner.object"), HashString("degrid/monster/bum-spawner.ogg"), 10, 20 + 5 * monsterMutation(special));
+	CAGE_COMPONENT_ENGINE(Transform, transform, spawner);
 	transform.orientation = randomDirectionQuat();
-	CAGE_COMPONENT_ENGINE(skeletalAnimation, sa, spawner);
+	CAGE_COMPONENT_ENGINE(SkeletalAnimation, sa, spawner);
 	sa.startTime = getApplicationTime();
 	DEGRID_COMPONENT(monster, m, spawner);
 	DEGRID_COMPONENT(spawner, s, spawner);

@@ -2,11 +2,11 @@
 
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
-#include <cage-core/spatial.h>
-#include <cage-core/hashString.h>
+#include <cage-core/Spatial.h>
+#include <cage-core/HashString.h>
 
-#include <cage-engine/window.h>
-#include <cage-engine/engineProfiling.h>
+#include <cage-Engine/window.h>
+#include <cage-Engine/EngineProfiling.h>
 
 globalStatisticsStruct statistics;
 
@@ -35,13 +35,13 @@ namespace
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = entities()->group()->count();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
-		statistics.timeRenderCurrent = engineProfilingValues(engineProfilingStatsFlags::FrameTime, engineProfilingModeEnum::Last);
+		statistics.timeRenderCurrent = engineProfilingValues(EngineProfilingStatsFlags::FrameTime, EngineProfilingModeEnum::Last);
 		if (statistics.updateIterationIgnorePause > 1000)
 		{
 			statistics.timeRenderMin = min(statistics.timeRenderMin, statistics.timeRenderCurrent);
 			statistics.timeRenderMax = max(statistics.timeRenderMax, statistics.timeRenderCurrent);
 		}
-		statistics.soundEffectsCurrent = voiceComponent::component->group()->count();
+		statistics.soundEffectsCurrent = SoundComponent::component->group()->count();
 		statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
 	}
 
@@ -72,9 +72,9 @@ namespace
 		};
 		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
 			if (game.powerups[i] > 0)
-				CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
+				CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
 
-#define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(severityEnum::Info, "statistics", stringizer() + CAGE_STRINGIZE(N) ": " + statistics.N);
+#define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + CAGE_STRINGIZE(N) ": " + statistics.N);
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
 			shotsFired, shotsTurret, shotsHit, shotsKill, shotsCurrent, shotsMax, \
 			monstersSpawned, monstersMutated, monstersMutations, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersFirstHit, \
@@ -95,16 +95,16 @@ namespace
 #undef GCHL_GENERATE
 
 		uint64 duration = getApplicationTime() - statistics.timeStart;
-		CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "duration: " + (duration / 1e6) + " s");
-		CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
-		CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
+		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "duration: " + (duration / 1e6) + " s");
+		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
+		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
 	}
 
 	class callbacksClass
 	{
-		eventListener<void()> engineUpdateListener;
-		eventListener<void()> gameStartListener;
-		eventListener<void()> gameStopListener;
+		EventListener<void()> engineUpdateListener;
+		EventListener<void()> gameStartListener;
+		EventListener<void()> gameStopListener;
 	public:
 		callbacksClass() : engineUpdateListener("statistics"), gameStartListener("statistics"), gameStopListener("statistics")
 		{

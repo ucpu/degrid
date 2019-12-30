@@ -4,12 +4,12 @@ namespace
 {
 	struct shockerComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 		real radius;
 		real speedFactor;
 	};
 
-	entityComponent *shockerComponent::component;
+	EntityComponent *shockerComponent::component;
 
 	void engineInit()
 	{
@@ -29,21 +29,21 @@ namespace
 			lightning(c, b, color);
 			return;
 		}
-		entity *e = entities()->createUnique();
-		CAGE_COMPONENT_ENGINE(transform, t, e);
+		Entity *e = entities()->createUnique();
+		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		t.position = c;
 		t.orientation = quat(v, vec3(0, 1, 0), true);
-		CAGE_COMPONENT_ENGINE(render, r, e);
-		r.object = hashString("degrid/monster/shocker/lightning.object");
+		CAGE_COMPONENT_ENGINE(Render, r, e);
+		r.object = HashString("degrid/monster/shocker/lightning.object");
 		r.color = color;
-		CAGE_COMPONENT_ENGINE(textureAnimation, anim, e);
+		CAGE_COMPONENT_ENGINE(TextureAnimation, anim, e);
 		anim.offset = randomChance();
 		DEGRID_COMPONENT(timeout, ttl, e);
 		ttl.ttl = 3;
 		e->add(entitiesPhysicsEvenWhenPaused);
-		CAGE_COMPONENT_ENGINE(light, light, e);
+		CAGE_COMPONENT_ENGINE(Light, light, e);
 		light.color = colorVariation(color) * 10;
-		light.lightType = lightTypeEnum::Point;
+		light.lightType = LightTypeEnum::Point;
 		light.attenuation = vec3(0, 0, 0.01);
 	}
 
@@ -53,17 +53,17 @@ namespace
 
 		if (game.paused)
 		{
-			for (entity *e : shockerComponent::component->entities())
-				e->remove(voiceComponent::component);
+			for (Entity *e : shockerComponent::component->entities())
+				e->remove(SoundComponent::component);
 			return;
 		}
 
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
 
-		for (entity *e : shockerComponent::component->entities())
+		for (Entity *e : shockerComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(shocker, sh, e);
 			vec3 v = tr.position - playerTransform.position;
 			real d = length(v);
@@ -81,25 +81,25 @@ namespace
 				playerVelocity.velocity *= sh.speedFactor;
 				if (((statistics.updateIterationIgnorePause + e->name()) % 3) == 0)
 				{
-					CAGE_COMPONENT_ENGINE(render, r, e);
+					CAGE_COMPONENT_ENGINE(Render, r, e);
 					lightning(tr.position + randomDirection3() * tr.scale, playerTransform.position + randomDirection3() * playerTransform.scale, r.color);
 				}
-				if (!e->has(voiceComponent::component))
+				if (!e->has(SoundComponent::component))
 				{
-					CAGE_COMPONENT_ENGINE(voice, v, e);
-					v.name = hashString("degrid/monster/shocker/lightning.flac");
+					CAGE_COMPONENT_ENGINE(Sound, v, e);
+					v.name = HashString("degrid/monster/shocker/lightning.flac");
 					v.startTime = uint64(e->name()) * 10000;
 				}
 			}
 			else
-				e->remove(voiceComponent::component);
+				e->remove(SoundComponent::component);
 		}
 	}
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
@@ -114,7 +114,7 @@ namespace
 void spawnShocker(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	entity *shocker = initializeSimple(spawnPosition, color, 3, hashString("degrid/monster/shocker/shocker.object"), hashString("degrid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
+	Entity *shocker = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/shocker/shocker.object"), HashString("degrid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
 	DEGRID_COMPONENT(shocker, sh, shocker);
 	sh.radius = randomRange(70, 80) + 10 * monsterMutation(special);
 	sh.speedFactor = 3.2 / (monsterMutation(special) + 4);

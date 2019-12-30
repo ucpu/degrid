@@ -2,8 +2,8 @@
 
 namespace
 {
-	eventListener<bool(uint32)> guiListener;
-	eventListener<bool(uint32, uint32, modifiersFlags)> keyReleaseListener;
+	EventListener<bool(uint32)> guiListener;
+	EventListener<bool(uint32, uint32, ModifiersFlags)> keyReleaseListener;
 
 	bool buttonBack(uint32 en)
 	{
@@ -13,7 +13,7 @@ namespace
 		return true;
 	}
 
-	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
+	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
 	{
 		if (key == 256) // esc
 		{
@@ -25,7 +25,7 @@ namespace
 
 	void eraseGui()
 	{
-		guiManager *guii = gui();
+		Gui *guii = gui();
 		guii->skipAllEventsUntilNextUpdate();
 		guii->setFocus(0);
 		guii->entities()->destroy();
@@ -87,107 +87,107 @@ namespace
 		// 14 - logo
 		// 15 - back button
 
-		entityManager *ents = gui()->entities();
+		EntityManager *ents = gui()->entities();
 
 		uint32 splits[4];
 
 		{ // splitter 0
-			entity *e = ents->create(4);
+			Entity *e = ents->create(4);
 			splits[0] = e->name();
-			CAGE_COMPONENT_GUI(layoutSplitter, ls, e);
+			CAGE_COMPONENT_GUI(LayoutSplitter, ls, e);
 			ls.inverse = true;
 		}
 		{ // splitter 1
-			entity *e = ents->create(5);
+			Entity *e = ents->create(5);
 			splits[1] = e->name();
-			CAGE_COMPONENT_GUI(parent, p, e);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[0];
 			p.order = 2;
-			CAGE_COMPONENT_GUI(layoutSplitter, ls, e);
+			CAGE_COMPONENT_GUI(LayoutSplitter, ls, e);
 			ls.vertical = true;
 			ls.inverse = true;
 		}
 		{ // splitter 2
-			entity *e = ents->create(6);
+			Entity *e = ents->create(6);
 			splits[2] = e->name();
-			CAGE_COMPONENT_GUI(parent, p, e);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[0];
 			p.order = 1;
-			CAGE_COMPONENT_GUI(layoutSplitter, ls, e);
+			CAGE_COMPONENT_GUI(LayoutSplitter, ls, e);
 		}
 		{ // splitter 3
-			entity *e = ents->create(7);
+			Entity *e = ents->create(7);
 			splits[3] = e->name();
-			CAGE_COMPONENT_GUI(parent, p, e);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[2];
 			p.order = 1;
-			CAGE_COMPONENT_GUI(layoutSplitter, ls, e);
+			CAGE_COMPONENT_GUI(LayoutSplitter, ls, e);
 			ls.vertical = true;
 			ls.inverse = true;
 		}
 
 		{ // panel 10
-			entity *e = ents->create(10);
-			CAGE_COMPONENT_GUI(parent, p, e);
+			Entity *e = ents->create(10);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[3];
 			p.order = 1;
-			CAGE_COMPONENT_GUI(scrollbars, sc, e);
+			CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 			sc.alignment = vec2(0, 0);
 		}
 		{ // panel 11
-			entity *e = ents->create(11);
-			CAGE_COMPONENT_GUI(parent, p, e);
+			Entity *e = ents->create(11);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[3];
 			p.order = 2;
-			CAGE_COMPONENT_GUI(scrollbars, sc, e);
+			CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 			sc.alignment = vec2(0, 1);
 		}
 		{ // panel 12
-			entity *e = ents->create(12);
-			CAGE_COMPONENT_GUI(parent, p, e);
+			Entity *e = ents->create(12);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[2];
 			p.order = 2;
-			CAGE_COMPONENT_GUI(scrollbars, sc, e);
+			CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 			sc.alignment = vec2(0.5, 0.5);
 		}
 		{ // panel 14
-			entity *e = ents->create(14);
-			CAGE_COMPONENT_GUI(parent, p, e);
+			Entity *e = ents->create(14);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[1];
 			p.order = 1;
-			CAGE_COMPONENT_GUI(scrollbars, sc, e);
+			CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 			sc.alignment = vec2(1, 0);
 		}
 		{ // panel 15
-			entity *e = ents->create(15);
-			CAGE_COMPONENT_GUI(parent, p, e);
+			Entity *e = ents->create(15);
+			CAGE_COMPONENT_GUI(Parent, p, e);
 			p.parent = splits[1];
 			p.order = 2;
-			CAGE_COMPONENT_GUI(scrollbars, sc, e);
+			CAGE_COMPONENT_GUI(Scrollbars, sc, e);
 			sc.alignment = vec2(1, 1);
 		}
 	}
 
 	void generateLogo()
 	{
-		entityManager *ents = gui()->entities();
-		entity *logo = ents->createUnique();
-		CAGE_COMPONENT_GUI(label, label, logo);
-		CAGE_COMPONENT_GUI(image, image, logo);
-		image.textureName = hashString("degrid/logo.png");
-		CAGE_COMPONENT_GUI(parent, parent, logo);
+		EntityManager *ents = gui()->entities();
+		Entity *logo = ents->createUnique();
+		CAGE_COMPONENT_GUI(Label, label, logo);
+		CAGE_COMPONENT_GUI(Image, image, logo);
+		image.textureName = HashString("degrid/logo.png");
+		CAGE_COMPONENT_GUI(Parent, parent, logo);
 		parent.parent = 14;
 	}
 
 	void generateButtonBack()
 	{
-		entityManager *ents = gui()->entities();
-		entity *but = ents->create(20);
-		CAGE_COMPONENT_GUI(button, button, but);
-		CAGE_COMPONENT_GUI(text, txt, but);
-		txt.assetName = hashString("degrid/languages/internationalized.textpack");
-		txt.textName = hashString("gui/mainmenu/back");
-		CAGE_COMPONENT_GUI(parent, parent, but);
+		EntityManager *ents = gui()->entities();
+		Entity *but = ents->create(20);
+		CAGE_COMPONENT_GUI(Button, button, but);
+		CAGE_COMPONENT_GUI(Text, txt, but);
+		txt.assetName = HashString("degrid/languages/internationalized.textpack");
+		txt.textName = HashString("gui/mainmenu/back");
+		CAGE_COMPONENT_GUI(Parent, parent, but);
 		parent.parent = 15;
 		guiListener.attach(gui()->widgetEvent);
 		guiListener.bind<&buttonBack>();

@@ -4,10 +4,10 @@ namespace
 {
 	struct rocketMonsterComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 	};
 
-	entityComponent *rocketMonsterComponent::component;
+	EntityComponent *rocketMonsterComponent::component;
 
 	void engineInit()
 	{
@@ -23,28 +23,28 @@ namespace
 
 		real disapearDistance2 = mapNoPullRadius * 2;
 		disapearDistance2 *= disapearDistance2;
-		for (entity *e : rocketMonsterComponent::component->entities())
+		for (Entity *e : rocketMonsterComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			if (lengthSquared(tr.position) > disapearDistance2)
 				e->add(entitiesToDestroy);
 			else
 			{
 				tr.orientation = tr.orientation * quat(degs(), degs(), degs(3));
 
-				entity *spark = entities()->createAnonymous();
-				CAGE_COMPONENT_ENGINE(transform, transform, spark);
+				Entity *spark = entities()->createAnonymous();
+				CAGE_COMPONENT_ENGINE(Transform, transform, spark);
 				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + (tr.orientation * vec3(0, 0, 1.2) + randomDirection3() * 0.3) * tr.scale;
 				transform.orientation = randomDirectionQuat();
-				CAGE_COMPONENT_ENGINE(render, render, spark);
-				render.object = hashString("degrid/environment/spark.object");
+				CAGE_COMPONENT_ENGINE(Render, render, spark);
+				render.object = HashString("degrid/environment/spark.object");
 				DEGRID_COMPONENT(velocity, v, e);
 				DEGRID_COMPONENT(velocity, vel, spark);
 				vel.velocity = (v.velocity + randomDirection3() * 0.05) * randomChance() * -0.5;
 				DEGRID_COMPONENT(timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
-				CAGE_COMPONENT_ENGINE(textureAnimation, at, spark);
+				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
 				at.startTime = currentControlTime();
 				at.speed = 30.f / ttl.ttl;
 				spark->add(entitiesPhysicsEvenWhenPaused);
@@ -54,8 +54,8 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
 	public:
 		callbacksClass()
 		{
@@ -70,13 +70,13 @@ namespace
 void spawnRocket(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	entity *e = initializeMonster(spawnPosition, color, 2.5, hashString("degrid/monster/rocket.object"), hashString("degrid/monster/bum-rocket.ogg"), 6, 2 + monsterMutation(special));
+	Entity *e = initializeMonster(spawnPosition, color, 2.5, HashString("degrid/monster/rocket.object"), HashString("degrid/monster/bum-rocket.ogg"), 6, 2 + monsterMutation(special));
 	DEGRID_COMPONENT(rocketMonster, r, e);
 	DEGRID_COMPONENT(velocity, v, e);
 	v.velocity = game.monstersTarget - spawnPosition;
 	v.velocity[1] = 0;
 	v.velocity = normalize(v.velocity) * (1.5 + 0.3 * monsterMutation(special));
-	CAGE_COMPONENT_ENGINE(transform, tr, e);
+	CAGE_COMPONENT_ENGINE(Transform, tr, e);
 	tr.orientation = quat(v.velocity, vec3(0, 1, 0), true);
 	monsterReflectMutation(e, special);
 }

@@ -3,8 +3,8 @@
 #include <cage-core/core.h>
 #include <cage-core/math.h>
 
-#include <cage-engine/core.h>
-#include <cage-engine/engine.h>
+#include <cage-Engine/core.h>
+#include <cage-Engine/Engine.h>
 
 #include <optick.h>
 
@@ -15,9 +15,9 @@ void powerupSpawn(const vec3 &position);
 void monstersSpawnInitial();
 real lifeDamage(real damage); // how much life is taken by the damage (based on players armor)
 void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size);
-void monsterExplosion(entity *e);
-void shotExplosion(entity *e);
-bool killMonster(entity *e, bool allowCallback);
+void monsterExplosion(Entity *e);
+void shotExplosion(Entity *e);
+bool killMonster(Entity *e, bool allowCallback);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(uint32 sounds[]);
@@ -28,8 +28,8 @@ uint32 permanentPowerupLimit();
 uint32 currentPermanentPowerups();
 bool canAddPermanentPowerup();
 vec3 colorVariation(const vec3 &color);
-eventDispatcher<bool()> &gameStartEvent();
-eventDispatcher<bool()> &gameStopEvent();
+EventDispatcher<bool()> &gameStartEvent();
+EventDispatcher<bool()> &gameStopEvent();
 
 enum class powerupTypeEnum
 {
@@ -80,10 +80,10 @@ const vec3 bluePillColor = vec3(123, 198, 242) / 255;
 const uint32 powerupSellPrice = 5;
 const uint32 powerupBuyPriceBase = 50;
 
-extern entityGroup *entitiesToDestroy;
-extern entityGroup *entitiesPhysicsEvenWhenPaused;
-extern holder<spatialData> spatialSearchData;
-extern holder<spatialQuery> spatialSearchQuery;
+extern EntityGroup *entitiesToDestroy;
+extern EntityGroup *entitiesPhysicsEvenWhenPaused;
+extern Holder<SpatialData> SpatialSearchData;
+extern Holder<SpatialQuery> SpatialSearchQuery;
 
 struct achievementsStruct
 {
@@ -106,8 +106,8 @@ struct globalGameStruct
 	uint32 buyPriceMultiplier;
 
 	// entities
-	entity *playerEntity;
-	entity *shieldEntity;
+	Entity *playerEntity;
+	Entity *shieldEntity;
 
 	// player
 	real life;
@@ -184,39 +184,39 @@ extern globalStatisticsStruct statistics;
 
 struct gravityComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	real strength; // positive -> pull closer, negative -> push away
 };
 
 struct velocityComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	vec3 velocity;
 };
 
 struct rotationComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	quat rotation;
 };
 
 struct timeoutComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	uint32 ttl; // game updates (does not tick when paused)
 	timeoutComponent() : ttl(0) {}
 };
 
 struct gridComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	vec3 place;
 	vec3 originalColor;
 };
 
 struct shotComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	real damage;
 	bool homing;
 	shotComponent() : homing(false) {}
@@ -224,26 +224,26 @@ struct shotComponent
 
 struct powerupComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	powerupTypeEnum type;
 	powerupComponent() : type(powerupTypeEnum::Total) {}
 };
 
 struct monsterComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 	real life;
 	real damage;
 	real groundLevel;
 	real dispersion;
 	uint32 defeatedSound;
-	delegate<void(uint32)> defeatedCallback;
+	Delegate<void(uint32)> defeatedCallback;
 	monsterComponent() : defeatedSound(0) {}
 };
 
 struct bossComponent
 {
-	static entityComponent *component;
+	static EntityComponent *component;
 };
 
 #define DEGRID_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);

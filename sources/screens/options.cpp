@@ -3,122 +3,122 @@
 
 #include <cage-core/config.h>
 
-configUint32 confControlMovement("degrid/control/movement", 0);
-configUint32 confControlFiring("degrid/control/firing", 4);
-configUint32 confControlBomb("degrid/control/bomb", 4 + 4);
-configUint32 confControlTurret("degrid/control/turret", 2 + 4);
-configUint32 confControlDecoy("degrid/control/decoy", 0 + 4);
-configString confPlayerName("degrid/player/name", "player name");
-configFloat confPlayerShotColorR("degrid/player/shotColorR", 1);
-configFloat confPlayerShotColorG("degrid/player/shotColorG", 1);
-configFloat confPlayerShotColorB("degrid/player/shotColorB", 1);
-configFloat confVolumeMusic("degrid/volume/music", 0.5f);
-configFloat confVolumeEffects("degrid/volume/effects", 0.5f);
-configFloat confVolumeSpeech("degrid/volume/speech", 0.7f);
+ConfigUint32 confControlMovement("degrid/control/movement", 0);
+ConfigUint32 confControlFiring("degrid/control/firing", 4);
+ConfigUint32 confControlBomb("degrid/control/bomb", 4 + 4);
+ConfigUint32 confControlTurret("degrid/control/turret", 2 + 4);
+ConfigUint32 confControlDecoy("degrid/control/decoy", 0 + 4);
+ConfigString confPlayerName("degrid/player/name", "player name");
+ConfigFloat confPlayerShotColorR("degrid/player/shotColorR", 1);
+ConfigFloat confPlayerShotColorG("degrid/player/shotColorG", 1);
+ConfigFloat confPlayerShotColorB("degrid/player/shotColorB", 1);
+ConfigFloat confVolumeMusic("degrid/volume/music", 0.5f);
+ConfigFloat confVolumeEffects("degrid/volume/effects", 0.5f);
+ConfigFloat confVolumeSpeech("degrid/volume/speech", 0.7f);
 
 namespace
 {
 	void addOptionsMovementFiring(uint32 ctr)
 	{
-		entityManager *ents = gui()->entities();
+		EntityManager *ents = gui()->entities();
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 0;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/arrowsAbsolute");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/arrowsAbsolute");
 		}
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 1;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/arrowsRelative");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/arrowsRelative");
 		}
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 2;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/lmb");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/lmb");
 		}
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 3;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/rmb");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/rmb");
 		}
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = 4;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/cursor");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/cursor");
 		}
 	}
 
 	void addOptionsPowers(uint32 ctr)
 	{
-		entityManager *ents = gui()->entities();
+		EntityManager *ents = gui()->entities();
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -4;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/lmb");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/lmb");
 		}
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -3;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/mmb");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/mmb");
 		}
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -2;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/rmb");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/rmb");
 		}
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = -1;
-			CAGE_COMPONENT_GUI(text, txt, opt);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/space");
+			CAGE_COMPONENT_GUI(Text, txt, opt);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/space");
 		}
 		for (sint32 i = 0; i < sizeof(letters); i++)
 		{
-			entity *opt = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, opt);
+			Entity *opt = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
 			parent.order = letters[i];
-			CAGE_COMPONENT_GUI(text, txt, opt);
+			CAGE_COMPONENT_GUI(Text, txt, opt);
 			txt.value = string(&letters[i], 1);
 		}
 	}
 
-	eventListener<bool(uint32)> guiEvent;
+	EventListener<bool(uint32)> guiEvent;
 
 	bool guiFunction(uint32 en)
 	{
@@ -126,49 +126,49 @@ namespace
 		{
 		case 31:
 		{
-			CAGE_COMPONENT_GUI(comboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
 			confControlMovement = control.selected;
 			return true;
 		}
 		case 32:
 		{
-			CAGE_COMPONENT_GUI(comboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
 			confControlFiring = control.selected;
 			return true;
 		}
 		case 33:
 		{
-			CAGE_COMPONENT_GUI(comboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
 			confControlBomb = control.selected;
 			return true;
 		}
 		case 34:
 		{
-			CAGE_COMPONENT_GUI(comboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
 			confControlTurret = control.selected;
 			return true;
 		}
 		case 35:
 		{
-			CAGE_COMPONENT_GUI(comboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
 			confControlDecoy = control.selected;
 			return true;
 		}
 		case 36:
 		{
-			CAGE_COMPONENT_GUI(sliderBar, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(SliderBar, control, gui()->entities()->get(en));
 			confVolumeMusic = control.value.value;
 			return true;
 		}
 		case 37:
 		{
-			CAGE_COMPONENT_GUI(sliderBar, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(SliderBar, control, gui()->entities()->get(en));
 			confVolumeEffects = control.value.value;
 			return true;
 		}
 		case 38:
 		{
-			CAGE_COMPONENT_GUI(sliderBar, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(SliderBar, control, gui()->entities()->get(en));
 			confVolumeSpeech = control.value.value;
 			return true;
 		}
@@ -180,52 +180,52 @@ namespace
 void setScreenOptions()
 {
 	regenerateGui(guiConfig());
-	entityManager *ents = gui()->entities();
+	EntityManager *ents = gui()->entities();
 	guiEvent.bind<&guiFunction>();
 	guiEvent.attach(gui()->widgetEvent);
 
-	entity *tabs = ents->createUnique();
+	Entity *tabs = ents->createUnique();
 	{
-		CAGE_COMPONENT_GUI(parent, parent, tabs);
+		CAGE_COMPONENT_GUI(Parent, parent, tabs);
 		parent.parent = 12;
-		CAGE_COMPONENT_GUI(layoutLine, layout, tabs);
+		CAGE_COMPONENT_GUI(LayoutLine, layout, tabs);
 		layout.vertical = false;
 	}
 
 	{ // controls
-		entity *panel = ents->createUnique();
+		Entity *panel = ents->createUnique();
 		{
-			CAGE_COMPONENT_GUI(panel, control, panel);
-			CAGE_COMPONENT_GUI(parent, parent, panel);
+			CAGE_COMPONENT_GUI(Panel, control, panel);
+			CAGE_COMPONENT_GUI(Parent, parent, panel);
 			parent.parent = tabs->name();
 			parent.order = 1;
-			CAGE_COMPONENT_GUI(layoutTable, layout, panel);
+			CAGE_COMPONENT_GUI(LayoutTable, layout, panel);
 			layout.sections = 2;
-			CAGE_COMPONENT_GUI(text, txt, panel);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/controls");
-			CAGE_COMPONENT_GUI(scrollbars, sc, panel);
+			CAGE_COMPONENT_GUI(Text, txt, panel);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/controls");
+			CAGE_COMPONENT_GUI(Scrollbars, sc, panel);
 		}
 		uint32 index = 0;
 
 		{ // movement
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/movement");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/movement");
 			}
 
 			{
-				entity *ctr = ents->create(31);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(31);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(comboBox, control, ctr);
+				CAGE_COMPONENT_GUI(ComboBox, control, ctr);
 				control.selected = confControlMovement;
 				addOptionsMovementFiring(ctr->name());
 			}
@@ -233,22 +233,22 @@ void setScreenOptions()
 
 		{ // firing
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/firing");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/firing");
 			}
 
 			{
-				entity *ctr = ents->create(32);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(32);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(comboBox, control, ctr);
+				CAGE_COMPONENT_GUI(ComboBox, control, ctr);
 				control.selected = confControlFiring;
 				addOptionsMovementFiring(ctr->name());
 			}
@@ -256,22 +256,22 @@ void setScreenOptions()
 
 		{ // bomb
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/bomb");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/bomb");
 			}
 
 			{
-				entity *ctr = ents->create(33);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(33);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(comboBox, control, ctr);
+				CAGE_COMPONENT_GUI(ComboBox, control, ctr);
 				control.selected = confControlBomb;
 				addOptionsPowers(ctr->name());
 			}
@@ -279,22 +279,22 @@ void setScreenOptions()
 
 		{ // turret
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/turret");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/turret");
 			}
 
 			{
-				entity *ctr = ents->create(34);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(34);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(comboBox, control, ctr);
+				CAGE_COMPONENT_GUI(ComboBox, control, ctr);
 				control.selected = confControlTurret;
 				addOptionsPowers(ctr->name());
 			}
@@ -302,22 +302,22 @@ void setScreenOptions()
 
 		{ // decoy
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/decoy");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/decoy");
 			}
 
 			{
-				entity *ctr = ents->create(35);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(35);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(comboBox, control, ctr);
+				CAGE_COMPONENT_GUI(ComboBox, control, ctr);
 				control.selected = confControlDecoy;
 				addOptionsPowers(ctr->name());
 			}
@@ -325,83 +325,83 @@ void setScreenOptions()
 	}
 
 	{
-		entity *panel = ents->createUnique();
+		Entity *panel = ents->createUnique();
 		{
-			CAGE_COMPONENT_GUI(panel, control, panel);
-			CAGE_COMPONENT_GUI(parent, parent, panel);
+			CAGE_COMPONENT_GUI(Panel, control, panel);
+			CAGE_COMPONENT_GUI(Parent, parent, panel);
 			parent.parent = tabs->name();
 			parent.order = 2;
-			CAGE_COMPONENT_GUI(layoutTable, layout, panel);
+			CAGE_COMPONENT_GUI(LayoutTable, layout, panel);
 			layout.sections = 2;
-			CAGE_COMPONENT_GUI(text, txt, panel);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString("gui/options/sounds");
-			CAGE_COMPONENT_GUI(scrollbars, sc, panel);
+			CAGE_COMPONENT_GUI(Text, txt, panel);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/sounds");
+			CAGE_COMPONENT_GUI(Scrollbars, sc, panel);
 		}
 		uint32 index = 0;
 
 		{ // music volume
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/musicVolume");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/musicVolume");
 			}
 
 			{
-				entity *ctr = ents->create(36);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(36);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(sliderBar, control, ctr);
+				CAGE_COMPONENT_GUI(SliderBar, control, ctr);
 				control.value = real(confVolumeMusic);
 			}
 		}
 
 		{ // effects volume
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/effectsVolume");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/effectsVolume");
 			}
 
 			{
-				entity *ctr = ents->create(37);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(37);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(sliderBar, control, ctr);
+				CAGE_COMPONENT_GUI(SliderBar, control, ctr);
 				control.value = real(confVolumeEffects);
 			}
 		}
 
 		{ // speech volume
 			{
-				entity *lbl = ents->createUnique();
-				CAGE_COMPONENT_GUI(parent, parent, lbl);
+				Entity *lbl = ents->createUnique();
+				CAGE_COMPONENT_GUI(Parent, parent, lbl);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(label, control, lbl);
-				CAGE_COMPONENT_GUI(text, txt, lbl);
-				txt.assetName = hashString("degrid/languages/internationalized.textpack");
-				txt.textName = hashString("gui/options/speechVolume");
+				CAGE_COMPONENT_GUI(Label, control, lbl);
+				CAGE_COMPONENT_GUI(Text, txt, lbl);
+				txt.assetName = HashString("degrid/languages/internationalized.textpack");
+				txt.textName = HashString("gui/options/speechVolume");
 			}
 
 			{
-				entity *ctr = ents->create(38);
-				CAGE_COMPONENT_GUI(parent, parent, ctr);
+				Entity *ctr = ents->create(38);
+				CAGE_COMPONENT_GUI(Parent, parent, ctr);
 				parent.parent = panel->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(sliderBar, control, ctr);
+				CAGE_COMPONENT_GUI(SliderBar, control, ctr);
 				control.value = real(confVolumeSpeech);
 			}
 		}

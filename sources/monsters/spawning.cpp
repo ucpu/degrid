@@ -94,7 +94,7 @@ namespace
 	void spawnDefinitionStruct::spawn()
 	{
 		{ // update player position
-			CAGE_COMPONENT_ENGINE(transform, p, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(Transform, p, game.playerEntity);
 			playerPosition = p.position;
 		}
 
@@ -145,7 +145,7 @@ namespace
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], origin + i * span, color);
 		} break;
-		default: CAGE_THROW_CRITICAL(exception, "invalid placing policy");
+		default: CAGE_THROW_CRITICAL(Exception, "invalid placing policy");
 		}
 	}
 
@@ -175,7 +175,7 @@ namespace
 	void announceJokeMap()
 	{
 		game.jokeMap = true;
-		makeAnnouncement(hashString("announcement/joke-map"), hashString("announcement-desc/joke-map"), 120 * 30);
+		makeAnnouncement(HashString("announcement/joke-map"), HashString("announcement-desc/joke-map"), 120 * 30);
 	}
 
 	void gameStart()
@@ -197,7 +197,7 @@ namespace
 
 		if (randomRange(0u, 1000u) == 42)
 		{
-			CAGE_LOG(severityEnum::Info, "joke", "JOKE: snakes only map");
+			CAGE_LOG(SeverityEnum::Info, "joke", "JOKE: snakes only map");
 			spawnDefinitionStruct d("snakes only");
 			d.spawnTypes = (monsterTypeFlags::Snake);
 			definitions.push_back(d);
@@ -517,7 +517,7 @@ namespace
 		for (auto &d : definitions)
 		{
 			if (d.iteration > 0)
-				CAGE_LOG(severityEnum::Info, "statistics", stringizer() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
+				CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
 		}
 #endif // DEGRID_TESTING
 
@@ -526,9 +526,9 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineUpdateListener;
-		eventListener<void()> gameStartListener;
-		eventListener<void()> gameStopListener;
+		EventListener<void()> engineUpdateListener;
+		EventListener<void()> gameStartListener;
+		EventListener<void()> gameStopListener;
 	public:
 		callbacksClass() : engineUpdateListener("spawning"), gameStartListener("spawning"), gameStopListener("spawning")
 		{

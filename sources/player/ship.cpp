@@ -3,10 +3,10 @@
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
-#include <cage-core/spatial.h>
-#include <cage-core/hashString.h>
+#include <cage-core/Spatial.h>
+#include <cage-core/HashString.h>
 
-extern configUint32 confControlMovement;
+extern ConfigUint32 confControlMovement;
 
 namespace
 {
@@ -18,7 +18,7 @@ namespace
 		if (game.cinematic)
 			return;
 
-		CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
 		DEGRID_COMPONENT(velocity, vl, game.playerEntity);
 
 		if (game.moveDirection != vec3())
@@ -33,18 +33,18 @@ namespace
 				vl.velocity = normalize(vl.velocity) * maxSpeed;
 			if (lengthSquared(change) > 0.01)
 			{
-				entity *spark = entities()->createAnonymous();
-				CAGE_COMPONENT_ENGINE(transform, transform, spark);
+				Entity *spark = entities()->createAnonymous();
+				CAGE_COMPONENT_ENGINE(Transform, transform, spark);
 				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
 				transform.orientation = randomDirectionQuat();
-				CAGE_COMPONENT_ENGINE(render, render, spark);
-				render.object = hashString("degrid/environment/spark.object");
+				CAGE_COMPONENT_ENGINE(Render, render, spark);
+				render.object = HashString("degrid/environment/spark.object");
 				DEGRID_COMPONENT(velocity, vel, spark);
 				vel.velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
 				DEGRID_COMPONENT(timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
-				CAGE_COMPONENT_ENGINE(textureAnimation, at, spark);
+				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
 				at.startTime = currentControlTime();
 				at.speed = 30.f / ttl.ttl;
 				spark->add(entitiesPhysicsEvenWhenPaused);
@@ -71,22 +71,22 @@ namespace
 	{
 		if (!game.playerEntity || !game.shieldEntity)
 			return;
-		CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
-		CAGE_COMPONENT_ENGINE(transform, trs, game.shieldEntity);
+		CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, trs, game.shieldEntity);
 		trs.position = tr.position;
 		trs.scale = tr.scale;
 		if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0)
 		{
-			CAGE_COMPONENT_ENGINE(render, render, game.shieldEntity);
-			render.object = hashString("degrid/player/shield.object");
-			CAGE_COMPONENT_ENGINE(voice, sound, game.shieldEntity);
-			sound.name = hashString("degrid/player/shield.ogg");
+			CAGE_COMPONENT_ENGINE(Render, render, game.shieldEntity);
+			render.object = HashString("degrid/player/shield.object");
+			CAGE_COMPONENT_ENGINE(Sound, sound, game.shieldEntity);
+			sound.name = HashString("degrid/player/shield.ogg");
 			sound.startTime = -1;
 		}
 		else
 		{
-			game.shieldEntity->remove(renderComponent::component);
-			game.shieldEntity->remove(voiceComponent::component);
+			game.shieldEntity->remove(RenderComponent::component);
+			game.shieldEntity->remove(SoundComponent::component);
 		}
 	}
 
@@ -114,14 +114,14 @@ namespace
 			scorePreviousSound += ld * sg;
 
 			uint32 sounds[] = {
-				hashString("degrid/speech/progress/doing-fine.wav"),
-				hashString("degrid/speech/progress/doing-well.wav"),
-				hashString("degrid/speech/progress/fantastic.wav"),
-				hashString("degrid/speech/progress/go-on.wav"),
-				hashString("degrid/speech/progress/i-hope-the-princess-is-worth-all-the-trouble.wav"),
-				hashString("degrid/speech/progress/keep-going.wav"),
-				hashString("degrid/speech/progress/lets-roll.wav"),
-				hashString("degrid/speech/progress/they-say-the-princess-is-very-beautiful.wav"),
+				HashString("degrid/speech/progress/doing-fine.wav"),
+				HashString("degrid/speech/progress/doing-well.wav"),
+				HashString("degrid/speech/progress/fantastic.wav"),
+				HashString("degrid/speech/progress/go-on.wav"),
+				HashString("degrid/speech/progress/i-hope-the-princess-is-worth-all-the-trouble.wav"),
+				HashString("degrid/speech/progress/keep-going.wav"),
+				HashString("degrid/speech/progress/lets-roll.wav"),
+				HashString("degrid/speech/progress/they-say-the-princess-is-very-beautiful.wav"),
 				0
 			};
 			soundSpeech(sounds);
@@ -148,27 +148,27 @@ namespace
 	{
 		scorePreviousSound = 0;
 
-		{ // player ship entity
+		{ // player ship Entity
 			game.playerEntity = entities()->createUnique();
-			CAGE_COMPONENT_ENGINE(transform, transform, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(Transform, transform, game.playerEntity);
 			transform.scale = playerScale;
-			CAGE_COMPONENT_ENGINE(render, render, game.playerEntity);
-			render.object = hashString("degrid/player/player.object");
+			CAGE_COMPONENT_ENGINE(Render, render, game.playerEntity);
+			render.object = HashString("degrid/player/player.object");
 			game.monstersTarget = vec3();
 		}
 
-		{ // player shield entity
+		{ // player shield Entity
 			game.shieldEntity = entities()->createUnique();
-			CAGE_COMPONENT_ENGINE(transform, transform, game.shieldEntity);
+			CAGE_COMPONENT_ENGINE(Transform, transform, game.shieldEntity);
 			(void)transform;
-			CAGE_COMPONENT_ENGINE(textureAnimation, aniTex, game.shieldEntity);
+			CAGE_COMPONENT_ENGINE(TextureAnimation, aniTex, game.shieldEntity);
 			aniTex.speed = 0.05;
 		}
 	}
 
 	void gameStop()
 	{
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
 		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, playerScale);
 		game.playerEntity->add(entitiesToDestroy);
@@ -179,10 +179,10 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineUpdateListener1;
-		eventListener<void()> engineUpdateListener2;
-		eventListener<void()> gameStartListener;
-		eventListener<void()> gameStopListener;
+		EventListener<void()> engineUpdateListener1;
+		EventListener<void()> engineUpdateListener2;
+		EventListener<void()> gameStartListener;
+		EventListener<void()> gameStopListener;
 	public:
 		callbacksClass() : engineUpdateListener1("ship1"), engineUpdateListener2("ship2"), gameStartListener("ship"), gameStopListener("ship")
 		{

@@ -4,18 +4,18 @@
 #include <cage-core/config.h>
 #include <cage-core/camera.h>
 
-extern configUint32 confControlMovement;
-extern configUint32 confControlFiring;
-extern configUint32 confControlBomb;
-extern configUint32 confControlTurret;
-extern configUint32 confControlDecoy;
-extern configString confPlayerName;
+extern ConfigUint32 confControlMovement;
+extern ConfigUint32 confControlFiring;
+extern ConfigUint32 confControlBomb;
+extern ConfigUint32 confControlTurret;
+extern ConfigUint32 confControlDecoy;
+extern ConfigString confPlayerName;
 
 void eventBomb();
 void eventTurret();
 void eventDecoy();
 
-entity *getPrimaryCameraEntity();
+Entity *getPrimaryCameraEntity();
 
 globalGameStruct game;
 
@@ -29,8 +29,8 @@ globalGameStruct::globalGameStruct()
 namespace
 {
 	bool keyMap[512];
-	mouseButtonsFlags buttonMap;
-	windowEventListeners windowListeners;
+	MouseButtonsFlags buttonMap;
+	WindowEventListeners windowListeners;
 
 	// input (options independent)
 	vec3 arrowsDirection;
@@ -48,8 +48,8 @@ namespace
 		p /= vec2(res.x, res.y);
 		p = p * 2 - 1;
 		real px = p[0], py = -p[1];
-		CAGE_COMPONENT_ENGINE(transform, ts, getPrimaryCameraEntity());
-		CAGE_COMPONENT_ENGINE(camera, cs, getPrimaryCameraEntity());
+		CAGE_COMPONENT_ENGINE(Transform, ts, getPrimaryCameraEntity());
+		CAGE_COMPONENT_ENGINE(Camera, cs, getPrimaryCameraEntity());
 		mat4 view = inverse(mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)));
 		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res.x) / real(res.y), cs.near, cs.far);
 		mat4 inv = inverse(proj * view);
@@ -77,7 +77,7 @@ namespace
 				eventAction(o + 4);
 	}
 
-	bool mousePress(mouseButtonsFlags buttons, modifiersFlags modifiers, const ivec2 &point)
+	bool mousePress(MouseButtonsFlags buttons, ModifiersFlags modifiers, const ivec2 &point)
 	{
 		if (game.paused)
 			return false;
@@ -88,24 +88,24 @@ namespace
 		return false;
 	}
 
-	bool mouseRelease(mouseButtonsFlags buttons, modifiersFlags modifiers, const ivec2 &point)
+	bool mouseRelease(MouseButtonsFlags buttons, ModifiersFlags modifiers, const ivec2 &point)
 	{
 		buttonMap &= ~buttons;
 
 		if (game.paused)
 			return false;
 
-		if ((buttons & mouseButtonsFlags::Left) == mouseButtonsFlags::Left)
+		if ((buttons & MouseButtonsFlags::Left) == MouseButtonsFlags::Left)
 			eventAction(0);
-		if ((buttons & mouseButtonsFlags::Right) == mouseButtonsFlags::Right)
+		if ((buttons & MouseButtonsFlags::Right) == MouseButtonsFlags::Right)
 			eventAction(1);
-		if ((buttons & mouseButtonsFlags::Middle) == mouseButtonsFlags::Middle)
+		if ((buttons & MouseButtonsFlags::Middle) == MouseButtonsFlags::Middle)
 			eventAction(2);
 
 		return false;
 	}
 
-	bool keyPress(uint32 key, uint32, modifiersFlags modifiers)
+	bool keyPress(uint32 key, uint32, ModifiersFlags modifiers)
 	{
 		if (game.paused)
 			return false;
@@ -117,7 +117,7 @@ namespace
 		return false;
 	}
 
-	bool keyRelease(uint32 key, uint32, modifiersFlags modifiers)
+	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
 	{
 		if (key < sizeof(keyMap))
 			keyMap[key] = false;
@@ -152,12 +152,12 @@ namespace
 		windowListeners.keyPress.bind<&keyPress>();
 		windowListeners.keyRelease.bind<&keyRelease>();
 
-		// process some events before gui
+		// process some Events before gui
 		windowListeners.mouseRelease.attach(window()->events.mouseRelease, -1);
 		windowListeners.keyRelease.attach(window()->events.keyRelease, -1);
 
 #ifdef DEGRID_TESTING
-		CAGE_LOG(severityEnum::Info, "degrid", string() + "TESTING GAME BUILD");
+		CAGE_LOG(SeverityEnum::Info, "degrid", string() + "TESTING GAME BUILD");
 #endif // DEGRID_TESTING
 
 		game.cinematic = true;
@@ -187,12 +187,12 @@ namespace
 			else
 			{
 				cnt = randomRange(0u, cnt);
-				for (entity *e : monsterComponent::component->entities())
+				for (Entity *e : monsterComponent::component->entities())
 				{
 					if (cnt-- == 0)
 					{
-						CAGE_COMPONENT_ENGINE(transform, p, game.playerEntity);
-						CAGE_COMPONENT_ENGINE(transform, t, e);
+						CAGE_COMPONENT_ENGINE(Transform, p, game.playerEntity);
+						CAGE_COMPONENT_ENGINE(Transform, t, e);
 						game.fireDirection = t.position - p.position;
 						game.fireDirection[1] = 0;
 						return;
@@ -204,9 +204,9 @@ namespace
 
 		{
 			setMousePosition();
-			if ((buttonMap & mouseButtonsFlags::Left) == mouseButtonsFlags::Left)
+			if ((buttonMap & MouseButtonsFlags::Left) == MouseButtonsFlags::Left)
 				mouseLeftPosition = mouseCurrentPosition;
-			if ((buttonMap & mouseButtonsFlags::Right) == mouseButtonsFlags::Right)
+			if ((buttonMap & MouseButtonsFlags::Right) == MouseButtonsFlags::Right)
 				mouseRightPosition = mouseCurrentPosition;
 		}
 
@@ -221,7 +221,7 @@ namespace
 				arrowsDirection += vec3(1, 0, 0);
 		}
 
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 
 		switch (confControlMovement)
 		{
@@ -230,7 +230,7 @@ namespace
 			break;
 		case 1: // arrows (relative)
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
 			game.moveDirection = tr.orientation * arrowsDirection;
 		} break;
 		case 2: // lmb
@@ -257,7 +257,7 @@ namespace
 			break;
 		case 1: // arrows (relative)
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
 			game.fireDirection = tr.orientation * arrowsDirection;
 		} break;
 		case 2: // lmb
@@ -274,13 +274,13 @@ namespace
 
 	void gameStart()
 	{
-		CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "new game, cinematic: " + game.cinematic);
+		CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "new game, cinematic: " + game.cinematic);
 
 		for (uint32 i = 0; i < sizeof(keyMap); i++)
 			keyMap[i] = false;
-		buttonMap = (mouseButtonsFlags)0;
+		buttonMap = MouseButtonsFlags::None;
 
-		for (entity *e : entities()->group()->entities())
+		for (Entity *e : entities()->group()->entities())
 			e->add(entitiesToDestroy);
 
 		{
@@ -314,9 +314,9 @@ namespace
 	{
 		if (!game.cinematic)
 		{
-			CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "game over");
-			CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "score: " + game.score);
-			CAGE_LOG(severityEnum::Info, "degrid", stringizer() + "money: " + game.money);
+			CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "game over");
+			CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "score: " + game.score);
+			CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "money: " + game.money);
 		}
 		game.paused = game.gameOver = true;
 		setScreenGameover();
@@ -324,10 +324,10 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
-		eventListener<void()> gameStartListener;
-		eventListener<void()> gameStopListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
+		EventListener<void()> gameStartListener;
+		EventListener<void()> gameStopListener;
 	public:
 		callbacksClass() : engineInitListener("controls"), engineUpdateListener("controls"), gameStartListener("controls"), gameStopListener("controls")
 		{

@@ -3,8 +3,8 @@
 
 #include <cage-core/config.h>
 #include <cage-core/timer.h>
-#include <cage-core/configIni.h>
-#include <cage-core/hashString.h>
+#include <cage-core/Ini.h>
+#include <cage-core/HashString.h>
 
 #include <unordered_map>
 
@@ -15,9 +15,9 @@ achievementsStruct::achievementsStruct()
 	detail::memset(this, 0, sizeof(*this));
 }
 
-eventDispatcher<bool(const string&)> &achievementAcquiredEvent()
+EventDispatcher<bool(const string&)> &achievementAcquiredEvent()
 {
-	static eventDispatcher<bool(const string&)> inst;
+	static EventDispatcher<bool(const string&)> inst;
 	return inst;
 }
 
@@ -52,7 +52,7 @@ bool achievementFullfilled(const string &name, bool bossKill)
 	if (game.cinematic)
 		return false;
 
-	CAGE_LOG_DEBUG(severityEnum::Info, "achievements", stringizer() + "fulfilled achievement: '" + name + "', boss: " + bossKill);
+	CAGE_LOG_DEBUG(SeverityEnum::Info, "achievements", stringizer() + "fulfilled achievement: '" + name + "', boss: " + bossKill);
 
 	{
 		auto it = data.find(name);
@@ -75,11 +75,11 @@ bool achievementFullfilled(const string &name, bool bossKill)
 		achievements.bosses++;
 	achievements.acquired++;
 
-	CAGE_LOG(severityEnum::Info, "achievements", string() + "acquired achievement: '" + name + "'");
+	CAGE_LOG(SeverityEnum::Info, "achievements", string() + "acquired achievement: '" + name + "'");
 
 	makeAnnouncement(
-		hashString((string() + "achievement/" + name).c_str()),
-		hashString((string() + "achievement-desc/" + name).c_str())
+		HashString((string() + "achievement/" + name).c_str()),
+		HashString((string() + "achievement-desc/" + name).c_str())
 	);
 
 	return true;
@@ -101,9 +101,9 @@ namespace
 		// load achievements
 		try
 		{
-			holder<configIni> ini = newConfigIni();
+			Holder<Ini> ini = newIni();
 			{
-				detail::overrideBreakpoint ob;
+				detail::OverrideBreakpoint ob;
 				ini->load("achievements.ini");
 			}
 			for (const string &section : ini->sections())
@@ -115,16 +115,16 @@ namespace
 		}
 		catch (...)
 		{
-			CAGE_LOG(severityEnum::Warning, "achievements", "failed to load achievements");
+			CAGE_LOG(SeverityEnum::Warning, "achievements", "failed to load achievements");
 			data.clear();
 		}
 		summaries(achievements.acquired, achievements.bosses);
-		CAGE_LOG(severityEnum::Info, "achievements", stringizer() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
+		CAGE_LOG(SeverityEnum::Info, "achievements", stringizer() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
 		for (const auto &a : data)
-			CAGE_LOG_CONTINUE(severityEnum::Note, "achievements", stringizer() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
+			CAGE_LOG_CONTINUE(SeverityEnum::Note, "achievements", stringizer() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
 		if (achievements.bosses > bossesTotalCount)
 		{
-			CAGE_LOG(severityEnum::Warning, "achievements", "are you cheating? there is not that many bosses in the game");
+			CAGE_LOG(SeverityEnum::Warning, "achievements", "are you cheating? there is not that many bosses in the game");
 		}
 	}
 
@@ -139,7 +139,7 @@ namespace
 
 		{ // save achievements
 #ifndef DEGRID_TESTING
-			holder<configIni> ini = newConfigIni();
+			Holder<Ini> ini = newIni();
 			for (const auto &a : data)
 			{
 				ini->setString(a.first, "date", a.second.date);
@@ -151,7 +151,7 @@ namespace
 			}
 			catch (...)
 			{
-				CAGE_LOG(severityEnum::Warning, "achievements", "failed to save achievements");
+				CAGE_LOG(SeverityEnum::Warning, "achievements", "failed to save achievements");
 			}
 #endif // !DEGRID_TESTING
 		}
@@ -159,8 +159,8 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineFinishListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineFinishListener;
 	public:
 		callbacksClass() : engineInitListener("achievements"), engineFinishListener("achievements")
 		{
@@ -175,10 +175,10 @@ namespace
 void setScreenAchievements()
 {
 	regenerateGui(guiConfig());
-	entityManager *ents = gui()->entities();
+	EntityManager *ents = gui()->entities();
 
 	{
-		CAGE_COMPONENT_GUI(layoutLine, layout, ents->get(12));
+		CAGE_COMPONENT_GUI(LayoutLine, layout, ents->get(12));
 		layout.vertical = true;
 	}
 
@@ -187,40 +187,40 @@ void setScreenAchievements()
 	{
 		uint32 panelName;
 		{ // panel
-			entity *e = ents->createUnique();
+			Entity *e = ents->createUnique();
 			panelName = e->name();
-			CAGE_COMPONENT_GUI(parent, parent, e);
+			CAGE_COMPONENT_GUI(Parent, parent, e);
 			parent.parent = 12;
 			parent.order = index++;
-			CAGE_COMPONENT_GUI(panel, panel, e);
-			CAGE_COMPONENT_GUI(text, txt, e);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString((string() + "achievement/" + it.first).c_str());
-			CAGE_COMPONENT_GUI(layoutLine, layout, e);
+			CAGE_COMPONENT_GUI(Panel, panel, e);
+			CAGE_COMPONENT_GUI(Text, txt, e);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString((string() + "achievement/" + it.first).c_str());
+			CAGE_COMPONENT_GUI(LayoutLine, layout, e);
 			layout.vertical = true;
 		}
 
 		{ // description
-			entity *e = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, e);
+			Entity *e = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, e);
 			parent.parent = panelName;
 			parent.order = 1;
-			CAGE_COMPONENT_GUI(label, label, e);
-			CAGE_COMPONENT_GUI(text, txt, e);
-			txt.assetName = hashString("degrid/languages/internationalized.textpack");
-			txt.textName = hashString((string() + "achievement-desc/" + it.first).c_str());
+			CAGE_COMPONENT_GUI(Label, label, e);
+			CAGE_COMPONENT_GUI(Text, txt, e);
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString((string() + "achievement-desc/" + it.first).c_str());
 		}
 
 		{ // date
-			entity *e = ents->createUnique();
-			CAGE_COMPONENT_GUI(parent, parent, e);
+			Entity *e = ents->createUnique();
+			CAGE_COMPONENT_GUI(Parent, parent, e);
 			parent.parent = panelName;
 			parent.order = 2;
-			CAGE_COMPONENT_GUI(label, label, e);
-			CAGE_COMPONENT_GUI(text, txt, e);
+			CAGE_COMPONENT_GUI(Label, label, e);
+			CAGE_COMPONENT_GUI(Text, txt, e);
 			txt.value = it.second.date;
-			CAGE_COMPONENT_GUI(textFormat, format, e);
-			format.align = textAlignEnum::Right;
+			CAGE_COMPONENT_GUI(TextFormat, format, e);
+			format.align = TextAlignEnum::Right;
 		}
 	}
 }

@@ -4,7 +4,7 @@ namespace
 {
 	struct snakeTailComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 		uint32 index;
 		uint32 follow;
 		snakeTailComponent() : index(0), follow(0) {}
@@ -12,12 +12,12 @@ namespace
 
 	struct snakeHeadComponent
 	{
-		static entityComponent *component;
+		static EntityComponent *component;
 		real speedMin, speedMax;
 	};
 
-	entityComponent *snakeHeadComponent::component;
-	entityComponent *snakeTailComponent::component;
+	EntityComponent *snakeHeadComponent::component;
+	EntityComponent *snakeTailComponent::component;
 
 	void engineInit()
 	{
@@ -39,9 +39,9 @@ namespace
 			return;
 
 		// snake heads
-		for (entity *e : snakeHeadComponent::component->entities())
+		for (Entity *e : snakeHeadComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(velocity, v, e);
 			DEGRID_COMPONENT(snakeHead, snake, e);
 			v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
@@ -55,9 +55,9 @@ namespace
 		}
 
 		// snake tails
-		for (entity *e : snakeTailComponent::component->entities())
+		for (Entity *e : snakeTailComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(velocity, v, e);
 			DEGRID_COMPONENT(monster, m, e);
 			DEGRID_COMPONENT(snakeTail, snake, e);
@@ -65,8 +65,8 @@ namespace
 			v.velocity = vec3();
 			if (snake.follow && entities()->has(snake.follow))
 			{
-				entity *p = entities()->get(snake.follow);
-				CAGE_COMPONENT_ENGINE(transform, trp, p);
+				Entity *p = entities()->get(snake.follow);
+				CAGE_COMPONENT_ENGINE(Transform, trp, p);
 				vec3 toPrev = trp.position - tr.position;
 				real r = tr.scale * 2;
 				real d2 = lengthSquared(toPrev);
@@ -75,7 +75,7 @@ namespace
 					if (d2 > sqr(r + 20))
 					{ // teleport
 						tr.position = trp.position + randomChance3() - 0.5;
-						e->remove(transformComponent::componentHistory);
+						e->remove(TransformComponent::componentHistory);
 					}
 					else
 					{ // move
@@ -109,9 +109,9 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineInitListener;
-		eventListener<void()> engineUpdateListener;
-		eventListener<void()> snakeTailsListener;
+		EventListener<void()> engineInitListener;
+		EventListener<void()> engineUpdateListener;
+		EventListener<void()> snakeTailsListener;
 	public:
 		callbacksClass()
 		{
@@ -129,13 +129,13 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 {
 	bool snakeJoke = randomRange(0u, 1000u) == 42;
 	if (snakeJoke)
-		makeAnnouncement(hashString("announcement/joke-snake"), hashString("announcement-desc/joke-snake"));
+		makeAnnouncement(HashString("announcement/joke-snake"), HashString("announcement-desc/joke-snake"));
 	uint32 special = 0;
 	uint32 prev = 0;
 	real groundLevel;
 	real scale;
 	{ // head
-		entity *head = initializeMonster(spawnPosition, color, 2, hashString("degrid/monster/snakeHead.object"), hashString("degrid/monster/bum-snake-head.ogg"), 5, (snakeJoke ? 100 : 3) + monsterMutation(special));
+		Entity *head = initializeMonster(spawnPosition, color, 2, HashString("degrid/monster/snakeHead.object"), HashString("degrid/monster/bum-snake-head.ogg"), 5, (snakeJoke ? 100 : 3) + monsterMutation(special));
 		DEGRID_COMPONENT(snakeHead, snake, head);
 		snake.speedMin = 0.3 + 0.1 * monsterMutation(special);
 		snake.speedMax = snake.speedMin + 0.6 + 0.2 * monsterMutation(special);
@@ -144,23 +144,23 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		DEGRID_COMPONENT(monster, monster, head);
 		monster.dispersion = 0.2;
 		groundLevel = monster.groundLevel;
-		CAGE_COMPONENT_ENGINE(transform, transform, head);
+		CAGE_COMPONENT_ENGINE(Transform, transform, head);
 		scale = transform.scale;
 	}
 	uint32 pieces = (snakeJoke ? randomRange(80, 100) : randomRange(10, 13)) + monsterMutation(special) * 2;
 	uint64 aniInitOff = randomRange(0, 10000000);
 	for (uint32 i = 0; i < pieces; i++)
 	{ // tail
-		entity *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, hashString("degrid/monster/snakeTail.object"), hashString("degrid/monster/bum-snake-tail.ogg"), 5, real::Infinity());
+		Entity *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, HashString("degrid/monster/snakeTail.object"), HashString("degrid/monster/bum-snake-tail.ogg"), 5, real::Infinity());
 		DEGRID_COMPONENT(snakeTail, snake, tail);
 		snake.index = i + 1;
 		snake.follow = prev;
 		prev = tail->name();
-		CAGE_COMPONENT_ENGINE(textureAnimation, aniTex, tail);
+		CAGE_COMPONENT_ENGINE(TextureAnimation, aniTex, tail);
 		aniTex.startTime = currentControlTime() + aniInitOff + i * 1000000;
 		DEGRID_COMPONENT(monster, monster, tail);
 		monster.dispersion = 0.2;
-		CAGE_COMPONENT_ENGINE(transform, transform, tail);
+		CAGE_COMPONENT_ENGINE(Transform, transform, tail);
 		transform.position[1] = monster.groundLevel = groundLevel;
 		CAGE_ASSERT(transform.scale == scale);
 	}

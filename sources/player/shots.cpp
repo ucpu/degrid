@@ -3,13 +3,13 @@
 #include <cage-core/geometry.h>
 #include <cage-core/config.h>
 #include <cage-core/entities.h>
-#include <cage-core/spatial.h>
+#include <cage-core/Spatial.h>
 #include <cage-core/color.h>
-#include <cage-core/hashString.h>
+#include <cage-core/HashString.h>
 
-extern configFloat confPlayerShotColorR;
-extern configFloat confPlayerShotColorG;
-extern configFloat confPlayerShotColorB;
+extern ConfigFloat confPlayerShotColorR;
+extern ConfigFloat confPlayerShotColorG;
+extern ConfigFloat confPlayerShotColorB;
 
 namespace
 {
@@ -25,21 +25,21 @@ namespace
 
 		game.shootingCooldown += real(4) * pow(1.3, game.powerups[(uint32)powerupTypeEnum::Multishot]) * pow(0.7, game.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
 
-		CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
 
 		for (real i = game.powerups[(uint32)powerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)powerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 		{
 			statistics.shotsFired++;
-			entity *shot = entities()->createUnique();
-			CAGE_COMPONENT_ENGINE(transform, transform, shot);
+			Entity *shot = entities()->createUnique();
+			CAGE_COMPONENT_ENGINE(Transform, transform, shot);
 			rads dir = atan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += degs(i * 10);
 			vec3 dirv = vec3(-sin(dir), 0, -cos(dir));
 			transform.position = playerTransform.position + dirv * 2;
 			transform.orientation = quat(degs(), dir, degs());
-			CAGE_COMPONENT_ENGINE(render, render, shot);
-			render.object = hashString("degrid/player/shot.object");
+			CAGE_COMPONENT_ENGINE(Render, render, shot);
+			render.object = HashString("degrid/player/shot.object");
 			if (game.powerups[(uint32)powerupTypeEnum::SuperDamage] > 0)
 				render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
 			else
@@ -56,10 +56,10 @@ namespace
 
 	void shotsUpdate()
 	{
-		for (entity *e : shotComponent::component->entities())
+		for (Entity *e : shotComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(transform, tr, e);
-			CAGE_COMPONENT_ENGINE(transform, playerTransform, game.playerEntity);
+			CAGE_COMPONENT_ENGINE(Transform, tr, e);
+			CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 
 			uint32 closestMonster = 0;
 			uint32 homingMonster = 0;
@@ -69,14 +69,14 @@ namespace
 			DEGRID_COMPONENT(shot, sh, e);
 			DEGRID_COMPONENT(velocity, vl, e);
 
-			spatialSearchQuery->intersection(sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
-			for (uint32 otherName : spatialSearchQuery->result())
+			SpatialSearchQuery->intersection(sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
+			for (uint32 otherName : SpatialSearchQuery->result())
 			{
 				if (otherName == myName)
 					continue;
 
-				entity *e = entities()->get(otherName);
-				CAGE_COMPONENT_ENGINE(transform, ot, e);
+				Entity *e = entities()->get(otherName);
+				CAGE_COMPONENT_ENGINE(Transform, ot, e);
 				vec3 toOther = ot.position - tr.position;
 				if (e->has(gridComponent::component))
 				{
@@ -109,7 +109,7 @@ namespace
 			if (closestMonster)
 			{
 				statistics.shotsHit++;
-				entity *m = entities()->get(closestMonster);
+				Entity *m = entities()->get(closestMonster);
 				DEGRID_COMPONENT(monster, om, m);
 				real dmg = sh.damage;
 				sh.damage -= om.life;
@@ -123,7 +123,7 @@ namespace
 						if (r < game.powerupSpawnChance)
 						{
 							game.powerupSpawnChance -= 1;
-							CAGE_COMPONENT_ENGINE(transform, mtr, m);
+							CAGE_COMPONENT_ENGINE(Transform, mtr, m);
 							powerupSpawn(mtr.position);
 						}
 						game.powerupSpawnChance += 0.02;
@@ -142,8 +142,8 @@ namespace
 			{
 				if (homingMonster)
 				{
-					entity *m = entities()->get(homingMonster);
-					CAGE_COMPONENT_ENGINE(transform, mtr, m);
+					Entity *m = entities()->get(homingMonster);
+					CAGE_COMPONENT_ENGINE(Transform, mtr, m);
 					vec3 toOther = normalize(mtr.position - tr.position);
 					real spd = length(vl.velocity);
 					vl.velocity = toOther * spd;
@@ -179,8 +179,8 @@ namespace
 
 	class callbacksClass
 	{
-		eventListener<void()> engineUpdateListener;
-		eventListener<void()> gameStartListener;
+		EventListener<void()> engineUpdateListener;
+		EventListener<void()> gameStartListener;
 	public:
 		callbacksClass() : engineUpdateListener("shots"), gameStartListener("shots")
 		{
