@@ -5,7 +5,7 @@
 #include <cage-core/assetManager.h>
 
 #include <cage-engine/engineProfiling.h>
-#include <cage-engine/FullscreenSwitcher.h>
+#include <cage-engine/fullscreenSwitcher.h>
 #include <cage-engine/highPerformanceGpuHint.h>
 
 #include <exception>
