@@ -2,8 +2,8 @@
 
 #include <cage-core/config.h>
 #include <cage-core/entities.h>
-#include <cage-core/HashString.h>
-#include <cage-core/VariableSmoothingBuffer.h>
+#include <cage-core/hashString.h>
+#include <cage-core/variableSmoothingBuffer.h>
 
 namespace
 {

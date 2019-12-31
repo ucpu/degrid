@@ -3,8 +3,8 @@
 
 #include <cage-core/config.h>
 #include <cage-core/timer.h>
-#include <cage-core/Ini.h>
-#include <cage-core/HashString.h>
+#include <cage-core/ini.h>
+#include <cage-core/hashString.h>
 
 #include <unordered_map>
 

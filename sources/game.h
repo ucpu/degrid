@@ -3,8 +3,8 @@
 #include <cage-core/core.h>
 #include <cage-core/math.h>
 
-#include <cage-Engine/core.h>
-#include <cage-Engine/Engine.h>
+#include <cage-engine/core.h>
+#include <cage-engine/engine.h>
 
 #include <optick.h>
 

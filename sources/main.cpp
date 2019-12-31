@@ -6,9 +6,9 @@
 #include <cage-core/config.h>
 #include <cage-core/assetManager.h>
 
-#include <cage-Engine/EngineProfiling.h>
-#include <cage-Engine/FullscreenSwitcher.h>
-#include <cage-Engine/highPerformanceGpuHint.h>
+#include <cage-engine/engineProfiling.h>
+#include <cage-engine/fullscreenSwitcher.h>
+#include <cage-engine/highPerformanceGpuHint.h>
 
 ConfigUint32 confLanguage("degrid/language/language", 0);
 

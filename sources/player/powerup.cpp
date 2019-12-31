@@ -3,7 +3,7 @@
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
 #include <cage-core/color.h>
-#include <cage-core/HashString.h>
+#include <cage-core/hashString.h>
 
 namespace
 {

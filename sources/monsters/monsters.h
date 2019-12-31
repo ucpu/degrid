@@ -2,8 +2,8 @@
 
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
-#include <cage-core/HashString.h>
-#include <cage-core/Spatial.h>
+#include <cage-core/hashString.h>
+#include <cage-core/spatial.h>
 
 enum class monsterTypeFlags
 {

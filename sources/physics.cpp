@@ -2,7 +2,7 @@
 
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
-#include <cage-core/Spatial.h>
+#include <cage-core/spatial.h>
 
 EntityGroup *entitiesToDestroy;
 EntityGroup *entitiesPhysicsEvenWhenPaused;
