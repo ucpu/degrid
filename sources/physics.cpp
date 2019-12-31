@@ -26,13 +26,13 @@ namespace
 		if (!game.paused)
 		{ // gravity
 			OPTICK_EVENT("gravity");
-			for (Entity *e : gravityComponent::component->entities())
+			for (Entity *e : GravityComponent::component->entities())
 			{
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
-				DEGRID_COMPONENT(gravity, g, e);
-				for (Entity *oe : velocityComponent::component->entities())
+				DEGRID_COMPONENT(Gravity, g, e);
+				for (Entity *oe : VelocityComponent::component->entities())
 				{
-					if (oe->has(gravityComponent::component))
+					if (oe->has(GravityComponent::component))
 						continue;
 					CAGE_COMPONENT_ENGINE(Transform, ot, oe);
 					vec3 d = t.position - ot.position;
@@ -45,35 +45,35 @@ namespace
 
 		{ // velocity
 			OPTICK_EVENT("velocity");
-			for (Entity *e : velocityComponent::component->entities())
+			for (Entity *e : VelocityComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
-				DEGRID_COMPONENT(velocity, v, e);
+				DEGRID_COMPONENT(Velocity, v, e);
 				t.position += v.velocity;
 			}
 		}
 
 		{ // rotation
 			OPTICK_EVENT("rotation");
-			for (Entity *e : rotationComponent::component->entities())
+			for (Entity *e : RotationComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
-				DEGRID_COMPONENT(rotation, r, e);
+				DEGRID_COMPONENT(Rotation, r, e);
 				t.orientation = r.rotation * t.orientation;
 			}
 		}
 
 		{ // timeout
 			OPTICK_EVENT("timeout");
-			for (Entity *e : timeoutComponent::component->entities())
+			for (Entity *e : TimeoutComponent::component->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				DEGRID_COMPONENT(timeout, t, e);
+				DEGRID_COMPONENT(Timeout, t, e);
 				if (t.ttl == 0)
 					e->add(entitiesToDestroy);
 				else
@@ -106,12 +106,12 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 	public:
-		callbacksClass() : engineInitListener("physics"), engineUpdateListener("physics")
+		Callbacks() : engineInitListener("physics"), engineUpdateListener("physics")
 		{
 			engineInitListener.attach(controlThread().initialize, -20);
 			engineInitListener.bind<&engineInit>();

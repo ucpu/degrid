@@ -1,5 +1,3 @@
-#include <atomic>
-
 #include "game.h"
 
 #include <cage-core/geometry.h>
@@ -11,6 +9,8 @@
 
 #include <cage-engine/sound.h>
 
+#include <atomic>
+
 extern ConfigFloat confVolumeMusic;
 extern ConfigFloat confVolumeEffects;
 extern ConfigFloat confVolumeSpeech;
@@ -19,7 +19,7 @@ namespace
 {
 	real suspense;
 
-	struct soundDataStruct
+	struct SoundData
 	{
 		Holder<MixingBus> suspenseBus;
 		Holder<MixingBus> actionBus;
@@ -48,10 +48,10 @@ namespace
 		uint64 speechStart;
 		std::atomic<uint32> speechName;
 
-		soundDataStruct() : suspenseLoaded(false), actionLoaded(false), endLoaded(false), speechStart(0), speechName(0)
+		SoundData() : suspenseLoaded(false), actionLoaded(false), endLoaded(false), speechStart(0), speechName(0)
 		{}
 	};
-	soundDataStruct *data;
+	SoundData *data;
 
 	void alterVolume(real &current, real target)
 	{
@@ -95,7 +95,7 @@ namespace
 		for (uint32 otherName : SpatialSearchQuery->result())
 		{
 			Entity *e = entities()->get(otherName);
-			if (e->has(monsterComponent::component))
+			if (e->has(MonsterComponent::component))
 			{
 				CAGE_COMPONENT_ENGINE(Transform, p, e);
 				real d = distance(p.position, playerTransform.position);
@@ -158,7 +158,7 @@ namespace
 
 	void engineInit()
 	{
-		data = detail::systemArena().createObject<soundDataStruct>();
+		data = detail::systemArena().createObject<SoundData>();
 #define GCHL_GENERATE(NAME) \
 		data->CAGE_JOIN(NAME, Bus) = newMixingBus(sound()); \
 		data->CAGE_JOIN(NAME, Bus)->addOutput(musicMixer()); \
@@ -195,7 +195,7 @@ namespace
 
 	void EngineFin()
 	{
-		detail::systemArena().destroy<soundDataStruct>(data);
+		detail::systemArena().destroy<SoundData>(data);
 	}
 
 	void gameStart()
@@ -232,7 +232,7 @@ namespace
 		soundSpeech(sounds);
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
@@ -240,7 +240,7 @@ namespace
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		callbacksClass() : engineInitListener("sounds"), engineUpdateListener("sounds"), EngineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
+		Callbacks() : engineInitListener("sounds"), engineUpdateListener("sounds"), EngineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
 		{
 			engineInitListener.attach(controlThread().initialize, -55);
 			engineInitListener.bind<&engineInit>();
@@ -267,7 +267,7 @@ void soundEffect(uint32 sound, const vec3 &position)
 	CAGE_COMPONENT_ENGINE(Sound, s, e);
 	s.name = sound;
 	s.startTime = currentControlTime();
-	DEGRID_COMPONENT(timeout, ttl, e);
+	DEGRID_COMPONENT(Timeout, ttl, e);
 	ttl.ttl = numeric_cast<uint32>((src->getDuration() + 100000) / controlThread().timePerTick);
 	e->add(entitiesPhysicsEvenWhenPaused);
 }

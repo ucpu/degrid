@@ -7,17 +7,17 @@
 
 namespace
 {
-	struct announcementStruct
+	struct Announcement
 	{
 		uint32 headingName;
 		uint32 descriptionName;
 		uint32 duration;
 
-		announcementStruct() : headingName(0), descriptionName(0), duration(30 * 30)
+		Announcement() : headingName(0), descriptionName(0), duration(30 * 30)
 		{}
 	};
 
-	std::vector<announcementStruct> announcements;
+	std::vector<Announcement> announcements;
 	bool needToRemakeGui;
 
 	EventListener<bool(uint32)> guiEvent;
@@ -37,7 +37,7 @@ namespace
 			return true;
 		}
 
-		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 		{
 			if (powerupMode[i] == 2)
 			{
@@ -67,7 +67,7 @@ namespace
 		return false;
 	}
 
-	static const uint32 textNames[(uint32)powerupTypeEnum::Total] = {
+	static const uint32 textNames[(uint32)PowerupTypeEnum::Total] = {
 		HashString("gui/game/puBomb"),
 		HashString("gui/game/puTurret"),
 		HashString("gui/game/puDecoy"),
@@ -315,7 +315,7 @@ namespace
 				}
 			}
 
-			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
 				bool anyBuy = canAddPermanentPowerup();
 				if (powerupMode[i] == 2)
@@ -429,7 +429,7 @@ namespace
 	void makeTheGui(uint32 openPanel)
 	{
 		{
-			guiConfig c;
+			GuiConfig c;
 			c.logo = false;
 			c.backButton = false;
 			regenerateGui(c);
@@ -540,7 +540,7 @@ namespace
 			}
 			uint32 index = 1;
 
-			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
 				if (powerupMode[i] == 0)
 				{
@@ -579,7 +579,7 @@ namespace
 			}
 			uint32 index = 1;
 
-			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
 				if (powerupMode[i] == 1)
 				{
@@ -619,7 +619,7 @@ namespace
 		// delete elapsed announcements
 		bool result = needToRemakeGui;
 		needToRemakeGui = false;
-		announcements.erase(std::remove_if(announcements.begin(), announcements.end(), [&](announcementStruct &a)
+		announcements.erase(std::remove_if(announcements.begin(), announcements.end(), [&](Announcement &a)
 		{
 			if (a.duration == 0)
 			{
@@ -667,7 +667,7 @@ namespace
 			txt.value = stringizer() + game.score;
 		}
 
-		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 		{
 			if (!gui()->entities()->has(200 + i))
 				continue;
@@ -687,11 +687,11 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineUpdateListener;
 	public:
-		callbacksClass()
+		Callbacks()
 		{
 			engineUpdateListener.attach(controlThread().update, 60);
 			engineUpdateListener.bind<&engineUpdate>();
@@ -711,7 +711,7 @@ void setScreenGame()
 
 void makeAnnouncement(uint32 headline, uint32 description, uint32 duration)
 {
-	announcementStruct a;
+	Announcement a;
 	a.headingName = headline;
 	a.descriptionName = description;
 	a.duration = duration;

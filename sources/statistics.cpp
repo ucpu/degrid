@@ -8,9 +8,9 @@
 #include <cage-engine/window.h>
 #include <cage-engine/engineProfiling.h>
 
-globalStatisticsStruct statistics;
+GlobalStatistics statistics;
 
-globalStatisticsStruct::globalStatisticsStruct()
+GlobalStatistics::GlobalStatistics()
 {
 	detail::memset(this, 0, sizeof(*this));
 	timeRenderMin = -1;
@@ -29,9 +29,9 @@ namespace
 		if (game.gameOver)
 			return;
 
-		statistics.shotsCurrent = shotComponent::component->group()->count();
+		statistics.shotsCurrent = ShotComponent::component->group()->count();
 		statistics.shotsMax = max(statistics.shotsMax, statistics.shotsCurrent);
-		statistics.monstersCurrent = monsterComponent::component->group()->count();
+		statistics.monstersCurrent = MonsterComponent::component->group()->count();
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = entities()->group()->count();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
@@ -47,13 +47,13 @@ namespace
 
 	void gameStart()
 	{
-		statistics = globalStatisticsStruct();
+		statistics = GlobalStatistics();
 		statistics.timeStart = getApplicationTime();
 	}
 
 	void gameStop()
 	{
-		static const string powerupName[(uint32)powerupTypeEnum::Total] = {
+		static const string powerupName[(uint32)PowerupTypeEnum::Total] = {
 			"Bomb",
 			"Turret",
 			"Decoy",
@@ -70,7 +70,7 @@ namespace
 			"Duration",
 			"Coin"
 		};
-		for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			if (game.powerups[i] > 0)
 				CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
 
@@ -100,13 +100,13 @@ namespace
 		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineUpdateListener;
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		callbacksClass() : engineUpdateListener("statistics"), gameStartListener("statistics"), gameStopListener("statistics")
+		Callbacks() : engineUpdateListener("statistics"), gameStartListener("statistics"), gameStopListener("statistics")
 		{
 			engineUpdateListener.attach(controlThread().update, -60);
 			engineUpdateListener.bind<&engineUpdate>();

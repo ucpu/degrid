@@ -13,21 +13,21 @@ namespace
 	quat skyboxOrientation;
 	quat skyboxRotation;
 
-	struct skyboxComponent
+	struct SkyboxComponent
 	{
 		static EntityComponent *component;
 
 		bool dissipating;
 
-		skyboxComponent() : dissipating(false)
+		SkyboxComponent() : dissipating(false)
 		{}
 	};
 
-	EntityComponent *skyboxComponent::component;
+	EntityComponent *SkyboxComponent::component;
 
 	void engineInit()
 	{
-		skyboxComponent::component = entities()->defineComponent(skyboxComponent(), true);
+		SkyboxComponent::component = entities()->defineComponent(SkyboxComponent(), true);
 		skyboxOrientation = randomDirectionQuat();
 		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
 	}
@@ -39,11 +39,11 @@ namespace
 		{ // update skybox
 			skyboxOrientation = skyboxRotation * skyboxOrientation;
 
-			for (Entity *e : skyboxComponent::component->entities())
+			for (Entity *e : SkyboxComponent::component->entities())
 			{
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
 				t.orientation = skyboxOrientation;
-				DEGRID_COMPONENT(skybox, s, e);
+				DEGRID_COMPONENT(Skybox, s, e);
 				if (s.dissipating)
 				{
 					CAGE_COMPONENT_ENGINE(Render, r, e);
@@ -64,7 +64,7 @@ namespace
 					r.sceneMask = 2;
 					r.object = HashString("degrid/environment/skyboxes/skybox.obj;hurt");
 					r.opacity = 1;
-					DEGRID_COMPONENT(skybox, s, e);
+					DEGRID_COMPONENT(Skybox, s, e);
 					s.dissipating = true;
 				}
 			}
@@ -74,12 +74,12 @@ namespace
 			return;
 
 		{ // update degrid markers
-			for (Entity *e : gridComponent::component->entities())
+			for (Entity *e : GridComponent::component->entities())
 			{
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
 				CAGE_COMPONENT_ENGINE(Render, r, e);
-				DEGRID_COMPONENT(velocity, v, e);
-				DEGRID_COMPONENT(grid, g, e);
+				DEGRID_COMPONENT(Velocity, v, e);
+				DEGRID_COMPONENT(Grid, g, e);
 				v.velocity *= 0.95;
 				v.velocity += (g.place - t.position) * 0.005;
 				r.color = interpolate(r.color, g.originalColor, 0.002);
@@ -89,10 +89,10 @@ namespace
 
 	void gameStart()
 	{
-		for (Entity *e : skyboxComponent::component->entities())
+		for (Entity *e : SkyboxComponent::component->entities())
 		{
 			// prEvent the skyboxes to be destroyed so that they can dissipate properly
-			DEGRID_COMPONENT(skybox, s, e);
+			DEGRID_COMPONENT(Skybox, s, e);
 			e->remove(entitiesToDestroy);
 		}
 
@@ -124,9 +124,9 @@ namespace
 				if (d > radius || d < 1e-7)
 					continue;
 				Entity *e = entities()->createUnique();
-				DEGRID_COMPONENT(velocity, velocity, e);
+				DEGRID_COMPONENT(Velocity, velocity, e);
 				velocity.velocity = randomDirection3();
-				DEGRID_COMPONENT(grid, grid, e);
+				DEGRID_COMPONENT(Grid, grid, e);
 				grid.place = vec3(x, -2, y) + vec3(randomChance(), randomChance() * 0.1, randomChance()) * 2 - 1;
 				CAGE_COMPONENT_ENGINE(Transform, transform, e);
 				transform.scale = 0.6;
@@ -148,7 +148,7 @@ namespace
 		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
 		{
 			Entity *e = entities()->createUnique();
-			DEGRID_COMPONENT(grid, grid, e);
+			DEGRID_COMPONENT(Grid, grid, e);
 			CAGE_COMPONENT_ENGINE(Transform, transform, e);
 			transform.position = grid.place = vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
 			transform.scale = 0.6;
@@ -157,16 +157,16 @@ namespace
 			grid.originalColor = render.color = vec3(1);
 		}
 
-		statistics.environmentGridMarkers = gridComponent::component->group()->count();
+		statistics.environmentGridMarkers = GridComponent::component->group()->count();
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 		EventListener<void()> gameStartListener;
 	public:
-		callbacksClass() : engineInitListener("environment"), engineUpdateListener("environment"), gameStartListener("environment")
+		Callbacks() : engineInitListener("environment"), engineUpdateListener("environment"), gameStartListener("environment")
 		{
 			engineInitListener.attach(controlThread().initialize, -35);
 			engineInitListener.bind<&engineInit>();
@@ -181,11 +181,11 @@ namespace
 void setSkybox(uint32 objectName)
 {
 	{ // initiate disappearing of old sky-boxes
-		for (Entity *e : skyboxComponent::component->entities())
+		for (Entity *e : SkyboxComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, t, e);
 			t.position[2] *= 0.9; // move the sky-box closer to the camera
-			DEGRID_COMPONENT(skybox, s, e);
+			DEGRID_COMPONENT(Skybox, s, e);
 			s.dissipating = true;
 		}
 	}
@@ -198,7 +198,7 @@ void setSkybox(uint32 objectName)
 		r.sceneMask = 2;
 		r.object = objectName;
 		r.opacity = 1;
-		DEGRID_COMPONENT(skybox, s, e);
+		DEGRID_COMPONENT(Skybox, s, e);
 	}
 }
 
@@ -213,11 +213,11 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		if (!entities()->has(otherName))
 			continue;
 		Entity *e = entities()->get(otherName);
-		if (!e->has(gridComponent::component))
+		if (!e->has(GridComponent::component))
 			continue;
 		CAGE_COMPONENT_ENGINE(Transform, ot, e);
 		CAGE_COMPONENT_ENGINE(Render, orc, e);
-		DEGRID_COMPONENT(velocity, og, e);
+		DEGRID_COMPONENT(Velocity, og, e);
 		vec3 toOther = ot.position - position;
 		real dist = length(toOther);
 		real intpr = smoothstep(((size - dist) / size + 1) * 0.5);
@@ -234,9 +234,9 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	{
 		real scale = randomChance();
 		Entity *e = entities()->createAnonymous();
-		DEGRID_COMPONENT(timeout, timeout, e);
+		DEGRID_COMPONENT(Timeout, timeout, e);
 		timeout.ttl = randomRange(5, 25);
-		DEGRID_COMPONENT(velocity, vel, e);
+		DEGRID_COMPONENT(Velocity, vel, e);
 		vel.velocity = velocity * 0.5 + randomDirection3() * (1.1 - scale);
 		CAGE_COMPONENT_ENGINE(Transform, transform, e);
 		transform.scale = randomRange(1.0, 1.3) * (scale * 0.4 + 0.8);
@@ -251,9 +251,9 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	// create light
 	{
 		Entity *e = entities()->createAnonymous();
-		DEGRID_COMPONENT(timeout, timeout, e);
+		DEGRID_COMPONENT(Timeout, timeout, e);
 		timeout.ttl = randomRange(5, 10);
-		DEGRID_COMPONENT(velocity, vel, e);
+		DEGRID_COMPONENT(Velocity, vel, e);
 		vel.velocity = velocity * 0.3 + randomDirection3() * 0.02;
 		CAGE_COMPONENT_ENGINE(Transform, transform, e);
 		transform.position = position + randomDirection3() * vec3(1, 0.1, 1) * size * randomChance();
@@ -276,8 +276,8 @@ void monsterExplosion(Entity *e)
 {
 	CAGE_COMPONENT_ENGINE(Transform, t, e);
 	CAGE_COMPONENT_ENGINE(Render, r, e);
-	DEGRID_COMPONENT(velocity, v, e);
-	DEGRID_COMPONENT(monster, m, e);
+	DEGRID_COMPONENT(Velocity, v, e);
+	DEGRID_COMPONENT(Monster, m, e);
 	environmentExplosion(t.position, v.velocity, r.color, t.scale);
 }
 
@@ -285,7 +285,7 @@ void shotExplosion(Entity *e)
 {
 	CAGE_COMPONENT_ENGINE(Transform, t, e);
 	CAGE_COMPONENT_ENGINE(Render, r, e);
-	DEGRID_COMPONENT(velocity, v, e);
+	DEGRID_COMPONENT(Velocity, v, e);
 	environmentExplosion(t.position, v.velocity, r.color, t.scale);
 }
 

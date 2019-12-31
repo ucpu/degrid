@@ -28,7 +28,7 @@ namespace
 			setScreenAchievements();
 			return true;
 		case 106:
-			setScreenCredits();
+			setScreenAbout();
 			return true;
 		case 107:
 			engineStop();
@@ -46,7 +46,7 @@ namespace
 void setScreenMainmenu()
 {
 	{
-		guiConfig c;
+		GuiConfig c;
 		c.backButton = false;
 		regenerateGui(c);
 	}
@@ -184,11 +184,11 @@ void setScreenMainmenu()
 
 namespace
 {
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 	public:
-		callbacksClass()
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize, 200);
 			engineInitListener.bind<&setScreenMainmenu>();

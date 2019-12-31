@@ -10,19 +10,19 @@
 
 using namespace cage;
 
-struct guiConfig
+struct GuiConfig
 {
 	bool backButton;
 	bool logo;
-	guiConfig();
+	GuiConfig();
 };
 
-void regenerateGui(const guiConfig &config);
+void regenerateGui(const GuiConfig &config);
 
 void setScreenMainmenu();
 void setScreenGame();
 void setScreenGameover();
 void setScreenOptions();
 void setScreenScores();
-void setScreenCredits();
+void setScreenAbout();
 void setScreenAchievements();

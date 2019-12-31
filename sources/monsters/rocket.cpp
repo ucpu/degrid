@@ -2,16 +2,16 @@
 
 namespace
 {
-	struct rocketMonsterComponent
+	struct RocketMonsterComponent
 	{
 		static EntityComponent *component;
 	};
 
-	EntityComponent *rocketMonsterComponent::component;
+	EntityComponent *RocketMonsterComponent::component;
 
 	void engineInit()
 	{
-		rocketMonsterComponent::component = entities()->defineComponent(rocketMonsterComponent(), true);
+		RocketMonsterComponent::component = entities()->defineComponent(RocketMonsterComponent(), true);
 	}
 
 	void engineUpdate()
@@ -23,7 +23,7 @@ namespace
 
 		real disapearDistance2 = mapNoPullRadius * 2;
 		disapearDistance2 *= disapearDistance2;
-		for (Entity *e : rocketMonsterComponent::component->entities())
+		for (Entity *e : RocketMonsterComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			if (lengthSquared(tr.position) > disapearDistance2)
@@ -39,10 +39,10 @@ namespace
 				transform.orientation = randomDirectionQuat();
 				CAGE_COMPONENT_ENGINE(Render, render, spark);
 				render.object = HashString("degrid/environment/spark.object");
-				DEGRID_COMPONENT(velocity, v, e);
-				DEGRID_COMPONENT(velocity, vel, spark);
+				DEGRID_COMPONENT(Velocity, v, e);
+				DEGRID_COMPONENT(Velocity, vel, spark);
 				vel.velocity = (v.velocity + randomDirection3() * 0.05) * randomChance() * -0.5;
-				DEGRID_COMPONENT(timeout, ttl, spark);
+				DEGRID_COMPONENT(Timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
 				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
 				at.startTime = currentControlTime();
@@ -52,12 +52,12 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 	public:
-		callbacksClass()
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize);
 			engineInitListener.bind<&engineInit>();
@@ -71,8 +71,8 @@ void spawnRocket(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
 	Entity *e = initializeMonster(spawnPosition, color, 2.5, HashString("degrid/monster/rocket.object"), HashString("degrid/monster/bum-rocket.ogg"), 6, 2 + monsterMutation(special));
-	DEGRID_COMPONENT(rocketMonster, r, e);
-	DEGRID_COMPONENT(velocity, v, e);
+	DEGRID_COMPONENT(RocketMonster, r, e);
+	DEGRID_COMPONENT(Velocity, v, e);
 	v.velocity = game.monstersTarget - spawnPosition;
 	v.velocity[1] = 0;
 	v.velocity = normalize(v.velocity) * (1.5 + 0.3 * monsterMutation(special));

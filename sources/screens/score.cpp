@@ -1,25 +1,25 @@
-#include <vector>
-#include <algorithm>
-
 #include "screens.h"
 
 #include <cage-core/files.h>
 #include <cage-core/ini.h>
 #include <cage-core/enumerate.h>
 
+#include <vector>
+#include <algorithm>
+
 namespace
 {
-	struct scoreStruct
+	struct Score
 	{
 		uint32 score;
 		string date;
 	};
 
-	struct scoreComparatorStruct
+	struct ScoreComparator
 	{
 		int mode;
-		scoreComparatorStruct(int mode) : mode(mode) {}
-		const bool operator () (const scoreStruct &a, const scoreStruct &b) const
+		ScoreComparator(int mode) : mode(mode) {}
+		const bool operator () (const Score &a, const Score &b) const
 		{
 			switch (mode)
 			{
@@ -30,7 +30,7 @@ namespace
 		}
 	};
 
-	std::vector<scoreStruct> scores;
+	std::vector<Score> scores;
 
 	void buildGui(int mode);
 
@@ -50,7 +50,7 @@ namespace
 
 	void buildGui(int mode)
 	{
-		regenerateGui(guiConfig());
+		regenerateGui(GuiConfig());
 		EntityManager *ents = gui()->entities();
 		guiEvent.bind<&guiFunction>();
 		guiEvent.attach(gui()->widgetEvent);
@@ -88,7 +88,7 @@ namespace
 			}
 		}
 
-		std::sort(scores.begin(), scores.end(), scoreComparatorStruct(mode));
+		std::sort(scores.begin(), scores.end(), ScoreComparator(mode));
 		for (auto it : enumerate(scores))
 		{
 			{
@@ -129,7 +129,7 @@ void setScreenScores()
 		ini->load("score.ini");
 		for (uint32 i = 0, e = ini->sectionsCount(); i < e; i++)
 		{
-			scoreStruct s;
+			Score s;
 			s.score = ini->getUint32(stringizer() + i, "score");
 			s.date = ini->getString(stringizer() + i, "date");
 			scores.push_back(s);

@@ -118,12 +118,12 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineUpdateListener;
 		EventListener<void()> gameStartListener;
 	public:
-		callbacksClass() : engineUpdateListener("camera"), gameStartListener("camera")
+		Callbacks() : engineUpdateListener("camera"), gameStartListener("camera")
 		{
 			engineUpdateListener.attach(controlThread().update, 50);
 			engineUpdateListener.bind<&engineUpdate>();

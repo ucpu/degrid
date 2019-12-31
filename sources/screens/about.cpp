@@ -1,9 +1,9 @@
 #include "screens.h"
 #include <cage-core/enumerate.h>
 
-void setScreenCredits()
+void setScreenAbout()
 {
-	regenerateGui(guiConfig());
+	regenerateGui(GuiConfig());
 	EntityManager *ents = gui()->entities();
 
 	Entity *panel = ents->createUnique();

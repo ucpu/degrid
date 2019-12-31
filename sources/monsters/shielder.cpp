@@ -2,7 +2,7 @@
 
 namespace
 {
-	struct shielderComponent
+	struct ShielderComponent
 	{
 		static EntityComponent *component;
 		uint32 shieldEntity;
@@ -10,26 +10,26 @@ namespace
 		uint32 chargingSteps;
 		uint32 turningSteps;
 		uint32 stepsLeft;
-		shielderComponent() : chargingSteps(0), turningSteps(0), stepsLeft(0) {}
+		ShielderComponent() : chargingSteps(0), turningSteps(0), stepsLeft(0) {}
 	};
 
-	struct shieldComponent
+	struct ShieldComponent
 	{
 		static EntityComponent *component;
 		bool active;
-		shieldComponent() : active(false) {}
+		ShieldComponent() : active(false) {}
 	};
 
-	EntityComponent *shielderComponent::component;
-	EntityComponent *shieldComponent::component;
+	EntityComponent *ShielderComponent::component;
+	EntityComponent *ShieldComponent::component;
 
 	void updateShields()
 	{
 		// update shields transformations
-		for (Entity *e : shielderComponent::component->entities())
+		for (Entity *e : ShielderComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, et, e);
-			DEGRID_COMPONENT(shielder, es, e);
+			DEGRID_COMPONENT(Shielder, es, e);
 			Entity *s = entities()->get(es.shieldEntity);
 			CAGE_COMPONENT_ENGINE(Transform, st, s);
 			st = et;
@@ -38,7 +38,7 @@ namespace
 
 	void shielderEliminated(Entity *e)
 	{
-		DEGRID_COMPONENT(shielder, sh, e);
+		DEGRID_COMPONENT(Shielder, sh, e);
 		if (entities()->has(sh.shieldEntity))
 			entities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
@@ -47,10 +47,10 @@ namespace
 
 	void engineInit()
 	{
-		shielderComponent::component = entities()->defineComponent(shielderComponent(), true);
-		shieldComponent::component = entities()->defineComponent(shieldComponent(), true);
+		ShielderComponent::component = entities()->defineComponent(ShielderComponent(), true);
+		ShieldComponent::component = entities()->defineComponent(ShieldComponent(), true);
 		shielderEliminatedListener.bind<&shielderEliminated>();
-		shielderEliminatedListener.attach(shielderComponent::component->group()->entityRemoved);
+		shielderEliminatedListener.attach(ShielderComponent::component->group()->entityRemoved);
 	}
 
 	void engineUpdate()
@@ -60,14 +60,14 @@ namespace
 		if (game.paused)
 			return;
 
-		for (Entity *e : shielderComponent::component->entities())
+		for (Entity *e : ShielderComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(velocity, mv, e);
-			DEGRID_COMPONENT(monster, ms, e);
-			DEGRID_COMPONENT(shielder, sh, e);
+			DEGRID_COMPONENT(Velocity, mv, e);
+			DEGRID_COMPONENT(Monster, ms, e);
+			DEGRID_COMPONENT(Shielder, sh, e);
 			Entity *se = entities()->get(sh.shieldEntity);
-			DEGRID_COMPONENT(shield, sse, se);
+			DEGRID_COMPONENT(Shield, sse, se);
 
 			// update the monster
 			if (sse.active)
@@ -121,7 +121,7 @@ namespace
 			for (uint32 otherName : SpatialSearchQuery->result())
 			{
 				Entity *e = entities()->get(otherName);
-				if (!e->has(shotComponent::component))
+				if (!e->has(ShotComponent::component))
 					continue;
 				CAGE_COMPONENT_ENGINE(Transform, ot, e);
 				vec3 toShot = ot.position - tr.position;
@@ -135,13 +135,13 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener1;
 		EventListener<void()> engineUpdateListener2;
 	public:
-		callbacksClass()
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize);
 			engineInitListener.bind<&engineInit>();
@@ -159,13 +159,13 @@ void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 	Entity *shielder = initializeMonster(spawnPosition, color, 3, HashString("degrid/monster/shielder.object"), HashString("degrid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
 	Entity *shield = entities()->createUnique();
 	{
-		DEGRID_COMPONENT(shielder, sh, shielder);
+		DEGRID_COMPONENT(Shielder, sh, shielder);
 		sh.shieldEntity = shield->name();
 		sh.movementSpeed = 0.8 + 0.2 * monsterMutation(special);
 		sh.turningSteps = randomRange(20u, 30u);
 		sh.chargingSteps = randomRange(60u, 180u);
 		sh.stepsLeft = sh.turningSteps;
-		DEGRID_COMPONENT(monster, m, shielder);
+		DEGRID_COMPONENT(Monster, m, shielder);
 		m.dispersion = 0.2;
 		monsterReflectMutation(shielder, special);
 	}
@@ -173,7 +173,7 @@ void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 		CAGE_COMPONENT_ENGINE(Transform, transformShielder, shielder);
 		CAGE_COMPONENT_ENGINE(Transform, transform, shield);
 		transform = transformShielder;
-		DEGRID_COMPONENT(shield, sh, shield);
+		DEGRID_COMPONENT(Shield, sh, shield);
 		sh.active = false;
 	}
 }

@@ -2,18 +2,18 @@
 
 namespace
 {
-	struct bossEggComponent
+	struct BossEggComponent
 	{
 		static EntityComponent *component;
 		
 		uint32 countdown;
 		uint32 portal;
 		
-		bossEggComponent() : countdown(10), portal(0)
+		BossEggComponent() : countdown(10), portal(0)
 		{}
 	};
 
-	EntityComponent *bossEggComponent::component;
+	EntityComponent *BossEggComponent::component;
 
 	void hatchEgg(Entity *e)
 	{
@@ -41,7 +41,7 @@ namespace
 
 	void eggDestroyed(Entity *e)
 	{
-		DEGRID_COMPONENT(bossEgg, egg, e);
+		DEGRID_COMPONENT(BossEgg, egg, e);
 		if (entities()->has(egg.portal))
 			entities()->get(egg.portal)->destroy();
 	}
@@ -49,8 +49,8 @@ namespace
 	EventListener<void(Entity *e)> eggDestroyedListener;
 	void engineInit()
 	{
-		bossEggComponent::component = entities()->defineComponent(bossEggComponent(), true);
-		eggDestroyedListener.attach(bossEggComponent::component->group()->entityRemoved);
+		BossEggComponent::component = entities()->defineComponent(BossEggComponent(), true);
+		eggDestroyedListener.attach(BossEggComponent::component->group()->entityRemoved);
 		eggDestroyedListener.bind<&eggDestroyed>();
 	}
 
@@ -61,16 +61,16 @@ namespace
 		if (game.paused)
 			return;
 
-		if (statistics.updateIteration % 5 == 0 && bossEggComponent::component->group()->count() > 0)
+		if (statistics.updateIteration % 5 == 0 && BossEggComponent::component->group()->count() > 0)
 		{
-			if (monsterComponent::component->group()->count() == bossEggComponent::component->group()->count())
+			if (MonsterComponent::component->group()->count() == BossEggComponent::component->group()->count())
 			{
-				for (Entity *e : bossEggComponent::component->entities())
+				for (Entity *e : BossEggComponent::component->entities())
 				{
 					CAGE_COMPONENT_ENGINE(Transform, t, e);
 					if (length(game.monstersTarget - t.position) > 100)
 						continue;
-					DEGRID_COMPONENT(bossEgg, m, e);
+					DEGRID_COMPONENT(BossEgg, m, e);
 					if (m.countdown-- == 0)
 					{
 						e->add(entitiesToDestroy);
@@ -82,10 +82,10 @@ namespace
 				makeAnnouncement(HashString("announcement/incoming-boss"), HashString("announcement-desc/incoming-boss"), 5);
 		}
 
-		for (Entity *e : bossEggComponent::component->entities())
+		for (Entity *e : BossEggComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(velocity, mv, e);
+			DEGRID_COMPONENT(Velocity, mv, e);
 			vec3 v = game.monstersTarget - tr.position;
 			real l = length(v);
 			mv.velocity = normalize(v) * pow(max(l - 70, 0) * 0.03, 1.5);
@@ -94,46 +94,46 @@ namespace
 
 	void lateUpdate()
 	{
-		for (Entity *e : bossEggComponent::component->entities())
+		for (Entity *e : BossEggComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(bossEgg, egg, e);
+			DEGRID_COMPONENT(BossEgg, egg, e);
 			CAGE_COMPONENT_ENGINE(Transform, portal, entities()->get(egg.portal));
 			portal.position = tr.position;
 			portal.scale = tr.scale * 0.88;
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
-		EventListener<void()> EngineLateUpdateListener;
+		EventListener<void()> engineLateUpdateListener;
 	public:
-		callbacksClass()
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize);
 			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();
-			EngineLateUpdateListener.attach(controlThread().update, 42); // after physics
-			EngineLateUpdateListener.bind<&lateUpdate>();
+			engineLateUpdateListener.attach(controlThread().update, 42); // after physics
+			engineLateUpdateListener.bind<&lateUpdate>();
 		}
 	} callbacksInstance;
 }
 
 void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 {
-	CAGE_ASSERT(bossComponent::component->group()->count() == 0);
+	CAGE_ASSERT(BossComponent::component->group()->count() == 0);
 	if (game.defeatedBosses >= bossesTotalCount)
 		return;
 	Entity *e = initializeMonster(spawnPosition, color, 10, HashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
-	DEGRID_COMPONENT(bossEgg, eggc, e);
+	DEGRID_COMPONENT(BossEgg, eggc, e);
 	{
-		DEGRID_COMPONENT(boss, boss, e);
-		DEGRID_COMPONENT(rotation, rot, e);
+		DEGRID_COMPONENT(Boss, boss, e);
+		DEGRID_COMPONENT(Rotation, rot, e);
 		rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.03);
-		DEGRID_COMPONENT(gravity, grav, e);
+		DEGRID_COMPONENT(Gravity, grav, e);
 		grav.strength = -10;
 	}
 
@@ -148,7 +148,7 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 			#undef GCHL_GENERATE
 		};
 		r.object = portalNames[game.defeatedBosses + 1];
-		DEGRID_COMPONENT(rotation, rotp, p);
+		DEGRID_COMPONENT(Rotation, rotp, p);
 		rotp.rotation = interpolate(quat(), randomDirectionQuat(), 0.003);
 		CAGE_COMPONENT_ENGINE(Transform, t, p);
 		t.orientation = randomDirectionQuat();

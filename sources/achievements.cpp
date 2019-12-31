@@ -8,9 +8,9 @@
 
 #include <unordered_map>
 
-achievementsStruct achievements;
+Achievements achievements;
 
-achievementsStruct::achievementsStruct()
+Achievements::Achievements()
 {
 	detail::memset(this, 0, sizeof(*this));
 }
@@ -35,16 +35,16 @@ namespace std
 
 namespace
 {
-	struct achievementStruct
+	struct Achievement
 	{
 		string date;
 		bool boss;
 
-		achievementStruct() : boss(false)
+		Achievement() : boss(false)
 		{}
 	};
 
-	std::unordered_map<string, achievementStruct> data;
+	std::unordered_map<string, Achievement> data;
 }
 
 bool achievementFullfilled(const string &name, bool bossKill)
@@ -63,7 +63,7 @@ bool achievementFullfilled(const string &name, bool bossKill)
 		}
 	}
 
-	achievementStruct &a = data[name];
+	Achievement &a = data[name];
 	{ // date
 		uint32 y, M, d, h, m, s;
 		detail::getSystemDateTime(y, M, d, h, m, s);
@@ -108,7 +108,7 @@ namespace
 			}
 			for (const string &section : ini->sections())
 			{
-				achievementStruct &a = data[section];
+				Achievement &a = data[section];
 				a.date = ini->getString(section, "date");
 				a.boss = ini->getBool(section, "boss");
 			}
@@ -157,12 +157,12 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineFinishListener;
 	public:
-		callbacksClass() : engineInitListener("achievements"), engineFinishListener("achievements")
+		Callbacks() : engineInitListener("achievements"), engineFinishListener("achievements")
 		{
 			engineInitListener.attach(controlThread().initialize, -60);
 			engineInitListener.bind<&engineInit>();
@@ -174,7 +174,7 @@ namespace
 
 void setScreenAchievements()
 {
-	regenerateGui(guiConfig());
+	regenerateGui(GuiConfig());
 	EntityManager *ents = gui()->entities();
 
 	{

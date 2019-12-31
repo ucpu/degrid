@@ -17,9 +17,9 @@ void eventDecoy();
 
 Entity *getPrimaryCameraEntity();
 
-globalGameStruct game;
+GlobalGame game;
 
-globalGameStruct::globalGameStruct()
+GlobalGame::GlobalGame()
 {
 	detail::memset(this, 0, sizeof(*this));
 	cinematic = true;
@@ -178,7 +178,7 @@ namespace
 
 		if (game.cinematic)
 		{
-			uint32 cnt = monsterComponent::component->group()->count();
+			uint32 cnt = MonsterComponent::component->group()->count();
 			if (cnt == 0)
 			{
 				game.fireDirection = randomDirection3();
@@ -187,7 +187,7 @@ namespace
 			else
 			{
 				cnt = randomRange(0u, cnt);
-				for (Entity *e : monsterComponent::component->entities())
+				for (Entity *e : MonsterComponent::component->entities())
 				{
 					if (cnt-- == 0)
 					{
@@ -285,7 +285,7 @@ namespace
 
 		{
 			bool cinematic = game.cinematic;
-			game = globalGameStruct();
+			game = GlobalGame();
 			game.cinematic = cinematic;
 		}
 
@@ -298,7 +298,7 @@ namespace
 		{
 			game.life = 1000000;
 			game.money = 1000000;
-			for (uint32 i = 0; i < (uint32)powerupTypeEnum::Total; i++)
+			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
 				switch (powerupMode[i])
 				{
@@ -322,14 +322,14 @@ namespace
 		setScreenGameover();
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		callbacksClass() : engineInitListener("controls"), engineUpdateListener("controls"), gameStartListener("controls"), gameStopListener("controls")
+		Callbacks() : engineInitListener("controls"), engineUpdateListener("controls"), gameStartListener("controls"), gameStopListener("controls")
 		{
 			engineInitListener.attach(controlThread().initialize, -30);
 			engineInitListener.bind<&engineInit>();

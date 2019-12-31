@@ -14,13 +14,13 @@ namespace
 			return;
 
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
 
-		for (Entity *e : monsterComponent::component->entities())
+		for (Entity *e : MonsterComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, t, e);
-			DEGRID_COMPONENT(velocity, v, e);
-			DEGRID_COMPONENT(monster, m, e);
+			DEGRID_COMPONENT(Velocity, v, e);
+			DEGRID_COMPONENT(Monster, m, e);
 
 			// monster dispersion
 			if (m.dispersion > 0)
@@ -35,7 +35,7 @@ namespace
 					Entity *e = entities()->get(otherName);
 					CAGE_COMPONENT_ENGINE(Transform, ot, e);
 					vec3 toMonster = t.position - ot.position;
-					if (e->has(monsterComponent::component))
+					if (e->has(MonsterComponent::component))
 					{
 						real d = ot.scale + t.scale;
 						if (lengthSquared(toMonster) < d*d)
@@ -50,7 +50,7 @@ namespace
 			if (collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
 			{
 				vec3 enemyDir = normalize(t.position - playerTransform.position);
-				if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0 && m.damage < real::Infinity())
+				if (game.powerups[(uint32)PowerupTypeEnum::Shield] > 0 && m.damage < real::Infinity())
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
@@ -93,7 +93,7 @@ namespace
 			t.position[1] = m.groundLevel;
 		}
 
-		bool hasBoss = bossComponent::component->group()->count() > 0;
+		bool hasBoss = BossComponent::component->group()->count() > 0;
 		if (!game.cinematic)
 		{
 			// finished a boss fight
@@ -110,11 +110,11 @@ namespace
 		wasBoss = hasBoss;
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineUpdateListener;
 	public:
-		callbacksClass() : engineUpdateListener("monsters")
+		Callbacks() : engineUpdateListener("monsters")
 		{
 			engineUpdateListener.attach(controlThread().update, 1);
 			engineUpdateListener.bind<&engineUpdate>();
@@ -124,7 +124,7 @@ namespace
 
 real lifeDamage(real damage)
 {
-	uint32 armor = game.powerups[(uint32)powerupTypeEnum::Armor];
+	uint32 armor = game.powerups[(uint32)PowerupTypeEnum::Armor];
 	return damage / (armor * 0.5 + 1);
 }
 
@@ -158,7 +158,7 @@ Entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real sca
 	Entity *m = entities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, transform, m);
 	CAGE_COMPONENT_ENGINE(Render, render, m);
-	DEGRID_COMPONENT(monster, monster, m);
+	DEGRID_COMPONENT(Monster, monster, m);
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.position = spawnPosition;
 	transform.position[1] = monster.groundLevel = randomChance() * 2 - 1;
@@ -177,7 +177,7 @@ bool killMonster(Entity *e, bool allowCallback)
 		return false;
 	e->add(entitiesToDestroy);
 	monsterExplosion(e);
-	DEGRID_COMPONENT(monster, m, e);
+	DEGRID_COMPONENT(Monster, m, e);
 	m.life = 0;
 	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
 	if (m.defeatedSound)

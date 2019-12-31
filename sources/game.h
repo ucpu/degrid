@@ -31,7 +31,7 @@ vec3 colorVariation(const vec3 &color);
 EventDispatcher<bool()> &gameStartEvent();
 EventDispatcher<bool()> &gameStopEvent();
 
-enum class powerupTypeEnum
+enum class PowerupTypeEnum
 {
 	// collectibles
 	Bomb,
@@ -56,13 +56,13 @@ enum class powerupTypeEnum
 	Total
 };
 
-const uint32 powerupMode[(uint32)powerupTypeEnum::Total] = {
+const uint32 powerupMode[(uint32)PowerupTypeEnum::Total] = {
 	0, 0, 0,
 	1, 1, 1,
 	2, 2, 2, 2, 2, 2, 2, 2,
 	3
 };
-const real powerupChances[(uint32)powerupTypeEnum::Total] = {
+const real powerupChances[(uint32)PowerupTypeEnum::Total] = {
 	0.05 / 3, 0.05 / 3, 0.05 / 3,
 	0.05 / 3, 0.05 / 3, 0.05 / 3,
 	0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8,
@@ -85,16 +85,16 @@ extern EntityGroup *entitiesPhysicsEvenWhenPaused;
 extern Holder<SpatialData> SpatialSearchData;
 extern Holder<SpatialQuery> SpatialSearchQuery;
 
-struct achievementsStruct
+struct Achievements
 {
 	uint32 bosses;
 	uint32 acquired;
 
-	achievementsStruct();
+	Achievements();
 };
-extern achievementsStruct achievements;
+extern Achievements achievements;
 
-struct globalGameStruct
+struct GlobalGame
 {
 	// game state
 	bool cinematic;
@@ -114,7 +114,7 @@ struct globalGameStruct
 	real shootingCooldown;
 	vec3 shotsColor;
 	uint64 score;
-	uint32 powerups[(uint32)powerupTypeEnum::Total];
+	uint32 powerups[(uint32)PowerupTypeEnum::Total];
 	uint32 money;
 	real powerupSpawnChance;
 	vec3 monstersTarget;
@@ -123,11 +123,11 @@ struct globalGameStruct
 	vec3 moveDirection;
 	vec3 fireDirection;
 
-	globalGameStruct();
+	GlobalGame();
 };
-extern globalGameStruct game;
+extern GlobalGame game;
 
-struct globalStatisticsStruct
+struct GlobalStatistics
 {
 	uint64 timeStart;
 	uint64 timeRenderMin; // minimal render time [us]
@@ -176,60 +176,60 @@ struct globalStatisticsStruct
 	uint32 soundEffectsCurrent;
 	uint32 soundEffectsMax;
 
-	globalStatisticsStruct();
+	GlobalStatistics();
 };
-extern globalStatisticsStruct statistics;
+extern GlobalStatistics statistics;
 
 // components
 
-struct gravityComponent
+struct GravityComponent
 {
 	static EntityComponent *component;
 	real strength; // positive -> pull closer, negative -> push away
 };
 
-struct velocityComponent
+struct VelocityComponent
 {
 	static EntityComponent *component;
 	vec3 velocity;
 };
 
-struct rotationComponent
+struct RotationComponent
 {
 	static EntityComponent *component;
 	quat rotation;
 };
 
-struct timeoutComponent
+struct TimeoutComponent
 {
 	static EntityComponent *component;
 	uint32 ttl; // game updates (does not tick when paused)
-	timeoutComponent() : ttl(0) {}
+	TimeoutComponent() : ttl(0) {}
 };
 
-struct gridComponent
+struct GridComponent
 {
 	static EntityComponent *component;
 	vec3 place;
 	vec3 originalColor;
 };
 
-struct shotComponent
+struct ShotComponent
 {
 	static EntityComponent *component;
 	real damage;
 	bool homing;
-	shotComponent() : homing(false) {}
+	ShotComponent() : homing(false) {}
 };
 
-struct powerupComponent
+struct PowerupComponent
 {
 	static EntityComponent *component;
-	powerupTypeEnum type;
-	powerupComponent() : type(powerupTypeEnum::Total) {}
+	PowerupTypeEnum type;
+	PowerupComponent() : type(PowerupTypeEnum::Total) {}
 };
 
-struct monsterComponent
+struct MonsterComponent
 {
 	static EntityComponent *component;
 	real life;
@@ -238,10 +238,10 @@ struct monsterComponent
 	real dispersion;
 	uint32 defeatedSound;
 	Delegate<void(uint32)> defeatedCallback;
-	monsterComponent() : defeatedSound(0) {}
+	MonsterComponent() : defeatedSound(0) {}
 };
 
-struct bossComponent
+struct BossComponent
 {
 	static EntityComponent *component;
 };

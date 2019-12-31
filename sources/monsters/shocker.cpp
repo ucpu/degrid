@@ -2,18 +2,18 @@
 
 namespace
 {
-	struct shockerComponent
+	struct ShockerComponent
 	{
 		static EntityComponent *component;
 		real radius;
 		real speedFactor;
 	};
 
-	EntityComponent *shockerComponent::component;
+	EntityComponent *ShockerComponent::component;
 
 	void engineInit()
 	{
-		shockerComponent::component = entities()->defineComponent(shockerComponent(), true);
+		ShockerComponent::component = entities()->defineComponent(ShockerComponent(), true);
 	}
 
 	void lightning(const vec3 &a, const vec3 &b, const vec3 &color)
@@ -38,7 +38,7 @@ namespace
 		r.color = color;
 		CAGE_COMPONENT_ENGINE(TextureAnimation, anim, e);
 		anim.offset = randomChance();
-		DEGRID_COMPONENT(timeout, ttl, e);
+		DEGRID_COMPONENT(Timeout, ttl, e);
 		ttl.ttl = 3;
 		e->add(entitiesPhysicsEvenWhenPaused);
 		CAGE_COMPONENT_ENGINE(Light, light, e);
@@ -53,25 +53,25 @@ namespace
 
 		if (game.paused)
 		{
-			for (Entity *e : shockerComponent::component->entities())
+			for (Entity *e : ShockerComponent::component->entities())
 				e->remove(SoundComponent::component);
 			return;
 		}
 
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
 
-		for (Entity *e : shockerComponent::component->entities())
+		for (Entity *e : ShockerComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(shocker, sh, e);
+			DEGRID_COMPONENT(Shocker, sh, e);
 			vec3 v = tr.position - playerTransform.position;
 			real d = length(v);
 
 			// stay away from the player
 			if (d < sh.radius * 0.8 && d > 1e-7)
 			{
-				DEGRID_COMPONENT(velocity, mv, e);
+				DEGRID_COMPONENT(Velocity, mv, e);
 				mv.velocity += normalize(v) * 0.3;
 			}
 
@@ -96,12 +96,12 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 	public:
-		callbacksClass()
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize);
 			engineInitListener.bind<&engineInit>();
@@ -115,7 +115,7 @@ void spawnShocker(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
 	Entity *shocker = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/shocker/shocker.object"), HashString("degrid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
-	DEGRID_COMPONENT(shocker, sh, shocker);
+	DEGRID_COMPONENT(Shocker, sh, shocker);
 	sh.radius = randomRange(70, 80) + 10 * monsterMutation(special);
 	sh.speedFactor = 3.2 / (monsterMutation(special) + 4);
 	monsterReflectMutation(shocker, special);

@@ -63,7 +63,7 @@ void setScreenGameover()
 	}
 
 	{
-		guiConfig c;
+		GuiConfig c;
 		c.backButton = false;
 		regenerateGui(c);
 	}

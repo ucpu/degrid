@@ -2,15 +2,15 @@
 
 #include <cage-core/entities.h>
 
-EntityComponent *gravityComponent::component;
-EntityComponent *velocityComponent::component;
-EntityComponent *rotationComponent::component;
-EntityComponent *timeoutComponent::component;
-EntityComponent *gridComponent::component;
-EntityComponent *shotComponent::component;
-EntityComponent *powerupComponent::component;
-EntityComponent *monsterComponent::component;
-EntityComponent *bossComponent::component;
+EntityComponent *GravityComponent::component;
+EntityComponent *VelocityComponent::component;
+EntityComponent *RotationComponent::component;
+EntityComponent *TimeoutComponent::component;
+EntityComponent *GridComponent::component;
+EntityComponent *ShotComponent::component;
+EntityComponent *PowerupComponent::component;
+EntityComponent *MonsterComponent::component;
+EntityComponent *BossComponent::component;
 
 EventDispatcher<bool()> &gameStartEvent()
 {
@@ -28,22 +28,22 @@ namespace
 {
 	void engineInit()
 	{
-		gravityComponent::component = entities()->defineComponent(gravityComponent(), true);
-		velocityComponent::component = entities()->defineComponent(velocityComponent(), true);
-		rotationComponent::component = entities()->defineComponent(rotationComponent(), true);
-		timeoutComponent::component = entities()->defineComponent(timeoutComponent(), true);
-		gridComponent::component = entities()->defineComponent(gridComponent(), true);
-		shotComponent::component = entities()->defineComponent(shotComponent(), true);
-		powerupComponent::component = entities()->defineComponent(powerupComponent(), true);
-		monsterComponent::component = entities()->defineComponent(monsterComponent(), true);
-		bossComponent::component = entities()->defineComponent(bossComponent(), true);
+		GravityComponent::component = entities()->defineComponent(GravityComponent(), true);
+		VelocityComponent::component = entities()->defineComponent(VelocityComponent(), true);
+		RotationComponent::component = entities()->defineComponent(RotationComponent(), true);
+		TimeoutComponent::component = entities()->defineComponent(TimeoutComponent(), true);
+		GridComponent::component = entities()->defineComponent(GridComponent(), true);
+		ShotComponent::component = entities()->defineComponent(ShotComponent(), true);
+		PowerupComponent::component = entities()->defineComponent(PowerupComponent(), true);
+		MonsterComponent::component = entities()->defineComponent(MonsterComponent(), true);
+		BossComponent::component = entities()->defineComponent(BossComponent(), true);
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 	public:
-		callbacksClass() : engineInitListener("globals")
+		Callbacks() : engineInitListener("globals")
 		{
 			engineInitListener.attach(controlThread().initialize, -50);
 			engineInitListener.bind<&engineInit>();

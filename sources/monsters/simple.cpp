@@ -1,12 +1,12 @@
 #include "monsters.h"
 
-EntityComponent *simpleMonsterComponent::component;
+EntityComponent *SimpleMonsterComponent::component;
 
 namespace
 {
 	void engineInit()
 	{
-		simpleMonsterComponent::component = entities()->defineComponent(simpleMonsterComponent(), true);
+		SimpleMonsterComponent::component = entities()->defineComponent(SimpleMonsterComponent(), true);
 	}
 
 	void spawnSmallCube(uint32 originalEntity)
@@ -15,7 +15,7 @@ namespace
 		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		CAGE_COMPONENT_ENGINE(Render, r, e);
 		for (uint32 i = 0; i < 2; i++)
-			spawnSimple(monsterTypeFlags::SmallCube, t.position + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
+			spawnSimple(MonsterTypeFlags::SmallCube, t.position + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
 
 	void spawnSmallTriangle(uint32 originalEntity)
@@ -24,7 +24,7 @@ namespace
 		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		CAGE_COMPONENT_ENGINE(Render, r, e);
 		for (uint32 i = 0; i < 2; i++)
-			spawnSimple(monsterTypeFlags::SmallTriangle, t.position + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
+			spawnSimple(MonsterTypeFlags::SmallTriangle, t.position + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
 
 	void engineUpdate()
@@ -34,11 +34,11 @@ namespace
 		if (game.paused)
 			return;
 
-		for (Entity *e : simpleMonsterComponent::component->entities())
+		for (Entity *e : SimpleMonsterComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(velocity, mv, e);
-			DEGRID_COMPONENT(simpleMonster, sm, e);
+			DEGRID_COMPONENT(Velocity, mv, e);
+			DEGRID_COMPONENT(SimpleMonster, sm, e);
 
 			if (lengthSquared(mv.velocity) > sm.maxSpeed * sm.maxSpeed + 1e-4)
 				mv.velocity = normalize(mv.velocity) * max(sm.maxSpeed, length(mv.velocity) - sm.acceleration);
@@ -75,7 +75,7 @@ namespace
 
 						Entity *e = entities()->get(otherName);
 
-						if (!e->has(shotComponent::component))
+						if (!e->has(ShotComponent::component))
 							continue;
 
 						CAGE_COMPONENT_ENGINE(Transform, ot, e);
@@ -85,7 +85,7 @@ namespace
 						if (lengthSquared(toMonster) >= closestDistance * closestDistance)
 							continue;
 
-						DEGRID_COMPONENT(velocity, ov, e);
+						DEGRID_COMPONENT(Velocity, ov, e);
 
 						// test its direction
 						if (dot(normalize(toMonster), normalize(ov.velocity)) < 0)
@@ -101,7 +101,7 @@ namespace
 				{
 					Entity *s = entities()->get(closestShot);
 					CAGE_COMPONENT_ENGINE(Transform, ot, s);
-					DEGRID_COMPONENT(velocity, ov, s);
+					DEGRID_COMPONENT(Velocity, ov, s);
 					vec3 a = tr.position - ot.position;
 					vec3 b = normalize(ov.velocity);
 					vec3 avoid = normalize(a - dot(a, b) * b);
@@ -117,12 +117,12 @@ namespace
 		}
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 	public:
-		callbacksClass()
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize);
 			engineInitListener.bind<&engineInit>();
@@ -135,10 +135,10 @@ namespace
 Entity *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, real circling, real spiraling, const quat &animation)
 {
 	Entity *e = initializeMonster(spawnPosition, color, scale, objectName, deadSound, damage, life);
-	DEGRID_COMPONENT(velocity, v, e);
-	DEGRID_COMPONENT(monster, m, e);
-	DEGRID_COMPONENT(simpleMonster, s, e);
-	DEGRID_COMPONENT(rotation, rot, e);
+	DEGRID_COMPONENT(Velocity, v, e);
+	DEGRID_COMPONENT(Monster, m, e);
+	DEGRID_COMPONENT(SimpleMonster, s, e);
+	DEGRID_COMPONENT(Rotation, rot, e);
 	v.velocity = randomDirection3();
 	v.velocity[1] = 0;
 	m.dispersion = dispersion;
@@ -151,39 +151,39 @@ Entity *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scal
 	return e;
 }
 
-void spawnSimple(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color)
+void spawnSimple(MonsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color)
 {
 	Entity *e = nullptr;
 	uint32 special = 0;
 	switch (type)
 	{
-	case monsterTypeFlags::Circle:
+	case MonsterTypeFlags::Circle:
 		e = initializeSimple(spawnPosition, color, 2, HashString("degrid/monster/smallCircle.object"), HashString("degrid/monster/bum-circle.ogg"), 2, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 2, 0, 1, 0, 0.3, quat());
 		break;
-	case monsterTypeFlags::SmallTriangle:
+	case MonsterTypeFlags::SmallTriangle:
 		e = initializeSimple(spawnPosition, color, 2.5, HashString("degrid/monster/smallTriangle.object"), HashString("degrid/monster/bum-triangle.ogg"), 3, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, 0.8, 0.1, quat(degs(), randomAngle() / 50, degs()));
 		break;
-	case monsterTypeFlags::SmallCube:
+	case MonsterTypeFlags::SmallCube:
 		e = initializeSimple(spawnPosition, color, 2.5, HashString("degrid/monster/smallCube.object"), HashString("degrid/monster/bum-cube.ogg"), 3, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, 0, 0.3, interpolate(quat(), randomDirectionQuat(), 0.01));
 		break;
-	case monsterTypeFlags::LargeTriangle:
+	case MonsterTypeFlags::LargeTriangle:
 		e = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/largeTriangle.object"), HashString("degrid/monster/bum-triangle.ogg"), 4, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, 0.1, 0.4, quat(degs(), randomAngle() / 50, degs()));
 		{
-			DEGRID_COMPONENT(monster, m, e);
+			DEGRID_COMPONENT(Monster, m, e);
 			m.defeatedCallback.bind<&spawnSmallTriangle>();
 		}
 		break;
-	case monsterTypeFlags::LargeCube:
+	case MonsterTypeFlags::LargeCube:
 		e = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/largeCube.object"), HashString("degrid/monster/bum-cube.ogg"), 4, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, 0, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
 		{
-			DEGRID_COMPONENT(monster, m, e);
+			DEGRID_COMPONENT(Monster, m, e);
 			m.defeatedCallback.bind<&spawnSmallCube>();
 		}
 		break;
-	case monsterTypeFlags::PinWheel:
+	case MonsterTypeFlags::PinWheel:
 		e = initializeSimple(spawnPosition, color, 3.5, HashString("degrid/monster/pinWheel.object"), HashString("degrid/monster/bum-pinwheel.ogg"), 4, 1 + monsterMutation(special), 2 + 0.4 * monsterMutation(special), 50, 0, 0.005, 0, 0, quat(degs(), degs(20), degs()));
 		break;
-	case monsterTypeFlags::Diamond:
+	case MonsterTypeFlags::Diamond:
 		e = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/largeDiamond.object"), HashString("degrid/monster/bum-diamond.ogg"), 4, 1 + monsterMutation(special), 0.7 + 0.15 * monsterMutation(special), 1, 0.9, 0.2, 0, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
 		break;
 	default: CAGE_THROW_CRITICAL(Exception, "invalid monster type");

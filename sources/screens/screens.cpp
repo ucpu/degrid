@@ -197,10 +197,10 @@ namespace
 
 }
 
-guiConfig::guiConfig() : backButton(true), logo(true)
+GuiConfig::GuiConfig() : backButton(true), logo(true)
 {}
 
-void regenerateGui(const guiConfig &config)
+void regenerateGui(const GuiConfig &config)
 {
 	eraseGui();
 	generateLayout();

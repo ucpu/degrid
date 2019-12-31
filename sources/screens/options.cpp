@@ -179,7 +179,7 @@ namespace
 
 void setScreenOptions()
 {
-	regenerateGui(guiConfig());
+	regenerateGui(GuiConfig());
 	EntityManager *ents = gui()->entities();
 	guiEvent.bind<&guiFunction>();
 	guiEvent.attach(gui()->widgetEvent);

@@ -5,7 +5,7 @@
 #include <cage-core/hashString.h>
 #include <cage-core/spatial.h>
 
-enum class monsterTypeFlags
+enum class MonsterTypeFlags
 {
 	None = 0,
 	Circle = 1 << 0,
@@ -27,11 +27,11 @@ enum class monsterTypeFlags
 };
 namespace cage
 {
-	GCHL_ENUM_BITS(monsterTypeFlags);
+	GCHL_ENUM_BITS(MonsterTypeFlags);
 }
 
-void spawnGeneral(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color);
-void spawnSimple(monsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color);
+void spawnGeneral(MonsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color);
+void spawnSimple(MonsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color);
 void spawnSnake(const vec3 &spawnPosition, const vec3 &color);
 void spawnShielder(const vec3 &spawnPosition, const vec3 &color);
 void spawnShocker(const vec3 &spawnPosition, const vec3 &color);
@@ -46,7 +46,7 @@ Entity *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scal
 uint32 monsterMutation(uint32 &special);
 void monsterReflectMutation(Entity *e, uint32 special);
 
-struct simpleMonsterComponent
+struct SimpleMonsterComponent
 {
 	static EntityComponent *component;
 	real maxSpeed;

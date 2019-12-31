@@ -23,12 +23,12 @@ namespace
 		if (game.fireDirection == vec3())
 			return;
 
-		game.shootingCooldown += real(4) * pow(1.3, game.powerups[(uint32)powerupTypeEnum::Multishot]) * pow(0.7, game.powerups[(uint32)powerupTypeEnum::FiringSpeed]);
+		game.shootingCooldown += real(4) * pow(1.3, game.powerups[(uint32)PowerupTypeEnum::Multishot]) * pow(0.7, game.powerups[(uint32)PowerupTypeEnum::FiringSpeed]);
 
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
 
-		for (real i = game.powerups[(uint32)powerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)powerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
+		for (real i = game.powerups[(uint32)PowerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)PowerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 		{
 			statistics.shotsFired++;
 			Entity *shot = entities()->createUnique();
@@ -40,23 +40,23 @@ namespace
 			transform.orientation = quat(degs(), dir, degs());
 			CAGE_COMPONENT_ENGINE(Render, render, shot);
 			render.object = HashString("degrid/player/shot.object");
-			if (game.powerups[(uint32)powerupTypeEnum::SuperDamage] > 0)
+			if (game.powerups[(uint32)PowerupTypeEnum::SuperDamage] > 0)
 				render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
 			else
 				render.color = game.shotsColor;
-			DEGRID_COMPONENT(velocity, vel, shot);
-			vel.velocity = dirv * (game.powerups[(uint32)powerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
-			DEGRID_COMPONENT(shot, sh, shot);
-			sh.damage = game.powerups[(uint32)powerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)powerupTypeEnum::SuperDamage] ? 4 : 1);
-			sh.homing = game.powerups[(uint32)powerupTypeEnum::HomingShots] > 0;
-			DEGRID_COMPONENT(timeout, ttl, shot);
+			DEGRID_COMPONENT(Velocity, vel, shot);
+			vel.velocity = dirv * (game.powerups[(uint32)PowerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
+			DEGRID_COMPONENT(Shot, sh, shot);
+			sh.damage = game.powerups[(uint32)PowerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)PowerupTypeEnum::SuperDamage] ? 4 : 1);
+			sh.homing = game.powerups[(uint32)PowerupTypeEnum::HomingShots] > 0;
+			DEGRID_COMPONENT(Timeout, ttl, shot);
 			ttl.ttl = shotsTtl;
 		}
 	}
 
 	void shotsUpdate()
 	{
-		for (Entity *e : shotComponent::component->entities())
+		for (Entity *e : ShotComponent::component->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
@@ -66,8 +66,8 @@ namespace
 			real closestDistance = real::Infinity();
 			real homingDistance = real::Infinity();
 			uint32 myName = e->name();
-			DEGRID_COMPONENT(shot, sh, e);
-			DEGRID_COMPONENT(velocity, vl, e);
+			DEGRID_COMPONENT(Shot, sh, e);
+			DEGRID_COMPONENT(Velocity, vl, e);
 
 			SpatialSearchQuery->intersection(sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
 			for (uint32 otherName : SpatialSearchQuery->result())
@@ -78,21 +78,21 @@ namespace
 				Entity *e = entities()->get(otherName);
 				CAGE_COMPONENT_ENGINE(Transform, ot, e);
 				vec3 toOther = ot.position - tr.position;
-				if (e->has(gridComponent::component))
+				if (e->has(GridComponent::component))
 				{
-					DEGRID_COMPONENT(velocity, og, e);
+					DEGRID_COMPONENT(Velocity, og, e);
 					og.velocity += normalize(vl.velocity) * (0.2f / max(1, length(toOther)));
 					continue;
 				}
-				if (!e->has(monsterComponent::component))
+				if (!e->has(MonsterComponent::component))
 					continue;
-				DEGRID_COMPONENT(monster, om, e);
+				DEGRID_COMPONENT(Monster, om, e);
 				if (om.life <= 0)
 					continue;
 				real dist = length(toOther);
 				if (dist < closestDistance)
 				{
-					DEGRID_COMPONENT(velocity, ov, e);
+					DEGRID_COMPONENT(Velocity, ov, e);
 					if (collisionTest(tr.position, tr.scale, vl.velocity, ot.position, ot.scale, ov.velocity))
 					{
 						closestMonster = otherName;
@@ -110,7 +110,7 @@ namespace
 			{
 				statistics.shotsHit++;
 				Entity *m = entities()->get(closestMonster);
-				DEGRID_COMPONENT(monster, om, m);
+				DEGRID_COMPONENT(Monster, om, m);
 				real dmg = sh.damage;
 				sh.damage -= om.life;
 				om.life -= dmg;
@@ -177,12 +177,12 @@ namespace
 		game.shotsColor = game.cinematic ? colorHsvToRgb(vec3(randomChance(), 1, 1)) : vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineUpdateListener;
 		EventListener<void()> gameStartListener;
 	public:
-		callbacksClass() : engineUpdateListener("shots"), gameStartListener("shots")
+		Callbacks() : engineUpdateListener("shots"), gameStartListener("shots")
 		{
 			engineUpdateListener.attach(controlThread().update, -10);
 			engineUpdateListener.bind<&engineUpdate>();

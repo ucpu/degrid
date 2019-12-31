@@ -19,12 +19,12 @@ namespace
 			return;
 
 		CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
-		DEGRID_COMPONENT(velocity, vl, game.playerEntity);
+		DEGRID_COMPONENT(Velocity, vl, game.playerEntity);
 
 		if (game.moveDirection != vec3())
 		{
-			real maxSpeed = game.powerups[(uint32)powerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
-			vec3 change = normalize(game.moveDirection) * (game.powerups[(uint32)powerupTypeEnum::Acceleration] + 1) * 0.1;
+			real maxSpeed = game.powerups[(uint32)PowerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
+			vec3 change = normalize(game.moveDirection) * (game.powerups[(uint32)PowerupTypeEnum::Acceleration] + 1) * 0.1;
 			if (confControlMovement == 1 && dot(tr.orientation * vec3(0, 0, -1), normalize(vl.velocity + change)) < 1e-5)
 				vl.velocity = vec3();
 			else
@@ -40,9 +40,9 @@ namespace
 				transform.orientation = randomDirectionQuat();
 				CAGE_COMPONENT_ENGINE(Render, render, spark);
 				render.object = HashString("degrid/environment/spark.object");
-				DEGRID_COMPONENT(velocity, vel, spark);
+				DEGRID_COMPONENT(Velocity, vel, spark);
 				vel.velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
-				DEGRID_COMPONENT(timeout, ttl, spark);
+				DEGRID_COMPONENT(Timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
 				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
 				at.startTime = currentControlTime();
@@ -75,7 +75,7 @@ namespace
 		CAGE_COMPONENT_ENGINE(Transform, trs, game.shieldEntity);
 		trs.position = tr.position;
 		trs.scale = tr.scale;
-		if (game.powerups[(uint32)powerupTypeEnum::Shield] > 0)
+		if (game.powerups[(uint32)PowerupTypeEnum::Shield] > 0)
 		{
 			CAGE_COMPONENT_ENGINE(Render, render, game.shieldEntity);
 			render.object = HashString("degrid/player/shield.object");
@@ -169,7 +169,7 @@ namespace
 	void gameStop()
 	{
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(velocity, playerVelocity, game.playerEntity);
+		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
 		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, playerScale);
 		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;
@@ -177,14 +177,14 @@ namespace
 		game.shieldEntity = nullptr;
 	}
 
-	class callbacksClass
+	class Callbacks
 	{
 		EventListener<void()> engineUpdateListener1;
 		EventListener<void()> engineUpdateListener2;
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		callbacksClass() : engineUpdateListener1("ship1"), engineUpdateListener2("ship2"), gameStartListener("ship"), gameStopListener("ship")
+		Callbacks() : engineUpdateListener1("ship1"), engineUpdateListener2("ship2"), gameStartListener("ship"), gameStopListener("ship")
 		{
 			engineUpdateListener1.attach(controlThread().update, -20);
 			engineUpdateListener1.bind<&engineUpdate>();
