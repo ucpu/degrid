@@ -55,7 +55,7 @@ namespace
 
 	void alterVolume(real &current, real target)
 	{
-		real change = 0.7f / (1000000 / soundThread().timePerTick);
+		real change = 0.7f / (1000000 / controlThread().updatePeriod());
 		if (current > target + change)
 		{
 			current -= change;
@@ -94,7 +94,7 @@ namespace
 		SpatialSearchQuery->intersection(sphere(playerTransform.position, distMax));
 		for (uint32 otherName : SpatialSearchQuery->result())
 		{
-			Entity *e = entities()->get(otherName);
+			Entity *e = engineEntities()->get(otherName);
 			if (e->has(MonsterComponent::component))
 			{
 				CAGE_COMPONENT_ENGINE(Transform, p, e);
@@ -115,10 +115,10 @@ namespace
 		data->speechBus3->clear();
 		if (!data->speechName)
 			return;
-		if (!assets()->ready(data->speechName))
+		if (!engineAssets()->ready(data->speechName))
 			return;
-		SoundSource *src = assets()->get<assetSchemeIndexSoundSource, SoundSource>(data->speechName);
-		if (data->speechStart + src->getDuration() + 100000 < currentControlTime())
+		SoundSource *src = engineAssets()->get<assetSchemeIndexSoundSource, SoundSource>(data->speechName);
+		if (data->speechStart + src->getDuration() + 100000 < engineControlTime())
 		{
 			data->speechName = 0;
 			return;
@@ -139,7 +139,7 @@ namespace
 		static const uint32 suspenseName = HashString("degrid/music/fear-and-horror.ogg");
 		static const uint32 actionName = HashString("degrid/music/chaotic-filth.ogg");
 		static const uint32 endName = HashString("degrid/music/sad-song.ogg");
-#define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded) && assets()->state(CAGE_JOIN(NAME, Name)) == AssetStateEnum::Ready) { assets()->get<assetSchemeIndexSoundSource, SoundSource>(CAGE_JOIN(NAME, Name))->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
+#define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded) && engineAssets()->state(CAGE_JOIN(NAME, Name)) == AssetStateEnum::Ready) { engineAssets()->get<assetSchemeIndexSoundSource, SoundSource>(CAGE_JOIN(NAME, Name))->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
 
@@ -160,30 +160,30 @@ namespace
 	{
 		data = detail::systemArena().createObject<SoundData>();
 #define GCHL_GENERATE(NAME) \
-		data->CAGE_JOIN(NAME, Bus) = newMixingBus(sound()); \
-		data->CAGE_JOIN(NAME, Bus)->addOutput(musicMixer()); \
-		data->CAGE_JOIN(NAME, Volume) = newVolumeFilter(sound()); \
+		data->CAGE_JOIN(NAME, Bus) = newMixingBus(engineSound()); \
+		data->CAGE_JOIN(NAME, Bus)->addOutput(engineMusicMixer()); \
+		data->CAGE_JOIN(NAME, Volume) = newVolumeFilter(engineSound()); \
 		data->CAGE_JOIN(NAME, Volume)->filter->setBus(data->CAGE_JOIN(NAME, Bus).get()); \
 		data->CAGE_JOIN(NAME, Volume)->volume = 0;
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
 
-		data->musicVolume = newVolumeFilter(sound());
-		data->musicVolume->filter->setBus(musicMixer());
-		data->effectsVolume = newVolumeFilter(sound());
-		data->effectsVolume->filter->setBus(effectsMixer());
+		data->musicVolume = newVolumeFilter(engineSound());
+		data->musicVolume->filter->setBus(engineMusicMixer());
+		data->effectsVolume = newVolumeFilter(engineSound());
+		data->effectsVolume->filter->setBus(engineEffectsMixer());
 
-		data->speechBus1 = newMixingBus(sound());
-		data->speechBus1->addOutput(masterMixer());
-		data->speechVolume = newVolumeFilter(sound());
+		data->speechBus1 = newMixingBus(engineSound());
+		data->speechBus1->addOutput(engineMasterMixer());
+		data->speechVolume = newVolumeFilter(engineSound());
 		data->speechVolume->filter->setBus(data->speechBus1.get());
 		data->speechVolume->volume = 0;
-		data->speechFilter = newMixingFilter(sound());
+		data->speechFilter = newMixingFilter(engineSound());
 		data->speechFilter->setBus(data->speechBus1.get());
 		data->speechFilter->execute.bind<speechCallback>();
-		data->speechBus2 = newMixingBus(sound());
+		data->speechBus2 = newMixingBus(engineSound());
 		data->speechBus2->addOutput(data->speechBus1.get());
-		data->speechBus3 = newMixingBus(sound());
+		data->speechBus3 = newMixingBus(engineSound());
 	}
 
 	void engineUpdate()
@@ -193,7 +193,7 @@ namespace
 		soundUpdate();
 	}
 
-	void EngineFin()
+	void engineFin()
 	{
 		detail::systemArena().destroy<SoundData>(data);
 	}
@@ -236,18 +236,18 @@ namespace
 	{
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
-		EventListener<void()> EngineFinListener;
+		EventListener<void()> engineFinListener;
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		Callbacks() : engineInitListener("sounds"), engineUpdateListener("sounds"), EngineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
+		Callbacks() : engineInitListener("sounds"), engineUpdateListener("sounds"), engineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
 		{
 			engineInitListener.attach(controlThread().initialize, -55);
 			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update, -55);
 			engineUpdateListener.bind<&engineUpdate>();
-			EngineFinListener.attach(controlThread().finalize, -55);
-			EngineFinListener.bind<&EngineFin>();
+			engineFinListener.attach(controlThread().finalize, -55);
+			engineFinListener.bind<&engineFin>();
 			gameStartListener.attach(gameStartEvent(), -55);
 			gameStartListener.bind<&gameStart>();
 			gameStopListener.attach(gameStopEvent(), -55);
@@ -258,17 +258,17 @@ namespace
 
 void soundEffect(uint32 sound, const vec3 &position)
 {
-	if (!assets()->ready(sound))
+	if (!engineAssets()->ready(sound))
 		return;
-	SoundSource *src = assets()->get<assetSchemeIndexSoundSource, SoundSource>(sound);
-	Entity *e = entities()->createUnique();
+	SoundSource *src = engineAssets()->get<assetSchemeIndexSoundSource, SoundSource>(sound);
+	Entity *e = engineEntities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, t, e);
 	t.position = position;
 	CAGE_COMPONENT_ENGINE(Sound, s, e);
 	s.name = sound;
-	s.startTime = currentControlTime();
+	s.startTime = engineControlTime();
 	DEGRID_COMPONENT(Timeout, ttl, e);
-	ttl.ttl = numeric_cast<uint32>((src->getDuration() + 100000) / controlThread().timePerTick);
+	ttl.ttl = numeric_cast<uint32>((src->getDuration() + 100000) / controlThread().updatePeriod());
 	e->add(entitiesPhysicsEvenWhenPaused);
 }
 
@@ -277,7 +277,7 @@ void soundSpeech(uint32 sound)
 	if (data->speechName)
 		return;
 	data->speechName = sound;
-	data->speechStart = currentControlTime() + 10000;
+	data->speechStart = engineControlTime() + 10000;
 }
 
 void soundSpeech(uint32 sounds[])

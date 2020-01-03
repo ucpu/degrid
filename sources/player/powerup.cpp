@@ -37,7 +37,7 @@ namespace
 			for (uint32 i = 0; i < 6; i++)
 			{
 				statistics.shotsTurret++;
-				Entity *shot = entities()->createUnique();
+				Entity *shot = engineEntities()->createUnique();
 				CAGE_COMPONENT_ENGINE(Transform, transform, shot);
 				transform.orientation = quat(degs(), degs(i * 60), degs()) * tr.orientation;
 				transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
@@ -172,8 +172,8 @@ namespace
 
 	void engineInit()
 	{
-		TurretComponent::component = entities()->defineComponent(TurretComponent(), true);
-		DecoyComponent::component = entities()->defineComponent(DecoyComponent(), true);
+		TurretComponent::component = engineEntities()->defineComponent(TurretComponent(), true);
+		DecoyComponent::component = engineEntities()->defineComponent(DecoyComponent(), true);
 	}
 
 	void engineUpdate()
@@ -242,7 +242,7 @@ void powerupSpawn(const vec3 &position)
 	else
 		statistics.powerupsSpawned++;
 
-	Entity *e = entities()->createUnique();
+	Entity *e = engineEntities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, transform, e);
 	transform.position = position * vec3(1, 0, 1);
 	transform.orientation = randomDirectionQuat();
@@ -320,7 +320,7 @@ void eventTurret()
 		return;
 	game.powerups[(uint32)PowerupTypeEnum::Turret]--;
 	statistics.turretsPlaced++;
-	Entity *turret = entities()->createUnique();
+	Entity *turret = engineEntities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 	CAGE_COMPONENT_ENGINE(Transform, transform, turret);
 	DEGRID_COMPONENT(Velocity, vel, turret); // allow it to be affected by gravity
@@ -353,7 +353,7 @@ void eventDecoy()
 		return;
 	game.powerups[(uint32)PowerupTypeEnum::Decoy]--;
 	statistics.decoysUsed++;
-	Entity *decoy = entities()->createUnique();
+	Entity *decoy = engineEntities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 	CAGE_COMPONENT_ENGINE(Transform, transform, decoy);
 	transform = playerTransform;

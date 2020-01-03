@@ -46,7 +46,7 @@ namespace
 					CAGE_ASSERT(game.powerups[i] > 0);
 					game.powerups[i]--;
 					game.money += powerupSellPrice;
-					gui()->skipAllEventsUntilNextUpdate();
+					engineGui()->skipAllEventsUntilNextUpdate();
 					makeTheGui(3);
 					return true;
 				}
@@ -57,7 +57,7 @@ namespace
 					game.powerups[i]++;
 					game.money -= powerupBuyPriceBase * game.buyPriceMultiplier;
 					game.buyPriceMultiplier++;
-					gui()->skipAllEventsUntilNextUpdate();
+					engineGui()->skipAllEventsUntilNextUpdate();
 					makeTheGui(3);
 					return true;
 				}
@@ -86,7 +86,7 @@ namespace
 
 	void makeTheGuiPaused(uint32 openPanel)
 	{
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 
 		{
 			CAGE_COMPONENT_GUI(LayoutLine, ll, ents->get(15));
@@ -158,7 +158,7 @@ namespace
 
 			for (uint32 idx = 0; idx < game.defeatedBosses + 1; idx++)
 			{
-				Entity *label = gui()->entities()->createUnique();
+				Entity *label = engineGui()->entities()->createUnique();
 				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = panelName;
 				parent.order = idx;
@@ -376,7 +376,7 @@ namespace
 
 	void makeTheGuiPlaying()
 	{
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 
 		{
 			CAGE_COMPONENT_GUI(Scrollbars, sc, ents->get(12));
@@ -434,9 +434,9 @@ namespace
 			c.backButton = false;
 			regenerateGui(c);
 		}
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 		guiEvent.bind<&guiFunction>();
-		guiEvent.attach(gui()->widgetEvent);
+		guiEvent.attach(engineGui()->widgetEvent);
 
 		{ // base stats
 			Entity *table = ents->createUnique();
@@ -449,7 +449,7 @@ namespace
 			uint32 index = 1;
 
 			{ // life label
-				Entity *label = gui()->entities()->createUnique();
+				Entity *label = engineGui()->entities()->createUnique();
 				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
@@ -463,7 +463,7 @@ namespace
 			}
 
 			{ // life value
-				Entity *label = gui()->entities()->create(100);
+				Entity *label = engineGui()->entities()->create(100);
 				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
@@ -476,7 +476,7 @@ namespace
 			}
 
 			{ // money label
-				Entity *label = gui()->entities()->createUnique();
+				Entity *label = engineGui()->entities()->createUnique();
 				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
@@ -490,7 +490,7 @@ namespace
 			}
 
 			{ // money value
-				Entity *label = gui()->entities()->create(101);
+				Entity *label = engineGui()->entities()->create(101);
 				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
@@ -503,7 +503,7 @@ namespace
 			}
 
 			{ // score label
-				Entity *label = gui()->entities()->createUnique();
+				Entity *label = engineGui()->entities()->createUnique();
 				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
@@ -517,7 +517,7 @@ namespace
 			}
 
 			{ // score value
-				Entity *label = gui()->entities()->create(102);
+				Entity *label = engineGui()->entities()->create(102);
 				CAGE_COMPONENT_GUI(Parent, parent, label);
 				parent.parent = table->name();
 				parent.order = index++;
@@ -545,7 +545,7 @@ namespace
 				if (powerupMode[i] == 0)
 				{
 					{ // label
-						Entity *label = gui()->entities()->createUnique();
+						Entity *label = engineGui()->entities()->createUnique();
 						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
@@ -556,7 +556,7 @@ namespace
 					}
 
 					{ // value
-						Entity *label = gui()->entities()->create(200 + i);
+						Entity *label = engineGui()->entities()->create(200 + i);
 						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
@@ -584,7 +584,7 @@ namespace
 				if (powerupMode[i] == 1)
 				{
 					{ // label
-						Entity *label = gui()->entities()->createUnique();
+						Entity *label = engineGui()->entities()->createUnique();
 						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
@@ -595,7 +595,7 @@ namespace
 					}
 
 					{ // value
-						Entity *label = gui()->entities()->create(200 + i);
+						Entity *label = engineGui()->entities()->create(200 + i);
 						CAGE_COMPONENT_GUI(Parent, parent, label);
 						parent.parent = table->name();
 						parent.order = index++;
@@ -655,23 +655,23 @@ namespace
 		}
 
 		{ // life
-			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(100));
+			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(100));
 			txt.value = stringizer() + numeric_cast<uint32>(max(0, game.life));
 		}
 		{ // money
-			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(101));
+			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(101));
 			txt.value = stringizer() + game.money;
 		}
 		{ // score
-			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(102));
+			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(102));
 			txt.value = stringizer() + game.score;
 		}
 
 		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 		{
-			if (!gui()->entities()->has(200 + i))
+			if (!engineGui()->entities()->has(200 + i))
 				continue;
-			CAGE_COMPONENT_GUI(Text, txt, gui()->entities()->get(200 + i));
+			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(200 + i));
 			switch (powerupMode[i])
 			{
 			case 0: // collectibles

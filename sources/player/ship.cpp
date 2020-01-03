@@ -33,7 +33,7 @@ namespace
 				vl.velocity = normalize(vl.velocity) * maxSpeed;
 			if (lengthSquared(change) > 0.01)
 			{
-				Entity *spark = entities()->createAnonymous();
+				Entity *spark = engineEntities()->createAnonymous();
 				CAGE_COMPONENT_ENGINE(Transform, transform, spark);
 				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
@@ -45,7 +45,7 @@ namespace
 				DEGRID_COMPONENT(Timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
 				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
-				at.startTime = currentControlTime();
+				at.startTime = engineControlTime();
 				at.speed = 30.f / ttl.ttl;
 				spark->add(entitiesPhysicsEvenWhenPaused);
 			}
@@ -149,7 +149,7 @@ namespace
 		scorePreviousSound = 0;
 
 		{ // player ship Entity
-			game.playerEntity = entities()->createUnique();
+			game.playerEntity = engineEntities()->createUnique();
 			CAGE_COMPONENT_ENGINE(Transform, transform, game.playerEntity);
 			transform.scale = playerScale;
 			CAGE_COMPONENT_ENGINE(Render, render, game.playerEntity);
@@ -158,7 +158,7 @@ namespace
 		}
 
 		{ // player shield Entity
-			game.shieldEntity = entities()->createUnique();
+			game.shieldEntity = engineEntities()->createUnique();
 			CAGE_COMPONENT_ENGINE(Transform, transform, game.shieldEntity);
 			(void)transform;
 			CAGE_COMPONENT_ENGINE(TextureAnimation, aniTex, game.shieldEntity);

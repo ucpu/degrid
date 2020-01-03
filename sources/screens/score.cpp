@@ -51,9 +51,9 @@ namespace
 	void buildGui(int mode)
 	{
 		regenerateGui(GuiConfig());
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 		guiEvent.bind<&guiFunction>();
-		guiEvent.attach(gui()->widgetEvent);
+		guiEvent.attach(engineGui()->widgetEvent);
 
 		Entity *panel = ents->createUnique();
 		{

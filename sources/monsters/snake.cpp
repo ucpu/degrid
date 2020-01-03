@@ -21,8 +21,8 @@ namespace
 
 	void engineInit()
 	{
-		SnakeTailComponent::component = entities()->defineComponent(SnakeTailComponent(), true);
-		SnakeHeadComponent::component = entities()->defineComponent(SnakeHeadComponent(), true);
+		SnakeTailComponent::component = engineEntities()->defineComponent(SnakeTailComponent(), true);
+		SnakeHeadComponent::component = engineEntities()->defineComponent(SnakeHeadComponent(), true);
 	}
 
 	void snakeSideMove(vec3 &p, const quat &forward, uint32 index, real dist)
@@ -63,9 +63,9 @@ namespace
 			DEGRID_COMPONENT(SnakeTail, snake, e);
 
 			v.velocity = vec3();
-			if (snake.follow && entities()->has(snake.follow))
+			if (snake.follow && engineEntities()->has(snake.follow))
 			{
-				Entity *p = entities()->get(snake.follow);
+				Entity *p = engineEntities()->get(snake.follow);
 				CAGE_COMPONENT_ENGINE(Transform, trp, p);
 				vec3 toPrev = trp.position - tr.position;
 				real r = tr.scale * 2;
@@ -157,7 +157,7 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		snake.follow = prev;
 		prev = tail->name();
 		CAGE_COMPONENT_ENGINE(TextureAnimation, aniTex, tail);
-		aniTex.startTime = currentControlTime() + aniInitOff + i * 1000000;
+		aniTex.startTime = engineControlTime() + aniInitOff + i * 1000000;
 		DEGRID_COMPONENT(Monster, monster, tail);
 		monster.dispersion = 0.2;
 		CAGE_COMPONENT_ENGINE(Transform, transform, tail);

@@ -4,7 +4,7 @@
 void setScreenAbout()
 {
 	regenerateGui(GuiConfig());
-	EntityManager *ents = gui()->entities();
+	EntityManager *ents = engineGui()->entities();
 
 	Entity *panel = ents->createUnique();
 	{
@@ -24,7 +24,7 @@ void setScreenAbout()
 
 	for (auto it : enumerate(textNames))
 	{
-		Entity *label = gui()->entities()->createUnique();
+		Entity *label = engineGui()->entities()->createUnique();
 		CAGE_COMPONENT_GUI(Parent, parent, label);
 		parent.parent = panel->name();
 		parent.order = numeric_cast<sint32>(it.cnt);

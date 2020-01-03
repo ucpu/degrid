@@ -20,7 +20,7 @@ namespace
 {
 	void addOptionsMovementFiring(uint32 ctr)
 	{
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 		{
 			Entity *opt = ents->createUnique();
 			CAGE_COMPONENT_GUI(Parent, parent, opt);
@@ -70,7 +70,7 @@ namespace
 
 	void addOptionsPowers(uint32 ctr)
 	{
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 		{
 			Entity *opt = ents->createUnique();
 			CAGE_COMPONENT_GUI(Parent, parent, opt);
@@ -126,49 +126,49 @@ namespace
 		{
 		case 31:
 		{
-			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, engineGui()->entities()->get(en));
 			confControlMovement = control.selected;
 			return true;
 		}
 		case 32:
 		{
-			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, engineGui()->entities()->get(en));
 			confControlFiring = control.selected;
 			return true;
 		}
 		case 33:
 		{
-			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, engineGui()->entities()->get(en));
 			confControlBomb = control.selected;
 			return true;
 		}
 		case 34:
 		{
-			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, engineGui()->entities()->get(en));
 			confControlTurret = control.selected;
 			return true;
 		}
 		case 35:
 		{
-			CAGE_COMPONENT_GUI(ComboBox, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(ComboBox, control, engineGui()->entities()->get(en));
 			confControlDecoy = control.selected;
 			return true;
 		}
 		case 36:
 		{
-			CAGE_COMPONENT_GUI(SliderBar, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(SliderBar, control, engineGui()->entities()->get(en));
 			confVolumeMusic = control.value.value;
 			return true;
 		}
 		case 37:
 		{
-			CAGE_COMPONENT_GUI(SliderBar, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(SliderBar, control, engineGui()->entities()->get(en));
 			confVolumeEffects = control.value.value;
 			return true;
 		}
 		case 38:
 		{
-			CAGE_COMPONENT_GUI(SliderBar, control, gui()->entities()->get(en));
+			CAGE_COMPONENT_GUI(SliderBar, control, engineGui()->entities()->get(en));
 			confVolumeSpeech = control.value.value;
 			return true;
 		}
@@ -180,9 +180,9 @@ namespace
 void setScreenOptions()
 {
 	regenerateGui(GuiConfig());
-	EntityManager *ents = gui()->entities();
+	EntityManager *ents = engineGui()->entities();
 	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(gui()->widgetEvent);
+	guiEvent.attach(engineGui()->widgetEvent);
 
 	Entity *tabs = ents->createUnique();
 	{

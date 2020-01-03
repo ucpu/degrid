@@ -11,7 +11,7 @@ namespace
 
 	void engineInit()
 	{
-		RocketMonsterComponent::component = entities()->defineComponent(RocketMonsterComponent(), true);
+		RocketMonsterComponent::component = engineEntities()->defineComponent(RocketMonsterComponent(), true);
 	}
 
 	void engineUpdate()
@@ -32,7 +32,7 @@ namespace
 			{
 				tr.orientation = tr.orientation * quat(degs(), degs(), degs(3));
 
-				Entity *spark = entities()->createAnonymous();
+				Entity *spark = engineEntities()->createAnonymous();
 				CAGE_COMPONENT_ENGINE(Transform, transform, spark);
 				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + (tr.orientation * vec3(0, 0, 1.2) + randomDirection3() * 0.3) * tr.scale;
@@ -45,7 +45,7 @@ namespace
 				DEGRID_COMPONENT(Timeout, ttl, spark);
 				ttl.ttl = randomRange(10, 15);
 				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
-				at.startTime = currentControlTime();
+				at.startTime = engineControlTime();
 				at.speed = 30.f / ttl.ttl;
 				spark->add(entitiesPhysicsEvenWhenPaused);
 			}

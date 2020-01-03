@@ -67,10 +67,10 @@ void setScreenGameover()
 		c.backButton = false;
 		regenerateGui(c);
 	}
-	EntityManager *ents = gui()->entities();
+	EntityManager *ents = engineGui()->entities();
 	guiEvent.bind<&buttonContinue>();
-	guiEvent.attach(gui()->widgetEvent);
-	keyReleaseListener.attach(window()->events.keyRelease);
+	guiEvent.attach(engineGui()->widgetEvent);
+	keyReleaseListener.attach(engineWindow()->events.keyRelease);
 	keyReleaseListener.bind<&keyRelease>();
 
 	Entity *panel = ents->createUnique();

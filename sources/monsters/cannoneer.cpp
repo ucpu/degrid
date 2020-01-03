@@ -42,25 +42,25 @@ namespace
 	void bodyEliminated(Entity *e)
 	{
 		DEGRID_COMPONENT(Body, b, e);
-		if (entities()->has(b.shieldEntity))
-			entities()->get(b.shieldEntity)->add(entitiesToDestroy);
+		if (engineEntities()->has(b.shieldEntity))
+			engineEntities()->get(b.shieldEntity)->add(entitiesToDestroy);
 		for (uint32 it : b.bulbs)
 		{
-			if (entities()->has(it))
-				entities()->get(it)->add(entitiesToDestroy);
+			if (engineEntities()->has(it))
+				engineEntities()->get(it)->add(entitiesToDestroy);
 		}
 	}
 
 	void cannonEliminated(Entity *e)
 	{
 		DEGRID_COMPONENT(Cannon, c, e);
-		if (entities()->has(c.bodyEntity))
+		if (engineEntities()->has(c.bodyEntity))
 		{
-			Entity *body = entities()->get(c.bodyEntity);
+			Entity *body = engineEntities()->get(c.bodyEntity);
 			DEGRID_COMPONENT(Body, b, body);
-			if (entities()->has(b.bulbs[b.cannonsKilled]))
+			if (engineEntities()->has(b.bulbs[b.cannonsKilled]))
 			{
-				Entity *e = entities()->get(b.bulbs[b.cannonsKilled]);
+				Entity *e = engineEntities()->get(b.bulbs[b.cannonsKilled]);
 				CAGE_COMPONENT_ENGINE(Render, r, e);
 				r.color = vec3(r.color[1], r.color[0], r.color[2]);
 				CAGE_COMPONENT_ENGINE(Light, l, e);
@@ -73,9 +73,9 @@ namespace
 			{
 				DEGRID_COMPONENT(Monster, m, body);
 				m.life = min(m.life, 10);
-				if (entities()->has(b.shieldEntity))
+				if (engineEntities()->has(b.shieldEntity))
 				{
-					entities()->get(b.shieldEntity)->add(entitiesToDestroy);
+					engineEntities()->get(b.shieldEntity)->add(entitiesToDestroy);
 					b.shieldEntity = 0;
 				}
 			}
@@ -88,8 +88,8 @@ namespace
 
 	void engineInit()
 	{
-		BodyComponent::component = entities()->defineComponent(BodyComponent(), true);
-		CannonComponent::component = entities()->defineComponent(CannonComponent(), true);
+		BodyComponent::component = engineEntities()->defineComponent(BodyComponent(), true);
+		CannonComponent::component = engineEntities()->defineComponent(CannonComponent(), true);
 		bodyEliminatedListener.bind<&bodyEliminated>();
 		bodyEliminatedListener.attach(BodyComponent::component->group()->entityRemoved);
 		cannonEliminatedListener.bind<&cannonEliminated>();
@@ -103,7 +103,7 @@ namespace
 		if (game.paused)
 			return;
 
-		EntityManager *ents = entities();
+		EntityManager *ents = engineEntities();
 
 		for (Entity *e : BodyComponent::component->entities())
 		{
@@ -156,7 +156,7 @@ namespace
 		if (game.paused)
 			return;
 
-		EntityManager *ents = entities();
+		EntityManager *ents = engineEntities();
 
 		for (Entity *e : BodyComponent::component->entities())
 		{
@@ -256,7 +256,7 @@ void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 	{ // light bulbs
 		for (uint32 &it : b.bulbs)
 		{
-			Entity *e = entities()->createUnique();
+			Entity *e = engineEntities()->createUnique();
 			it = e->name();
 			CAGE_COMPONENT_ENGINE(Render, r, e);
 			r.object = HashString("degrid/boss/cannoneerBulb.object");

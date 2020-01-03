@@ -49,10 +49,10 @@ namespace
 		if (currentLanguageHash != loadedLanguageHash)
 		{
 			if (loadedLanguageHash)
-				assets()->remove(loadedLanguageHash);
+				engineAssets()->remove(loadedLanguageHash);
 			loadedLanguageHash = currentLanguageHash;
 			if (loadedLanguageHash)
-				assets()->add(loadedLanguageHash);
+				engineAssets()->add(loadedLanguageHash);
 		}
 	}
 
@@ -81,10 +81,10 @@ int main(int argc, const char *args[])
 	try
 	{
 		configSetBool("cage/config/autoSave", true);
-		controlThread().timePerTick = 1000000 / 30;
 		engineInitialize(EngineCreateConfig());
+		controlThread().updatePeriod(1000000 / 30);
 
-		listeners.attachAll(window(), 1000);
+		listeners.attachAll(engineWindow(), 1000);
 		listeners.windowClose.bind<&windowClose>();
 		listeners.keyRelease.bind<&keyRelease>();
 		EventListener<void()> assetsUpdateListener;
@@ -94,9 +94,9 @@ int main(int argc, const char *args[])
 		frameCounterListener.bind<&frameCounter>();
 		frameCounterListener.attach(graphicsPrepareThread().prepare);
 
-		window()->title("Degrid");
+		engineWindow()->title("Degrid");
 		reloadLanguage(confLanguage);
-		assets()->add(HashString("degrid/degrid.pack"));
+		engineAssets()->add(HashString("degrid/degrid.pack"));
 
 		{
 			Holder<FullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
@@ -107,9 +107,9 @@ int main(int argc, const char *args[])
 			engineStart();
 		}
 
-		assets()->remove(HashString("degrid/degrid.pack"));
+		engineAssets()->remove(HashString("degrid/degrid.pack"));
 		if (loadedLanguageHash)
-			assets()->remove(loadedLanguageHash);
+			engineAssets()->remove(loadedLanguageHash);
 
 		engineFinalize();
 		return 0;

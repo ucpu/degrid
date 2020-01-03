@@ -21,7 +21,7 @@ namespace
 
 	void engineInit()
 	{
-		SpawnerComponent::component = entities()->defineComponent(SpawnerComponent(), true);
+		SpawnerComponent::component = engineEntities()->defineComponent(SpawnerComponent(), true);
 	}
 
 	void engineUpdate()

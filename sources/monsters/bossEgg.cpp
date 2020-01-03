@@ -42,14 +42,14 @@ namespace
 	void eggDestroyed(Entity *e)
 	{
 		DEGRID_COMPONENT(BossEgg, egg, e);
-		if (entities()->has(egg.portal))
-			entities()->get(egg.portal)->destroy();
+		if (engineEntities()->has(egg.portal))
+			engineEntities()->get(egg.portal)->destroy();
 	}
 
 	EventListener<void(Entity *e)> eggDestroyedListener;
 	void engineInit()
 	{
-		BossEggComponent::component = entities()->defineComponent(BossEggComponent(), true);
+		BossEggComponent::component = engineEntities()->defineComponent(BossEggComponent(), true);
 		eggDestroyedListener.attach(BossEggComponent::component->group()->entityRemoved);
 		eggDestroyedListener.bind<&eggDestroyed>();
 	}
@@ -98,7 +98,7 @@ namespace
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(BossEgg, egg, e);
-			CAGE_COMPONENT_ENGINE(Transform, portal, entities()->get(egg.portal));
+			CAGE_COMPONENT_ENGINE(Transform, portal, engineEntities()->get(egg.portal));
 			portal.position = tr.position;
 			portal.scale = tr.scale * 0.88;
 		}
@@ -138,7 +138,7 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 	}
 
 	{ // portal
-		Entity *p = entities()->createUnique();
+		Entity *p = engineEntities()->createUnique();
 		eggc.portal = p->name();
 		CAGE_COMPONENT_ENGINE(Render, r, p);
 		static const uint32 portalNames[] = {

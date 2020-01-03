@@ -50,9 +50,9 @@ void setScreenMainmenu()
 		c.backButton = false;
 		regenerateGui(c);
 	}
-	EntityManager *ents = gui()->entities();
+	EntityManager *ents = engineGui()->entities();
 	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(gui()->widgetEvent);
+	guiEvent.attach(engineGui()->widgetEvent);
 
 	{ // main menu
 		{

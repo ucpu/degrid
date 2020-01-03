@@ -27,7 +27,7 @@ namespace
 
 	void engineInit()
 	{
-		SkyboxComponent::component = entities()->defineComponent(SkyboxComponent(), true);
+		SkyboxComponent::component = engineEntities()->defineComponent(SkyboxComponent(), true);
 		skyboxOrientation = randomDirectionQuat();
 		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
 	}
@@ -57,7 +57,7 @@ namespace
 			{ // hurt
 				if (statistics.updateIterationIgnorePause == statistics.monstersLastHit && !game.cinematic)
 				{
-					Entity *e = entities()->createUnique();
+					Entity *e = engineEntities()->createUnique();
 					CAGE_COMPONENT_ENGINE(Transform, t, e);
 					t.orientation = skyboxOrientation;
 					CAGE_COMPONENT_ENGINE(Render, r, e);
@@ -102,7 +102,7 @@ namespace
 			setSkybox(HashString("degrid/environment/skyboxes/skybox.obj;0"));
 
 		{ // the sun
-			Entity *light = entities()->createUnique();
+			Entity *light = engineEntities()->createUnique();
 			CAGE_COMPONENT_ENGINE(Transform, t, light);
 			t.orientation = quat(degs(-55), degs(70), degs());
 			CAGE_COMPONENT_ENGINE(Light, l, light);
@@ -123,7 +123,7 @@ namespace
 				const real d = length(vec3(x, 0, y));
 				if (d > radius || d < 1e-7)
 					continue;
-				Entity *e = entities()->createUnique();
+				Entity *e = engineEntities()->createUnique();
 				DEGRID_COMPONENT(Velocity, velocity, e);
 				velocity.velocity = randomDirection3();
 				DEGRID_COMPONENT(Grid, grid, e);
@@ -147,7 +147,7 @@ namespace
 #endif
 		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
 		{
-			Entity *e = entities()->createUnique();
+			Entity *e = engineEntities()->createUnique();
 			DEGRID_COMPONENT(Grid, grid, e);
 			CAGE_COMPONENT_ENGINE(Transform, transform, e);
 			transform.position = grid.place = vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
@@ -191,7 +191,7 @@ void setSkybox(uint32 objectName)
 	}
 
 	{ // create new sky-box
-		Entity *e = entities()->createUnique();
+		Entity *e = engineEntities()->createUnique();
 		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		t.position[2] = -1e-5; // semitransparent objects are rendered back-to-front; this makes the sky-box the furthest
 		CAGE_COMPONENT_ENGINE(Render, r, e);
@@ -210,9 +210,9 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	SpatialSearchQuery->intersection(sphere(position, size * 2));
 	for (uint32 otherName : SpatialSearchQuery->result())
 	{
-		if (!entities()->has(otherName))
+		if (!engineEntities()->has(otherName))
 			continue;
-		Entity *e = entities()->get(otherName);
+		Entity *e = engineEntities()->get(otherName);
 		if (!e->has(GridComponent::component))
 			continue;
 		CAGE_COMPONENT_ENGINE(Transform, ot, e);
@@ -233,7 +233,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	for (uint32 i = 0; i < cnt; i++)
 	{
 		real scale = randomChance();
-		Entity *e = entities()->createAnonymous();
+		Entity *e = engineEntities()->createAnonymous();
 		DEGRID_COMPONENT(Timeout, timeout, e);
 		timeout.ttl = randomRange(5, 25);
 		DEGRID_COMPONENT(Velocity, vel, e);
@@ -250,7 +250,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 
 	// create light
 	{
-		Entity *e = entities()->createAnonymous();
+		Entity *e = engineEntities()->createAnonymous();
 		DEGRID_COMPONENT(Timeout, timeout, e);
 		timeout.ttl = randomRange(5, 10);
 		DEGRID_COMPONENT(Velocity, vel, e);

@@ -25,7 +25,7 @@ namespace
 
 	void eraseGui()
 	{
-		Gui *guii = gui();
+		Gui *guii = engineGui();
 		guii->skipAllEventsUntilNextUpdate();
 		guii->setFocus(0);
 		guii->entities()->destroy();
@@ -87,7 +87,7 @@ namespace
 		// 14 - logo
 		// 15 - back button
 
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 
 		uint32 splits[4];
 
@@ -170,7 +170,7 @@ namespace
 
 	void generateLogo()
 	{
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 		Entity *logo = ents->createUnique();
 		CAGE_COMPONENT_GUI(Label, label, logo);
 		CAGE_COMPONENT_GUI(Image, image, logo);
@@ -181,7 +181,7 @@ namespace
 
 	void generateButtonBack()
 	{
-		EntityManager *ents = gui()->entities();
+		EntityManager *ents = engineGui()->entities();
 		Entity *but = ents->create(20);
 		CAGE_COMPONENT_GUI(Button, button, but);
 		CAGE_COMPONENT_GUI(Text, txt, but);
@@ -189,9 +189,9 @@ namespace
 		txt.textName = HashString("gui/mainmenu/back");
 		CAGE_COMPONENT_GUI(Parent, parent, but);
 		parent.parent = 15;
-		guiListener.attach(gui()->widgetEvent);
+		guiListener.attach(engineGui()->widgetEvent);
 		guiListener.bind<&buttonBack>();
-		keyReleaseListener.attach(window()->events.keyRelease);
+		keyReleaseListener.attach(engineWindow()->events.keyRelease);
 		keyReleaseListener.bind<&keyRelease>();
 	}
 

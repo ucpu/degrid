@@ -40,10 +40,10 @@ namespace
 
 	void setMousePosition()
 	{
-		if (!window()->isFocused())
+		if (!engineWindow()->isFocused())
 			return;
-		ivec2 point = window()->mousePosition();
-		ivec2 res = window()->resolution();
+		ivec2 point = engineWindow()->mousePosition();
+		ivec2 res = engineWindow()->resolution();
 		vec2 p = vec2(point.x, point.y);
 		p /= vec2(res.x, res.y);
 		p = p * 2 - 1;
@@ -146,15 +146,15 @@ namespace
 
 	void engineInit()
 	{
-		windowListeners.attachAll(window());
+		windowListeners.attachAll(engineWindow());
 		windowListeners.mousePress.bind<&mousePress>();
 		windowListeners.mouseRelease.bind<&mouseRelease>();
 		windowListeners.keyPress.bind<&keyPress>();
 		windowListeners.keyRelease.bind<&keyRelease>();
 
 		// process some Events before gui
-		windowListeners.mouseRelease.attach(window()->events.mouseRelease, -1);
-		windowListeners.keyRelease.attach(window()->events.keyRelease, -1);
+		windowListeners.mouseRelease.attach(engineWindow()->events.mouseRelease, -1);
+		windowListeners.keyRelease.attach(engineWindow()->events.keyRelease, -1);
 
 #ifdef DEGRID_TESTING
 		CAGE_LOG(SeverityEnum::Info, "degrid", string() + "TESTING GAME BUILD");
@@ -280,7 +280,7 @@ namespace
 			keyMap[i] = false;
 		buttonMap = MouseButtonsFlags::None;
 
-		for (Entity *e : entities()->group()->entities())
+		for (Entity *e : engineEntities()->group()->entities())
 			e->add(entitiesToDestroy);
 
 		{

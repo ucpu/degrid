@@ -28,15 +28,15 @@ namespace
 {
 	void engineInit()
 	{
-		GravityComponent::component = entities()->defineComponent(GravityComponent(), true);
-		VelocityComponent::component = entities()->defineComponent(VelocityComponent(), true);
-		RotationComponent::component = entities()->defineComponent(RotationComponent(), true);
-		TimeoutComponent::component = entities()->defineComponent(TimeoutComponent(), true);
-		GridComponent::component = entities()->defineComponent(GridComponent(), true);
-		ShotComponent::component = entities()->defineComponent(ShotComponent(), true);
-		PowerupComponent::component = entities()->defineComponent(PowerupComponent(), true);
-		MonsterComponent::component = entities()->defineComponent(MonsterComponent(), true);
-		BossComponent::component = entities()->defineComponent(BossComponent(), true);
+		GravityComponent::component = engineEntities()->defineComponent(GravityComponent(), true);
+		VelocityComponent::component = engineEntities()->defineComponent(VelocityComponent(), true);
+		RotationComponent::component = engineEntities()->defineComponent(RotationComponent(), true);
+		TimeoutComponent::component = engineEntities()->defineComponent(TimeoutComponent(), true);
+		GridComponent::component = engineEntities()->defineComponent(GridComponent(), true);
+		ShotComponent::component = engineEntities()->defineComponent(ShotComponent(), true);
+		PowerupComponent::component = engineEntities()->defineComponent(PowerupComponent(), true);
+		MonsterComponent::component = engineEntities()->defineComponent(MonsterComponent(), true);
+		BossComponent::component = engineEntities()->defineComponent(BossComponent(), true);
 	}
 
 	class Callbacks

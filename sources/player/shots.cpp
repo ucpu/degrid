@@ -31,7 +31,7 @@ namespace
 		for (real i = game.powerups[(uint32)PowerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)PowerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 		{
 			statistics.shotsFired++;
-			Entity *shot = entities()->createUnique();
+			Entity *shot = engineEntities()->createUnique();
 			CAGE_COMPONENT_ENGINE(Transform, transform, shot);
 			rads dir = atan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += degs(i * 10);
@@ -75,7 +75,7 @@ namespace
 				if (otherName == myName)
 					continue;
 
-				Entity *e = entities()->get(otherName);
+				Entity *e = engineEntities()->get(otherName);
 				CAGE_COMPONENT_ENGINE(Transform, ot, e);
 				vec3 toOther = ot.position - tr.position;
 				if (e->has(GridComponent::component))
@@ -109,7 +109,7 @@ namespace
 			if (closestMonster)
 			{
 				statistics.shotsHit++;
-				Entity *m = entities()->get(closestMonster);
+				Entity *m = engineEntities()->get(closestMonster);
 				DEGRID_COMPONENT(Monster, om, m);
 				real dmg = sh.damage;
 				sh.damage -= om.life;
@@ -142,7 +142,7 @@ namespace
 			{
 				if (homingMonster)
 				{
-					Entity *m = entities()->get(homingMonster);
+					Entity *m = engineEntities()->get(homingMonster);
 					CAGE_COMPONENT_ENGINE(Transform, mtr, m);
 					vec3 toOther = normalize(mtr.position - tr.position);
 					real spd = length(vl.velocity);

@@ -32,7 +32,7 @@ namespace
 				{
 					if (otherName == myName)
 						continue;
-					Entity *e = entities()->get(otherName);
+					Entity *e = engineEntities()->get(otherName);
 					CAGE_COMPONENT_ENGINE(Transform, ot, e);
 					vec3 toMonster = t.position - ot.position;
 					if (e->has(MonsterComponent::component))
@@ -155,7 +155,7 @@ void monsterReflectMutation(Entity *e, uint32 special)
 Entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
 {
 	statistics.monstersSpawned++;
-	Entity *m = entities()->createUnique();
+	Entity *m = engineEntities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, transform, m);
 	CAGE_COMPONENT_ENGINE(Render, render, m);
 	DEGRID_COMPONENT(Monster, monster, m);

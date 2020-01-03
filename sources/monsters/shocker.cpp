@@ -13,7 +13,7 @@ namespace
 
 	void engineInit()
 	{
-		ShockerComponent::component = entities()->defineComponent(ShockerComponent(), true);
+		ShockerComponent::component = engineEntities()->defineComponent(ShockerComponent(), true);
 	}
 
 	void lightning(const vec3 &a, const vec3 &b, const vec3 &color)
@@ -29,7 +29,7 @@ namespace
 			lightning(c, b, color);
 			return;
 		}
-		Entity *e = entities()->createUnique();
+		Entity *e = engineEntities()->createUnique();
 		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		t.position = c;
 		t.orientation = quat(v, vec3(0, 1, 0), true);

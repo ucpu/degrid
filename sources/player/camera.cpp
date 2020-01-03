@@ -79,7 +79,7 @@ namespace
 	void gameStart()
 	{
 		{
-			skyboxPrimaryCameraEntity = entities()->createUnique();
+			skyboxPrimaryCameraEntity = engineEntities()->createUnique();
 			CAGE_COMPONENT_ENGINE(Transform, transform, skyboxPrimaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
 			CAGE_COMPONENT_ENGINE(Camera, c, skyboxPrimaryCameraEntity);
@@ -91,7 +91,7 @@ namespace
 		}
 
 		{
-			primaryCameraEntity = entities()->createUnique();
+			primaryCameraEntity = engineEntities()->createUnique();
 			CAGE_COMPONENT_ENGINE(Transform, transform, primaryCameraEntity);
 			transform.orientation = quat(degs(-90), degs(), degs());
 			transform.position = vec3(0, cameraDistance, 0);
@@ -113,8 +113,8 @@ namespace
 		}
 
 		{
-			skyboxSecondaryCameraEntity = entities()->createUnique();
-			secondaryCameraEntity = entities()->createUnique();
+			skyboxSecondaryCameraEntity = engineEntities()->createUnique();
+			secondaryCameraEntity = engineEntities()->createUnique();
 		}
 	}
 

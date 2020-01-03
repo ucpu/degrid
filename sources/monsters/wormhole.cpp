@@ -71,7 +71,7 @@ namespace
 
 	void wormholeKilled(uint32 name)
 	{
-		Entity *w = entities()->get(name);
+		Entity *w = engineEntities()->get(name);
 		CAGE_COMPONENT_ENGINE(Transform, wt, w);
 		DEGRID_COMPONENT(Gravity, wg, w);
 
@@ -84,7 +84,7 @@ namespace
 		}
 
 		// create temporary opposite gravity effect
-		Entity *e = entities()->createUnique();
+		Entity *e = engineEntities()->createUnique();
 		CAGE_COMPONENT_ENGINE(Transform, et, e);
 		DEGRID_COMPONENT(Gravity, eg, e);
 		et.position = wt.position;
@@ -95,8 +95,8 @@ namespace
 
 	void engineInit()
 	{
-		WormholeComponent::component = entities()->defineComponent(WormholeComponent(), true);
-		MonsterFlickeringComponent::component = entities()->defineComponent(MonsterFlickeringComponent(), true);
+		WormholeComponent::component = engineEntities()->defineComponent(WormholeComponent(), true);
+		MonsterFlickeringComponent::component = engineEntities()->defineComponent(MonsterFlickeringComponent(), true);
 	}
 
 	void engineUpdate()
@@ -108,7 +108,7 @@ namespace
 			{
 				CAGE_COMPONENT_ENGINE(Render, r, e);
 				DEGRID_COMPONENT(MonsterFlickering, m, e);
-				real l = (real)currentControlTime() * m.flickeringFrequency + m.flickeringOffset;
+				real l = (real)engineControlTime() * m.flickeringFrequency + m.flickeringOffset;
 				real s = sin(rads::Full() * l) * 0.5 + 0.5;
 				r.color = colorHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
 			}
@@ -142,7 +142,7 @@ namespace
 				{
 					if (otherName == myName)
 						continue;
-					Entity *oe = entities()->get(otherName);
+					Entity *oe = engineEntities()->get(otherName);
 
 					// gravity irrelevant entities
 					if (!oe->has(VelocityComponent::component))

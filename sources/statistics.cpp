@@ -33,7 +33,7 @@ namespace
 		statistics.shotsMax = max(statistics.shotsMax, statistics.shotsCurrent);
 		statistics.monstersCurrent = MonsterComponent::component->group()->count();
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
-		statistics.entitiesCurrent = entities()->group()->count();
+		statistics.entitiesCurrent = engineEntities()->group()->count();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
 		statistics.timeRenderCurrent = engineProfilingValues(EngineProfilingStatsFlags::FrameTime, EngineProfilingModeEnum::Last);
 		if (statistics.updateIterationIgnorePause > 1000)

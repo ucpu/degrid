@@ -13,8 +13,8 @@ namespace
 {
 	void engineInit()
 	{
-		entitiesToDestroy = entities()->defineGroup();
-		entitiesPhysicsEvenWhenPaused = entities()->defineGroup();
+		entitiesToDestroy = engineEntities()->defineGroup();
+		entitiesPhysicsEvenWhenPaused = engineEntities()->defineGroup();
 		SpatialSearchData = newSpatialData(SpatialDataCreateConfig());
 		SpatialSearchQuery = newSpatialQuery(SpatialSearchData.get());
 	}

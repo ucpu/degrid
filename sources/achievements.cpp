@@ -175,7 +175,7 @@ namespace
 void setScreenAchievements()
 {
 	regenerateGui(GuiConfig());
-	EntityManager *ents = gui()->entities();
+	EntityManager *ents = engineGui()->entities();
 
 	{
 		CAGE_COMPONENT_GUI(LayoutLine, layout, ents->get(12));

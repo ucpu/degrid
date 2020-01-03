@@ -30,7 +30,7 @@ namespace
 		{
 			CAGE_COMPONENT_ENGINE(Transform, et, e);
 			DEGRID_COMPONENT(Shielder, es, e);
-			Entity *s = entities()->get(es.shieldEntity);
+			Entity *s = engineEntities()->get(es.shieldEntity);
 			CAGE_COMPONENT_ENGINE(Transform, st, s);
 			st = et;
 		}
@@ -39,16 +39,16 @@ namespace
 	void shielderEliminated(Entity *e)
 	{
 		DEGRID_COMPONENT(Shielder, sh, e);
-		if (entities()->has(sh.shieldEntity))
-			entities()->get(sh.shieldEntity)->add(entitiesToDestroy);
+		if (engineEntities()->has(sh.shieldEntity))
+			engineEntities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
 
 	EventListener<void(Entity*)> shielderEliminatedListener;
 
 	void engineInit()
 	{
-		ShielderComponent::component = entities()->defineComponent(ShielderComponent(), true);
-		ShieldComponent::component = entities()->defineComponent(ShieldComponent(), true);
+		ShielderComponent::component = engineEntities()->defineComponent(ShielderComponent(), true);
+		ShieldComponent::component = engineEntities()->defineComponent(ShieldComponent(), true);
 		shielderEliminatedListener.bind<&shielderEliminated>();
 		shielderEliminatedListener.attach(ShielderComponent::component->group()->entityRemoved);
 	}
@@ -66,7 +66,7 @@ namespace
 			DEGRID_COMPONENT(Velocity, mv, e);
 			DEGRID_COMPONENT(Monster, ms, e);
 			DEGRID_COMPONENT(Shielder, sh, e);
-			Entity *se = entities()->get(sh.shieldEntity);
+			Entity *se = engineEntities()->get(sh.shieldEntity);
 			DEGRID_COMPONENT(Shield, sse, se);
 
 			// update the monster
@@ -120,7 +120,7 @@ namespace
 			SpatialSearchQuery->intersection(sphere(tr.position + forward * (tr.scale + 1), 5));
 			for (uint32 otherName : SpatialSearchQuery->result())
 			{
-				Entity *e = entities()->get(otherName);
+				Entity *e = engineEntities()->get(otherName);
 				if (!e->has(ShotComponent::component))
 					continue;
 				CAGE_COMPONENT_ENGINE(Transform, ot, e);
@@ -157,7 +157,7 @@ void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
 	Entity *shielder = initializeMonster(spawnPosition, color, 3, HashString("degrid/monster/shielder.object"), HashString("degrid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
-	Entity *shield = entities()->createUnique();
+	Entity *shield = engineEntities()->createUnique();
 	{
 		DEGRID_COMPONENT(Shielder, sh, shielder);
 		sh.shieldEntity = shield->name();

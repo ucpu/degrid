@@ -6,12 +6,12 @@ namespace
 {
 	void engineInit()
 	{
-		SimpleMonsterComponent::component = entities()->defineComponent(SimpleMonsterComponent(), true);
+		SimpleMonsterComponent::component = engineEntities()->defineComponent(SimpleMonsterComponent(), true);
 	}
 
 	void spawnSmallCube(uint32 originalEntity)
 	{
-		Entity *e = entities()->get(originalEntity);
+		Entity *e = engineEntities()->get(originalEntity);
 		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		CAGE_COMPONENT_ENGINE(Render, r, e);
 		for (uint32 i = 0; i < 2; i++)
@@ -20,7 +20,7 @@ namespace
 
 	void spawnSmallTriangle(uint32 originalEntity)
 	{
-		Entity *e = entities()->get(originalEntity);
+		Entity *e = engineEntities()->get(originalEntity);
 		CAGE_COMPONENT_ENGINE(Transform, t, e);
 		CAGE_COMPONENT_ENGINE(Render, r, e);
 		for (uint32 i = 0; i < 2; i++)
@@ -57,7 +57,7 @@ namespace
 
 				// circling
 				{
-					rads ang = real(e->name() % 2) * rads::Full() * 0.5 + real(((e->name() / 2) % 30) / 30.0) * rads::Full() + rads(currentControlTime() * 1e-6);
+					rads ang = real(e->name() % 2) * rads::Full() * 0.5 + real(((e->name() / 2) % 30) / 30.0) * rads::Full() + rads(engineControlTime() * 1e-6);
 					vec3 dir = quat(degs(), ang, degs()) * vec3(0, 0, -1);
 					will = interpolate(will, dir, sm.circling);
 				}
@@ -73,7 +73,7 @@ namespace
 						if (otherName == myName)
 							continue;
 
-						Entity *e = entities()->get(otherName);
+						Entity *e = engineEntities()->get(otherName);
 
 						if (!e->has(ShotComponent::component))
 							continue;
@@ -99,7 +99,7 @@ namespace
 				// avoidance
 				if (closestShot)
 				{
-					Entity *s = entities()->get(closestShot);
+					Entity *s = engineEntities()->get(closestShot);
 					CAGE_COMPONENT_ENGINE(Transform, ot, s);
 					DEGRID_COMPONENT(Velocity, ov, s);
 					vec3 a = tr.position - ot.position;
