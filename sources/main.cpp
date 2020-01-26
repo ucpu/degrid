@@ -89,7 +89,7 @@ int main(int argc, const char *args[])
 		listeners.keyRelease.bind<&keyRelease>();
 		EventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
-		assetsUpdateListener.attach(controlThread().assets);
+		assetsUpdateListener.attach(controlThread().update);
 		EventListener<void()> frameCounterListener;
 		frameCounterListener.bind<&frameCounter>();
 		frameCounterListener.attach(graphicsPrepareThread().prepare);

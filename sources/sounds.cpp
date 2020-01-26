@@ -115,9 +115,9 @@ namespace
 		data->speechBus3->clear();
 		if (!data->speechName)
 			return;
-		if (!engineAssets()->ready(data->speechName))
+		Holder<SoundSource> src = engineAssets()->get<AssetSchemeIndexSoundSource, SoundSource>(data->speechName);
+		if (!src)
 			return;
-		SoundSource *src = engineAssets()->get<assetSchemeIndexSoundSource, SoundSource>(data->speechName);
 		if (data->speechStart + src->getDuration() + 100000 < engineControlTime())
 		{
 			data->speechName = 0;
@@ -139,7 +139,7 @@ namespace
 		static const uint32 suspenseName = HashString("degrid/music/fear-and-horror.ogg");
 		static const uint32 actionName = HashString("degrid/music/chaotic-filth.ogg");
 		static const uint32 endName = HashString("degrid/music/sad-song.ogg");
-#define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded) && engineAssets()->state(CAGE_JOIN(NAME, Name)) == AssetStateEnum::Ready) { engineAssets()->get<assetSchemeIndexSoundSource, SoundSource>(CAGE_JOIN(NAME, Name))->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
+#define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded)) { Holder<SoundSource> src = engineAssets()->get<AssetSchemeIndexSoundSource, SoundSource>(CAGE_JOIN(NAME, Name)); if (!src) return; src->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
 
@@ -258,9 +258,9 @@ namespace
 
 void soundEffect(uint32 sound, const vec3 &position)
 {
-	if (!engineAssets()->ready(sound))
+	Holder<SoundSource> src = engineAssets()->get<AssetSchemeIndexSoundSource, SoundSource>(sound);
+	if (!src)
 		return;
-	SoundSource *src = engineAssets()->get<assetSchemeIndexSoundSource, SoundSource>(sound);
 	Entity *e = engineEntities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, t, e);
 	t.position = position;
