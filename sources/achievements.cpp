@@ -5,6 +5,7 @@
 #include <cage-core/timer.h>
 #include <cage-core/ini.h>
 #include <cage-core/hashString.h>
+#include <cage-core/debug.h>
 
 #include <unordered_map>
 

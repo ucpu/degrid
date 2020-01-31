@@ -1,6 +1,7 @@
 #include "screens.h"
 #include "../game.h"
 #include <cage-core/enumerate.h>
+#include <cage-core/macros.h>
 
 #include <vector>
 #include <algorithm>

@@ -246,4 +246,4 @@ struct BossComponent
 	static EntityComponent *component;
 };
 
-#define DEGRID_COMPONENT(T, C, E) ::CAGE_JOIN(T, Component) &C = E->value<::CAGE_JOIN(T, Component)>(::CAGE_JOIN(T, Component)::component);
+#define DEGRID_COMPONENT(T, C, E) ::T##Component &C = E->value<::T##Component>(::T##Component::component);

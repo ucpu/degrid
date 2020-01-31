@@ -6,6 +6,7 @@
 #include <cage-core/assetManager.h>
 #include <cage-core/spatial.h>
 #include <cage-core/hashString.h>
+#include <cage-core/macros.h>
 
 #include <cage-engine/sound.h>
 

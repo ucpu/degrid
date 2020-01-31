@@ -1,3 +1,5 @@
+#include <cage-core/macros.h>
+
 #include "monsters.h"
 
 namespace

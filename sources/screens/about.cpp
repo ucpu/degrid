@@ -1,5 +1,6 @@
 #include "screens.h"
 #include <cage-core/enumerate.h>
+#include <cage-core/macros.h>
 
 void setScreenAbout()
 {

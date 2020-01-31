@@ -4,6 +4,7 @@
 #include <cage-core/entities.h>
 #include <cage-core/spatial.h>
 #include <cage-core/hashString.h>
+#include <cage-core/macros.h>
 
 #include <cage-engine/window.h>
 #include <cage-engine/engineProfiling.h>
