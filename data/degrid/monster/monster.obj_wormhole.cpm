@@ -1,10 +1,10 @@
 
 [base]
 mask = 0.5
-emission = 5
+emission = 2
 
 [mult]
-albedo = 0.01, 0.01, 0.01
+intensity = 0.2
 
 [textures]
 albedo = blackhole/baked$$$$.png

@@ -9,10 +9,8 @@ rocket.obj
 []
 scheme = mesh
 uvs = false
-
 bones = true
 material = spawner.cpm
-#axes = +x-z+y
 spawner.x
 
 []

@@ -262,7 +262,8 @@ void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color)
 			r.object = HashString("degrid/boss/cannoneerBulb.object");
 			r.color = vec3(0.022, 0.428, 0.025);
 			CAGE_COMPONENT_ENGINE(Light, l, e);
-			l.color = r.color * 50;
+			l.color = r.color;
+			l.intensity = 50;
 			l.lightType = LightTypeEnum::Point;
 			l.attenuation = vec3(1, 0, 1);
 		}

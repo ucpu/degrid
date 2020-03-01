@@ -107,7 +107,8 @@ namespace
 			t.orientation = quat(degs(-55), degs(70), degs());
 			CAGE_COMPONENT_ENGINE(Light, l, light);
 			l.lightType = LightTypeEnum::Directional;
-			l.color = vec3(3);
+			l.color = vec3(1);
+			l.intensity = 3;
 		}
 
 		const real radius = mapNoPullRadius * 1.5;
@@ -129,13 +130,13 @@ namespace
 				DEGRID_COMPONENT(Grid, grid, e);
 				grid.place = vec3(x, -2, y) + vec3(randomChance(), randomChance() * 0.1, randomChance()) * 2 - 1;
 				CAGE_COMPONENT_ENGINE(Transform, transform, e);
-				transform.scale = 0.6;
+				transform.scale = 0.7;
 				transform.position = grid.place + randomDirection3() * vec3(10, 0.1, 10);
 				CAGE_COMPONENT_ENGINE(Render, render, e);
 				render.object = HashString("degrid/environment/grid.object");
 				real ang = real(atan2(x, y)) / (real::Pi() * 2) + 0.5;
 				real dst = d / radius;
-				render.color = colorHsvToRgb(vec3(ang, 1, interpolate(real(0.5), real(0.2), sqr(dst))));
+				render.color = colorHsvToRgb(vec3(ang, 1, interpolate(real(0.6), real(0.4), sqr(dst))));
 				grid.originalColor = render.color;
 			}
 		}
@@ -263,7 +264,8 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		vec3 colorinv = colorRgbToHsv(color);
 		colorinv[0] = (colorinv[0] + 0.5) % 1;
 		colorinv = colorHsvToRgb(colorinv);
-		light.color = colorVariation(colorinv) * randomRange(2.0, 3.0);
+		light.color = colorVariation(colorinv);
+		light.intensity = randomRange(2.0, 3.0);
 		light.lightType = LightTypeEnum::Point;
 		light.attenuation = vec3(0, 0, 0.005);
 
@@ -294,5 +296,5 @@ vec3 colorVariation(const vec3 &color)
 	vec3 dev = randomChance3() * 0.1 - 0.05;
 	vec3 hsv = colorRgbToHsv(color) + dev;
 	hsv[0] = (hsv[0] + 1) % 1;
-	return colorHsvToRgb(clamp(hsv, vec3(0), vec3(1)));
+	return colorHsvToRgb(clamp(hsv, 0, 1));
 }

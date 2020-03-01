@@ -1,5 +1,5 @@
 
 [base]
 mask = 1
-roughness = 0.7
-metallic = 0.01
+roughness = 0.5
+metallic = 1

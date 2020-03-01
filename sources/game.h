@@ -165,14 +165,14 @@ struct GlobalStatistics
 	uint32 turretsPlaced;
 	uint32 decoysUsed;
 	uint32 entitiesCurrent;
-	uint32 entitiesMax; // maximum number of all entities at any sinle moment
+	uint32 entitiesMax; // maximum number of all entities at any single moment
 	uint32 environmentGridMarkers; // initial number of grid markers
 	uint32 environmentExplosions; // total number of explosions
 	uint32 keyPressed; // keyboard keys pressed
 	uint32 buttonPressed; // mouse buttons pressed
 	uint32 updateIterationIgnorePause; // number of game update ticks, does increment during pause
 	uint32 updateIteration; // number of game update ticks, does NOT increment during pause
-	uint32 frameIteration; // numer of rendered frames
+	uint32 frameIteration; // number of rendered frames
 	uint32 soundEffectsCurrent;
 	uint32 soundEffectsMax;
 

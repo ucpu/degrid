@@ -3,7 +3,7 @@
 emission = 1
 
 [mult]
-albedo = 0.3, 0.3, 0.3
+intensity = 0.6
 
 [textures]
 albedo = 3.png

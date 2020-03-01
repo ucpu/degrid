@@ -32,22 +32,25 @@ namespace
 			{
 				tr.orientation = tr.orientation * quat(degs(), degs(), degs(3));
 
-				Entity *spark = engineEntities()->createAnonymous();
-				CAGE_COMPONENT_ENGINE(Transform, transform, spark);
-				transform.scale = randomChance() * 0.2 + 0.3;
-				transform.position = tr.position + (tr.orientation * vec3(0, 0, 1.2) + randomDirection3() * 0.3) * tr.scale;
-				transform.orientation = randomDirectionQuat();
-				CAGE_COMPONENT_ENGINE(Render, render, spark);
-				render.object = HashString("degrid/environment/spark.object");
-				DEGRID_COMPONENT(Velocity, v, e);
-				DEGRID_COMPONENT(Velocity, vel, spark);
-				vel.velocity = (v.velocity + randomDirection3() * 0.05) * randomChance() * -0.5;
-				DEGRID_COMPONENT(Timeout, ttl, spark);
-				ttl.ttl = randomRange(10, 15);
-				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
-				at.startTime = engineControlTime();
-				at.speed = 30.f / ttl.ttl;
-				spark->add(entitiesPhysicsEvenWhenPaused);
+				if ((e->name() + statistics.updateIterationIgnorePause) % 3 == 0)
+				{
+					Entity *spark = engineEntities()->createAnonymous();
+					CAGE_COMPONENT_ENGINE(Transform, transform, spark);
+					transform.scale = randomChance() * 0.2 + 0.3;
+					transform.position = tr.position + (tr.orientation * vec3(0, 0, 1.2) + randomDirection3() * 0.3) * tr.scale;
+					transform.orientation = randomDirectionQuat();
+					CAGE_COMPONENT_ENGINE(Render, render, spark);
+					render.object = HashString("degrid/environment/spark.object");
+					DEGRID_COMPONENT(Velocity, v, e);
+					DEGRID_COMPONENT(Velocity, vel, spark);
+					vel.velocity = (v.velocity + randomDirection3() * 0.05) * randomChance() * -0.5;
+					DEGRID_COMPONENT(Timeout, ttl, spark);
+					ttl.ttl = randomRange(10, 15);
+					CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
+					at.startTime = engineControlTime();
+					at.speed = 30.f / ttl.ttl;
+					spark->add(entitiesPhysicsEvenWhenPaused);
+				}
 			}
 		}
 	}

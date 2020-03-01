@@ -42,7 +42,8 @@ namespace
 		ttl.ttl = 3;
 		e->add(entitiesPhysicsEvenWhenPaused);
 		CAGE_COMPONENT_ENGINE(Light, light, e);
-		light.color = colorVariation(color) * 10;
+		light.color = colorVariation(color);
+		light.intensity = 10;
 		light.lightType = LightTypeEnum::Point;
 		light.attenuation = vec3(0, 0, 0.01);
 	}

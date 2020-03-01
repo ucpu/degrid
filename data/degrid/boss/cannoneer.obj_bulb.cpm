@@ -1,7 +1,4 @@
 
 [base]
-#albedo = 0.022, 0.428, 0.025
-emission = 1
 mask = 1
-#roughness = 0.6
-#metallic = 0.05
+emission = 1

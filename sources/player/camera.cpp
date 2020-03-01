@@ -59,8 +59,8 @@ namespace
 					c.sceneMask = 1;
 					c.near = 3;
 					c.far = 500;
-					c.ambientLight = ambientLight;
-					c.ambientDirectionalLight = directionalLight;
+					c.ambientColor = ambientLight;
+					c.ambientDirectionalColor = directionalLight;
 					c.clear = CameraClearFlags::None;
 					c.camera.perspectiveFov = degs(60);
 					c.viewportOrigin = vec2(0.7, 0);
@@ -102,8 +102,8 @@ namespace
 			c.near = 150;
 			c.far = 1000;
 			c.camera.perspectiveFov = degs(40);
-			c.ambientLight = ambientLight;
-			c.ambientDirectionalLight = directionalLight;
+			c.ambientColor = ambientLight;
+			c.ambientDirectionalColor = directionalLight;
 			c.clear = CameraClearFlags::None;
 			c.effects = CameraEffectsFlags::CombinedPass & ~CameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);

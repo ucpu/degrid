@@ -1,5 +1,5 @@
 
 [base]
 albedo = 1,1,0
-roughness = 0.5
-metallic = 0.5
+roughness = 0.3
+metallic = 1

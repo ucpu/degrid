@@ -1,7 +1,7 @@
 
 [base]
-roughness = 0.1
-metallic = 0.9
+roughness = 0.4
+metallic = 1
 
 [textures]
 albedo = turret.png

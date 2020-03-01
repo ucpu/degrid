@@ -3,7 +3,7 @@
 emission = 1
 
 [mult]
-albedo = 1.5, 0.5, 0.5
+albedo = 1.0, 0.5, 0.5
 
 [textures]
 albedo = hurt.png

@@ -94,7 +94,7 @@ namespace
 void spawnSpawner(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
-	Entity *spawner = initializeMonster(spawnPosition, color, 4, HashString("degrid/monster/spawner.object"), HashString("degrid/monster/bum-spawner.ogg"), 10, 20 + 5 * monsterMutation(special));
+	Entity *spawner = initializeMonster(spawnPosition, color, 6, HashString("degrid/monster/spawner.object"), HashString("degrid/monster/bum-spawner.ogg"), 10, 20 + 5 * monsterMutation(special));
 	CAGE_COMPONENT_ENGINE(Transform, transform, spawner);
 	transform.orientation = randomDirectionQuat();
 	CAGE_COMPONENT_ENGINE(SkeletalAnimation, sa, spawner);
