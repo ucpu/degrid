@@ -82,7 +82,7 @@ const uint32 powerupBuyPriceBase = 50;
 
 extern EntityGroup *entitiesToDestroy;
 extern EntityGroup *entitiesPhysicsEvenWhenPaused;
-extern Holder<SpatialData> SpatialSearchData;
+extern Holder<SpatialStructure> SpatialSearchData;
 extern Holder<SpatialQuery> SpatialSearchQuery;
 
 struct Achievements

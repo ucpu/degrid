@@ -44,14 +44,14 @@ namespace
 			return;
 		ivec2 point = engineWindow()->mousePosition();
 		ivec2 res = engineWindow()->resolution();
-		vec2 p = vec2(point.x, point.y);
-		p /= vec2(res.x, res.y);
+		vec2 p = vec2(point[0], point[1]);
+		p /= vec2(res[0], res[1]);
 		p = p * 2 - 1;
 		real px = p[0], py = -p[1];
 		CAGE_COMPONENT_ENGINE(Transform, ts, getPrimaryCameraEntity());
 		CAGE_COMPONENT_ENGINE(Camera, cs, getPrimaryCameraEntity());
 		mat4 view = inverse(mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)));
-		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res.x) / real(res.y), cs.near, cs.far);
+		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res[0]) / real(res[1]), cs.near, cs.far);
 		mat4 inv = inverse(proj * view);
 		vec4 pn = inv * vec4(px, py, -1, 1);
 		vec4 pf = inv * vec4(px, py, 1, 1);
@@ -167,7 +167,7 @@ namespace
 	void engineUpdate()
 	{
 		OPTICK_EVENT("controls");
-		CAGE_ASSERT(!game.gameOver || game.paused, game.gameOver, game.paused, game.cinematic);
+		CAGE_ASSERT(!game.gameOver || game.paused);
 
 		if (game.paused)
 			return;

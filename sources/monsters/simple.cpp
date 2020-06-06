@@ -113,7 +113,7 @@ namespace
 					mv.velocity = normalize(mv.velocity) * sm.maxSpeed;
 			}
 
-			CAGE_ASSERT(mv.velocity.valid(), mv.velocity, tr.position, tr.orientation, tr.scale);
+			CAGE_ASSERT(mv.velocity.valid());
 		}
 	}
 

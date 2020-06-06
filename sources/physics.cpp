@@ -2,11 +2,11 @@
 
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
-#include <cage-core/spatial.h>
+#include <cage-core/spatialStructure.h>
 
 EntityGroup *entitiesToDestroy;
 EntityGroup *entitiesPhysicsEvenWhenPaused;
-Holder<SpatialData> SpatialSearchData;
+Holder<SpatialStructure> SpatialSearchData;
 Holder<SpatialQuery> SpatialSearchQuery;
 
 namespace
@@ -15,7 +15,7 @@ namespace
 	{
 		entitiesToDestroy = engineEntities()->defineGroup();
 		entitiesPhysicsEvenWhenPaused = engineEntities()->defineGroup();
-		SpatialSearchData = newSpatialData(SpatialDataCreateConfig());
+		SpatialSearchData = newSpatialStructure({});
 		SpatialSearchQuery = newSpatialQuery(SpatialSearchData.get());
 	}
 

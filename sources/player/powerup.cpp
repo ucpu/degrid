@@ -80,7 +80,7 @@ namespace
 		for (Entity *e : PowerupComponent::component->entities())
 		{
 			DEGRID_COMPONENT(Powerup, p, e);
-			CAGE_ASSERT(p.type < PowerupTypeEnum::Total, p.type);
+			CAGE_ASSERT(p.type < PowerupTypeEnum::Total);
 
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			if (!collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))

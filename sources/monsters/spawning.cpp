@@ -98,8 +98,8 @@ namespace
 			playerPosition = p.position;
 		}
 
-		CAGE_ASSERT(spawnCountMin <= spawnCountMax && spawnCountMin > 0, spawnCountMin, spawnCountMax);
-		CAGE_ASSERT(distanceMin <= distanceMax && distanceMin > 0, distanceMin, distanceMax);
+		CAGE_ASSERT(spawnCountMin <= spawnCountMax && spawnCountMin > 0);
+		CAGE_ASSERT(distanceMin <= distanceMax && distanceMin > 0);
 		std::vector<MonsterTypeFlags> allowed;
 		allowed.reserve(32);
 		{

@@ -4,7 +4,7 @@
 #include <cage-core/entities.h>
 #include <cage-core/assetManager.h>
 #include <cage-core/config.h>
-#include <cage-core/spatial.h>
+#include <cage-core/spatialStructure.h>
 #include <cage-core/hashString.h>
 #include <cage-core/color.h>
 
