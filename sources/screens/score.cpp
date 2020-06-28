@@ -126,7 +126,7 @@ void setScreenScores()
 	if ((pathType("score.ini") & PathTypeFlags::File) == PathTypeFlags::File)
 	{
 		Holder<Ini> ini = newIni();
-		ini->load("score.ini");
+		ini->importFile("score.ini");
 		for (uint32 i = 0, e = ini->sectionsCount(); i < e; i++)
 		{
 			Score s;

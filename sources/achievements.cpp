@@ -105,7 +105,7 @@ namespace
 			Holder<Ini> ini = newIni();
 			{
 				detail::OverrideBreakpoint ob;
-				ini->load("achievements.ini");
+				ini->importFile("achievements.ini");
 			}
 			for (const string &section : ini->sections())
 			{
@@ -148,7 +148,7 @@ namespace
 			}
 			try
 			{
-				ini->save("achievements.ini");
+				ini->exportFile("achievements.ini");
 			}
 			catch (...)
 			{
