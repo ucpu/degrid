@@ -8,8 +8,6 @@
 #include <cage-engine/fullscreenSwitcher.h>
 #include <cage-engine/highPerformanceGpuHint.h>
 
-#include <exception>
-
 ConfigUint32 confLanguage("degrid/language/language", 0);
 
 void reloadLanguage(uint32 index);
@@ -114,19 +112,9 @@ int main(int argc, const char *args[])
 		engineFinalize();
 		return 0;
 	}
-	catch (const cage::Exception &e)
-	{
-		CAGE_LOG(SeverityEnum::Note, "exception", e.message);
-		CAGE_LOG(SeverityEnum::Error, "degrid", "caught cage exception in main");
-	}
-	catch (const std::exception &e)
-	{
-		CAGE_LOG(SeverityEnum::Note, "exception", e.what());
-		CAGE_LOG(SeverityEnum::Error, "degrid", "caught std exception in main");
-	}
 	catch (...)
 	{
-		CAGE_LOG(SeverityEnum::Error, "degrid", "caught unknown exception in main");
+		detail::logCurrentCaughtException();
 	}
 	return 1;
 }
