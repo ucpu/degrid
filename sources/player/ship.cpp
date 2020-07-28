@@ -56,7 +56,7 @@ namespace
 		// pull to center
 		if (length(tr.position) > mapNoPullRadius)
 		{
-			vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - mapNoPullRadius) / mapNoPullRadius, 2);
+			vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - mapNoPullRadius) * 0.02, 2);
 			vl.velocity += pullToCenter;
 		}
 

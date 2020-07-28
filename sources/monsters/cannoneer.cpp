@@ -125,7 +125,7 @@ namespace
 			if (ents->has(cannon.bodyEntity))
 			{
 				DEGRID_COMPONENT(Monster, monster, e);
-				monster.life = min(monster.life + 0.01, 20);
+				monster.life = min(monster.life + 0.002, 20);
 				Entity *body = ents->get(cannon.bodyEntity);
 				cannon.extension += 0.01;
 				if (cannon.extension >= 1)

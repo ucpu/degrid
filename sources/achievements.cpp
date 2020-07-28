@@ -11,11 +11,6 @@
 
 Achievements achievements;
 
-Achievements::Achievements()
-{
-	detail::memset(this, 0, sizeof(*this));
-}
-
 EventDispatcher<bool(const string&)> &achievementAcquiredEvent()
 {
 	static EventDispatcher<bool(const string&)> inst;

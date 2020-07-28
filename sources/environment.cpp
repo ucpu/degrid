@@ -17,10 +17,7 @@ namespace
 	{
 		static EntityComponent *component;
 
-		bool dissipating;
-
-		SkyboxComponent() : dissipating(false)
-		{}
+		bool dissipating = false;
 	};
 
 	EntityComponent *SkyboxComponent::component;
@@ -59,7 +56,7 @@ namespace
 				{
 					Entity *e = engineEntities()->createUnique();
 					CAGE_COMPONENT_ENGINE(Transform, t, e);
-					t.orientation = skyboxOrientation;
+					t.orientation = randomDirectionQuat();
 					CAGE_COMPONENT_ENGINE(Render, r, e);
 					r.sceneMask = 2;
 					r.object = HashString("degrid/environment/skyboxes/skybox.obj;hurt");
@@ -91,7 +88,7 @@ namespace
 	{
 		for (Entity *e : SkyboxComponent::component->entities())
 		{
-			// prEvent the skyboxes to be destroyed so that they can dissipate properly
+			// prevent the skyboxes to be destroyed so that they can dissipate properly
 			DEGRID_COMPONENT(Skybox, s, e);
 			e->remove(entitiesToDestroy);
 		}
@@ -111,7 +108,7 @@ namespace
 			l.intensity = 3;
 		}
 
-		const real radius = mapNoPullRadius * 1.5;
+		const real radius = mapNoPullRadius + playerScale;
 #ifdef CAGE_DEBUG
 		const real step = 50;
 #else

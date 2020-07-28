@@ -18,6 +18,7 @@ namespace
 
 	VariableSmoothingBuffer<vec3, 16> playerPosSmoother;
 	VariableSmoothingBuffer<vec3, 16> cameraPosSmoother;
+	real cameraFovShakeAmplitude;
 
 	void engineUpdate()
 	{
@@ -25,6 +26,16 @@ namespace
 
 		if (game.gameOver)
 			return;
+
+		// fov (breathing effect)
+		cameraFovShakeAmplitude = interpolate(cameraFovShakeAmplitude, (real)BossComponent::component->group()->count(), 0.003);
+		rads fov = degs(40 + 0.5 * cage::sin(degs(engineControlTime() * 2.5e-4)) * clamp(cameraFovShakeAmplitude, 0, 1));
+		{
+			CAGE_COMPONENT_ENGINE(Camera, pc, primaryCameraEntity);
+			pc.camera.perspectiveFov = fov;
+			CAGE_COMPONENT_ENGINE(Camera, sc, skyboxPrimaryCameraEntity);
+			sc.camera.perspectiveFov = fov;
+		}
 
 		{ // camera
 			CAGE_COMPONENT_ENGINE(Transform, p, game.playerEntity);
@@ -35,6 +46,8 @@ namespace
 			cameraPosSmoother.add(ct);
 			c.position = cameraPosSmoother.smooth();
 			c.orientation = quat(playerPosSmoother.smooth() - c.position, vec3(0, 0, -1));
+			CAGE_COMPONENT_ENGINE(Transform, s, skyboxPrimaryCameraEntity);
+			s.orientation = c.orientation;
 		}
 
 		{ // secondaryCamera
@@ -50,7 +63,7 @@ namespace
 					c.sceneMask = 2;
 					c.near = 0.5;
 					c.far = 3;
-					c.camera.perspectiveFov = degs(60);
+					c.camera.perspectiveFov = fov * 1.5;
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
 				}
@@ -66,7 +79,7 @@ namespace
 					c.ambientColor = ambientLight;
 					c.ambientDirectionalColor = directionalLight;
 					c.clear = CameraClearFlags::None;
-					c.camera.perspectiveFov = degs(60);
+					c.camera.perspectiveFov = fov * 1.5;
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
 					c.effects = CameraEffectsFlags::CombinedPass & ~CameraEffectsFlags::AmbientOcclusion;
@@ -105,7 +118,7 @@ namespace
 			c.clear = CameraClearFlags::None;
 			c.effects = CameraEffectsFlags::CombinedPass & ~CameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);
-			static const float halfVolumeDistance = 30;
+			constexpr float halfVolumeDistance = 30;
 			ls.attenuation[1] = 2.0 / halfVolumeDistance;
 			ls.attenuation[0] = ls.attenuation[1] * cameraDistance * -1;
 		}

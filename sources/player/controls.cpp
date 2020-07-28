@@ -19,13 +19,6 @@ Entity *getPrimaryCameraEntity();
 
 GlobalGame game;
 
-GlobalGame::GlobalGame()
-{
-	detail::memset(this, 0, sizeof(*this));
-	cinematic = true;
-	buyPriceMultiplier = 1;
-}
-
 namespace
 {
 	bool keyMap[512];

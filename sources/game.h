@@ -68,17 +68,16 @@ const real powerupChances[(uint32)PowerupTypeEnum::Total] = {
 	0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8,
 	0.85
 };
-const char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
+constexpr char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 const real playerScale = 3;
-const real mapNoPullRadius = 200;
+const real mapNoPullRadius = 250;
 const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
-const uint32 shotsTtl = 300;
-//const real powerupIsCoin = 0.85;
-const uint32 bossesTotalCount = 5;
+constexpr uint32 shotsTtl = 300;
+constexpr uint32 bossesTotalCount = 5;
 const vec3 redPillColor = vec3(229, 101, 84) / 255;
 const vec3 bluePillColor = vec3(123, 198, 242) / 255;
-const uint32 powerupSellPrice = 5;
-const uint32 powerupBuyPriceBase = 50;
+constexpr uint32 powerupSellPrice = 5;
+constexpr uint32 powerupBuyPriceBase = 50;
 
 extern EntityGroup *entitiesToDestroy;
 extern EntityGroup *entitiesPhysicsEvenWhenPaused;
@@ -87,43 +86,39 @@ extern Holder<SpatialQuery> SpatialSearchQuery;
 
 struct Achievements
 {
-	uint32 bosses;
-	uint32 acquired;
-
-	Achievements();
+	uint32 bosses = 0;
+	uint32 acquired = 0;
 };
 extern Achievements achievements;
 
 struct GlobalGame
 {
 	// game state
-	bool cinematic;
-	bool paused;
-	bool gameOver;
-	bool jokeMap;
+	bool cinematic = true;
+	bool paused = false;
+	bool gameOver = false;
+	bool jokeMap = false;
 
-	uint32 defeatedBosses;
-	uint32 buyPriceMultiplier;
+	uint32 defeatedBosses = 0;
+	uint32 buyPriceMultiplier = 1;
 
 	// entities
-	Entity *playerEntity;
-	Entity *shieldEntity;
+	Entity *playerEntity = nullptr;
+	Entity *shieldEntity = nullptr;
 
 	// player
 	real life;
 	real shootingCooldown;
 	vec3 shotsColor;
-	uint64 score;
-	uint32 powerups[(uint32)PowerupTypeEnum::Total];
-	uint32 money;
+	uint64 score = 0;
+	uint32 powerups[(uint32)PowerupTypeEnum::Total] = {};
+	uint32 money = 0;
 	real powerupSpawnChance;
 	vec3 monstersTarget;
 
 	// ship controls (options dependent)
 	vec3 moveDirection;
 	vec3 fireDirection;
-
-	GlobalGame();
 };
 extern GlobalGame game;
 
@@ -203,8 +198,7 @@ struct RotationComponent
 struct TimeoutComponent
 {
 	static EntityComponent *component;
-	uint32 ttl; // game updates (does not tick when paused)
-	TimeoutComponent() : ttl(0) {}
+	uint32 ttl = 0; // game updates (does not tick when paused)
 };
 
 struct GridComponent
@@ -218,15 +212,13 @@ struct ShotComponent
 {
 	static EntityComponent *component;
 	real damage;
-	bool homing;
-	ShotComponent() : homing(false) {}
+	bool homing = false;
 };
 
 struct PowerupComponent
 {
 	static EntityComponent *component;
-	PowerupTypeEnum type;
-	PowerupComponent() : type(PowerupTypeEnum::Total) {}
+	PowerupTypeEnum type = PowerupTypeEnum::Total;
 };
 
 struct MonsterComponent
@@ -236,9 +228,8 @@ struct MonsterComponent
 	real damage;
 	real groundLevel;
 	real dispersion;
-	uint32 defeatedSound;
+	uint32 defeatedSound = 0;
 	Delegate<void(uint32)> defeatedCallback;
-	MonsterComponent() : defeatedSound(0) {}
 };
 
 struct BossComponent
