@@ -42,22 +42,22 @@ namespace
 		{
 			if (powerupMode[i] == 2)
 			{
-				if (en == 1000 + i * 4 + 2) // sell
-				{
-					CAGE_ASSERT(game.powerups[i] > 0);
-					game.powerups[i]--;
-					game.money += powerupSellPrice;
-					engineGui()->skipAllEventsUntilNextUpdate();
-					makeTheGui(3);
-					return true;
-				}
-				if (en == 1000 + i * 4 + 3) // buy
+				if (en == 1000 + i * 4 + 2) // buy
 				{
 					CAGE_ASSERT(canAddPermanentPowerup());
 					CAGE_ASSERT(game.money >= powerupBuyPriceBase * game.buyPriceMultiplier);
 					game.powerups[i]++;
 					game.money -= powerupBuyPriceBase * game.buyPriceMultiplier;
 					game.buyPriceMultiplier++;
+					engineGui()->skipAllEventsUntilNextUpdate();
+					makeTheGui(3);
+					return true;
+				}
+				if (en == 1000 + i * 4 + 3) // sell
+				{
+					CAGE_ASSERT(game.powerups[i] > 0);
+					game.powerups[i]--;
+					game.money += powerupSellPrice;
 					engineGui()->skipAllEventsUntilNextUpdate();
 					makeTheGui(3);
 					return true;
@@ -290,26 +290,55 @@ namespace
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
 					text.textName = HashString("gui/paused/count");
 				}
-				{ // sell
+				{ // buy
 					Entity *e = ents->createUnique();
 					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = panelName;
 					parent.order = -8;
+				}
+				{ // sell
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
+					parent.parent = panelName;
+					parent.order = -7;
+				}
+			}
+
+			{ // footer
+				{ // label
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
+					parent.parent = panelName;
+					parent.order = 1000;
+					CAGE_COMPONENT_GUI(Label, but, e);
 					CAGE_COMPONENT_GUI(Text, text, e);
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
-					text.textName = HashString("gui/paused/sell");
-					CAGE_COMPONENT_GUI(Label, but, e);
-					CAGE_COMPONENT_GUI(TextFormat, tf, e);
-					tf.align = TextAlignEnum::Center;
+					text.textName = HashString("gui/paused/prices");
+				}
+				{ // empty
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
+					parent.parent = panelName;
+					parent.order = 1001;
 				}
 				{ // buy
 					Entity *e = ents->createUnique();
 					CAGE_COMPONENT_GUI(Parent, parent, e);
 					parent.parent = panelName;
-					parent.order = -7;
+					parent.order = 1002;
 					CAGE_COMPONENT_GUI(Text, text, e);
-					text.assetName = HashString("degrid/languages/internationalized.textpack");
-					text.textName = HashString("gui/paused/buy");
+					text.value = stringizer() + (powerupBuyPriceBase * game.buyPriceMultiplier);
+					CAGE_COMPONENT_GUI(Label, but, e);
+					CAGE_COMPONENT_GUI(TextFormat, tf, e);
+					tf.align = TextAlignEnum::Center;
+				}
+				{ // sell
+					Entity *e = ents->createUnique();
+					CAGE_COMPONENT_GUI(Parent, parent, e);
+					parent.parent = panelName;
+					parent.order = 1003;
+					CAGE_COMPONENT_GUI(Text, text, e);
+					text.value = stringizer() + powerupSellPrice;
 					CAGE_COMPONENT_GUI(Label, but, e);
 					CAGE_COMPONENT_GUI(TextFormat, tf, e);
 					tf.align = TextAlignEnum::Center;
@@ -342,29 +371,31 @@ namespace
 						CAGE_COMPONENT_GUI(TextFormat, format, e);
 						format.align = TextAlignEnum::Center;
 					}
-					{ // sell
+					{ // buy
 						Entity *e = ents->create(1000 + i * 4 + 2);
 						CAGE_COMPONENT_GUI(Parent, parent, e);
 						parent.parent = panelName;
 						parent.order = i * 4 + 2;
 						CAGE_COMPONENT_GUI(Text, text, e);
-						text.value = stringizer() + powerupSellPrice;
+						text.assetName = HashString("degrid/languages/internationalized.textpack");
+						text.textName = HashString("gui/paused/buy");
 						CAGE_COMPONENT_GUI(Button, but, e);
-						if (game.powerups[i] == 0)
+						if (!anyBuy || game.money < powerupBuyPriceBase * game.buyPriceMultiplier)
 						{
 							CAGE_COMPONENT_GUI(WidgetState, ws, e);
 							ws.disabled = true;
 						}
 					}
-					{ // buy
+					{ // sell
 						Entity *e = ents->create(1000 + i * 4 + 3);
 						CAGE_COMPONENT_GUI(Parent, parent, e);
 						parent.parent = panelName;
 						parent.order = i * 4 + 3;
 						CAGE_COMPONENT_GUI(Text, text, e);
-						text.value = stringizer() + (powerupBuyPriceBase * game.buyPriceMultiplier);
+						text.assetName = HashString("degrid/languages/internationalized.textpack");
+						text.textName = HashString("gui/paused/sell");
 						CAGE_COMPONENT_GUI(Button, but, e);
-						if (!anyBuy || game.money < powerupBuyPriceBase * game.buyPriceMultiplier)
+						if (game.powerups[i] == 0)
 						{
 							CAGE_COMPONENT_GUI(WidgetState, ws, e);
 							ws.disabled = true;

@@ -73,6 +73,7 @@ market = Vesmírný Trh
 sell = Prodat
 buy = Koupit
 count = Aktivní
+prices = Cena:
 permanentLimit = Powerupy: {0} / {1}
 
 [gui/gameover]

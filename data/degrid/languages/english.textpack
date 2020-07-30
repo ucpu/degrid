@@ -73,6 +73,7 @@ market = Space Market
 sell = Sell
 buy = Buy
 count = Active
+prices = Price:
 permanentLimit = Powerups: {0} / {1}
 
 [gui/gameover]
