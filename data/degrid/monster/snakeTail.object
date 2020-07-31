@@ -4,3 +4,4 @@ speed = 0.4
 
 []
 monster.obj?snakeTail
+../player/player.obj?shield

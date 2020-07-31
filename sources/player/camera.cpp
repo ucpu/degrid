@@ -12,8 +12,8 @@ namespace
 	Entity *secondaryCameraEntity;
 	Entity *skyboxSecondaryCameraEntity;
 
-	const vec3 ambientLight = vec3(0.1);
-	const vec3 directionalLight = vec3(1);
+	const real ambientLight = 0.3;
+	const real directionalLight = 0;
 	const real cameraDistance = 220;
 
 	VariableSmoothingBuffer<vec3, 16> playerPosSmoother;
@@ -76,8 +76,9 @@ namespace
 					c.sceneMask = 1;
 					c.near = 3;
 					c.far = 500;
-					c.ambientColor = ambientLight;
-					c.ambientDirectionalColor = directionalLight;
+					c.ambientColor = c.ambientDirectionalColor = vec3(1);
+					c.ambientIntensity = ambientLight;
+					c.ambientDirectionalIntensity = directionalLight;
 					c.clear = CameraClearFlags::None;
 					c.camera.perspectiveFov = fov * 1.5;
 					c.viewportOrigin = vec2(0.7, 0);
@@ -113,8 +114,9 @@ namespace
 			c.near = 150;
 			c.far = 1000;
 			c.camera.perspectiveFov = degs(40);
-			c.ambientColor = ambientLight;
-			c.ambientDirectionalColor = directionalLight;
+			c.ambientColor = c.ambientDirectionalColor = vec3(1);
+			c.ambientIntensity = ambientLight;
+			c.ambientDirectionalIntensity = directionalLight;
 			c.clear = CameraClearFlags::None;
 			c.effects = CameraEffectsFlags::CombinedPass & ~CameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);

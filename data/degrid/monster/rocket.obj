@@ -1,6 +1,5 @@
 # Blender v2.79 (sub 0) OBJ File: 'monster2.blend'
 # www.blender.org
-mtllib rocket.mtl
 o rocket
 v 0.000000 0.000000 1.298228
 v 0.000000 -0.000000 -1.031925

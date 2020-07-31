@@ -1,11 +1,11 @@
 
 [base]
-albedo = 0.2, 0.2, 0.3
+albedo = 0.2, 0.2, 0.5
 roughness = 0.4
-metallic = 0
+metallic = 0.3
 
 [mult]
-intensity = 0.1
+intensity = 0.25
 
 [textures]
 albedo = shield/baked$$$$.png
