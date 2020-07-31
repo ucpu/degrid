@@ -3,6 +3,7 @@
 
 #include <cage-core/config.h>
 #include <cage-core/camera.h>
+#include <cage-core/geometry.h>
 
 extern ConfigUint32 confControlMovement;
 extern ConfigUint32 confControlFiring;
@@ -35,6 +36,7 @@ namespace
 	{
 		if (!engineWindow()->isFocused())
 			return;
+
 		ivec2 point = engineWindow()->mousePosition();
 		ivec2 res = engineWindow()->resolution();
 		vec2 p = vec2(point[0], point[1]);
@@ -50,7 +52,20 @@ namespace
 		vec4 pf = inv * vec4(px, py, 1, 1);
 		vec3 near = vec3(pn) / pn[3];
 		vec3 far = vec3(pf) / pf[3];
-		mouseCurrentPosition = (near + far) * 0.5;
+		mouseCurrentPosition = intersection(makeLine(near, far), plane(vec3(), vec3(0, 1, 0)));
+
+		if (false)
+		{
+			// debug visualization of the mouse position
+			Entity *e = engineEntities()->createAnonymous();
+			CAGE_COMPONENT_ENGINE(Transform, t, e);
+			t.position = mouseCurrentPosition;
+			t.scale = 3;
+			CAGE_COMPONENT_ENGINE(Render, r, e);
+			r.object = HashString("cage/mesh/sphere.obj");
+			DEGRID_COMPONENT(Timeout, tt, e);
+			tt.ttl = 1;
+		}
 	}
 
 	void eventAction(uint32 option)
@@ -88,11 +103,11 @@ namespace
 		if (game.paused)
 			return false;
 
-		if ((buttons & MouseButtonsFlags::Left) == MouseButtonsFlags::Left)
+		if (any(buttons & MouseButtonsFlags::Left))
 			eventAction(0);
-		if ((buttons & MouseButtonsFlags::Right) == MouseButtonsFlags::Right)
+		if (any(buttons & MouseButtonsFlags::Right))
 			eventAction(1);
-		if ((buttons & MouseButtonsFlags::Middle) == MouseButtonsFlags::Middle)
+		if (any(buttons & MouseButtonsFlags::Middle))
 			eventAction(2);
 
 		return false;
@@ -173,10 +188,7 @@ namespace
 		{
 			uint32 cnt = MonsterComponent::component->group()->count();
 			if (cnt == 0)
-			{
 				game.fireDirection = randomDirection3();
-				game.fireDirection[1] = 0;
-			}
 			else
 			{
 				cnt = randomRange(0u, cnt);
@@ -187,19 +199,20 @@ namespace
 						CAGE_COMPONENT_ENGINE(Transform, p, game.playerEntity);
 						CAGE_COMPONENT_ENGINE(Transform, t, e);
 						game.fireDirection = t.position - p.position;
-						game.fireDirection[1] = 0;
-						return;
+						break;
 					}
 				}
 			}
+			game.fireDirection[1] = 0;
+			game.fireDirection = normalize(game.fireDirection);
 			return;
 		}
 
 		{
 			setMousePosition();
-			if ((buttonMap & MouseButtonsFlags::Left) == MouseButtonsFlags::Left)
+			if (any(buttonMap & MouseButtonsFlags::Left))
 				mouseLeftPosition = mouseCurrentPosition;
-			if ((buttonMap & MouseButtonsFlags::Right) == MouseButtonsFlags::Right)
+			if (any(buttonMap & MouseButtonsFlags::Right))
 				mouseRightPosition = mouseCurrentPosition;
 		}
 
@@ -212,8 +225,11 @@ namespace
 				arrowsDirection += vec3(-1, 0, 0);
 			if (keyMap[68] || keyMap[262]) // d, right
 				arrowsDirection += vec3(1, 0, 0);
+			if (arrowsDirection != vec3())
+				arrowsDirection = normalize(arrowsDirection);
 		}
 
+		constexpr float MouseMultilpier = 0.05f;
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 
 		switch (confControlMovement)
@@ -222,26 +238,23 @@ namespace
 			game.moveDirection = arrowsDirection;
 			break;
 		case 1: // arrows (relative)
-		{
-			CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
-			game.moveDirection = tr.orientation * arrowsDirection;
-		} break;
+			game.moveDirection = playerTransform.orientation * arrowsDirection;
+			break;
 		case 2: // lmb
-			game.moveDirection = mouseLeftPosition - playerTransform.position;
-			if (lengthSquared(game.moveDirection) < 100)
-				game.moveDirection = vec3();
+			game.moveDirection = (mouseLeftPosition - playerTransform.position) * MouseMultilpier;
 			break;
 		case 3: // rmb
-			game.moveDirection = mouseRightPosition - playerTransform.position;
-			if (lengthSquared(game.moveDirection) < 100)
-				game.moveDirection = vec3();
+			game.moveDirection = (mouseRightPosition - playerTransform.position) * MouseMultilpier;
 			break;
 		case 4: // cursor position
-			game.moveDirection = mouseCurrentPosition - playerTransform.position;
-			if (lengthSquared(game.moveDirection) < 100)
-				game.moveDirection = vec3();
+			game.moveDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultilpier;
 			break;
 		}
+		game.moveDirection[1] = 0;
+		if (lengthSquared(game.moveDirection) > sqr(0.9))
+			game.moveDirection = normalize(game.moveDirection);
+		else
+			game.moveDirection = vec3();
 
 		switch (confControlFiring)
 		{
@@ -249,20 +262,23 @@ namespace
 			game.fireDirection = arrowsDirection;
 			break;
 		case 1: // arrows (relative)
-		{
-			CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
-			game.fireDirection = tr.orientation * arrowsDirection;
-		} break;
+			game.fireDirection = playerTransform.orientation * arrowsDirection;
+			break;
 		case 2: // lmb
-			game.fireDirection = mouseLeftPosition - playerTransform.position;
+			game.fireDirection = (mouseLeftPosition - playerTransform.position) * MouseMultilpier;
 			break;
 		case 3: // rmb
-			game.fireDirection = mouseRightPosition - playerTransform.position;
+			game.fireDirection = (mouseRightPosition - playerTransform.position) * MouseMultilpier;
 			break;
 		case 4: // cursor position
-			game.fireDirection = mouseCurrentPosition - playerTransform.position;
+			game.fireDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultilpier;
 			break;
 		}
+		game.fireDirection[1] = 0;
+		if (lengthSquared(game.fireDirection) > sqr(0.9))
+			game.fireDirection = normalize(game.fireDirection);
+		else
+			game.fireDirection = vec3();
 	}
 
 	void gameStart()

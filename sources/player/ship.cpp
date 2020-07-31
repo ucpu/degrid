@@ -23,13 +23,14 @@ namespace
 
 		if (game.moveDirection != vec3())
 		{
-			real maxSpeed = game.powerups[(uint32)PowerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
-			vec3 change = normalize(game.moveDirection) * (game.powerups[(uint32)PowerupTypeEnum::Acceleration] + 1) * 0.1;
+			CAGE_ASSERT(abs(lengthSquared(game.moveDirection) - 1) < 1e-3);
+			const real maxSpeed = game.powerups[(uint32)PowerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
+			const vec3 change = game.moveDirection * (game.powerups[(uint32)PowerupTypeEnum::Acceleration] + 1) * 0.1;
 			if (confControlMovement == 1 && dot(tr.orientation * vec3(0, 0, -1), normalize(vl.velocity + change)) < 1e-5)
 				vl.velocity = vec3();
 			else
 				vl.velocity += change;
-			if (lengthSquared(vl.velocity) > maxSpeed * maxSpeed)
+			if (lengthSquared(vl.velocity) > sqr(maxSpeed))
 				vl.velocity = normalize(vl.velocity) * maxSpeed;
 			if (lengthSquared(change) > 0.01)
 			{
