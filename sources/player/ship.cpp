@@ -91,7 +91,7 @@ namespace
 		}
 	}
 
-	void checkScore(uint32 limit, const string &name)
+	void checkScore(uint32 limit, const char *name)
 	{
 		if (game.score >= limit && scorePreviousAchievements < limit)
 			achievementFullfilled(name);
@@ -99,12 +99,17 @@ namespace
 
 	void scoreUpdate()
 	{
-		if (game.jokeMap && game.score >= 5000 && scorePreviousAchievements < 5000)
-			achievementFullfilled("joke-map");
-		checkScore(   5000, "starting-kit");
-		checkScore(  20000, "bronze");
-		checkScore( 100000, "silver");
-		checkScore(1000000, "gold");
+		if (game.jokeMap)
+		{
+			checkScore(5000, "joke-map");
+		}
+		else
+		{
+			checkScore(5000, "starting-kit");
+			checkScore(20000, "bronze");
+			checkScore(100000, "silver");
+			checkScore(1000000, "gold");
+		}
 		scorePreviousAchievements = game.score;
 
 		uint64 lg = scorePreviousSound >= 20000 ? 10 : scorePreviousSound >= 2000 ? 2 : 1;

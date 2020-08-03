@@ -93,7 +93,7 @@ namespace
 			t.position[1] = m.groundLevel;
 		}
 
-		bool hasBoss = BossComponent::component->group()->count() > 0;
+		const bool hasBoss = BossComponent::component->group()->count() > 0;
 		if (!game.cinematic)
 		{
 			// finished a boss fight
@@ -104,7 +104,7 @@ namespace
 				game.defeatedBosses++;
 				const uint32 li = min(numeric_cast<uint32>(game.life), 100u);
 				game.money += li * game.defeatedBosses / 2;
-				game.score += numeric_cast<uint64>(game.score * game.defeatedBosses * li * 0.01);
+				game.score += numeric_cast<uint64>(game.score * (li * 0.01 + 0.5));
 				game.life += (100 - li) * 0.5;
 			}
 		}

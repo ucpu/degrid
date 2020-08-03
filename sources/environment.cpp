@@ -139,7 +139,7 @@ namespace
 		}
 
 #ifdef CAGE_DEBUG
-		constexpr float angStep = 6;
+		constexpr float angStep = 9;
 #else
 		constexpr float angStep = 3;
 #endif
