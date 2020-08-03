@@ -1,13 +1,13 @@
-#include "game.h"
-
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/spatialStructure.h>
 
+#include "game.h"
+
 EntityGroup *entitiesToDestroy;
 EntityGroup *entitiesPhysicsEvenWhenPaused;
-Holder<SpatialStructure> SpatialSearchData;
-Holder<SpatialQuery> SpatialSearchQuery;
+Holder<SpatialStructure> spatialSearchData;
+Holder<SpatialQuery> spatialSearchQuery;
 
 namespace
 {
@@ -15,8 +15,8 @@ namespace
 	{
 		entitiesToDestroy = engineEntities()->defineGroup();
 		entitiesPhysicsEvenWhenPaused = engineEntities()->defineGroup();
-		SpatialSearchData = newSpatialStructure({});
-		SpatialSearchQuery = newSpatialQuery(SpatialSearchData.get());
+		spatialSearchData = newSpatialStructure({});
+		spatialSearchQuery = newSpatialQuery(spatialSearchData.get());
 	}
 
 	void engineUpdate()
@@ -88,21 +88,21 @@ namespace
 
 		{
 			OPTICK_EVENT("Spatial update");
-			SpatialSearchData->clear();
+			spatialSearchData->clear();
 			for (Entity *e : TransformComponent::component->entities())
 			{
 				uint32 n = e->name();
 				if (n)
 				{
 					CAGE_COMPONENT_ENGINE(Transform, tr, e);
-					SpatialSearchData->update(n, sphere(tr.position, tr.scale));
+					spatialSearchData->update(n, sphere(tr.position, tr.scale));
 				}
 			}
 		}
 
 		{
 			OPTICK_EVENT("Spatial rebuild");
-			SpatialSearchData->rebuild();
+			spatialSearchData->rebuild();
 		}
 	}
 

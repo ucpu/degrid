@@ -1,9 +1,9 @@
-#include "../game.h"
-
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/hashString.h>
 #include <cage-core/spatialStructure.h>
+
+#include "../game.h"
 
 enum class MonsterTypeFlags
 {

@@ -1,9 +1,9 @@
-#include "../game.h"
-#include "../screens/screens.h"
-
 #include <cage-core/config.h>
 #include <cage-core/camera.h>
 #include <cage-core/geometry.h>
+
+#include "../game.h"
+#include "../screens/screens.h"
 
 extern ConfigUint32 confControlMovement;
 extern ConfigUint32 confControlFiring;
@@ -80,8 +80,8 @@ namespace
 
 	void eventLetter(uint32 key)
 	{
-		for (uint32 o = 0; o < sizeof(letters); o++)
-			if (letters[o] == key)
+		for (uint32 o = 0; o < sizeof(Letters); o++)
+			if (Letters[o] == key)
 				eventAction(o + 4);
 	}
 
@@ -229,7 +229,7 @@ namespace
 				arrowsDirection = normalize(arrowsDirection);
 		}
 
-		constexpr float MouseMultilpier = 0.05f;
+		constexpr float MouseMultiplier = 0.05f;
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 
 		switch (confControlMovement)
@@ -241,13 +241,13 @@ namespace
 			game.moveDirection = playerTransform.orientation * arrowsDirection;
 			break;
 		case 2: // lmb
-			game.moveDirection = (mouseLeftPosition - playerTransform.position) * MouseMultilpier;
+			game.moveDirection = (mouseLeftPosition - playerTransform.position) * MouseMultiplier;
 			break;
 		case 3: // rmb
-			game.moveDirection = (mouseRightPosition - playerTransform.position) * MouseMultilpier;
+			game.moveDirection = (mouseRightPosition - playerTransform.position) * MouseMultiplier;
 			break;
 		case 4: // cursor position
-			game.moveDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultilpier;
+			game.moveDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultiplier;
 			break;
 		}
 		game.moveDirection[1] = 0;
@@ -265,13 +265,13 @@ namespace
 			game.fireDirection = playerTransform.orientation * arrowsDirection;
 			break;
 		case 2: // lmb
-			game.fireDirection = (mouseLeftPosition - playerTransform.position) * MouseMultilpier;
+			game.fireDirection = (mouseLeftPosition - playerTransform.position) * MouseMultiplier;
 			break;
 		case 3: // rmb
-			game.fireDirection = (mouseRightPosition - playerTransform.position) * MouseMultilpier;
+			game.fireDirection = (mouseRightPosition - playerTransform.position) * MouseMultiplier;
 			break;
 		case 4: // cursor position
-			game.fireDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultilpier;
+			game.fireDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultiplier;
 			break;
 		}
 		game.fireDirection[1] = 0;
@@ -299,7 +299,7 @@ namespace
 		}
 
 		game.life = 100;
-		game.money = achievements.acquired * powerupBuyPriceBase;
+		game.money = achievements.acquired * PowerupBuyPriceBase;
 		game.powerupSpawnChance = 0.3;
 
 #ifdef DEGRID_TESTING
@@ -309,7 +309,7 @@ namespace
 			game.money = 1000000;
 			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
-				switch (powerupMode[i])
+				switch (PowerupMode[i])
 				{
 				case 0: game.powerups[i] = 10; break;
 				case 2: game.powerups[i] = 2; break;

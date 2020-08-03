@@ -5,9 +5,8 @@ namespace
 	struct SnakeTailComponent
 	{
 		static EntityComponent *component;
-		uint32 index;
-		uint32 follow;
-		SnakeTailComponent() : index(0), follow(0) {}
+		uint32 index = 0;
+		uint32 follow = 0;
 	};
 
 	struct SnakeHeadComponent

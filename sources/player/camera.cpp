@@ -1,9 +1,9 @@
-#include "../game.h"
-
 #include <cage-core/config.h>
 #include <cage-core/entities.h>
 #include <cage-core/hashString.h>
 #include <cage-core/variableSmoothingBuffer.h>
+
+#include "../game.h"
 
 namespace
 {
@@ -12,9 +12,9 @@ namespace
 	Entity *secondaryCameraEntity;
 	Entity *skyboxSecondaryCameraEntity;
 
-	const real ambientLight = 0.3;
-	const real directionalLight = 0;
-	const real cameraDistance = 220;
+	constexpr float AmbientLight = 0.3f;
+	constexpr float DirectionalLight = 0;
+	constexpr float CameraDistance = 220;
 
 	VariableSmoothingBuffer<vec3, 16> playerPosSmoother;
 	VariableSmoothingBuffer<vec3, 16> cameraPosSmoother;
@@ -42,7 +42,7 @@ namespace
 			playerPosSmoother.add(p.position);
 			CAGE_COMPONENT_ENGINE(Transform, c, primaryCameraEntity);
 			quat rot = quat(degs(game.cinematic ? -40 : -90), {}, {});
-			vec3 ct = playerPosSmoother.smooth() + rot * vec3(0, 0, cameraDistance);
+			vec3 ct = playerPosSmoother.smooth() + rot * vec3(0, 0, CameraDistance);
 			cameraPosSmoother.add(ct);
 			c.position = cameraPosSmoother.smooth();
 			c.orientation = quat(playerPosSmoother.smooth() - c.position, vec3(0, 0, -1));
@@ -77,8 +77,8 @@ namespace
 					c.near = 3;
 					c.far = 500;
 					c.ambientColor = c.ambientDirectionalColor = vec3(1);
-					c.ambientIntensity = ambientLight;
-					c.ambientDirectionalIntensity = directionalLight;
+					c.ambientIntensity = AmbientLight;
+					c.ambientDirectionalIntensity = DirectionalLight;
 					c.clear = CameraClearFlags::None;
 					c.camera.perspectiveFov = fov * 1.5;
 					c.viewportOrigin = vec2(0.7, 0);
@@ -115,14 +115,14 @@ namespace
 			c.far = 1000;
 			c.camera.perspectiveFov = degs(40);
 			c.ambientColor = c.ambientDirectionalColor = vec3(1);
-			c.ambientIntensity = ambientLight;
-			c.ambientDirectionalIntensity = directionalLight;
+			c.ambientIntensity = AmbientLight;
+			c.ambientDirectionalIntensity = DirectionalLight;
 			c.clear = CameraClearFlags::None;
 			c.effects = CameraEffectsFlags::CombinedPass & ~CameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);
-			constexpr float halfVolumeDistance = 30;
-			ls.attenuation[1] = 2.0 / halfVolumeDistance;
-			ls.attenuation[0] = ls.attenuation[1] * cameraDistance * -1;
+			constexpr float HalfVolumeDistance = 30;
+			ls.attenuation[1] = 2.0 / HalfVolumeDistance;
+			ls.attenuation[0] = ls.attenuation[1] * CameraDistance * -1;
 		}
 
 		{

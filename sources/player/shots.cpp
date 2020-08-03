@@ -1,11 +1,11 @@
-#include "../game.h"
-
 #include <cage-core/geometry.h>
 #include <cage-core/config.h>
 #include <cage-core/entities.h>
 #include <cage-core/spatialStructure.h>
 #include <cage-core/color.h>
 #include <cage-core/hashString.h>
+
+#include "../game.h"
 
 extern ConfigFloat confPlayerShotColorR;
 extern ConfigFloat confPlayerShotColorG;
@@ -50,7 +50,7 @@ namespace
 			sh.damage = game.powerups[(uint32)PowerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)PowerupTypeEnum::SuperDamage] ? 4 : 1);
 			sh.homing = game.powerups[(uint32)PowerupTypeEnum::HomingShots] > 0;
 			DEGRID_COMPONENT(Timeout, ttl, shot);
-			ttl.ttl = shotsTtl;
+			ttl.ttl = ShotsTtl;
 		}
 	}
 
@@ -69,8 +69,8 @@ namespace
 			DEGRID_COMPONENT(Shot, sh, e);
 			DEGRID_COMPONENT(Velocity, vl, e);
 
-			SpatialSearchQuery->intersection(sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
-			for (uint32 otherName : SpatialSearchQuery->result())
+			spatialSearchQuery->intersection(sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
+			for (uint32 otherName : spatialSearchQuery->result())
 			{
 				if (otherName == myName)
 					continue;
@@ -126,7 +126,7 @@ namespace
 							CAGE_COMPONENT_ENGINE(Transform, mtr, m);
 							powerupSpawn(mtr.position);
 						}
-						game.powerupSpawnChance += 0.02;
+						game.powerupSpawnChance += 0.01;
 					}
 				}
 				if (sh.damage <= 1e-5)

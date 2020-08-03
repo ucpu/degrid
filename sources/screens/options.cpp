@@ -1,7 +1,7 @@
+#include <cage-core/config.h>
+
 #include "screens.h"
 #include "../game.h"
-
-#include <cage-core/config.h>
 
 ConfigUint32 confControlMovement("degrid/control/movement", 0);
 ConfigUint32 confControlFiring("degrid/control/firing", 4);
@@ -107,14 +107,14 @@ namespace
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/options/space");
 		}
-		for (sint32 i = 0; i < sizeof(letters); i++)
+		for (sint32 i = 0; i < sizeof(Letters); i++)
 		{
 			Entity *opt = ents->createUnique();
 			CAGE_COMPONENT_GUI(Parent, parent, opt);
 			parent.parent = ctr;
-			parent.order = letters[i];
+			parent.order = Letters[i];
 			CAGE_COMPONENT_GUI(Text, txt, opt);
-			txt.value = string(&letters[i], 1);
+			txt.value = string(&Letters[i], 1);
 		}
 	}
 

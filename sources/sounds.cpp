@@ -1,5 +1,3 @@
-#include "game.h"
-
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
@@ -7,8 +5,9 @@
 #include <cage-core/spatialStructure.h>
 #include <cage-core/hashString.h>
 #include <cage-core/macros.h>
-
 #include <cage-engine/sound.h>
+
+#include "game.h"
 
 #include <atomic>
 
@@ -30,15 +29,15 @@ namespace
 		Holder<VolumeFilter> actionVolume;
 		Holder<VolumeFilter> endVolume;
 
-		bool suspenseLoaded;
-		bool actionLoaded;
-		bool endLoaded;
+		bool suspenseLoaded = false;
+		bool actionLoaded = false;
+		bool endLoaded = false;
 
 		Holder<VolumeFilter> musicVolume;
 		Holder<VolumeFilter> effectsVolume;
 
-		// this is a bit of a hack. the Engine will have to be improved to handle situations like these
-		// Engine master bus <- bus 1 <- volume filter <- filter (speechCallback) <- bus 2 <- bus 3 <- source
+		// this is a bit of a hack. the engine will have to be improved to handle situations like these
+		// engine master bus <- bus 1 <- volume filter <- filter (speechCallback) <- bus 2 <- bus 3 <- source
 		// problem is, that the filter cannot modify its inputs (bus 2) of its own bus (bus 1)
 		// but it may modify bus 3 :D
 		Holder<MixingBus> speechBus1;
@@ -46,11 +45,8 @@ namespace
 		Holder<MixingBus> speechBus3;
 		Holder<VolumeFilter> speechVolume;
 		Holder<MixingFilter> speechFilter;
-		uint64 speechStart;
-		std::atomic<uint32> speechName;
-
-		SoundData() : suspenseLoaded(false), actionLoaded(false), endLoaded(false), speechStart(0), speechName(0)
-		{}
+		uint64 speechStart = 0;
+		std::atomic<uint32> speechName{0};
 	};
 	SoundData *data;
 
@@ -88,12 +84,12 @@ namespace
 			return;
 		}
 
-		static const real distMin = 30;
-		static const real distMax = 60;
+		constexpr const float distMin = 30;
+		constexpr const float distMax = 60;
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		real closestMonsterToPlayer = real::Infinity();
-		SpatialSearchQuery->intersection(sphere(playerTransform.position, distMax));
-		for (uint32 otherName : SpatialSearchQuery->result())
+		spatialSearchQuery->intersection(sphere(playerTransform.position, distMax));
+		for (uint32 otherName : spatialSearchQuery->result())
 		{
 			Entity *e = engineEntities()->get(otherName);
 			if (e->has(MonsterComponent::component))
@@ -137,9 +133,9 @@ namespace
 		data->effectsVolume->volume = (float)confVolumeEffects;
 		data->speechVolume->volume = (float)confVolumeSpeech;
 
-		static const uint32 suspenseName = HashString("degrid/music/fear-and-horror.ogg");
-		static const uint32 actionName = HashString("degrid/music/chaotic-filth.ogg");
-		static const uint32 endName = HashString("degrid/music/sad-song.ogg");
+		constexpr uint32 suspenseName = HashString("degrid/music/fear-and-horror.ogg");
+		constexpr uint32 actionName = HashString("degrid/music/chaotic-filth.ogg");
+		constexpr uint32 endName = HashString("degrid/music/sad-song.ogg");
 #define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded)) { Holder<SoundSource> src = engineAssets()->get<AssetSchemeIndexSoundSource, SoundSource>(CAGE_JOIN(NAME, Name)); if (!src) return; src->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
@@ -203,7 +199,7 @@ namespace
 	{
 		if (!game.cinematic)
 		{
-			uint32 sounds[] = {
+			constexpr const uint32 Sounds[] = {
 				HashString("degrid/speech/starts/a-princess-needs-our-help.wav"),
 				HashString("degrid/speech/starts/enemy-is-approaching.wav"),
 				HashString("degrid/speech/starts/its-a-trap.wav"),
@@ -216,13 +212,13 @@ namespace
 				HashString("degrid/speech/starts/ready-set-go.wav"),
 				0
 			};
-			soundSpeech(sounds);
+			soundSpeech(Sounds);
 		}
 	}
 
 	void gameStop()
 	{
-		uint32 sounds[] = {
+		constexpr const uint32 Sounds[] = {
 			HashString("degrid/speech/gameover/game-over.wav"),
 			HashString("degrid/speech/gameover/lets-try-again.wav"),
 			HashString("degrid/speech/gameover/oh-no.wav"),
@@ -230,7 +226,7 @@ namespace
 			HashString("degrid/speech/gameover/thats-it.wav"),
 			0
 		};
-		soundSpeech(sounds);
+		soundSpeech(Sounds);
 	}
 
 	class Callbacks
@@ -281,9 +277,9 @@ void soundSpeech(uint32 sound)
 	data->speechStart = engineControlTime() + 10000;
 }
 
-void soundSpeech(uint32 sounds[])
+void soundSpeech(const uint32 sounds[])
 {
-	uint32 *p = sounds;
+	const uint32 *p = sounds;
 	uint32 count = 0;
 	while (*p++)
 		count++;

@@ -1,6 +1,6 @@
-#include "monsters.h"
-
 #include <cage-core/color.h>
+
+#include "monsters.h"
 
 #include <algorithm>
 #include <vector>
@@ -27,23 +27,23 @@ namespace
 	struct SpawnDefinition
 	{
 		// spawned monsters
-		uint32 spawnCountMin, spawnCountMax;
-		real distanceMin, distanceMax;
-		MonsterTypeFlags spawnTypes;
-		PlacingPolicyEnum placingPolicy;
+		uint32 spawnCountMin = 1, spawnCountMax = 1;
+		real distanceMin = 200, distanceMax = 250;
+		MonsterTypeFlags spawnTypes = MonsterTypeFlags::None;
+		PlacingPolicyEnum placingPolicy = PlacingPolicyEnum::Random;
 
 		// priority
 		real priorityCurrent; // lowest priority goes first
 		real priorityChange;
 		real priorityAdditive;
-		real priorityMultiplier;
+		real priorityMultiplier = 1;
 
 		// statistics
-		uint32 iteration;
-		uint32 spawned;
+		uint32 iteration = 0;
+		uint32 spawned = 0;
 		string name;
 
-		SpawnDefinition(const string &name);
+		explicit SpawnDefinition(const string &name);
 		bool operator < (const SpawnDefinition &other) const { return priorityCurrent < other.priorityCurrent; }
 		void perform();
 		void performSimulation();
@@ -51,13 +51,7 @@ namespace
 		void spawn();
 	};
 
-	SpawnDefinition::SpawnDefinition(const string &name) :
-		spawnTypes((MonsterTypeFlags)0),
-		spawnCountMin(1), spawnCountMax(1),
-		distanceMin(200), distanceMax(250),
-		placingPolicy(PlacingPolicyEnum::Random),
-		priorityCurrent(0), priorityChange(0), priorityAdditive(0), priorityMultiplier(1),
-		iteration(0), spawned(0), name(name)
+	SpawnDefinition::SpawnDefinition(const string &name) : name(name)
 	{}
 
 	uint32 monstersLimit()

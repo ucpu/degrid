@@ -1,5 +1,6 @@
-#include "monsters.h"
 #include <cage-core/enumerate.h>
+
+#include "monsters.h"
 
 namespace
 {
@@ -7,31 +8,22 @@ namespace
 	{
 		static EntityComponent *component;
 
-		uint32 bulbs[24];
-		uint32 shieldEntity;
-		uint32 lastHit;
-		uint8 cannonsSpawned;
-		uint8 cannonsKilled;
-
-		BodyComponent() : shieldEntity(0), lastHit(0), cannonsSpawned(0), cannonsKilled(0)
-		{
-			for (uint32 &it : bulbs)
-				it = 0;
-		}
+		uint32 bulbs[24] = {};
+		uint32 shieldEntity = 0;
+		uint32 lastHit = 0;
+		uint8 cannonsSpawned = 0;
+		uint8 cannonsKilled = 0;
 	};
 
 	struct CannonComponent
 	{
 		static EntityComponent *component;
 
-		uint32 bodyEntity;
-		uint32 index; // 0 .. 7 (inclusive)
+		uint32 bodyEntity = 0;
+		uint32 index = 0; // 0 .. 7 (inclusive)
 		real extension; // 0 = fully retracted, 1 = fully exposed
 		real loading; // 1 = fully loaded
 		rads firingOffset;
-
-		CannonComponent() : bodyEntity(0), index(0), extension(0), loading(0), firingOffset(0)
-		{}
 	};
 
 	EntityComponent *BodyComponent::component;
@@ -142,7 +134,7 @@ namespace
 						DEGRID_COMPONENT(Velocity, vel, bullet);
 						vel.velocity = ct.orientation * vec3(0, 0, -1.0);
 						DEGRID_COMPONENT(Timeout, ttl, bullet);
-						ttl.ttl = shotsTtl;
+						ttl.ttl = ShotsTtl;
 					}
 				}
 			}

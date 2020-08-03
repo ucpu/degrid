@@ -2,7 +2,6 @@
 #include <cage-core/math.h>
 #include <cage-core/entities.h>
 #include <cage-core/hashString.h>
-
 #include <cage-engine/core.h>
 #include <cage-engine/engine.h>
 #include <cage-engine/window.h>
@@ -12,9 +11,8 @@ using namespace cage;
 
 struct GuiConfig
 {
-	bool backButton;
-	bool logo;
-	GuiConfig();
+	bool backButton = true;
+	bool logo = true;
 };
 
 void regenerateGui(const GuiConfig &config);

@@ -1,20 +1,17 @@
-#include <vector>
+#include <cage-core/color.h>
 
 #include "monsters.h"
 
-#include <cage-core/color.h>
+#include <vector>
 
 namespace
 {
 	struct SpawnerComponent
 	{
 		static EntityComponent *component;
-		uint32 count;
-		uint32 period;
-		MonsterTypeFlags type;
-
-		SpawnerComponent() : count(0), period(0), type(MonsterTypeFlags::None)
-		{}
+		uint32 count = 0;
+		uint32 period = 0;
+		MonsterTypeFlags type = MonsterTypeFlags::None;
 	};
 
 	EntityComponent *SpawnerComponent::component;
@@ -63,7 +60,7 @@ namespace
 		}
 	} callbacksInstance;
 
-	const MonsterTypeFlags types[bossesTotalCount + 1] = {
+	constexpr const MonsterTypeFlags Types[BossesTotalCount + 1] = {
 		MonsterTypeFlags::Circle | MonsterTypeFlags::SmallCube | MonsterTypeFlags::SmallTriangle,
 		MonsterTypeFlags::SmallCube | MonsterTypeFlags::SmallTriangle | MonsterTypeFlags::LargeCube | MonsterTypeFlags::LargeTriangle | MonsterTypeFlags::Diamond,
 		MonsterTypeFlags::LargeCube | MonsterTypeFlags::LargeTriangle | MonsterTypeFlags::Diamond | MonsterTypeFlags::PinWheel | MonsterTypeFlags::Shielder,
@@ -101,7 +98,7 @@ void spawnSpawner(const vec3 &spawnPosition, const vec3 &color)
 	sa.startTime = getApplicationTime();
 	DEGRID_COMPONENT(Monster, m, spawner);
 	DEGRID_COMPONENT(Spawner, s, spawner);
-	s.type = pickOne(types[game.defeatedBosses]);
+	s.type = pickOne(Types[game.defeatedBosses]);
 	s.count = 60 + 15 * monsterMutation(special);
 	s.period = numeric_cast<uint32>(25.0 / (3 + monsterMutation(special))) + 1;
 	DEGRID_COMPONENT(Rotation, rotation, spawner);

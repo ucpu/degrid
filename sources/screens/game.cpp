@@ -1,7 +1,8 @@
-#include "screens.h"
-#include "../game.h"
 #include <cage-core/enumerate.h>
 #include <cage-core/macros.h>
+
+#include "screens.h"
+#include "../game.h"
 
 #include <vector>
 #include <algorithm>
@@ -40,13 +41,13 @@ namespace
 
 		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 		{
-			if (powerupMode[i] == 2)
+			if (PowerupMode[i] == 2)
 			{
 				if (en == 1000 + i * 4 + 2) // sell
 				{
 					CAGE_ASSERT(game.powerups[i] > 0);
 					game.powerups[i]--;
-					game.money += powerupSellPrice;
+					game.money += PowerupSellPriceBase * (game.defeatedBosses + 1);
 					engineGui()->skipAllEventsUntilNextUpdate();
 					makeTheGui(3);
 					return true;
@@ -54,9 +55,9 @@ namespace
 				if (en == 1000 + i * 4 + 3) // buy
 				{
 					CAGE_ASSERT(canAddPermanentPowerup());
-					CAGE_ASSERT(game.money >= powerupBuyPriceBase * game.buyPriceMultiplier);
+					CAGE_ASSERT(game.money >= PowerupBuyPriceBase * game.buyPriceMultiplier);
 					game.powerups[i]++;
-					game.money -= powerupBuyPriceBase * game.buyPriceMultiplier;
+					game.money -= PowerupBuyPriceBase * game.buyPriceMultiplier;
 					game.buyPriceMultiplier++;
 					engineGui()->skipAllEventsUntilNextUpdate();
 					makeTheGui(3);
@@ -68,7 +69,7 @@ namespace
 		return false;
 	}
 
-	static const uint32 textNames[(uint32)PowerupTypeEnum::Total] = {
+	constexpr const uint32 TextNames[(uint32)PowerupTypeEnum::Total] = {
 		HashString("gui/game/puBomb"),
 		HashString("gui/game/puTurret"),
 		HashString("gui/game/puDecoy"),
@@ -104,7 +105,7 @@ namespace
 			parent.parent = 15;
 			parent.order = 1;
 			CAGE_COMPONENT_GUI(TextFormat, format, but);
-			format.color = redPillColor;
+			format.color = RedPillColor;
 		}
 
 		{ // end game button
@@ -117,7 +118,7 @@ namespace
 			parent.parent = 15;
 			parent.order = 2;
 			CAGE_COMPONENT_GUI(TextFormat, format, but);
-			format.color = bluePillColor;
+			format.color = BluePillColor;
 		}
 
 		uint32 layoutName;
@@ -150,7 +151,7 @@ namespace
 				ll.vertical = true;
 			}
 
-			static const uint32 textNames[] = {
+			constexpr const uint32 TextNames[] = {
 				#define GCHL_GENERATE(N) HashString("gui/story/" CAGE_STRINGIZE(N)),
 						GCHL_GENERATE(0)
 						CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
@@ -166,7 +167,7 @@ namespace
 				CAGE_COMPONENT_GUI(Label, lab, label);
 				CAGE_COMPONENT_GUI(Text, txt, label);
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
-				txt.textName = textNames[idx];
+				txt.textName = TextNames[idx];
 				idx++;
 			}
 		}
@@ -191,7 +192,7 @@ namespace
 				ll.vertical = false;
 			}
 
-			for (uint32 i = 0; i < bossesTotalCount; i++)
+			for (uint32 i = 0; i < BossesTotalCount; i++)
 			{
 				uint32 pn;
 				{
@@ -319,7 +320,7 @@ namespace
 			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
 				bool anyBuy = canAddPermanentPowerup();
-				if (powerupMode[i] == 2)
+				if (PowerupMode[i] == 2)
 				{
 					{ // label
 						Entity *e = ents->create(1000 + i * 4 + 0);
@@ -328,7 +329,7 @@ namespace
 						parent.order = i * 4 + 0;
 						CAGE_COMPONENT_GUI(Text, text, e);
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
-						text.textName = textNames[i];
+						text.textName = TextNames[i];
 						CAGE_COMPONENT_GUI(Label, but, e);
 					}
 					{ // count
@@ -348,7 +349,7 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 2;
 						CAGE_COMPONENT_GUI(Text, text, e);
-						text.value = stringizer() + powerupSellPrice;
+						text.value = stringizer() + (PowerupSellPriceBase * (game.defeatedBosses + 1));
 						CAGE_COMPONENT_GUI(Button, but, e);
 						if (game.powerups[i] == 0)
 						{
@@ -362,9 +363,9 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 3;
 						CAGE_COMPONENT_GUI(Text, text, e);
-						text.value = stringizer() + (powerupBuyPriceBase * game.buyPriceMultiplier);
+						text.value = stringizer() + (PowerupBuyPriceBase * game.buyPriceMultiplier);
 						CAGE_COMPONENT_GUI(Button, but, e);
-						if (!anyBuy || game.money < powerupBuyPriceBase * game.buyPriceMultiplier)
+						if (!anyBuy || game.money < PowerupBuyPriceBase * game.buyPriceMultiplier)
 						{
 							CAGE_COMPONENT_GUI(WidgetState, ws, e);
 							ws.disabled = true;
@@ -543,7 +544,7 @@ namespace
 
 			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
-				if (powerupMode[i] == 0)
+				if (PowerupMode[i] == 0)
 				{
 					{ // label
 						Entity *label = engineGui()->entities()->createUnique();
@@ -553,7 +554,7 @@ namespace
 						CAGE_COMPONENT_GUI(Label, control, label);
 						CAGE_COMPONENT_GUI(Text, text, label);
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
-						text.textName = textNames[i];
+						text.textName = TextNames[i];
 					}
 
 					{ // value
@@ -582,7 +583,7 @@ namespace
 
 			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
-				if (powerupMode[i] == 1)
+				if (PowerupMode[i] == 1)
 				{
 					{ // label
 						Entity *label = engineGui()->entities()->createUnique();
@@ -592,7 +593,7 @@ namespace
 						CAGE_COMPONENT_GUI(Label, control, label);
 						CAGE_COMPONENT_GUI(Text, text, label);
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
-						text.textName = textNames[i];
+						text.textName = TextNames[i];
 					}
 
 					{ // value
@@ -673,7 +674,7 @@ namespace
 			if (!engineGui()->entities()->has(200 + i))
 				continue;
 			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(200 + i));
-			switch (powerupMode[i])
+			switch (PowerupMode[i])
 			{
 			case 0: // collectibles
 				txt.value = stringizer() + game.powerups[i];

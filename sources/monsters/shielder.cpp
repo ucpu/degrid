@@ -5,19 +5,17 @@ namespace
 	struct ShielderComponent
 	{
 		static EntityComponent *component;
-		uint32 shieldEntity;
+		uint32 shieldEntity = 0;
+		uint32 chargingSteps = 0;
+		uint32 turningSteps = 0;
+		uint32 stepsLeft = 0;
 		real movementSpeed;
-		uint32 chargingSteps;
-		uint32 turningSteps;
-		uint32 stepsLeft;
-		ShielderComponent() : chargingSteps(0), turningSteps(0), stepsLeft(0) {}
 	};
 
 	struct ShieldComponent
 	{
 		static EntityComponent *component;
-		bool active;
-		ShieldComponent() : active(false) {}
+		bool active = false;
 	};
 
 	EntityComponent *ShielderComponent::component;
@@ -117,8 +115,8 @@ namespace
 
 			// destroy shots
 			vec3 forward = tr.orientation * vec3(0, 0, -1);
-			SpatialSearchQuery->intersection(sphere(tr.position + forward * (tr.scale + 1), 5));
-			for (uint32 otherName : SpatialSearchQuery->result())
+			spatialSearchQuery->intersection(sphere(tr.position + forward * (tr.scale + 1), 5));
+			for (uint32 otherName : spatialSearchQuery->result())
 			{
 				Entity *e = engineEntities()->get(otherName);
 				if (!e->has(ShotComponent::component))

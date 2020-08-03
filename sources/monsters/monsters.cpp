@@ -1,6 +1,6 @@
-#include "monsters.h"
-
 #include <cage-core/color.h>
+
+#include "monsters.h"
 
 namespace
 {
@@ -27,8 +27,8 @@ namespace
 			{
 				uint32 myName = e->name();
 				vec3 dispersion;
-				SpatialSearchQuery->intersection(sphere(t.position, t.scale + 1));
-				for (uint32 otherName : SpatialSearchQuery->result())
+				spatialSearchQuery->intersection(sphere(t.position, t.scale + 1));
+				for (uint32 otherName : spatialSearchQuery->result())
 				{
 					if (otherName == myName)
 						continue;
@@ -47,18 +47,18 @@ namespace
 			}
 
 			// collision with player
-			if (collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
+			if (collisionTest(playerTransform.position, PlayerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
 			{
 				vec3 enemyDir = normalize(t.position - playerTransform.position);
 				if (game.powerups[(uint32)PowerupTypeEnum::Shield] > 0 && m.damage < real::Infinity())
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
-					environmentExplosion(playerTransform.position + enemyDir * (playerScale * 1.1), playerVelocity.velocity + enemyDir * 0.5, vec3(1), 1); // shield sparks
+					environmentExplosion(playerTransform.position + enemyDir * (PlayerScale * 1.1), playerVelocity.velocity + enemyDir * 0.5, vec3(1), 1); // shield sparks
 				}
 				else
 				{
-					environmentExplosion(playerTransform.position + enemyDir * playerScale, playerVelocity.velocity + enemyDir * 0.5, playerDeathColor, 1); // hull sparks
+					environmentExplosion(playerTransform.position + enemyDir * PlayerScale, playerVelocity.velocity + enemyDir * 0.5, PlayerDeathColor, 1); // hull sparks
 					statistics.monstersSucceded++;
 					game.life -= lifeDamage(m.damage);
 					if (statistics.monstersFirstHit == 0)
@@ -66,7 +66,7 @@ namespace
 					statistics.monstersLastHit = statistics.updateIterationIgnorePause;
 					if (game.life > 0 && !game.cinematic)
 					{
-						uint32 sounds[] = {
+						constexpr const uint32 Sounds[] = {
 							HashString("degrid/speech/damage/better-to-avoid-next-time.wav"),
 							HashString("degrid/speech/damage/beware.wav"),
 							HashString("degrid/speech/damage/critical-damage.wav"),
@@ -81,7 +81,7 @@ namespace
 							HashString("degrid/speech/damage/we-have-been-hit.wav"),
 							0
 						};
-						soundSpeech(sounds);
+						soundSpeech(Sounds);
 					}
 				}
 				if (m.life < real::Infinity())
@@ -99,12 +99,13 @@ namespace
 			// finished a boss fight
 			if (wasBoss && !hasBoss)
 			{
-				CAGE_ASSERT(game.defeatedBosses < bossesTotalCount);
+				CAGE_ASSERT(game.defeatedBosses < BossesTotalCount);
 				achievementFullfilled(stringizer() + "boss-" + game.defeatedBosses, true);
 				game.defeatedBosses++;
-				game.money += numeric_cast<uint32>(game.life * 2);
-				game.score += numeric_cast<uint64>(game.score * (double)game.life.value / 100);
-				game.life += (100 - game.life) * 0.5;
+				const uint32 li = min(numeric_cast<uint32>(game.life), 100u);
+				game.money += li * game.defeatedBosses / 2;
+				game.score += numeric_cast<uint64>(game.score * game.defeatedBosses * li * 0.01);
+				game.life += (100 - li) * 0.5;
 			}
 		}
 		wasBoss = hasBoss;
@@ -124,7 +125,7 @@ namespace
 
 real lifeDamage(real damage)
 {
-	uint32 armor = game.powerups[(uint32)PowerupTypeEnum::Armor];
+	const uint32 armor = game.powerups[(uint32)PowerupTypeEnum::Armor];
 	return damage / (armor * 0.5 + 1);
 }
 
@@ -132,7 +133,7 @@ uint32 monsterMutation(uint32 &special)
 {
 	if (game.cinematic)
 		return 0;
-	static const real probabilities[] = { real(), real(), real(1e-4), real(1e-3), real(0.1), real(0.5) };
+	constexpr const float probabilities[] = { 0, 0, 1e-4f, 1e-3f, 0.1f, 0.5f };
 	uint32 res = 0;
 	real probability = probabilities[min(game.defeatedBosses, numeric_cast<uint32>(sizeof(probabilities) / sizeof(probabilities[0]) - 1))];
 	while (randomChance() < probability)

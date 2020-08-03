@@ -1,12 +1,11 @@
-#include "game.h"
-#include "screens/screens.h"
-
 #include <cage-core/config.h>
 #include <cage-core/assetManager.h>
-
 #include <cage-engine/engineProfiling.h>
 #include <cage-engine/fullscreenSwitcher.h>
 #include <cage-engine/highPerformanceGpuHint.h>
+
+#include "game.h"
+#include "screens/screens.h"
 
 ConfigUint32 confLanguage("degrid/language/language", 0);
 
@@ -64,12 +63,12 @@ namespace
 
 void reloadLanguage(uint32 index)
 {
-	static const uint32 languages[] = {
+	constexpr const uint32 Languages[] = {
 		HashString("degrid/languages/english.textpack"),
 		HashString("degrid/languages/czech.textpack")
 	};
-	if (index < sizeof(languages) / sizeof(languages[0]))
-		currentLanguageHash = languages[index];
+	if (index < sizeof(Languages) / sizeof(Languages[0]))
+		currentLanguageHash = Languages[index];
 	else
 		currentLanguageHash = 0;
 }

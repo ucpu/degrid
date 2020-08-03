@@ -1,10 +1,10 @@
-#include "../game.h"
-
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
 #include <cage-core/spatialStructure.h>
 #include <cage-core/hashString.h>
+
+#include "../game.h"
 
 extern ConfigUint32 confControlMovement;
 
@@ -55,9 +55,9 @@ namespace
 			vl.velocity *= 0.97;
 
 		// pull to center
-		if (length(tr.position) > mapNoPullRadius)
+		if (length(tr.position) > MapNoPullRadius)
 		{
-			vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - mapNoPullRadius) * 0.02, 2);
+			vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - MapNoPullRadius) * 0.02, 2);
 			vl.velocity += pullToCenter;
 		}
 
@@ -114,7 +114,7 @@ namespace
 		{
 			scorePreviousSound += ld * sg;
 
-			uint32 sounds[] = {
+			constexpr const uint32 Sounds[] = {
 				HashString("degrid/speech/progress/doing-fine.wav"),
 				HashString("degrid/speech/progress/doing-well.wav"),
 				HashString("degrid/speech/progress/fantastic.wav"),
@@ -125,7 +125,7 @@ namespace
 				HashString("degrid/speech/progress/they-say-the-princess-is-very-beautiful.wav"),
 				0
 			};
-			soundSpeech(sounds);
+			soundSpeech(Sounds);
 		}
 	}
 
@@ -152,7 +152,7 @@ namespace
 		{ // player ship Entity
 			game.playerEntity = engineEntities()->createUnique();
 			CAGE_COMPONENT_ENGINE(Transform, transform, game.playerEntity);
-			transform.scale = playerScale;
+			transform.scale = PlayerScale;
 			CAGE_COMPONENT_ENGINE(Render, render, game.playerEntity);
 			render.object = HashString("degrid/player/player.object");
 			game.monstersTarget = vec3();
@@ -171,7 +171,7 @@ namespace
 	{
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
-		environmentExplosion(playerTransform.position, playerVelocity.velocity, playerDeathColor, playerScale);
+		environmentExplosion(playerTransform.position, playerVelocity.velocity, PlayerDeathColor, PlayerScale);
 		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;
 		game.shieldEntity->add(entitiesToDestroy);

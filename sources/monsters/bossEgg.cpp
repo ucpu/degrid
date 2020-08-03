@@ -8,18 +8,15 @@ namespace
 	{
 		static EntityComponent *component;
 		
-		uint32 countdown;
-		uint32 portal;
-		
-		BossEggComponent() : countdown(10), portal(0)
-		{}
+		uint32 countdown = 10;
+		uint32 portal = 0;
 	};
 
 	EntityComponent *BossEggComponent::component;
 
 	void hatchEgg(Entity *e)
 	{
-		static const uint32 skyboxNames[] = {
+		constexpr const uint32 skyboxNames[] = {
 			#define GCHL_GENERATE(N) HashString("degrid/environment/skyboxes/skybox.obj;" CAGE_STRINGIZE(N)),
 					GCHL_GENERATE(0)
 					CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
@@ -63,7 +60,7 @@ namespace
 		if (game.paused)
 			return;
 
-		if (statistics.updateIteration % 5 == 0 && BossEggComponent::component->group()->count() > 0)
+		if ((statistics.updateIteration % 5) == 0 && BossEggComponent::component->group()->count() > 0)
 		{
 			if (MonsterComponent::component->group()->count() == BossEggComponent::component->group()->count())
 			{
@@ -127,7 +124,7 @@ namespace
 void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 {
 	CAGE_ASSERT(BossComponent::component->group()->count() == 0);
-	if (game.defeatedBosses >= bossesTotalCount)
+	if (game.defeatedBosses >= BossesTotalCount)
 		return;
 	Entity *e = initializeMonster(spawnPosition, color, 10, HashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
 	DEGRID_COMPONENT(BossEgg, eggc, e);
@@ -143,7 +140,7 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 		Entity *p = engineEntities()->createUnique();
 		eggc.portal = p->name();
 		CAGE_COMPONENT_ENGINE(Render, r, p);
-		static const uint32 portalNames[] = {
+		constexpr const uint32 portalNames[] = {
 			#define GCHL_GENERATE(N) HashString("degrid/environment/skyboxes/portal.obj;" CAGE_STRINGIZE(N)),
 					GCHL_GENERATE(0)
 					CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))

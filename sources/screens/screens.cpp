@@ -197,9 +197,6 @@ namespace
 
 }
 
-GuiConfig::GuiConfig() : backButton(true), logo(true)
-{}
-
 void regenerateGui(const GuiConfig &config)
 {
 	eraseGui();

@@ -2,7 +2,6 @@
 
 #include <cage-core/core.h>
 #include <cage-core/math.h>
-
 #include <cage-engine/core.h>
 #include <cage-engine/engine.h>
 
@@ -20,7 +19,7 @@ void shotExplosion(Entity *e);
 bool killMonster(Entity *e, bool allowCallback);
 void soundEffect(uint32 sound, const vec3 &position);
 void soundSpeech(uint32 sound);
-void soundSpeech(uint32 sounds[]);
+void soundSpeech(const uint32 sounds[]);
 void setSkybox(uint32 objectName);
 bool achievementFullfilled(const string &name, bool bossKill = false); // returns if this is the first time the achievement is fulfilled
 void makeAnnouncement(uint32 headline, uint32 description, uint32 duration = 30 * 30);
@@ -56,33 +55,33 @@ enum class PowerupTypeEnum
 	Total
 };
 
-const uint32 powerupMode[(uint32)PowerupTypeEnum::Total] = {
-	0, 0, 0,
-	1, 1, 1,
-	2, 2, 2, 2, 2, 2, 2, 2,
-	3
+constexpr const uint32 PowerupMode[(uint32)PowerupTypeEnum::Total] = {
+	0, 0, 0, // collectibles
+	1, 1, 1, // timed
+	2, 2, 2, 2, 2, 2, 2, 2, // permanent
+	3 // extra
 };
-const real powerupChances[(uint32)PowerupTypeEnum::Total] = {
-	0.05 / 3, 0.05 / 3, 0.05 / 3,
-	0.05 / 3, 0.05 / 3, 0.05 / 3,
-	0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8, 0.05 / 8,
-	0.85
+constexpr const float PowerupChances[(uint32)PowerupTypeEnum::Total] = {
+	0.1f / 3, 0.1f / 3, 0.1f / 3,
+	0.1f / 3, 0.1f / 3, 0.1f / 3,
+	0.1f / 8, 0.1f / 8, 0.1f / 8, 0.1f / 8, 0.1f / 8, 0.1f / 8, 0.1f / 8, 0.1f / 8,
+	0.7f
 };
-constexpr char letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
-const real playerScale = 3;
-const real mapNoPullRadius = 250;
-const vec3 playerDeathColor = vec3(0.68, 0.578, 0.252);
-constexpr uint32 shotsTtl = 300;
-constexpr uint32 bossesTotalCount = 5;
-const vec3 redPillColor = vec3(229, 101, 84) / 255;
-const vec3 bluePillColor = vec3(123, 198, 242) / 255;
-constexpr uint32 powerupSellPrice = 5;
-constexpr uint32 powerupBuyPriceBase = 50;
+constexpr const char Letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
+constexpr float PlayerScale = 3;
+constexpr float MapNoPullRadius = 250;
+const vec3 PlayerDeathColor = vec3(0.68, 0.578, 0.252);
+constexpr uint32 ShotsTtl = 300;
+constexpr uint32 BossesTotalCount = 5;
+const vec3 RedPillColor = vec3(229, 101, 84) / 255;
+const vec3 BluePillColor = vec3(123, 198, 242) / 255;
+constexpr uint32 PowerupSellPriceBase = 5;
+constexpr uint32 PowerupBuyPriceBase = 10;
 
 extern EntityGroup *entitiesToDestroy;
 extern EntityGroup *entitiesPhysicsEvenWhenPaused;
-extern Holder<SpatialStructure> SpatialSearchData;
-extern Holder<SpatialQuery> SpatialSearchQuery;
+extern Holder<SpatialStructure> spatialSearchData;
+extern Holder<SpatialQuery> spatialSearchQuery;
 
 struct Achievements
 {

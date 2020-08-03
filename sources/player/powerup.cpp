@@ -1,9 +1,9 @@
-#include "../game.h"
-
 #include <cage-core/entities.h>
 #include <cage-core/config.h>
 #include <cage-core/color.h>
 #include <cage-core/hashString.h>
+
+#include "../game.h"
 
 namespace
 {
@@ -49,7 +49,7 @@ namespace
 				DEGRID_COMPONENT(Shot, sh, shot);
 				sh.damage = 1;
 				DEGRID_COMPONENT(Timeout, ttl, shot);
-				ttl.ttl = shotsTtl;
+				ttl.ttl = ShotsTtl;
 			}
 		}
 	}
@@ -69,7 +69,7 @@ namespace
 	void wastedPowerup()
 	{
 		statistics.powerupsWasted++;
-		game.money += powerupSellPrice;
+		game.money += PowerupSellPriceBase * (game.defeatedBosses + 1);
 		soundSpeech(HashString("degrid/speech/pickup/sold.wav"));
 	}
 
@@ -83,10 +83,10 @@ namespace
 			CAGE_ASSERT(p.type < PowerupTypeEnum::Total);
 
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			if (!collisionTest(playerTransform.position, playerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))
+			if (!collisionTest(playerTransform.position, PlayerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))
 			{
 				vec3 toPlayer = playerTransform.position - tr.position;
-				real dist = max(length(toPlayer) - playerScale - tr.scale, 1);
+				real dist = max(length(toPlayer) - PlayerScale - tr.scale, 1);
 				tr.position += normalize(toPlayer) * (2 / dist);
 				continue;
 			}
@@ -94,7 +94,7 @@ namespace
 			game.score += 20;
 			statistics.powerupsPicked++;
 			e->add(entitiesToDestroy);
-			switch (powerupMode[(uint32)p.type])
+			switch (PowerupMode[(uint32)p.type])
 			{
 			case 0: // collectible
 				if (game.powerups[(uint32)p.type] < 3)
@@ -111,7 +111,7 @@ namespace
 						bool ok = true;
 						for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 						{
-							if (powerupMode[i] == 0 && game.powerups[i] < 3)
+							if (PowerupMode[i] == 0 && game.powerups[i] < 3)
 								ok = false;
 						}
 						if (ok)
@@ -186,7 +186,7 @@ namespace
 		{ // decrease timed power ups
 			for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			{
-				if (powerupMode[i] == 1 && game.powerups[i] > 0)
+				if (PowerupMode[i] == 1 && game.powerups[i] > 0)
 					game.powerups[i]--;
 			}
 		}
@@ -216,8 +216,8 @@ namespace
 		uint32 c = 0;
 		while (true)
 		{
-			CAGE_ASSERT(c < sizeof(powerupChances) / sizeof(powerupChances[0]));
-			p -= powerupChances[c];
+			CAGE_ASSERT(c < sizeof(PowerupChances) / sizeof(PowerupChances[0]));
+			p -= PowerupChances[c];
 			if (p < 0)
 				return (PowerupTypeEnum)c;
 			c++;
@@ -233,10 +233,10 @@ void powerupSpawn(const vec3 &position)
 	PowerupTypeEnum type = powerupSpawnType();
 	if (statistics.powerupsSpawned == 0)
 	{
-		while (powerupMode[(uint32)type] != 2)
+		while (PowerupMode[(uint32)type] != 2)
 			type = powerupSpawnType();
 	}
-	bool coin = type == PowerupTypeEnum::Coin;
+	const bool coin = type == PowerupTypeEnum::Coin;
 	if (coin)
 		statistics.coinsSpawned++;
 	else
@@ -246,7 +246,7 @@ void powerupSpawn(const vec3 &position)
 	CAGE_COMPONENT_ENGINE(Transform, transform, e);
 	transform.position = position * vec3(1, 0, 1);
 	transform.orientation = randomDirectionQuat();
-	transform.scale = coin ? 1.5 : 2.5;
+	transform.scale = coin ? 2.0 : 2.5;
 	DEGRID_COMPONENT(Timeout, ttl, e);
 	ttl.ttl = 120 * 30;
 	DEGRID_COMPONENT(Powerup, p, e);
@@ -255,13 +255,13 @@ void powerupSpawn(const vec3 &position)
 	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
 	DEGRID_COMPONENT(Velocity, velocity, e); // to make the powerup affected by gravity
 	CAGE_COMPONENT_ENGINE(Render, render, e);
-	static const uint32 objectName[4] = {
+	constexpr const uint32 ObjectName[4] = {
 		HashString("degrid/player/powerupCollectible.object"),
 		HashString("degrid/player/powerupOnetime.object"),
 		HashString("degrid/player/powerupPermanent.object"),
 		HashString("degrid/player/coin.object")
 	};
-	render.object = objectName[powerupMode[(uint32)p.type]];
+	render.object = ObjectName[PowerupMode[(uint32)p.type]];
 	render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
 	soundEffect(coin ? HashString("degrid/player/coin.ogg") : HashString("degrid/player/powerup.ogg"), transform.position);
 }
@@ -303,12 +303,12 @@ void eventBomb()
 	if (BossComponent::component->group()->count() == 0)
 		monstersSpawnInitial();
 
-	uint32 sounds[] = {
+	constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/bomb-them-all.wav"),
 		HashString("degrid/speech/use/burn-them-all.wav"),
 		HashString("degrid/speech/use/let-them-burn.wav"),
 		0 };
-	soundSpeech(sounds);
+	soundSpeech(Sounds);
 
 	if (kills == 0)
 		achievementFullfilled("wasted");
@@ -337,11 +337,11 @@ void eventTurret()
 	DEGRID_COMPONENT(Rotation, rot, turret);
 	rot.rotation = quat(degs(), degs(1), degs());
 
-	uint32 sounds[] = {
+	constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/engaging-a-turret.wav"),
 		HashString("degrid/speech/use/turret-engaged.wav"),
 		0 };
-	soundSpeech(sounds);
+	soundSpeech(Sounds);
 
 	if (TurretComponent::component->group()->count() >= 4)
 		achievementFullfilled("turrets");
@@ -369,11 +369,11 @@ void eventDecoy()
 	DEGRID_COMPONENT(Rotation, rot, decoy);
 	rot.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
-	uint32 sounds[] = {
+	constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/decoy-launched.wav"),
 		HashString("degrid/speech/use/launching-a-decoy.wav"),
 		0 };
-	soundSpeech(sounds);
+	soundSpeech(Sounds);
 }
 
 uint32 permanentPowerupLimit()

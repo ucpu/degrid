@@ -1,8 +1,8 @@
-#include "screens.h"
-#include "../game.h"
-
 #include <cage-core/config.h>
 #include <cage-core/files.h>
+
+#include "screens.h"
+#include "../game.h"
 
 void reloadLanguage(uint32 index);
 extern ConfigUint32 confLanguage;
@@ -90,7 +90,7 @@ void setScreenMainmenu()
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/newgame");
 			CAGE_COMPONENT_GUI(TextFormat, format, butNewGame);
-			format.color = redPillColor;
+			format.color = RedPillColor;
 		}
 
 		{
@@ -149,7 +149,7 @@ void setScreenMainmenu()
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/quit");
 			CAGE_COMPONENT_GUI(TextFormat, format, butQuit);
-			format.color = bluePillColor;
+			format.color = BluePillColor;
 		}
 	}
 
@@ -162,12 +162,12 @@ void setScreenMainmenu()
 			layout.vertical = true;
 		}
 
-		static const uint32 flags[] = {
+		constexpr const uint32 Flags[] = {
 			HashString("degrid/languages/english.png"),
 			HashString("degrid/languages/czech.png")
 		};
 
-		for (uint32 i = 0; i < sizeof(flags) / sizeof(flags[0]); i++)
+		for (uint32 i = 0; i < sizeof(Flags) / sizeof(Flags[0]); i++)
 		{
 			Entity *but = ents->create(200 + i);
 			CAGE_COMPONENT_GUI(Parent, parent, but);
@@ -175,7 +175,7 @@ void setScreenMainmenu()
 			parent.order = i;
 			CAGE_COMPONENT_GUI(Button, control, but);
 			CAGE_COMPONENT_GUI(Image, img, but);
-			img.textureName = flags[i];
+			img.textureName = Flags[i];
 			CAGE_COMPONENT_GUI(ExplicitSize, size, but);
 			size.size = vec2(80, 40);
 		}

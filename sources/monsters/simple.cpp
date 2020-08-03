@@ -67,8 +67,8 @@ namespace
 				{
 					real closestDistance = real::Infinity();
 					uint32 myName = e->name();
-					SpatialSearchQuery->intersection(sphere(tr.position, 15));
-					for (uint32 otherName : SpatialSearchQuery->result())
+					spatialSearchQuery->intersection(sphere(tr.position, 15));
+					for (uint32 otherName : spatialSearchQuery->result())
 					{
 						if (otherName == myName)
 							continue;

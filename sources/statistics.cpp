@@ -1,12 +1,11 @@
-#include "game.h"
-
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/hashString.h>
 #include <cage-core/macros.h>
-
 #include <cage-engine/window.h>
 #include <cage-engine/engineProfiling.h>
+
+#include "game.h"
 
 GlobalStatistics statistics;
 
@@ -53,7 +52,7 @@ namespace
 
 	void gameStop()
 	{
-		static const string powerupName[(uint32)PowerupTypeEnum::Total] = {
+		static const string PowerupName[(uint32)PowerupTypeEnum::Total] = {
 			"Bomb",
 			"Turret",
 			"Decoy",
@@ -72,7 +71,7 @@ namespace
 		};
 		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			if (game.powerups[i] > 0)
-				CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "powerup '" + powerupName[i] + "': " + game.powerups[i]);
+				CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "powerup '" + PowerupName[i] + "': " + game.powerups[i]);
 
 #define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + CAGE_STRINGIZE(N) ": " + statistics.N);
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
@@ -94,7 +93,7 @@ namespace
 		));
 #undef GCHL_GENERATE
 
-		uint64 duration = getApplicationTime() - statistics.timeStart;
+		const uint64 duration = getApplicationTime() - statistics.timeStart;
 		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "duration: " + (duration / 1e6) + " s");
 		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
 		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));

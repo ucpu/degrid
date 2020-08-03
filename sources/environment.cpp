@@ -1,5 +1,3 @@
-#include "game.h"
-
 #include <cage-core/geometry.h>
 #include <cage-core/entities.h>
 #include <cage-core/assetManager.h>
@@ -7,6 +5,8 @@
 #include <cage-core/spatialStructure.h>
 #include <cage-core/hashString.h>
 #include <cage-core/color.h>
+
+#include "game.h"
 
 namespace
 {
@@ -108,11 +108,11 @@ namespace
 			l.intensity = 3;
 		}
 
-		const real radius = mapNoPullRadius + playerScale;
+		constexpr float radius = MapNoPullRadius + PlayerScale;
 #ifdef CAGE_DEBUG
-		const real step = 50;
+		constexpr float step = 50;
 #else
-		const real step = 12;
+		constexpr float step = 12;
 #endif
 		for (real y = -radius; y < radius + 1e-3; y += step)
 		{
@@ -139,9 +139,9 @@ namespace
 		}
 
 #ifdef CAGE_DEBUG
-		const real angStep = 5;
+		constexpr float angStep = 6;
 #else
-		const real angStep = 2;
+		constexpr float angStep = 3;
 #endif
 		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
 		{
@@ -205,8 +205,8 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	statistics.environmentExplosions++;
 
 	// colorize nearby grids
-	SpatialSearchQuery->intersection(sphere(position, size * 2));
-	for (uint32 otherName : SpatialSearchQuery->result())
+	spatialSearchQuery->intersection(sphere(position, size * 2));
+	for (uint32 otherName : spatialSearchQuery->result())
 	{
 		if (!engineEntities()->has(otherName))
 			continue;

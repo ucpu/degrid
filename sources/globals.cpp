@@ -1,6 +1,6 @@
-#include "game.h"
-
 #include <cage-core/entities.h>
+
+#include "game.h"
 
 EntityComponent *GravityComponent::component;
 EntityComponent *VelocityComponent::component;

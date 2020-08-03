@@ -1,8 +1,8 @@
-#include "screens.h"
-
 #include <cage-core/files.h>
 #include <cage-core/ini.h>
 #include <cage-core/enumerate.h>
+
+#include "screens.h"
 
 #include <vector>
 #include <algorithm>
@@ -17,9 +17,9 @@ namespace
 
 	struct ScoreComparator
 	{
-		int mode;
-		ScoreComparator(int mode) : mode(mode) {}
-		const bool operator () (const Score &a, const Score &b) const
+		int mode = -1;
+		explicit ScoreComparator(int mode) : mode(mode) {}
+		bool operator () (const Score &a, const Score &b) const
 		{
 			switch (mode)
 			{

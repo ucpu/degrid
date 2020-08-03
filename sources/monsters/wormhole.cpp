@@ -1,6 +1,6 @@
-#include "monsters.h"
-
 #include <cage-core/color.h>
+
+#include "monsters.h"
 
 #include <vector>
 
@@ -137,8 +137,8 @@ namespace
 			if (g.strength > 0)
 			{ // this is sucking wormhole
 				CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-				SpatialSearchQuery->intersection(sphere(t.position, t.scale + 0.1));
-				for (uint32 otherName : SpatialSearchQuery->result())
+				spatialSearchQuery->intersection(sphere(t.position, t.scale + 0.1));
+				for (uint32 otherName : spatialSearchQuery->result())
 				{
 					if (otherName == myName)
 						continue;

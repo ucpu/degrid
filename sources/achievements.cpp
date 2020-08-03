@@ -1,11 +1,11 @@
-#include "game.h"
-#include "screens/screens.h"
-
 #include <cage-core/config.h>
 #include <cage-core/timer.h>
 #include <cage-core/ini.h>
 #include <cage-core/hashString.h>
 #include <cage-core/debug.h>
+
+#include "game.h"
+#include "screens/screens.h"
 
 #include <unordered_map>
 
@@ -34,10 +34,7 @@ namespace
 	struct Achievement
 	{
 		string date;
-		bool boss;
-
-		Achievement() : boss(false)
-		{}
+		bool boss = false;
 	};
 
 	std::unordered_map<string, Achievement> data;
@@ -118,7 +115,7 @@ namespace
 		CAGE_LOG(SeverityEnum::Info, "achievements", stringizer() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
 		for (const auto &a : data)
 			CAGE_LOG_CONTINUE(SeverityEnum::Note, "achievements", stringizer() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
-		if (achievements.bosses > bossesTotalCount)
+		if (achievements.bosses > BossesTotalCount)
 		{
 			CAGE_LOG(SeverityEnum::Warning, "achievements", "are you cheating? there is not that many bosses in the game");
 		}

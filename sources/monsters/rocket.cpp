@@ -21,7 +21,7 @@ namespace
 		if (game.paused)
 			return;
 
-		real disapearDistance2 = mapNoPullRadius * 2;
+		real disapearDistance2 = MapNoPullRadius * 2;
 		disapearDistance2 *= disapearDistance2;
 		for (Entity *e : RocketMonsterComponent::component->entities())
 		{
