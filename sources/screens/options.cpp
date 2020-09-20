@@ -114,7 +114,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = Letters[i];
 			CAGE_COMPONENT_GUI(Text, txt, opt);
-			txt.value = string(&Letters[i], 1);
+			txt.value = string(Letters[i]);
 		}
 	}
 
