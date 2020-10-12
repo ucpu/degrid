@@ -83,7 +83,7 @@ namespace
 					c.camera.perspectiveFov = fov * 1.5;
 					c.viewportOrigin = vec2(0.7, 0);
 					c.viewportSize = vec2(0.3, 0.3);
-					c.effects = CameraEffectsFlags::CombinedPass & ~CameraEffectsFlags::AmbientOcclusion;
+					c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
 				}
 			}
 			else
@@ -118,7 +118,7 @@ namespace
 			c.ambientIntensity = AmbientLight;
 			c.ambientDirectionalIntensity = DirectionalLight;
 			c.clear = CameraClearFlags::None;
-			c.effects = CameraEffectsFlags::CombinedPass & ~CameraEffectsFlags::AmbientOcclusion;
+			c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);
 			constexpr float HalfVolumeDistance = 30;
 			ls.attenuation[1] = 2.0 / HalfVolumeDistance;

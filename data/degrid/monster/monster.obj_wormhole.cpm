@@ -1,9 +1,9 @@
 
 [base]
-mask = 0.5
 emission = 2
 
 [mult]
+mask = 0.5
 intensity = 0.2
 
 [textures]

@@ -1,5 +1,7 @@
 
 [base]
-mask = 1
 roughness = 0.1
 metallic = 0
+
+[mult]
+mask = 0

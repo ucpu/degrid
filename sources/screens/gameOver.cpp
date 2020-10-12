@@ -104,7 +104,7 @@ void setScreenGameover()
 		parent.order = 2;
 		CAGE_COMPONENT_GUI(Label, control, empScore);
 		CAGE_COMPONENT_GUI(Text, txt, empScore);
-		txt.value = string(game.score);
+		txt.value = stringizer() + game.score;
 		CAGE_COMPONENT_GUI(TextFormat, format, empScore);
 		format.align = TextAlignEnum::Center;
 		format.color = vec3(0, 1, 0);

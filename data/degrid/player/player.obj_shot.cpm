@@ -1,7 +1,9 @@
 
 [base]
-mask = 1
 emission = 0.7
+
+[mult]
+mask = 0
 
 [flags]
 noLighting

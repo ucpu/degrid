@@ -14,5 +14,4 @@ albedo = shield/baked$$$$.png
 noShadowCast
 noVelocityWrite
 noDepthWrite
-opacityTexture
-translucency
+translucent

@@ -1,4 +1,6 @@
 
 [base]
-mask = 1
 emission = 1
+
+[mult]
+mask = 0
