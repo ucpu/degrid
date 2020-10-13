@@ -8,6 +8,7 @@
 #include "screens/screens.h"
 
 #include <unordered_map>
+#include <string>
 
 Achievements achievements;
 
