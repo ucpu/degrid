@@ -9,6 +9,8 @@
 
 #include <unordered_map>
 #include <string>
+#include <chrono>
+#include <ctime>
 
 Achievements achievements;
 
@@ -59,9 +61,10 @@ bool achievementFullfilled(const string &name, bool bossKill)
 
 	Achievement &a = data[name];
 	{ // date
-		uint32 y, M, d, h, m, s;
-		detail::getSystemDateTime(y, M, d, h, m, s);
-		a.date = detail::formatDateTime(y, M, d, h, m, s);
+		const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		char buffer[50];
+		std::strftime(buffer, 50, "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+		a.date = buffer;
 	}
 	a.boss = bossKill;
 

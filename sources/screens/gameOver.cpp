@@ -4,6 +4,9 @@
 #include "screens.h"
 #include "../game.h"
 
+#include <chrono>
+#include <ctime>
+
 namespace
 {
 	EventListener<bool(uint32)> guiEvent;
@@ -51,9 +54,10 @@ void setScreenGameover()
 		Holder<File> f = newFile("score.ini", fm);
 		f->writeLine("[]");
 		{
-			uint32 y, m, d, h, mm, s;
-			detail::getSystemDateTime(y, m, d, h, mm, s);
-			f->writeLine(stringizer() + "date = " + detail::formatDateTime(y, m, d, h, mm, s));
+			const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			char buffer[50];
+			std::strftime(buffer, 50, "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+			f->writeLine(stringizer() + "date = " + buffer);
 		}
 		f->writeLine(stringizer() + "bosses = " + game.defeatedBosses + " / " + achievements.bosses);
 		f->writeLine(stringizer() + "achievements = " + achievements.acquired);
