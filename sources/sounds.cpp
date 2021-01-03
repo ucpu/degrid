@@ -157,30 +157,30 @@ namespace
 	{
 		data = detail::systemArena().createObject<SoundData>();
 #define GCHL_GENERATE(NAME) \
-		data->CAGE_JOIN(NAME, Bus) = newMixingBus(engineSound()); \
+		data->CAGE_JOIN(NAME, Bus) = newMixingBus(); \
 		data->CAGE_JOIN(NAME, Bus)->addOutput(engineMusicMixer()); \
-		data->CAGE_JOIN(NAME, Volume) = newVolumeFilter(engineSound()); \
+		data->CAGE_JOIN(NAME, Volume) = newVolumeFilter(); \
 		data->CAGE_JOIN(NAME, Volume)->filter->setBus(data->CAGE_JOIN(NAME, Bus).get()); \
 		data->CAGE_JOIN(NAME, Volume)->volume = 0;
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
 #undef GCHL_GENERATE
 
-		data->musicVolume = newVolumeFilter(engineSound());
+		data->musicVolume = newVolumeFilter();
 		data->musicVolume->filter->setBus(engineMusicMixer());
-		data->effectsVolume = newVolumeFilter(engineSound());
+		data->effectsVolume = newVolumeFilter();
 		data->effectsVolume->filter->setBus(engineEffectsMixer());
 
-		data->speechBus1 = newMixingBus(engineSound());
+		data->speechBus1 = newMixingBus();
 		data->speechBus1->addOutput(engineMasterMixer());
-		data->speechVolume = newVolumeFilter(engineSound());
+		data->speechVolume = newVolumeFilter();
 		data->speechVolume->filter->setBus(data->speechBus1.get());
 		data->speechVolume->volume = 0;
-		data->speechFilter = newMixingFilter(engineSound());
+		data->speechFilter = newMixingFilter();
 		data->speechFilter->setBus(data->speechBus1.get());
 		data->speechFilter->execute.bind<speechCallback>();
-		data->speechBus2 = newMixingBus(engineSound());
+		data->speechBus2 = newMixingBus();
 		data->speechBus2->addOutput(data->speechBus1.get());
-		data->speechBus3 = newMixingBus(engineSound());
+		data->speechBus3 = newMixingBus();
 	}
 
 	void engineUpdate()
