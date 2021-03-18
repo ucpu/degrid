@@ -29,7 +29,7 @@ void setScreenAbout()
 		Entity *label = engineGui()->entities()->createUnique();
 		CAGE_COMPONENT_GUI(Parent, parent, label);
 		parent.parent = panel->name();
-		parent.order = numeric_cast<sint32>(it.cnt);
+		parent.order = numeric_cast<sint32>(it.index);
 		CAGE_COMPONENT_GUI(Label, lab, label);
 		CAGE_COMPONENT_GUI(Text, txt, label);
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");

@@ -165,8 +165,8 @@ namespace
 				if (ents->has(*it))
 				{
 					CAGE_COMPONENT_ENGINE(Transform, t, ents->get(*it));
-					uint32 octet = numeric_cast<uint32>(it.cnt) / 3;
-					sint32 sub = (numeric_cast<sint32>(it.cnt) % 3) - 1;
+					uint32 octet = numeric_cast<uint32>(it.index) / 3;
+					sint32 sub = (numeric_cast<sint32>(it.index) % 3) - 1;
 					quat o = quat(rads(), degs(octet * 45 + 22.5), rads());
 					vec3 p = o * vec3(0.8, 0.34, sub * -0.15) * bt.scale;
 					t.position = bt.position + bt.orientation * p;

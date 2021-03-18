@@ -95,7 +95,7 @@ namespace
 				Entity *txtScore = ents->createUnique();
 				CAGE_COMPONENT_GUI(Parent, parent, txtScore);
 				parent.parent = panel->name();
-				parent.order = numeric_cast<sint32>(it.cnt) * 2 + 100;
+				parent.order = numeric_cast<sint32>(it.index) * 2 + 100;
 				CAGE_COMPONENT_GUI(Label, control, txtScore);
 				CAGE_COMPONENT_GUI(Text, txt, txtScore);
 				txt.value = it->date;
@@ -107,7 +107,7 @@ namespace
 				Entity *txtDate = ents->createUnique();
 				CAGE_COMPONENT_GUI(Parent, parent, txtDate);
 				parent.parent = panel->name();
-				parent.order = numeric_cast<sint32>(it.cnt * 2 + 101);
+				parent.order = numeric_cast<sint32>(it.index * 2 + 101);
 				CAGE_COMPONENT_GUI(Label, control, txtDate);
 				CAGE_COMPONENT_GUI(Text, txt, txtDate);
 				txt.value = stringizer() + it->score;

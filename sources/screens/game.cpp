@@ -434,7 +434,7 @@ namespace
 					CAGE_COMPONENT_GUI(Panel, panel2, panel);
 					CAGE_COMPONENT_GUI(Parent, parent, panel);
 					parent.parent = layoutName;
-					parent.order = numeric_cast<sint32>(a.cnt) + 1;
+					parent.order = numeric_cast<sint32>(a.index) + 1;
 					CAGE_COMPONENT_GUI(Text, txt, panel);
 					txt.assetName = HashString("degrid/languages/internationalized.textpack");
 					txt.textName = a->headingName;
