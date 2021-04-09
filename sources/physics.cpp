@@ -113,7 +113,7 @@ namespace
 	public:
 		Callbacks() : engineInitListener("physics"), engineUpdateListener("physics")
 		{
-			engineInitListener.attach(controlThread().initialize, -20);
+			engineInitListener.attach(controlThread().initialize, -40);
 			engineInitListener.bind<&engineInit>();
 			engineUpdateListener.attach(controlThread().update, 30);
 			engineUpdateListener.bind<&engineUpdate>();

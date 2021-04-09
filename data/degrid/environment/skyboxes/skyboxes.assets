@@ -4,79 +4,79 @@ scheme = pack
 skyboxes.pack
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 0.cpm
 skybox.obj;0
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 1.cpm
 skybox.obj;1
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 2.cpm
 skybox.obj;2
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 3.cpm
 skybox.obj;3
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 4.cpm
 skybox.obj;4
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 5.cpm
 skybox.obj;5
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = hurt.cpm
 skybox.obj;hurt
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = menu.cpm
 skybox.obj;menu
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 1p.cpm
 portal.obj;1
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 2p.cpm
 portal.obj;2
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 3p.cpm
 portal.obj;3
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 4p.cpm
 portal.obj;4
 
 []
-scheme = mesh
+scheme = model
 normals = false
 material = 5p.cpm
 portal.obj;5

@@ -29,7 +29,7 @@ namespace
 
 		// fov (breathing effect)
 		cameraFovShakeAmplitude = interpolate(cameraFovShakeAmplitude, (real)BossComponent::component->group()->count(), 0.003);
-		rads fov = degs(40 + 0.5 * cage::sin(degs(engineControlTime() * 2.5e-4)) * clamp(cameraFovShakeAmplitude, 0, 1));
+		rads fov = degs(40 + 0.5 * cage::sin(degs(engineControlTime() * 2.5e-4)) * saturate(cameraFovShakeAmplitude));
 		{
 			CAGE_COMPONENT_ENGINE(Camera, pc, primaryCameraEntity);
 			pc.camera.perspectiveFov = fov;
@@ -120,9 +120,7 @@ namespace
 			c.clear = CameraClearFlags::None;
 			c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);
-			constexpr float HalfVolumeDistance = 30;
-			ls.attenuation[1] = 2.0 / HalfVolumeDistance;
-			ls.attenuation[0] = ls.attenuation[1] * CameraDistance * -1;
+			ls.rolloffFactor = 0.5 / CameraDistance;
 		}
 
 		{

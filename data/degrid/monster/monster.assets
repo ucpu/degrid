@@ -18,7 +18,7 @@ premultiplyAlpha = true
 shocker/lightning_$$.png
 
 []
-scheme = mesh
+scheme = model
 monster.obj?largeCube
 monster.obj?largeDiamond
 monster.obj?largeTriangle

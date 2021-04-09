@@ -17,13 +17,13 @@ cannoneerCannon.object
 egg.object
 
 []
-scheme = mesh
+scheme = model
 uvs = false
 
 egg.obj
 
 []
-scheme = mesh
+scheme = model
 uvs = false
 
 cannoneer.obj?body_body_body
@@ -35,12 +35,12 @@ cannoneer.obj?cannon_cannon_inner
 cannoneer.obj?ball
 
 []
-scheme = mesh
+scheme = model
 material = ../player/player.obj_shield.cpm
 cannoneer.obj?shield
 
 []
-scheme = mesh
+scheme = model
 uvs = false
 
 material = cannoneer.obj_bulb.cpm

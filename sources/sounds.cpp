@@ -4,12 +4,9 @@
 #include <cage-core/assetManager.h>
 #include <cage-core/spatialStructure.h>
 #include <cage-core/hashString.h>
-#include <cage-core/macros.h>
 #include <cage-engine/sound.h>
 
 #include "game.h"
-
-#include <atomic>
 
 extern ConfigFloat confVolumeMusic;
 extern ConfigFloat confVolumeEffects;
@@ -18,60 +15,14 @@ extern ConfigFloat confVolumeSpeech;
 namespace
 {
 	real suspense;
+	real suspenseVolume;
+	real actionVolume;
+	real endVolume;
+	Entity *suspenseEnt;
+	Entity *actionEnt;
+	Entity *endEnt;
 
-	struct SoundData
-	{
-		Holder<MixingBus> suspenseBus;
-		Holder<MixingBus> actionBus;
-		Holder<MixingBus> endBus;
-
-		Holder<VolumeFilter> suspenseVolume;
-		Holder<VolumeFilter> actionVolume;
-		Holder<VolumeFilter> endVolume;
-
-		bool suspenseLoaded = false;
-		bool actionLoaded = false;
-		bool endLoaded = false;
-
-		Holder<VolumeFilter> musicVolume;
-		Holder<VolumeFilter> effectsVolume;
-
-		// this is a bit of a hack. the engine will have to be improved to handle situations like these
-		// engine master bus <- bus 1 <- volume filter <- filter (speechCallback) <- bus 2 <- bus 3 <- source
-		// problem is, that the filter cannot modify its inputs (bus 2) of its own bus (bus 1)
-		// but it may modify bus 3 :D
-		Holder<MixingBus> speechBus1;
-		Holder<MixingBus> speechBus2;
-		Holder<MixingBus> speechBus3;
-		Holder<VolumeFilter> speechVolume;
-		Holder<MixingFilter> speechFilter;
-		uint64 speechStart = 0;
-		std::atomic<uint32> speechName{0};
-	};
-	SoundData *data;
-
-	void alterVolume(real &current, real target)
-	{
-		real change = 0.7f / (1000000 / controlThread().updatePeriod());
-		if (current > target + change)
-		{
-			current -= change;
-			return;
-		}
-		if (current < target - change)
-		{
-			current += change;
-			return;
-		}
-		current = target;
-	}
-
-	void alterVolume(Holder<VolumeFilter> &current, real target)
-	{
-		alterVolume(current->volume, target);
-	}
-
-	void musicUpdate()
+	void determineSuspense()
 	{
 		if (game.cinematic)
 		{
@@ -106,97 +57,64 @@ namespace
 			suspense = 1;
 	}
 
-	void speechCallback(const MixingFilterApi &api)
+	void alterVolume(real& current, real target)
 	{
-		// this function is called in another thread!
-		data->speechBus3->clear();
-		if (!data->speechName)
-			return;
-		Holder<SoundSource> src = engineAssets()->get<AssetSchemeIndexSoundSource, SoundSource>(data->speechName);
-		if (!src)
-			return;
-		if (data->speechStart + src->getDuration() + 100000 < engineControlTime())
+		real change = 0.7f / (1000000 / controlThread().updatePeriod());
+		if (current > target + change)
 		{
-			data->speechName = 0;
+			current -= change;
 			return;
 		}
-		src->addOutput(data->speechBus3.get());
-		data->speechBus3->addOutput(data->speechBus2.get());
-		SoundDataBuffer s = api.output;
-		s.time -= (sint64)data->speechStart;
-		api.input(s);
+		if (current < target - change)
+		{
+			current += change;
+			return;
+		}
+		current = target;
 	}
 
-	void soundUpdate()
+	void determineVolumes()
 	{
-		data->musicVolume->volume = (float)confVolumeMusic;
-		data->effectsVolume->volume = (float)confVolumeEffects;
-		data->speechVolume->volume = (float)confVolumeSpeech;
-
-		constexpr uint32 suspenseName = HashString("degrid/music/fear-and-horror.ogg");
-		constexpr uint32 actionName = HashString("degrid/music/chaotic-filth.ogg");
-		constexpr uint32 endName = HashString("degrid/music/sad-song.ogg");
-#define GCHL_GENERATE(NAME) if (!data->CAGE_JOIN(NAME, Loaded)) { Holder<SoundSource> src = engineAssets()->get<AssetSchemeIndexSoundSource, SoundSource>(CAGE_JOIN(NAME, Name)); if (!src) return; src->addOutput(data->CAGE_JOIN(NAME, Bus).get()); data->CAGE_JOIN(NAME, Volume)->volume = 0; data->CAGE_JOIN(NAME, Loaded) = true; }
-		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
-#undef GCHL_GENERATE
-
 		if (game.gameOver)
 		{
-			alterVolume(data->suspenseVolume, 0);
-			alterVolume(data->actionVolume, 0);
-			alterVolume(data->endVolume, 1);
+			alterVolume(suspenseVolume, 0);
+			alterVolume(actionVolume, 0);
+			alterVolume(endVolume, 1);
 			return;
 		}
 
-		alterVolume(data->suspenseVolume, suspense);
-		alterVolume(data->actionVolume, 1 - suspense);
-		alterVolume(data->endVolume, 0);
-	}
-
-	void engineInit()
-	{
-		data = detail::systemArena().createObject<SoundData>();
-#define GCHL_GENERATE(NAME) \
-		data->CAGE_JOIN(NAME, Bus) = newMixingBus(); \
-		data->CAGE_JOIN(NAME, Bus)->addOutput(engineMusicMixer()); \
-		data->CAGE_JOIN(NAME, Volume) = newVolumeFilter(); \
-		data->CAGE_JOIN(NAME, Volume)->filter->setBus(data->CAGE_JOIN(NAME, Bus).get()); \
-		data->CAGE_JOIN(NAME, Volume)->volume = 0;
-		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, suspense, action, end));
-#undef GCHL_GENERATE
-
-		data->musicVolume = newVolumeFilter();
-		data->musicVolume->filter->setBus(engineMusicMixer());
-		data->effectsVolume = newVolumeFilter();
-		data->effectsVolume->filter->setBus(engineEffectsMixer());
-
-		data->speechBus1 = newMixingBus();
-		data->speechBus1->addOutput(engineMasterMixer());
-		data->speechVolume = newVolumeFilter();
-		data->speechVolume->filter->setBus(data->speechBus1.get());
-		data->speechVolume->volume = 0;
-		data->speechFilter = newMixingFilter();
-		data->speechFilter->setBus(data->speechBus1.get());
-		data->speechFilter->execute.bind<speechCallback>();
-		data->speechBus2 = newMixingBus();
-		data->speechBus2->addOutput(data->speechBus1.get());
-		data->speechBus3 = newMixingBus();
+		alterVolume(suspenseVolume, suspense);
+		alterVolume(actionVolume, 1 - suspense);
+		alterVolume(endVolume, 0);
 	}
 
 	void engineUpdate()
 	{
 		OPTICK_EVENT("sound");
-		musicUpdate();
-		soundUpdate();
+
+		determineSuspense();
+		determineVolumes();
+
+		suspenseEnt->value<SoundComponent>(SoundComponent::component).gain = suspenseVolume * (real)confVolumeMusic;
+		actionEnt->value<SoundComponent>(SoundComponent::component).gain = actionVolume * (real)confVolumeMusic;
+		endEnt->value<SoundComponent>(SoundComponent::component).gain = endVolume * (real)confVolumeMusic;
 	}
 
-	void engineFin()
+	Entity *initEntity(const uint32 soundName)
 	{
-		detail::systemArena().destroy<SoundData>(data);
+		Entity *e = engineEntities()->createUnique();
+		CAGE_COMPONENT_ENGINE(Sound, s, e);
+		s.gain = 0;
+		s.name = soundName;
+		return e;
 	}
 
 	void gameStart()
 	{
+		suspenseEnt = initEntity(HashString("degrid/music/fear-and-horror.ogg"));
+		actionEnt = initEntity(HashString("degrid/music/chaotic-filth.ogg"));
+		endEnt = initEntity(HashString("degrid/music/sad-song.ogg"));
+
 		if (!game.cinematic)
 		{
 			constexpr const uint32 Sounds[] = {
@@ -231,50 +149,52 @@ namespace
 
 	class Callbacks
 	{
-		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
-		EventListener<void()> engineFinListener;
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		Callbacks() : engineInitListener("sounds"), engineUpdateListener("sounds"), engineFinListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
+		Callbacks() : engineUpdateListener("sounds"), gameStartListener("sounds"), gameStopListener("sounds")
 		{
-			engineInitListener.attach(controlThread().initialize, -55);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update, -55);
+			engineUpdateListener.attach(controlThread().update, 55);
 			engineUpdateListener.bind<&engineUpdate>();
-			engineFinListener.attach(controlThread().finalize, -55);
-			engineFinListener.bind<&engineFin>();
-			gameStartListener.attach(gameStartEvent(), -55);
+			gameStartListener.attach(gameStartEvent(), 55);
 			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent(), -55);
+			gameStopListener.attach(gameStopEvent(), 55);
 			gameStopListener.bind<&gameStop>();
 		}
 	} callbacksInstance;
 }
 
-void soundEffect(uint32 sound, const vec3 &position)
+void soundEffect(uint32 soundName, const vec3 &position)
 {
-	Holder<SoundSource> src = engineAssets()->get<AssetSchemeIndexSoundSource, SoundSource>(sound);
+	Holder<Sound> src = engineAssets()->get<AssetSchemeIndexSound, Sound>(soundName);
 	if (!src)
 		return;
 	Entity *e = engineEntities()->createUnique();
 	CAGE_COMPONENT_ENGINE(Transform, t, e);
 	t.position = position;
 	CAGE_COMPONENT_ENGINE(Sound, s, e);
-	s.name = sound;
+	s.name = soundName;
 	s.startTime = engineControlTime();
+	s.gain = (real)confVolumeEffects;
 	DEGRID_COMPONENT(Timeout, ttl, e);
-	ttl.ttl = numeric_cast<uint32>((src->getDuration() + 100000) / controlThread().updatePeriod());
+	ttl.ttl = numeric_cast<uint32>((src->duration() + 100000) / controlThread().updatePeriod());
 	e->add(entitiesPhysicsEvenWhenPaused);
 }
 
-void soundSpeech(uint32 sound)
+void soundSpeech(uint32 soundName)
 {
-	if (data->speechName)
+	Holder<Sound> src = engineAssets()->get<AssetSchemeIndexSound, Sound>(soundName);
+	if (!src)
 		return;
-	data->speechName = sound;
-	data->speechStart = engineControlTime() + 10000;
+	Entity* e = engineEntities()->createUnique();
+	CAGE_COMPONENT_ENGINE(Sound, s, e);
+	s.name = soundName;
+	s.startTime = engineControlTime();
+	s.gain = (real)confVolumeSpeech;
+	DEGRID_COMPONENT(Timeout, ttl, e);
+	ttl.ttl = numeric_cast<uint32>((src->duration() + 100000) / controlThread().updatePeriod());
+	e->add(entitiesPhysicsEvenWhenPaused);
 }
 
 void soundSpeech(const uint32 sounds[])

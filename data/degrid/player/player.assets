@@ -22,7 +22,7 @@ premultiplyAlpha = true
 shield/baked$$$$.png
 
 []
-scheme = mesh
+scheme = model
 player.obj?player
 player.obj?shot
 player.obj?turret
@@ -30,21 +30,21 @@ player.obj?shield
 coin.obj
 
 []
-scheme = mesh
+scheme = model
 material = powerupOnetime.cpm
 uvs = false
 
 powerup.obj;onetime
 
 []
-scheme = mesh
+scheme = model
 material = powerupCollectible.cpm
 uvs = false
 
 powerup.obj;collectible
 
 []
-scheme = mesh
+scheme = model
 material = powerupPermanent.cpm
 uvs = false
 

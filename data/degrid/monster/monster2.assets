@@ -1,13 +1,13 @@
 
 []
-scheme = mesh
+scheme = model
 uvs = false
 
 material = rocket.cpm
 rocket.obj
 
 []
-scheme = mesh
+scheme = model
 uvs = false
 bones = true
 material = spawner.cpm
