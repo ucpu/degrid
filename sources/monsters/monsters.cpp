@@ -27,7 +27,7 @@ namespace
 			{
 				uint32 myName = e->name();
 				vec3 dispersion;
-				spatialSearchQuery->intersection(sphere(t.position, t.scale + 1));
+				spatialSearchQuery->intersection(Sphere(t.position, t.scale + 1));
 				for (uint32 otherName : spatialSearchQuery->result())
 				{
 					if (otherName == myName)

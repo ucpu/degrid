@@ -69,7 +69,7 @@ namespace
 			DEGRID_COMPONENT(Shot, sh, e);
 			DEGRID_COMPONENT(Velocity, vl, e);
 
-			spatialSearchQuery->intersection(sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
+			spatialSearchQuery->intersection(Sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
 			for (uint32 otherName : spatialSearchQuery->result())
 			{
 				if (otherName == myName)

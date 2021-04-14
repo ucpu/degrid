@@ -137,7 +137,7 @@ namespace
 			if (g.strength > 0)
 			{ // this is sucking wormhole
 				CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-				spatialSearchQuery->intersection(sphere(t.position, t.scale + 0.1));
+				spatialSearchQuery->intersection(Sphere(t.position, t.scale + 0.1));
 				for (uint32 otherName : spatialSearchQuery->result())
 				{
 					if (otherName == myName)

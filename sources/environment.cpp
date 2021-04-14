@@ -205,7 +205,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 	statistics.environmentExplosions++;
 
 	// colorize nearby grids
-	spatialSearchQuery->intersection(sphere(position, size * 2));
+	spatialSearchQuery->intersection(Sphere(position, size * 2));
 	for (uint32 otherName : spatialSearchQuery->result())
 	{
 		if (!engineEntities()->has(otherName))

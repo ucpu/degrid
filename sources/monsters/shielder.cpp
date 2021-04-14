@@ -115,7 +115,7 @@ namespace
 
 			// destroy shots
 			vec3 forward = tr.orientation * vec3(0, 0, -1);
-			spatialSearchQuery->intersection(sphere(tr.position + forward * (tr.scale + 1), 5));
+			spatialSearchQuery->intersection(Sphere(tr.position + forward * (tr.scale + 1), 5));
 			for (uint32 otherName : spatialSearchQuery->result())
 			{
 				Entity *e = engineEntities()->get(otherName);

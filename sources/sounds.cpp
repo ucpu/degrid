@@ -39,7 +39,7 @@ namespace
 		constexpr const float distMax = 60;
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		real closestMonsterToPlayer = real::Infinity();
-		spatialSearchQuery->intersection(sphere(playerTransform.position, distMax));
+		spatialSearchQuery->intersection(Sphere(playerTransform.position, distMax));
 		for (uint32 otherName : spatialSearchQuery->result())
 		{
 			Entity *e = engineEntities()->get(otherName);

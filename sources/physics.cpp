@@ -95,7 +95,7 @@ namespace
 				if (n)
 				{
 					CAGE_COMPONENT_ENGINE(Transform, tr, e);
-					spatialSearchData->update(n, sphere(tr.position, tr.scale));
+					spatialSearchData->update(n, Sphere(tr.position, tr.scale));
 				}
 			}
 		}
@@ -125,6 +125,6 @@ bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, c
 {
 	vec3 m = velocityB - velocityA;
 	if (lengthSquared(m) > 1e-7)
-		return intersects(makeSegment(positionB, positionB + m), sphere(positionA, radiusA + radiusB));
-	return intersects(positionB, sphere(positionA, radiusA + radiusB));
+		return intersects(makeSegment(positionB, positionB + m), Sphere(positionA, radiusA + radiusB));
+	return intersects(positionB, Sphere(positionA, radiusA + radiusB));
 }

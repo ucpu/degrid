@@ -47,7 +47,7 @@ namespace
 	void gameStart()
 	{
 		statistics = GlobalStatistics();
-		statistics.timeStart = getApplicationTime();
+		statistics.timeStart = applicationTime();
 	}
 
 	void gameStop()
@@ -93,7 +93,7 @@ namespace
 		));
 #undef GCHL_GENERATE
 
-		const uint64 duration = getApplicationTime() - statistics.timeStart;
+		const uint64 duration = applicationTime() - statistics.timeStart;
 		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "duration: " + (duration / 1e6) + " s");
 		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
 		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));

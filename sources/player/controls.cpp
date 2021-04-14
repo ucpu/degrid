@@ -52,7 +52,7 @@ namespace
 		vec4 pf = inv * vec4(px, py, 1, 1);
 		vec3 near = vec3(pn) / pn[3];
 		vec3 far = vec3(pf) / pf[3];
-		mouseCurrentPosition = intersection(makeLine(near, far), plane(vec3(), vec3(0, 1, 0)));
+		mouseCurrentPosition = intersection(makeLine(near, far), Plane(vec3(), vec3(0, 1, 0)));
 
 		if (false)
 		{
