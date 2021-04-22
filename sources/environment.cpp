@@ -262,7 +262,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		colorinv[0] = (colorinv[0] + 0.5) % 1;
 		colorinv = colorHsvToRgb(colorinv);
 		light.color = colorVariation(colorinv);
-		light.intensity = randomRange(2.0, 3.0);
+		light.intensity = randomRange(0.8, 1.2);
 		light.lightType = LightTypeEnum::Point;
 		light.attenuation = vec3(0, 0, 0.005);
 
