@@ -65,11 +65,13 @@ coin.object
 scheme = sound
 loopBefore = false
 loopAfter = false
+mono = true
 powerup.ogg
 coin.ogg
 
 []
 scheme = sound
+mono = true
 loopBefore = true
 loopAfter = true
 shield.ogg

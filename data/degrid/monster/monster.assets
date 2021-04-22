@@ -55,6 +55,7 @@ shocker/lightning.object
 scheme = sound
 loopBefore = false
 loopAfter = false
+mono = true
 bum-circle.ogg
 bum-triangle.ogg
 bum-cube.ogg
@@ -71,5 +72,6 @@ shocker/bum-shocker.ogg
 scheme = sound
 loopBefore = true
 loopAfter = true
+mono = true
 shocker/lightning.flac
 
