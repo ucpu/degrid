@@ -6,7 +6,7 @@ namespace
 {
 	void engineInit()
 	{
-		SimpleMonsterComponent::component = engineEntities()->defineComponent(SimpleMonsterComponent(), true);
+		SimpleMonsterComponent::component = engineEntities()->defineComponent(SimpleMonsterComponent());
 	}
 
 	void spawnSmallCube(uint32 originalEntity)

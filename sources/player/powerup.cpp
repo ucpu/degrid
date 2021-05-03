@@ -172,8 +172,8 @@ namespace
 
 	void engineInit()
 	{
-		TurretComponent::component = engineEntities()->defineComponent(TurretComponent(), true);
-		DecoyComponent::component = engineEntities()->defineComponent(DecoyComponent(), true);
+		TurretComponent::component = engineEntities()->defineComponent(TurretComponent());
+		DecoyComponent::component = engineEntities()->defineComponent(DecoyComponent());
 	}
 
 	void engineUpdate()

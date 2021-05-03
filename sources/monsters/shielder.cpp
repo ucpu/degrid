@@ -45,8 +45,8 @@ namespace
 
 	void engineInit()
 	{
-		ShielderComponent::component = engineEntities()->defineComponent(ShielderComponent(), true);
-		ShieldComponent::component = engineEntities()->defineComponent(ShieldComponent(), true);
+		ShielderComponent::component = engineEntities()->defineComponent(ShielderComponent());
+		ShieldComponent::component = engineEntities()->defineComponent(ShieldComponent());
 		shielderEliminatedListener.bind<&shielderEliminated>();
 		shielderEliminatedListener.attach(ShielderComponent::component->group()->entityRemoved);
 	}

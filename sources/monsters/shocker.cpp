@@ -13,7 +13,7 @@ namespace
 
 	void engineInit()
 	{
-		ShockerComponent::component = engineEntities()->defineComponent(ShockerComponent(), true);
+		ShockerComponent::component = engineEntities()->defineComponent(ShockerComponent());
 	}
 
 	void lightning(const vec3 &a, const vec3 &b, const vec3 &color)

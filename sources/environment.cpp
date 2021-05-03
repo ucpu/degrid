@@ -24,7 +24,7 @@ namespace
 
 	void engineInit()
 	{
-		SkyboxComponent::component = engineEntities()->defineComponent(SkyboxComponent(), true);
+		SkyboxComponent::component = engineEntities()->defineComponent(SkyboxComponent());
 		skyboxOrientation = randomDirectionQuat();
 		skyboxRotation = interpolate(quat(), randomDirectionQuat(), 5e-5);
 	}

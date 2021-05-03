@@ -48,7 +48,7 @@ namespace
 	EventListener<void(Entity *e)> eggDestroyedListener;
 	void engineInit()
 	{
-		BossEggComponent::component = engineEntities()->defineComponent(BossEggComponent(), true);
+		BossEggComponent::component = engineEntities()->defineComponent(BossEggComponent());
 		eggDestroyedListener.attach(BossEggComponent::component->group()->entityRemoved);
 		eggDestroyedListener.bind<&eggDestroyed>();
 	}

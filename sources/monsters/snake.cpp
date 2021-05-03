@@ -20,8 +20,8 @@ namespace
 
 	void engineInit()
 	{
-		SnakeTailComponent::component = engineEntities()->defineComponent(SnakeTailComponent(), true);
-		SnakeHeadComponent::component = engineEntities()->defineComponent(SnakeHeadComponent(), true);
+		SnakeTailComponent::component = engineEntities()->defineComponent(SnakeTailComponent());
+		SnakeHeadComponent::component = engineEntities()->defineComponent(SnakeHeadComponent());
 	}
 
 	void snakeSideMove(vec3 &p, const quat &forward, uint32 index, real dist)

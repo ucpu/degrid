@@ -80,8 +80,8 @@ namespace
 
 	void engineInit()
 	{
-		BodyComponent::component = engineEntities()->defineComponent(BodyComponent(), true);
-		CannonComponent::component = engineEntities()->defineComponent(CannonComponent(), true);
+		BodyComponent::component = engineEntities()->defineComponent(BodyComponent());
+		CannonComponent::component = engineEntities()->defineComponent(CannonComponent());
 		bodyEliminatedListener.bind<&bodyEliminated>();
 		bodyEliminatedListener.attach(BodyComponent::component->group()->entityRemoved);
 		cannonEliminatedListener.bind<&cannonEliminated>();

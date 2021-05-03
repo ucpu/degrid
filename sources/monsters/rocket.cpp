@@ -11,7 +11,7 @@ namespace
 
 	void engineInit()
 	{
-		RocketMonsterComponent::component = engineEntities()->defineComponent(RocketMonsterComponent(), true);
+		RocketMonsterComponent::component = engineEntities()->defineComponent(RocketMonsterComponent());
 	}
 
 	void engineUpdate()

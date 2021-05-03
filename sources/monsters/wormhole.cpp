@@ -95,8 +95,8 @@ namespace
 
 	void engineInit()
 	{
-		WormholeComponent::component = engineEntities()->defineComponent(WormholeComponent(), true);
-		MonsterFlickeringComponent::component = engineEntities()->defineComponent(MonsterFlickeringComponent(), true);
+		WormholeComponent::component = engineEntities()->defineComponent(WormholeComponent());
+		MonsterFlickeringComponent::component = engineEntities()->defineComponent(MonsterFlickeringComponent());
 	}
 
 	void engineUpdate()
