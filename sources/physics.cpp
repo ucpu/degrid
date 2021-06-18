@@ -16,7 +16,7 @@ namespace
 		entitiesToDestroy = engineEntities()->defineGroup();
 		entitiesPhysicsEvenWhenPaused = engineEntities()->defineGroup();
 		spatialSearchData = newSpatialStructure({});
-		spatialSearchQuery = newSpatialQuery(spatialSearchData.get());
+		spatialSearchQuery = newSpatialQuery(spatialSearchData.share());
 	}
 
 	void engineUpdate()
