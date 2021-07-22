@@ -9,8 +9,6 @@ namespace
 {
 	Entity *primaryCameraEntity;
 	Entity *skyboxPrimaryCameraEntity;
-	Entity *secondaryCameraEntity;
-	Entity *skyboxSecondaryCameraEntity;
 
 	constexpr float AmbientLight = 0.3f;
 	constexpr float DirectionalLight = 0;
@@ -49,49 +47,6 @@ namespace
 			CAGE_COMPONENT_ENGINE(Transform, s, skyboxPrimaryCameraEntity);
 			s.orientation = c.orientation;
 		}
-
-		{ // secondaryCamera
-			static ConfigBool secondaryCamera("degrid/secondaryCamera/enabled", false);
-			if (secondaryCamera)
-			{
-				CAGE_COMPONENT_ENGINE(Transform, tp, game.playerEntity);
-				{
-					CAGE_COMPONENT_ENGINE(Transform, ts, skyboxSecondaryCameraEntity);
-					ts.orientation = tp.orientation;
-					CAGE_COMPONENT_ENGINE(Camera, c, skyboxSecondaryCameraEntity);
-					c.cameraOrder = 3;
-					c.sceneMask = 2;
-					c.near = 0.5;
-					c.far = 3;
-					c.camera.perspectiveFov = fov * 1.5;
-					c.viewportOrigin = vec2(0.7, 0);
-					c.viewportSize = vec2(0.3, 0.3);
-				}
-				{
-					CAGE_COMPONENT_ENGINE(Transform, tc, secondaryCameraEntity);
-					tc.position = tp.position;
-					tc.orientation = tp.orientation;
-					CAGE_COMPONENT_ENGINE(Camera, c, secondaryCameraEntity);
-					c.cameraOrder = 4;
-					c.sceneMask = 1;
-					c.near = 3;
-					c.far = 500;
-					c.ambientColor = c.ambientDirectionalColor = vec3(1);
-					c.ambientIntensity = AmbientLight;
-					c.ambientDirectionalIntensity = DirectionalLight;
-					c.clear = CameraClearFlags::None;
-					c.camera.perspectiveFov = fov * 1.5;
-					c.viewportOrigin = vec2(0.7, 0);
-					c.viewportSize = vec2(0.3, 0.3);
-					c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
-				}
-			}
-			else
-			{
-				skyboxSecondaryCameraEntity->remove(CameraComponent::component);
-				secondaryCameraEntity->remove(CameraComponent::component);
-			}
-		}
 	}
 
 	void gameStart()
@@ -121,11 +76,6 @@ namespace
 			c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
 			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);
 			ls.rolloffFactor = 0.5 / CameraDistance;
-		}
-
-		{
-			skyboxSecondaryCameraEntity = engineEntities()->createUnique();
-			secondaryCameraEntity = engineEntities()->createUnique();
 		}
 	}
 

@@ -108,11 +108,11 @@ namespace
 			l.intensity = 3;
 		}
 
-		constexpr float radius = MapNoPullRadius + PlayerScale;
+		constexpr real radius = MapNoPullRadius + PlayerScale;
 #ifdef CAGE_DEBUG
-		constexpr float step = 50;
+		constexpr real step = 50;
 #else
-		constexpr float step = 12;
+		constexpr real step = 12;
 #endif
 		for (real y = -radius; y < radius + 1e-3; y += step)
 		{
@@ -139,11 +139,11 @@ namespace
 		}
 
 #ifdef CAGE_DEBUG
-		constexpr float angStep = 9;
+		constexpr rads angStep = degs(9);
 #else
-		constexpr float angStep = 3;
+		constexpr rads angStep = degs(3);
 #endif
-		for (rads ang = degs(0); ang < degs(360); ang += degs(angStep))
+		for (rads ang = degs(0); ang < degs(360); ang += angStep)
 		{
 			Entity *e = engineEntities()->createUnique();
 			DEGRID_COMPONENT(Grid, grid, e);

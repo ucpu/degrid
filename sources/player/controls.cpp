@@ -229,7 +229,7 @@ namespace
 				arrowsDirection = normalize(arrowsDirection);
 		}
 
-		constexpr float MouseMultiplier = 0.05f;
+		constexpr real MouseMultiplier = 0.05;
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 
 		switch (confControlMovement)
