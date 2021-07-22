@@ -28,9 +28,9 @@ namespace
 		if (game.gameOver)
 			return;
 
-		statistics.shotsCurrent = ShotComponent::component->group()->count();
+		statistics.shotsCurrent = engineEntities()->component<ShotComponent>()->count();
 		statistics.shotsMax = max(statistics.shotsMax, statistics.shotsCurrent);
-		statistics.monstersCurrent = MonsterComponent::component->group()->count();
+		statistics.monstersCurrent = engineEntities()->component<MonsterComponent>()->count();
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = engineEntities()->group()->count();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
@@ -40,7 +40,7 @@ namespace
 			statistics.timeRenderMin = min(statistics.timeRenderMin, statistics.timeRenderCurrent);
 			statistics.timeRenderMax = max(statistics.timeRenderMax, statistics.timeRenderCurrent);
 		}
-		statistics.soundEffectsCurrent = SoundComponent::component->group()->count();
+		statistics.soundEffectsCurrent = engineEntities()->component<SoundComponent>()->count();
 		statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
 	}
 

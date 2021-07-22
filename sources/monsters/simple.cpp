@@ -1,12 +1,10 @@
 #include "monsters.h"
 
-EntityComponent *SimpleMonsterComponent::component;
-
 namespace
 {
 	void engineInit()
 	{
-		SimpleMonsterComponent::component = engineEntities()->defineComponent(SimpleMonsterComponent());
+		engineEntities()->defineComponent(SimpleMonsterComponent());
 	}
 
 	void spawnSmallCube(uint32 originalEntity)
@@ -34,7 +32,7 @@ namespace
 		if (game.paused)
 			return;
 
-		for (Entity *e : SimpleMonsterComponent::component->entities())
+		for (Entity *e : engineEntities()->component<SimpleMonsterComponent>()->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(Velocity, mv, e);
@@ -75,7 +73,7 @@ namespace
 
 						Entity *e = engineEntities()->get(otherName);
 
-						if (!e->has(ShotComponent::component))
+						if (!e->has<ShotComponent>())
 							continue;
 
 						CAGE_COMPONENT_ENGINE(Transform, ot, e);

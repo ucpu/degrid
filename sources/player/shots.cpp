@@ -56,7 +56,7 @@ namespace
 
 	void shotsUpdate()
 	{
-		for (Entity *e : ShotComponent::component->entities())
+		for (Entity *e : engineEntities()->component<ShotComponent>()->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
@@ -78,13 +78,13 @@ namespace
 				Entity *e = engineEntities()->get(otherName);
 				CAGE_COMPONENT_ENGINE(Transform, ot, e);
 				vec3 toOther = ot.position - tr.position;
-				if (e->has(GridComponent::component))
+				if (e->has<GridComponent>())
 				{
 					DEGRID_COMPONENT(Velocity, og, e);
 					og.velocity += normalize(vl.velocity) * (0.2f / max(1, length(toOther)));
 					continue;
 				}
-				if (!e->has(MonsterComponent::component))
+				if (!e->has<MonsterComponent>())
 					continue;
 				DEGRID_COMPONENT(Monster, om, e);
 				if (om.life <= 0)

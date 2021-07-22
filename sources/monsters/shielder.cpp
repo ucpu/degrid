@@ -109,7 +109,7 @@ namespace
 			}
 			else
 			{
-				se->remove(RenderComponent::component);
+				se->remove<RenderComponent>();
 				continue;
 			}
 
@@ -119,7 +119,7 @@ namespace
 			for (uint32 otherName : spatialSearchQuery->result())
 			{
 				Entity *e = engineEntities()->get(otherName);
-				if (!e->has(ShotComponent::component))
+				if (!e->has<ShotComponent>())
 					continue;
 				CAGE_COMPONENT_ENGINE(Transform, ot, e);
 				vec3 toShot = ot.position - tr.position;

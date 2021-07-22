@@ -74,7 +74,7 @@ namespace
 					if (d2 > sqr(r + 20))
 					{ // teleport
 						tr.position = trp.position + randomChance3() - 0.5;
-						e->remove(TransformComponent::componentHistory);
+						//e->remove(TransformComponent::componentHistory);
 					}
 					else
 					{ // move

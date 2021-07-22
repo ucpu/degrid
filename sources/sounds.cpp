@@ -43,7 +43,7 @@ namespace
 		for (uint32 otherName : spatialSearchQuery->result())
 		{
 			Entity *e = engineEntities()->get(otherName);
-			if (e->has(MonsterComponent::component))
+			if (e->has<MonsterComponent>())
 			{
 				CAGE_COMPONENT_ENGINE(Transform, p, e);
 				real d = distance(p.position, playerTransform.position);
@@ -95,9 +95,9 @@ namespace
 		determineSuspense();
 		determineVolumes();
 
-		suspenseEnt->value<SoundComponent>(SoundComponent::component).gain = suspenseVolume * (real)confVolumeMusic;
-		actionEnt->value<SoundComponent>(SoundComponent::component).gain = actionVolume * (real)confVolumeMusic;
-		endEnt->value<SoundComponent>(SoundComponent::component).gain = endVolume * (real)confVolumeMusic;
+		suspenseEnt->value<SoundComponent>().gain = suspenseVolume * (real)confVolumeMusic;
+		actionEnt->value<SoundComponent>().gain = actionVolume * (real)confVolumeMusic;
+		endEnt->value<SoundComponent>().gain = endVolume * (real)confVolumeMusic;
 	}
 
 	Entity *initEntity(const uint32 soundName)

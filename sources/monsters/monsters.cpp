@@ -16,7 +16,7 @@ namespace
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
 
-		for (Entity *e : MonsterComponent::component->entities())
+		for (Entity *e : engineEntities()->component<MonsterComponent>()->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, t, e);
 			DEGRID_COMPONENT(Velocity, v, e);
@@ -35,7 +35,7 @@ namespace
 					Entity *e = engineEntities()->get(otherName);
 					CAGE_COMPONENT_ENGINE(Transform, ot, e);
 					vec3 toMonster = t.position - ot.position;
-					if (e->has(MonsterComponent::component))
+					if (e->has<MonsterComponent>())
 					{
 						real d = ot.scale + t.scale;
 						if (lengthSquared(toMonster) < d*d)
@@ -93,7 +93,7 @@ namespace
 			t.position[1] = m.groundLevel;
 		}
 
-		const bool hasBoss = BossComponent::component->group()->count() > 0;
+		const bool hasBoss = engineEntities()->component<BossComponent>()->count() > 0;
 		if (!game.cinematic)
 		{
 			// finished a boss fight

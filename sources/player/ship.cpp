@@ -86,8 +86,8 @@ namespace
 		}
 		else
 		{
-			game.shieldEntity->remove(RenderComponent::component);
-			game.shieldEntity->remove(SoundComponent::component);
+			game.shieldEntity->remove<RenderComponent>();
+			game.shieldEntity->remove<SoundComponent>();
 		}
 	}
 

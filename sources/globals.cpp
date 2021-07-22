@@ -2,16 +2,6 @@
 
 #include "game.h"
 
-EntityComponent *GravityComponent::component;
-EntityComponent *VelocityComponent::component;
-EntityComponent *RotationComponent::component;
-EntityComponent *TimeoutComponent::component;
-EntityComponent *GridComponent::component;
-EntityComponent *ShotComponent::component;
-EntityComponent *PowerupComponent::component;
-EntityComponent *MonsterComponent::component;
-EntityComponent *BossComponent::component;
-
 EventDispatcher<bool()> &gameStartEvent()
 {
 	static EventDispatcher<bool()> inst;
@@ -28,15 +18,15 @@ namespace
 {
 	void engineInit()
 	{
-		GravityComponent::component = engineEntities()->defineComponent(GravityComponent());
-		VelocityComponent::component = engineEntities()->defineComponent(VelocityComponent());
-		RotationComponent::component = engineEntities()->defineComponent(RotationComponent());
-		TimeoutComponent::component = engineEntities()->defineComponent(TimeoutComponent());
-		GridComponent::component = engineEntities()->defineComponent(GridComponent());
-		ShotComponent::component = engineEntities()->defineComponent(ShotComponent());
-		PowerupComponent::component = engineEntities()->defineComponent(PowerupComponent());
-		MonsterComponent::component = engineEntities()->defineComponent(MonsterComponent());
-		BossComponent::component = engineEntities()->defineComponent(BossComponent());
+		engineEntities()->defineComponent(GravityComponent());
+		engineEntities()->defineComponent(VelocityComponent());
+		engineEntities()->defineComponent(RotationComponent());
+		engineEntities()->defineComponent(TimeoutComponent());
+		engineEntities()->defineComponent(GridComponent());
+		engineEntities()->defineComponent(ShotComponent());
+		engineEntities()->defineComponent(PowerupComponent());
+		engineEntities()->defineComponent(MonsterComponent());
+		engineEntities()->defineComponent(BossComponent());
 	}
 
 	class Callbacks

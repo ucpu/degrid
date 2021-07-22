@@ -150,7 +150,7 @@ namespace
 		if (game.paused)
 			return;
 
-		if (BossComponent::component->group()->count() > 0)
+		if (engineEntities()->component<BossComponent>()->count() > 0)
 			return;
 
 		uint32 limit = monstersLimit();

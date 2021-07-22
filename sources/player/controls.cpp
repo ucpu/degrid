@@ -186,13 +186,13 @@ namespace
 
 		if (game.cinematic)
 		{
-			uint32 cnt = MonsterComponent::component->group()->count();
+			uint32 cnt = engineEntities()->component<MonsterComponent>()->count();
 			if (cnt == 0)
 				game.fireDirection = randomDirection3();
 			else
 			{
 				cnt = randomRange(0u, cnt);
-				for (Entity *e : MonsterComponent::component->entities())
+				for (Entity *e : engineEntities()->component<MonsterComponent>()->entities())
 				{
 					if (cnt-- == 0)
 					{

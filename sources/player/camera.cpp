@@ -26,7 +26,7 @@ namespace
 			return;
 
 		// fov (breathing effect)
-		cameraFovShakeAmplitude = interpolate(cameraFovShakeAmplitude, (real)BossComponent::component->group()->count(), 0.003);
+		cameraFovShakeAmplitude = interpolate(cameraFovShakeAmplitude, (real)engineEntities()->component<BossComponent>()->count(), 0.003);
 		rads fov = degs(40 + 0.5 * cage::sin(degs(engineControlTime() * 2.5e-4)) * saturate(cameraFovShakeAmplitude));
 		{
 			CAGE_COMPONENT_ENGINE(Camera, pc, primaryCameraEntity);

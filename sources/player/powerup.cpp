@@ -77,7 +77,7 @@ namespace
 	{
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
 		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
-		for (Entity *e : PowerupComponent::component->entities())
+		for (Entity *e : engineEntities()->component<PowerupComponent>()->entities())
 		{
 			DEGRID_COMPONENT(Powerup, p, e);
 			CAGE_ASSERT(p.type < PowerupTypeEnum::Total);
@@ -273,8 +273,8 @@ void eventBomb()
 
 	game.powerups[(uint32)PowerupTypeEnum::Bomb]--;
 	uint32 kills = 0;
-	uint32 count = MonsterComponent::component->group()->count();
-	for (Entity *e : MonsterComponent::component->entities())
+	uint32 count = engineEntities()->component<MonsterComponent>()->count();
+	for (Entity *e : engineEntities()->component<MonsterComponent>()->entities())
 	{
 		DEGRID_COMPONENT(Monster, m, e);
 		m.life -= 10;
@@ -293,14 +293,14 @@ void eventBomb()
 
 	{
 		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		for (Entity *e : GridComponent::component->entities())
+		for (Entity *e : engineEntities()->component<GridComponent>()->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, t, e);
 			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
 		}
 	}
 
-	if (BossComponent::component->group()->count() == 0)
+	if (engineEntities()->component<BossComponent>()->count() == 0)
 		monstersSpawnInitial();
 
 	constexpr const uint32 Sounds[] = {

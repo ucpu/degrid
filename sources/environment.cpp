@@ -71,7 +71,7 @@ namespace
 			return;
 
 		{ // update degrid markers
-			for (Entity *e : GridComponent::component->entities())
+			for (Entity *e : engineEntities()->component<GridComponent>()->entities())
 			{
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
 				CAGE_COMPONENT_ENGINE(Render, r, e);
@@ -86,7 +86,7 @@ namespace
 
 	void gameStart()
 	{
-		for (Entity *e : SkyboxComponent::component->entities())
+		for (Entity *e : engineEntities()->component<SkyboxComponent>()->entities())
 		{
 			// prevent the skyboxes to be destroyed so that they can dissipate properly
 			DEGRID_COMPONENT(Skybox, s, e);
@@ -155,7 +155,7 @@ namespace
 			grid.originalColor = render.color = vec3(1);
 		}
 
-		statistics.environmentGridMarkers = GridComponent::component->group()->count();
+		statistics.environmentGridMarkers = engineEntities()->component<GridComponent>()->count();
 	}
 
 	class Callbacks
@@ -179,7 +179,7 @@ namespace
 void setSkybox(uint32 objectName)
 {
 	{ // initiate disappearing of old sky-boxes
-		for (Entity *e : SkyboxComponent::component->entities())
+		for (Entity *e : engineEntities()->component<SkyboxComponent>()->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, t, e);
 			t.position[2] *= 0.9; // move the sky-box closer to the camera
@@ -211,7 +211,7 @@ void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3
 		if (!engineEntities()->has(otherName))
 			continue;
 		Entity *e = engineEntities()->get(otherName);
-		if (!e->has(GridComponent::component))
+		if (!e->has<GridComponent>())
 			continue;
 		CAGE_COMPONENT_ENGINE(Transform, ot, e);
 		CAGE_COMPONENT_ENGINE(Render, orc, e);

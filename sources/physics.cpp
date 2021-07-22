@@ -26,13 +26,13 @@ namespace
 		if (!game.paused)
 		{ // gravity
 			OPTICK_EVENT("gravity");
-			for (Entity *e : GravityComponent::component->entities())
+			for (Entity *e : engineEntities()->component<GravityComponent>()->entities())
 			{
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
 				DEGRID_COMPONENT(Gravity, g, e);
-				for (Entity *oe : VelocityComponent::component->entities())
+				for (Entity *oe : engineEntities()->component<VelocityComponent>()->entities())
 				{
-					if (oe->has(GravityComponent::component))
+					if (oe->has<GravityComponent>())
 						continue;
 					CAGE_COMPONENT_ENGINE(Transform, ot, oe);
 					vec3 d = t.position - ot.position;
@@ -45,7 +45,7 @@ namespace
 
 		{ // velocity
 			OPTICK_EVENT("velocity");
-			for (Entity *e : VelocityComponent::component->entities())
+			for (Entity *e : engineEntities()->component<VelocityComponent>()->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
@@ -57,7 +57,7 @@ namespace
 
 		{ // rotation
 			OPTICK_EVENT("rotation");
-			for (Entity *e : RotationComponent::component->entities())
+			for (Entity *e : engineEntities()->component<RotationComponent>()->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
@@ -69,7 +69,7 @@ namespace
 
 		{ // timeout
 			OPTICK_EVENT("timeout");
-			for (Entity *e : TimeoutComponent::component->entities())
+			for (Entity *e : engineEntities()->component<TimeoutComponent>()->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
@@ -89,7 +89,7 @@ namespace
 		{
 			OPTICK_EVENT("Spatial update");
 			spatialSearchData->clear();
-			for (Entity *e : TransformComponent::component->entities())
+			for (Entity *e : engineEntities()->component<TransformComponent>()->entities())
 			{
 				uint32 n = e->name();
 				if (n)

@@ -48,7 +48,6 @@ void monsterReflectMutation(Entity *e, uint32 special);
 
 struct SimpleMonsterComponent
 {
-	static EntityComponent *component;
 	real maxSpeed;
 	real acceleration;
 	real avoidance;

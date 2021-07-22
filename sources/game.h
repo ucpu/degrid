@@ -178,51 +178,43 @@ extern GlobalStatistics statistics;
 
 struct GravityComponent
 {
-	static EntityComponent *component;
 	real strength; // positive -> pull closer, negative -> push away
 };
 
 struct VelocityComponent
 {
-	static EntityComponent *component;
 	vec3 velocity;
 };
 
 struct RotationComponent
 {
-	static EntityComponent *component;
 	quat rotation;
 };
 
 struct TimeoutComponent
 {
-	static EntityComponent *component;
 	uint32 ttl = 0; // game updates (does not tick when paused)
 };
 
 struct GridComponent
 {
-	static EntityComponent *component;
 	vec3 place;
 	vec3 originalColor;
 };
 
 struct ShotComponent
 {
-	static EntityComponent *component;
 	real damage;
 	bool homing = false;
 };
 
 struct PowerupComponent
 {
-	static EntityComponent *component;
 	PowerupTypeEnum type = PowerupTypeEnum::Total;
 };
 
 struct MonsterComponent
 {
-	static EntityComponent *component;
 	real life;
 	real damage;
 	real groundLevel;
@@ -232,8 +224,7 @@ struct MonsterComponent
 };
 
 struct BossComponent
-{
-	static EntityComponent *component;
-};
+{};
 
-#define DEGRID_COMPONENT(T, C, E) ::T##Component &C = E->value<::T##Component>(::T##Component::component);
+// deprecated
+#define DEGRID_COMPONENT(T, C, E) ::T##Component &C = E->value<::T##Component>();

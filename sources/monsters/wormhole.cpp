@@ -145,11 +145,11 @@ namespace
 					Entity *oe = engineEntities()->get(otherName);
 
 					// gravity irrelevant entities
-					if (!oe->has(VelocityComponent::component))
+					if (!oe->has<VelocityComponent>())
 						continue;
 
 					// shots
-					if (oe->has(ShotComponent::component))
+					if (oe->has<ShotComponent>())
 						continue;
 
 					bool teleport = false;
@@ -168,11 +168,11 @@ namespace
 					}
 
 					// grids
-					if (oe->has(GridComponent::component))
+					if (oe->has<GridComponent>())
 						teleport = true;
 
 					// monsters
-					if (oe->has(MonsterComponent::component))
+					if (oe->has<MonsterComponent>())
 					{
 						updateMonsterFlickering(oe);
 						teleport = true;
@@ -191,7 +191,7 @@ namespace
 						}
 						else
 							ot.position = playerTransform.position + dir * randomRange(200, 250);
-						oe->remove(TransformComponent::componentHistory);
+						//oe->remove(TransformComponent::componentHistory);
 					}
 					else
 						oe->add(entitiesToDestroy);

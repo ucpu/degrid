@@ -55,7 +55,7 @@ namespace
 		if (game.paused)
 		{
 			for (Entity *e : ShockerComponent::component->entities())
-				e->remove(SoundComponent::component);
+				e->remove<SoundComponent>();
 			return;
 		}
 
@@ -85,7 +85,7 @@ namespace
 					CAGE_COMPONENT_ENGINE(Render, r, e);
 					lightning(tr.position + randomDirection3() * tr.scale, playerTransform.position + randomDirection3() * playerTransform.scale, r.color);
 				}
-				if (!e->has(SoundComponent::component))
+				if (!e->has<SoundComponent>())
 				{
 					CAGE_COMPONENT_ENGINE(Sound, v, e);
 					v.name = HashString("degrid/monster/shocker/lightning.flac");
@@ -93,7 +93,7 @@ namespace
 				}
 			}
 			else
-				e->remove(SoundComponent::component);
+				e->remove<SoundComponent>();
 		}
 	}
 

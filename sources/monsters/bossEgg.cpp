@@ -62,7 +62,7 @@ namespace
 
 		if ((statistics.updateIteration % 5) == 0 && BossEggComponent::component->group()->count() > 0)
 		{
-			if (MonsterComponent::component->group()->count() == BossEggComponent::component->group()->count())
+			if (engineEntities()->component<MonsterComponent>()->count() == engineEntities()->component<BossEggComponent>()->count())
 			{
 				for (Entity *e : BossEggComponent::component->entities())
 				{
@@ -81,7 +81,7 @@ namespace
 				makeAnnouncement(HashString("announcement/incoming-boss"), HashString("announcement-desc/incoming-boss"), 5);
 		}
 
-		for (Entity *e : BossEggComponent::component->entities())
+		for (Entity *e : engineEntities()->component<BossEggComponent>()->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(Velocity, mv, e);
@@ -93,7 +93,7 @@ namespace
 
 	void lateUpdate()
 	{
-		for (Entity *e : BossEggComponent::component->entities())
+		for (Entity *e : engineEntities()->component<BossEggComponent>()->entities())
 		{
 			CAGE_COMPONENT_ENGINE(Transform, tr, e);
 			DEGRID_COMPONENT(BossEgg, egg, e);
@@ -123,7 +123,7 @@ namespace
 
 void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 {
-	CAGE_ASSERT(BossComponent::component->group()->count() == 0);
+	CAGE_ASSERT(engineEntities()->component<BossComponent>()->count() == 0);
 	if (game.defeatedBosses >= BossesTotalCount)
 		return;
 	Entity *e = initializeMonster(spawnPosition, color, 10, HashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
