@@ -113,7 +113,7 @@ namespace
 		return false;
 	}
 
-	bool keyPress(uint32 key, uint32, ModifiersFlags modifiers)
+	bool keyPress(uint32 key, ModifiersFlags modifiers)
 	{
 		if (game.paused)
 			return false;
@@ -125,7 +125,7 @@ namespace
 		return false;
 	}
 
-	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
+	bool keyRelease(uint32 key, ModifiersFlags modifiers)
 	{
 		if (key < sizeof(keyMap))
 			keyMap[key] = false;

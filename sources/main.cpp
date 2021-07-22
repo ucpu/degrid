@@ -22,7 +22,7 @@ namespace
 		return true;
 	}
 
-	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
+	bool keyRelease(uint32 key, ModifiersFlags modifiers)
 	{
 		if (modifiers != ModifiersFlags::None)
 			return false;
@@ -97,9 +97,9 @@ int main(int argc, const char *args[])
 
 		{
 			Holder<FullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
-			Holder<EngineProfiling> EngineProfiling = newEngineProfiling();
-			EngineProfiling->profilingScope = EngineProfilingScopeEnum::None;
-			EngineProfiling->screenPosition = vec2(0.5);
+			Holder<EngineProfiling> engineProfiling = newEngineProfiling();
+			engineProfiling->profilingScope = EngineProfilingScopeEnum::None;
+			engineProfiling->screenPosition = vec2(0.5);
 
 			engineStart();
 		}

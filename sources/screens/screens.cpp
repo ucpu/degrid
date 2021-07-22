@@ -3,7 +3,7 @@
 namespace
 {
 	EventListener<bool(uint32)> guiListener;
-	EventListener<bool(uint32, uint32, ModifiersFlags)> keyReleaseListener;
+	EventListener<bool(uint32, ModifiersFlags)> keyReleaseListener;
 
 	bool buttonBack(uint32 en)
 	{
@@ -13,7 +13,7 @@ namespace
 		return true;
 	}
 
-	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
+	bool keyRelease(uint32 key, ModifiersFlags modifiers)
 	{
 		if (key == 256) // esc
 		{

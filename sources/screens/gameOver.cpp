@@ -10,7 +10,7 @@
 namespace
 {
 	EventListener<bool(uint32)> guiEvent;
-	EventListener<bool(uint32, uint32, ModifiersFlags)> keyReleaseListener;
+	EventListener<bool(uint32, ModifiersFlags)> keyReleaseListener;
 
 	void endScreen()
 	{
@@ -24,7 +24,7 @@ namespace
 			setScreenMainmenu();
 	}
 
-	bool keyRelease(uint32 key, uint32, ModifiersFlags modifiers)
+	bool keyRelease(uint32 key, ModifiersFlags modifiers)
 	{
 		if (key == 256) // esc
 		{
