@@ -90,8 +90,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("sound");
-
 		determineSuspense();
 		determineVolumes();
 

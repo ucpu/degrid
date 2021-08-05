@@ -145,8 +145,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("spawning");
-
 		if (game.paused)
 			return;
 

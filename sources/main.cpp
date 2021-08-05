@@ -1,6 +1,6 @@
 #include <cage-core/config.h>
 #include <cage-core/assetManager.h>
-#include <cage-engine/engineProfiling.h>
+#include <cage-engine/engineStatistics.h>
 #include <cage-engine/fullscreenSwitcher.h>
 #include <cage-engine/highPerformanceGpuHint.h>
 
@@ -20,25 +20,6 @@ namespace
 	{
 		engineStop();
 		return true;
-	}
-
-	bool keyRelease(uint32 key, ModifiersFlags modifiers)
-	{
-		if (modifiers != ModifiersFlags::None)
-			return false;
-
-		static ConfigBool secondaryCamera("degrid/secondaryCamera/enabled", false);
-
-		CAGE_LOG_DEBUG(SeverityEnum::Info, "keyboard", stringizer() + "key: " + key);
-
-		switch (key)
-		{
-		case 298: // F9
-			secondaryCamera = !(bool)secondaryCamera;
-			return true;
-		}
-
-		return false;
 	}
 
 	void assetsUpdate()
@@ -83,7 +64,6 @@ int main(int argc, const char *args[])
 
 		listeners.attachAll(engineWindow(), 1000);
 		listeners.windowClose.bind<&windowClose>();
-		listeners.keyRelease.bind<&keyRelease>();
 		EventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
 		assetsUpdateListener.attach(controlThread().update);
@@ -97,9 +77,9 @@ int main(int argc, const char *args[])
 
 		{
 			Holder<FullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
-			Holder<EngineProfiling> engineProfiling = newEngineProfiling();
-			engineProfiling->profilingScope = EngineProfilingScopeEnum::None;
-			engineProfiling->screenPosition = vec2(0.5);
+			Holder<EngineStatistics> engineStatistics = newEngineStatistics();
+			engineStatistics->statisticsScope = EngineStatisticsScopeEnum::None;
+			engineStatistics->screenPosition = vec2(0.5);
 
 			engineStart();
 		}

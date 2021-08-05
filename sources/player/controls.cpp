@@ -174,7 +174,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("controls");
 		CAGE_ASSERT(!game.gameOver || game.paused);
 
 		if (game.paused)

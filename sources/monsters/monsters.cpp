@@ -8,8 +8,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("monsters");
-
 		if (game.paused)
 			return;
 

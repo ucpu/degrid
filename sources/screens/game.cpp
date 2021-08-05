@@ -670,8 +670,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("gui");
-
 		if (game.gameOver || game.cinematic)
 			return;
 

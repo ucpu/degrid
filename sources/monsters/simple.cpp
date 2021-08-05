@@ -27,8 +27,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("simple monsters");
-
 		if (game.paused)
 			return;
 

@@ -101,8 +101,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("wormhole");
-
 		{ // flickering
 			for (Entity *e : MonsterFlickeringComponent::component->entities())
 			{

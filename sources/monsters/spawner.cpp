@@ -23,8 +23,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("spawner");
-
 		if (game.paused)
 			return;
 

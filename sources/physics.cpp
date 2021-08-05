@@ -21,11 +21,8 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("physics");
-
 		if (!game.paused)
 		{ // gravity
-			OPTICK_EVENT("gravity");
 			for (Entity *e : engineEntities()->component<GravityComponent>()->entities())
 			{
 				CAGE_COMPONENT_ENGINE(Transform, t, e);
@@ -44,7 +41,6 @@ namespace
 		}
 
 		{ // velocity
-			OPTICK_EVENT("velocity");
 			for (Entity *e : engineEntities()->component<VelocityComponent>()->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
@@ -56,7 +52,6 @@ namespace
 		}
 
 		{ // rotation
-			OPTICK_EVENT("rotation");
 			for (Entity *e : engineEntities()->component<RotationComponent>()->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
@@ -68,7 +63,6 @@ namespace
 		}
 
 		{ // timeout
-			OPTICK_EVENT("timeout");
 			for (Entity *e : engineEntities()->component<TimeoutComponent>()->entities())
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
@@ -82,12 +76,10 @@ namespace
 		}
 
 		{
-			OPTICK_EVENT("destroy entities");
 			entitiesToDestroy->destroy();
 		}
 
 		{
-			OPTICK_EVENT("Spatial update");
 			spatialSearchData->clear();
 			for (Entity *e : engineEntities()->component<TransformComponent>()->entities())
 			{
@@ -98,10 +90,6 @@ namespace
 					spatialSearchData->update(n, Sphere(tr.position, tr.scale));
 				}
 			}
-		}
-
-		{
-			OPTICK_EVENT("Spatial rebuild");
 			spatialSearchData->rebuild();
 		}
 	}

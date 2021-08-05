@@ -163,8 +163,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("shots");
-
 		if (!game.paused)
 		{
 			shipFiring();

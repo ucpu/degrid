@@ -55,8 +55,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("boss egg");
-
 		if (game.paused)
 			return;
 

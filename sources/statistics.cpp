@@ -3,7 +3,7 @@
 #include <cage-core/hashString.h>
 #include <cage-core/macros.h>
 #include <cage-engine/window.h>
-#include <cage-engine/engineProfiling.h>
+#include <cage-engine/engineStatistics.h>
 
 #include "game.h"
 
@@ -19,8 +19,6 @@ namespace
 {
 	void engineUpdate()
 	{
-		OPTICK_EVENT("statistics");
-
 		statistics.updateIterationIgnorePause++;
 		if (!game.paused)
 			statistics.updateIteration++;
@@ -34,7 +32,7 @@ namespace
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = engineEntities()->group()->count();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
-		statistics.timeRenderCurrent = engineProfilingValues(EngineProfilingStatsFlags::FrameTime, EngineProfilingModeEnum::Last);
+		statistics.timeRenderCurrent = engineStatisticsValues(EngineStatisticsFlags::FrameTime, EngineStatisticsModeEnum::Last);
 		if (statistics.updateIterationIgnorePause > 1000)
 		{
 			statistics.timeRenderMin = min(statistics.timeRenderMin, statistics.timeRenderCurrent);

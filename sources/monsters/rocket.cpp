@@ -16,8 +16,6 @@ namespace
 
 	void engineUpdate()
 	{
-		OPTICK_EVENT("rocket");
-
 		if (game.paused)
 			return;
 

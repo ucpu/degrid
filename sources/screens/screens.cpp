@@ -27,7 +27,7 @@ namespace
 	{
 		Gui *guii = engineGui();
 		guii->skipAllEventsUntilNextUpdate();
-		guii->setFocus(0);
+		guii->focus(0);
 		guii->entities()->destroy();
 		guii->widgetEvent.detach();
 		keyReleaseListener.detach();
