@@ -26,17 +26,17 @@ namespace
 		// update shields transformations
 		for (Entity *e : ShielderComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(Transform, et, e);
-			DEGRID_COMPONENT(Shielder, es, e);
+			TransformComponent &et = e->value<TransformComponent>();
+			ShielderComponent &es = e->value<ShielderComponent>();
 			Entity *s = engineEntities()->get(es.shieldEntity);
-			CAGE_COMPONENT_ENGINE(Transform, st, s);
+			TransformComponent &st = s->value<TransformComponent>();
 			st = et;
 		}
 	}
 
 	void shielderEliminated(Entity *e)
 	{
-		DEGRID_COMPONENT(Shielder, sh, e);
+		ShielderComponent &sh = e->value<ShielderComponent>();
 		if (engineEntities()->has(sh.shieldEntity))
 			engineEntities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
@@ -58,12 +58,12 @@ namespace
 
 		for (Entity *e : ShielderComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(Velocity, mv, e);
-			DEGRID_COMPONENT(Monster, ms, e);
-			DEGRID_COMPONENT(Shielder, sh, e);
+			TransformComponent &tr = e->value<TransformComponent>();
+			VelocityComponent &mv = e->value<VelocityComponent>();
+			MonsterComponent &ms = e->value<MonsterComponent>();
+			ShielderComponent &sh = e->value<ShielderComponent>();
 			Entity *se = engineEntities()->get(sh.shieldEntity);
-			DEGRID_COMPONENT(Shield, sse, se);
+			ShieldComponent &sse = se->value<ShieldComponent>();
 
 			// update the monster
 			if (sse.active)
@@ -102,7 +102,7 @@ namespace
 			// update shield rendering
 			if (sse.active)
 			{
-				CAGE_COMPONENT_ENGINE(Render, render, se);
+				RenderComponent &render = se->value<RenderComponent>();
 				render.object = HashString("degrid/monster/shield.object");
 			}
 			else
@@ -119,7 +119,7 @@ namespace
 				Entity *e = engineEntities()->get(otherName);
 				if (!e->has<ShotComponent>())
 					continue;
-				CAGE_COMPONENT_ENGINE(Transform, ot, e);
+				TransformComponent &ot = e->value<TransformComponent>();
 				vec3 toShot = ot.position - tr.position;
 				vec3 dirShot = normalize(toShot);
 				if (dot(dirShot, forward) < cos(degs(45)))
@@ -155,21 +155,21 @@ void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 	Entity *shielder = initializeMonster(spawnPosition, color, 3, HashString("degrid/monster/shielder.object"), HashString("degrid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
 	Entity *shield = engineEntities()->createUnique();
 	{
-		DEGRID_COMPONENT(Shielder, sh, shielder);
+		ShielderComponent &sh = shielder->value<ShielderComponent>();
 		sh.shieldEntity = shield->name();
 		sh.movementSpeed = 0.8 + 0.2 * monsterMutation(special);
 		sh.turningSteps = randomRange(20u, 30u);
 		sh.chargingSteps = randomRange(60u, 180u);
 		sh.stepsLeft = sh.turningSteps;
-		DEGRID_COMPONENT(Monster, m, shielder);
+		MonsterComponent &m = shielder->value<MonsterComponent>();
 		m.dispersion = 0.2;
 		monsterReflectMutation(shielder, special);
 	}
 	{
-		CAGE_COMPONENT_ENGINE(Transform, transformShielder, shielder);
-		CAGE_COMPONENT_ENGINE(Transform, transform, shield);
+		TransformComponent &transformShielder = shielder->value<TransformComponent>();
+		TransformComponent &transform = shield->value<TransformComponent>();
 		transform = transformShielder;
-		DEGRID_COMPONENT(Shield, sh, shield);
+		ShieldComponent &sh = shield->value<ShieldComponent>();
 		sh.active = false;
 	}
 }

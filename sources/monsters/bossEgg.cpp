@@ -24,8 +24,8 @@ namespace
 		};
 		setSkybox(skyboxNames[game.defeatedBosses + 1]);
 		monsterExplosion(e);
-		CAGE_COMPONENT_ENGINE(Transform, t, e);
-		CAGE_COMPONENT_ENGINE(Render, r, e);
+		TransformComponent &t = e->value<TransformComponent>();
+		RenderComponent &r = e->value<RenderComponent>();
 		switch (game.defeatedBosses)
 		{
 		case 0: return spawnBossCannoneer(t.position, r.color);
@@ -40,7 +40,7 @@ namespace
 
 	void eggDestroyed(Entity *e)
 	{
-		DEGRID_COMPONENT(BossEgg, egg, e);
+		BossEggComponent &egg = e->value<BossEggComponent>();
 		if (engineEntities()->has(egg.portal))
 			engineEntities()->get(egg.portal)->destroy();
 	}
@@ -64,10 +64,10 @@ namespace
 			{
 				for (Entity *e : BossEggComponent::component->entities())
 				{
-					CAGE_COMPONENT_ENGINE(Transform, t, e);
+					TransformComponent &t = e->value<TransformComponent>();
 					if (length(game.monstersTarget - t.position) > 100)
 						continue;
-					DEGRID_COMPONENT(BossEgg, m, e);
+					BossEggComponent &m = e->value<BossEggComponent>();
 					if (m.countdown-- == 0)
 					{
 						e->add(entitiesToDestroy);
@@ -81,8 +81,8 @@ namespace
 
 		for (Entity *e : engineEntities()->component<BossEggComponent>()->entities())
 		{
-			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(Velocity, mv, e);
+			TransformComponent &tr = e->value<TransformComponent>();
+			VelocityComponent &mv = e->value<VelocityComponent>();
 			vec3 v = game.monstersTarget - tr.position;
 			real l = length(v);
 			mv.velocity = normalize(v) * pow(max(l - 70, 0) * 0.03, 1.5);
@@ -93,9 +93,9 @@ namespace
 	{
 		for (Entity *e : engineEntities()->component<BossEggComponent>()->entities())
 		{
-			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(BossEgg, egg, e);
-			CAGE_COMPONENT_ENGINE(Transform, portal, engineEntities()->get(egg.portal));
+			TransformComponent &tr = e->value<TransformComponent>();
+			BossEggComponent &egg = e->value<BossEggComponent>();
+			TransformComponent &portal = engineEntities()->get(egg.portal)->value<TransformComponent>();
 			portal.position = tr.position;
 			portal.scale = tr.scale * 0.88;
 		}
@@ -125,19 +125,19 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 	if (game.defeatedBosses >= BossesTotalCount)
 		return;
 	Entity *e = initializeMonster(spawnPosition, color, 10, HashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
-	DEGRID_COMPONENT(BossEgg, eggc, e);
+	BossEggComponent &eggc = e->value<BossEggComponent>();
 	{
-		DEGRID_COMPONENT(Boss, boss, e);
-		DEGRID_COMPONENT(Rotation, rot, e);
+		BossComponent &boss = e->value<BossComponent>();
+		RotationComponent &rot = e->value<RotationComponent>();
 		rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.03);
-		DEGRID_COMPONENT(Gravity, grav, e);
+		GravityComponent &grav = e->value<GravityComponent>();
 		grav.strength = -10;
 	}
 
 	{ // portal
 		Entity *p = engineEntities()->createUnique();
 		eggc.portal = p->name();
-		CAGE_COMPONENT_ENGINE(Render, r, p);
+		RenderComponent &r = p->value<RenderComponent>();
 		constexpr const uint32 portalNames[] = {
 			#define GCHL_GENERATE(N) HashString("degrid/environment/skyboxes/portal.obj;" CAGE_STRINGIZE(N)),
 					GCHL_GENERATE(0)
@@ -145,9 +145,9 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 			#undef GCHL_GENERATE
 		};
 		r.object = portalNames[game.defeatedBosses + 1];
-		DEGRID_COMPONENT(Rotation, rotp, p);
+		RotationComponent &rotp = p->value<RotationComponent>();
 		rotp.rotation = interpolate(quat(), randomDirectionQuat(), 0.003);
-		CAGE_COMPONENT_ENGINE(Transform, t, p);
+		TransformComponent &t = p->value<TransformComponent>();
 		t.orientation = randomDirectionQuat();
 	}
 }

@@ -30,18 +30,18 @@ namespace
 			return;
 		}
 		Entity *e = engineEntities()->createUnique();
-		CAGE_COMPONENT_ENGINE(Transform, t, e);
+		TransformComponent &t = e->value<TransformComponent>();
 		t.position = c;
 		t.orientation = quat(v, vec3(0, 1, 0), true);
-		CAGE_COMPONENT_ENGINE(Render, r, e);
+		RenderComponent &r = e->value<RenderComponent>();
 		r.object = HashString("degrid/monster/shocker/lightning.object");
 		r.color = color;
-		CAGE_COMPONENT_ENGINE(TextureAnimation, anim, e);
+		TextureAnimationComponent &anim = e->value<TextureAnimationComponent>();
 		anim.offset = randomChance();
-		DEGRID_COMPONENT(Timeout, ttl, e);
+		TimeoutComponent &ttl = e->value<TimeoutComponent>();
 		ttl.ttl = 3;
 		e->add(entitiesPhysicsEvenWhenPaused);
-		CAGE_COMPONENT_ENGINE(Light, light, e);
+		LightComponent &light = e->value<LightComponent>();
 		light.color = colorVariation(color);
 		light.intensity = 10;
 		light.lightType = LightTypeEnum::Point;
@@ -57,20 +57,20 @@ namespace
 			return;
 		}
 
-		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
+		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
 
 		for (Entity *e : ShockerComponent::component->entities())
 		{
-			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			DEGRID_COMPONENT(Shocker, sh, e);
+			TransformComponent &tr = e->value<TransformComponent>();
+			ShockerComponent &sh = e->value<ShockerComponent>();
 			vec3 v = tr.position - playerTransform.position;
 			real d = length(v);
 
 			// stay away from the player
 			if (d < sh.radius * 0.8 && d > 1e-7)
 			{
-				DEGRID_COMPONENT(Velocity, mv, e);
+				VelocityComponent &mv = e->value<VelocityComponent>();
 				mv.velocity += normalize(v) * 0.3;
 			}
 
@@ -80,12 +80,12 @@ namespace
 				playerVelocity.velocity *= sh.speedFactor;
 				if (((statistics.updateIterationIgnorePause + e->name()) % 3) == 0)
 				{
-					CAGE_COMPONENT_ENGINE(Render, r, e);
+					RenderComponent &r = e->value<RenderComponent>();
 					lightning(tr.position + randomDirection3() * tr.scale, playerTransform.position + randomDirection3() * playerTransform.scale, r.color);
 				}
 				if (!e->has<SoundComponent>())
 				{
-					CAGE_COMPONENT_ENGINE(Sound, v, e);
+					SoundComponent &v = e->value<SoundComponent>();
 					v.name = HashString("degrid/monster/shocker/lightning.flac");
 					v.startTime = uint64(e->name()) * 10000;
 				}
@@ -114,7 +114,7 @@ void spawnShocker(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
 	Entity *shocker = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/shocker/shocker.object"), HashString("degrid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
-	DEGRID_COMPONENT(Shocker, sh, shocker);
+	ShockerComponent &sh = shocker->value<ShockerComponent>();
 	sh.radius = randomRange(70, 80) + 10 * monsterMutation(special);
 	sh.speedFactor = 3.2 / (monsterMutation(special) + 4);
 	monsterReflectMutation(shocker, special);

@@ -18,8 +18,8 @@ namespace
 		if (game.cinematic)
 			return;
 
-		CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
-		DEGRID_COMPONENT(Velocity, vl, game.playerEntity);
+		TransformComponent &tr = game.playerEntity->value<TransformComponent>();
+		VelocityComponent &vl = game.playerEntity->value<VelocityComponent>();
 
 		if (game.moveDirection != vec3())
 		{
@@ -35,17 +35,17 @@ namespace
 			if (lengthSquared(change) > 0.01)
 			{
 				Entity *spark = engineEntities()->createAnonymous();
-				CAGE_COMPONENT_ENGINE(Transform, transform, spark);
+				TransformComponent &transform = spark->value<TransformComponent>();
 				transform.scale = randomChance() * 0.2 + 0.3;
 				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
 				transform.orientation = randomDirectionQuat();
-				CAGE_COMPONENT_ENGINE(Render, render, spark);
+				RenderComponent &render = spark->value<RenderComponent>();
 				render.object = HashString("degrid/environment/spark.object");
-				DEGRID_COMPONENT(Velocity, vel, spark);
+				VelocityComponent &vel = spark->value<VelocityComponent>();
 				vel.velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
-				DEGRID_COMPONENT(Timeout, ttl, spark);
+				TimeoutComponent &ttl = spark->value<TimeoutComponent>();
 				ttl.ttl = randomRange(10, 15);
-				CAGE_COMPONENT_ENGINE(TextureAnimation, at, spark);
+				TextureAnimationComponent &at = spark->value<TextureAnimationComponent>();
 				at.startTime = engineControlTime();
 				at.speed = 30.f / ttl.ttl;
 				spark->add(entitiesPhysicsEvenWhenPaused);
@@ -72,15 +72,15 @@ namespace
 	{
 		if (!game.playerEntity || !game.shieldEntity)
 			return;
-		CAGE_COMPONENT_ENGINE(Transform, tr, game.playerEntity);
-		CAGE_COMPONENT_ENGINE(Transform, trs, game.shieldEntity);
+		TransformComponent &tr = game.playerEntity->value<TransformComponent>();
+		TransformComponent &trs = game.shieldEntity->value<TransformComponent>();
 		trs.position = tr.position;
 		trs.scale = tr.scale;
 		if (game.powerups[(uint32)PowerupTypeEnum::Shield] > 0)
 		{
-			CAGE_COMPONENT_ENGINE(Render, render, game.shieldEntity);
+			RenderComponent &render = game.shieldEntity->value<RenderComponent>();
 			render.object = HashString("degrid/player/shield.object");
-			CAGE_COMPONENT_ENGINE(Sound, sound, game.shieldEntity);
+			SoundComponent &sound = game.shieldEntity->value<SoundComponent>();
 			sound.name = HashString("degrid/player/shield.ogg");
 			sound.startTime = -1;
 		}
@@ -154,26 +154,26 @@ namespace
 
 		{ // player ship Entity
 			game.playerEntity = engineEntities()->createUnique();
-			CAGE_COMPONENT_ENGINE(Transform, transform, game.playerEntity);
+			TransformComponent &transform = game.playerEntity->value<TransformComponent>();
 			transform.scale = PlayerScale;
-			CAGE_COMPONENT_ENGINE(Render, render, game.playerEntity);
+			RenderComponent &render = game.playerEntity->value<RenderComponent>();
 			render.object = HashString("degrid/player/player.object");
 			game.monstersTarget = vec3();
 		}
 
 		{ // player shield Entity
 			game.shieldEntity = engineEntities()->createUnique();
-			CAGE_COMPONENT_ENGINE(Transform, transform, game.shieldEntity);
+			TransformComponent &transform = game.shieldEntity->value<TransformComponent>();
 			(void)transform;
-			CAGE_COMPONENT_ENGINE(TextureAnimation, aniTex, game.shieldEntity);
+			TextureAnimationComponent &aniTex = game.shieldEntity->value<TextureAnimationComponent>();
 			aniTex.speed = 0.05;
 		}
 	}
 
 	void gameStop()
 	{
-		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
+		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
 		environmentExplosion(playerTransform.position, playerVelocity.velocity, PlayerDeathColor, PlayerScale);
 		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;

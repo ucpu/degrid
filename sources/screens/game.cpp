@@ -91,33 +91,33 @@ namespace
 		EntityManager *ents = engineGui()->entities();
 
 		{
-			CAGE_COMPONENT_GUI(LayoutLine, ll, ents->get(15));
+			GuiLayoutLineComponent &ll = ents->get(15)->value<GuiLayoutLineComponent>();
 			ll.vertical = true;
 		}
 
 		{ // continue button
 			Entity *but = ents->create(501);
-			CAGE_COMPONENT_GUI(Button, control, but);
-			CAGE_COMPONENT_GUI(Text, txt, but);
+			GuiButtonComponent &control = but->value<GuiButtonComponent>();
+			GuiTextComponent &txt = but->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/paused/continue");
-			CAGE_COMPONENT_GUI(Parent, parent, but);
+			GuiParentComponent &parent = but->value<GuiParentComponent>();
 			parent.parent = 15;
 			parent.order = 1;
-			CAGE_COMPONENT_GUI(TextFormat, format, but);
+			GuiTextFormatComponent &format = but->value<GuiTextFormatComponent>();
 			format.color = RedPillColor;
 		}
 
 		{ // end game button
 			Entity *but = ents->create(500);
-			CAGE_COMPONENT_GUI(Button, control, but);
-			CAGE_COMPONENT_GUI(Text, txt, but);
+			GuiButtonComponent &control = but->value<GuiButtonComponent>();
+			GuiTextComponent &txt = but->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/paused/giveup");
-			CAGE_COMPONENT_GUI(Parent, parent, but);
+			GuiParentComponent &parent = but->value<GuiParentComponent>();
 			parent.parent = 15;
 			parent.order = 2;
-			CAGE_COMPONENT_GUI(TextFormat, format, but);
+			GuiTextFormatComponent &format = but->value<GuiTextFormatComponent>();
 			format.color = BluePillColor;
 		}
 
@@ -125,9 +125,9 @@ namespace
 		{ // layout
 			Entity *e = ents->createUnique();
 			layoutName = e->name();
-			CAGE_COMPONENT_GUI(Parent, parent, e);
+			GuiParentComponent &parent = e->value<GuiParentComponent>();
 			parent.parent = 12;
-			CAGE_COMPONENT_GUI(LayoutLine, ll, e);
+			GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 			ll.vertical = true;
 		}
 
@@ -136,18 +136,18 @@ namespace
 			{ // panel
 				Entity *e = ents->createUnique();
 				panelName = e->name();
-				CAGE_COMPONENT_GUI(Spoiler, spoiler, e);
+				GuiSpoilerComponent &spoiler = e->value<GuiSpoilerComponent>();
 				spoiler.collapsed = openPanel != 1;
 				spoiler.collapsesSiblings = true;
-				CAGE_COMPONENT_GUI(Parent, parent, e);
+				GuiParentComponent &parent = e->value<GuiParentComponent>();
 				parent.parent = layoutName;
 				parent.order = 1;
-				CAGE_COMPONENT_GUI(Text, text, e);
+				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/story");
-				CAGE_COMPONENT_GUI(Scrollbars, sc, e);
+				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
 				sc.alignment = vec2(0.5, 0.5);
-				CAGE_COMPONENT_GUI(LayoutLine, ll, e);
+				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 				ll.vertical = true;
 			}
 
@@ -161,11 +161,11 @@ namespace
 			for (uint32 idx = 0; idx < game.defeatedBosses + 1; idx++)
 			{
 				Entity *label = engineGui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(Parent, parent, label);
+				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = panelName;
 				parent.order = idx;
-				CAGE_COMPONENT_GUI(Label, lab, label);
-				CAGE_COMPONENT_GUI(Text, txt, label);
+				GuiLabelComponent &lab = label->value<GuiLabelComponent>();
+				GuiTextComponent &txt = label->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = TextNames[idx];
 				idx++;
@@ -177,18 +177,18 @@ namespace
 			{ // panel
 				Entity *e = ents->createUnique();
 				panelName = e->name();
-				CAGE_COMPONENT_GUI(Spoiler, spoiler, e);
+				GuiSpoilerComponent &spoiler = e->value<GuiSpoilerComponent>();
 				spoiler.collapsed = openPanel != 2;
 				spoiler.collapsesSiblings = true;
-				CAGE_COMPONENT_GUI(Parent, parent, e);
+				GuiParentComponent &parent = e->value<GuiParentComponent>();
 				parent.parent = layoutName;
 				parent.order = 2;
-				CAGE_COMPONENT_GUI(Text, text, e);
+				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/bosses");
-				CAGE_COMPONENT_GUI(Scrollbars, sc, e);
+				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
 				sc.alignment = vec2(0.5, 0.5);
-				CAGE_COMPONENT_GUI(LayoutLine, ll, e);
+				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 				ll.vertical = false;
 			}
 
@@ -198,31 +198,31 @@ namespace
 				{
 					Entity *e = ents->createUnique();
 					pn = e->name();
-					CAGE_COMPONENT_GUI(Panel, panel, e);
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiPanelComponent &panel = e->value<GuiPanelComponent>();
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = i;
-					CAGE_COMPONENT_GUI(Text, text, e);
+					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
 					text.textName = i < achievements.bosses ? HashString(string(stringizer() + "achievement/boss-" + i)) : HashString("achievement/boss-unknown");
 				}
 				{
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Label, label, e);
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiLabelComponent &label = e->value<GuiLabelComponent>();
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = pn;
 					parent.order = 1;
-					CAGE_COMPONENT_GUI(Image, img, e);
+					GuiImageComponent &img = e->value<GuiImageComponent>();
 					img.textureName = i < achievements.bosses ? HashString(string(stringizer() + "degrid/boss/icon/" + i + ".png")) : HashString("degrid/boss/icon/unknown.png");
 				}
 				if (game.defeatedBosses > i)
 				{
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Label, label, e);
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiLabelComponent &label = e->value<GuiLabelComponent>();
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = pn;
 					parent.order = 2;
-					CAGE_COMPONENT_GUI(Image, img, e);
+					GuiImageComponent &img = e->value<GuiImageComponent>();
 					img.textureName = HashString("degrid/boss/icon/defeated.png");
 				}
 			}
@@ -233,32 +233,32 @@ namespace
 			{ // panel
 				Entity *e = ents->createUnique();
 				marketName = e->name();
-				CAGE_COMPONENT_GUI(Spoiler, spoiler, e);
+				GuiSpoilerComponent &spoiler = e->value<GuiSpoilerComponent>();
 				spoiler.collapsed = openPanel != 3;
 				spoiler.collapsesSiblings = true;
-				CAGE_COMPONENT_GUI(Parent, parent, e);
+				GuiParentComponent &parent = e->value<GuiParentComponent>();
 				parent.parent = layoutName;
 				parent.order = 3;
-				CAGE_COMPONENT_GUI(Text, text, e);
+				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/market");
-				CAGE_COMPONENT_GUI(Scrollbars, sc, e);
+				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
 				sc.alignment = vec2(0.5, 0.5);
-				CAGE_COMPONENT_GUI(LayoutLine, ll, e);
+				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 				ll.vertical = true;
 			}
 
 			{ // permanent powerup limit
 				Entity *e = ents->createUnique();
-				CAGE_COMPONENT_GUI(Parent, parent, e);
+				GuiParentComponent &parent = e->value<GuiParentComponent>();
 				parent.parent = marketName;
 				parent.order = 1;
-				CAGE_COMPONENT_GUI(Text, text, e);
+				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/permanentLimit");
 				text.value = stringizer() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
-				CAGE_COMPONENT_GUI(Label, but, e);
-				CAGE_COMPONENT_GUI(TextFormat, tf, e);
+				GuiLabelComponent &but = e->value<GuiLabelComponent>();
+				GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
 				tf.align = TextAlignEnum::Center;
 			}
 
@@ -267,39 +267,39 @@ namespace
 
 				Entity *e = ents->createUnique();
 				panelName = e->name();
-				CAGE_COMPONENT_GUI(Parent, parent, e);
+				GuiParentComponent &parent = e->value<GuiParentComponent>();
 				parent.parent = marketName;
 				parent.order = 2;
-				CAGE_COMPONENT_GUI(LayoutTable, lt, e);
+				GuiLayoutTableComponent &lt = e->value<GuiLayoutTableComponent>();
 				lt.sections = 4;
 			}
 
 			{ // header
 				{ // label
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = -10;
 				}
 				{ // count
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = -9;
-					CAGE_COMPONENT_GUI(Label, but, e);
-					CAGE_COMPONENT_GUI(Text, text, e);
+					GuiLabelComponent &but = e->value<GuiLabelComponent>();
+					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
 					text.textName = HashString("gui/paused/count");
 				}
 				{ // buy
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = -8;
 				}
 				{ // sell
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = -7;
 				}
@@ -308,40 +308,40 @@ namespace
 			{ // footer
 				{ // label
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = 1000;
-					CAGE_COMPONENT_GUI(Label, but, e);
-					CAGE_COMPONENT_GUI(Text, text, e);
+					GuiLabelComponent &but = e->value<GuiLabelComponent>();
+					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
 					text.textName = HashString("gui/paused/prices");
 				}
 				{ // empty
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = 1001;
 				}
 				{ // buy
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = 1002;
-					CAGE_COMPONENT_GUI(Text, text, e);
+					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.value = stringizer() + (PowerupBuyPriceBase * game.buyPriceMultiplier);
-					CAGE_COMPONENT_GUI(Label, but, e);
-					CAGE_COMPONENT_GUI(TextFormat, tf, e);
+					GuiLabelComponent &but = e->value<GuiLabelComponent>();
+					GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
 					tf.align = TextAlignEnum::Center;
 				}
 				{ // sell
 					Entity *e = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, e);
+					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = 1003;
-					CAGE_COMPONENT_GUI(Text, text, e);
+					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.value = stringizer() + (PowerupSellPriceBase * (game.defeatedBosses + 1));
-					CAGE_COMPONENT_GUI(Label, but, e);
-					CAGE_COMPONENT_GUI(TextFormat, tf, e);
+					GuiLabelComponent &but = e->value<GuiLabelComponent>();
+					GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
 					tf.align = TextAlignEnum::Center;
 				}
 			}
@@ -353,52 +353,52 @@ namespace
 				{
 					{ // label
 						Entity *e = ents->create(1000 + i * 4 + 0);
-						CAGE_COMPONENT_GUI(Parent, parent, e);
+						GuiParentComponent &parent = e->value<GuiParentComponent>();
 						parent.parent = panelName;
 						parent.order = i * 4 + 0;
-						CAGE_COMPONENT_GUI(Text, text, e);
+						GuiTextComponent &text = e->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = TextNames[i];
-						CAGE_COMPONENT_GUI(Label, but, e);
+						GuiLabelComponent &but = e->value<GuiLabelComponent>();
 					}
 					{ // count
 						Entity *e = ents->create(1000 + i * 4 + 1);
-						CAGE_COMPONENT_GUI(Parent, parent, e);
+						GuiParentComponent &parent = e->value<GuiParentComponent>();
 						parent.parent = panelName;
 						parent.order = i * 4 + 1;
-						CAGE_COMPONENT_GUI(Text, text, e);
+						GuiTextComponent &text = e->value<GuiTextComponent>();
 						text.value = stringizer() + game.powerups[i];
-						CAGE_COMPONENT_GUI(Label, but, e);
-						CAGE_COMPONENT_GUI(TextFormat, format, e);
+						GuiLabelComponent &but = e->value<GuiLabelComponent>();
+						GuiTextFormatComponent &format = e->value<GuiTextFormatComponent>();
 						format.align = TextAlignEnum::Center;
 					}
 					{ // buy
 						Entity *e = ents->create(1000 + i * 4 + 2);
-						CAGE_COMPONENT_GUI(Parent, parent, e);
+						GuiParentComponent &parent = e->value<GuiParentComponent>();
 						parent.parent = panelName;
 						parent.order = i * 4 + 2;
-						CAGE_COMPONENT_GUI(Text, text, e);
+						GuiTextComponent &text = e->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = HashString("gui/paused/buy");
-						CAGE_COMPONENT_GUI(Button, but, e);
+						GuiButtonComponent &but = e->value<GuiButtonComponent>();
 						if (!anyBuy || game.money < PowerupBuyPriceBase * game.buyPriceMultiplier)
 						{
-							CAGE_COMPONENT_GUI(WidgetState, ws, e);
+							GuiWidgetStateComponent &ws = e->value<GuiWidgetStateComponent>();
 							ws.disabled = true;
 						}
 					}
 					{ // sell
 						Entity *e = ents->create(1000 + i * 4 + 3);
-						CAGE_COMPONENT_GUI(Parent, parent, e);
+						GuiParentComponent &parent = e->value<GuiParentComponent>();
 						parent.parent = panelName;
 						parent.order = i * 4 + 3;
-						CAGE_COMPONENT_GUI(Text, text, e);
+						GuiTextComponent &text = e->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = HashString("gui/paused/sell");
-						CAGE_COMPONENT_GUI(Button, but, e);
+						GuiButtonComponent &but = e->value<GuiButtonComponent>();
 						if (game.powerups[i] == 0)
 						{
-							CAGE_COMPONENT_GUI(WidgetState, ws, e);
+							GuiWidgetStateComponent &ws = e->value<GuiWidgetStateComponent>();
 							ws.disabled = true;
 						}
 					}
@@ -412,7 +412,7 @@ namespace
 		EntityManager *ents = engineGui()->entities();
 
 		{
-			CAGE_COMPONENT_GUI(Scrollbars, sc, ents->get(12));
+			GuiScrollbarsComponent &sc = ents->get(12)->value<GuiScrollbarsComponent>();
 			sc.alignment = vec2(0.5, 0);
 		}
 
@@ -420,9 +420,9 @@ namespace
 		{ // layout
 			Entity *e = ents->createUnique();
 			layoutName = e->name();
-			CAGE_COMPONENT_GUI(Parent, parent, e);
+			GuiParentComponent &parent = e->value<GuiParentComponent>();
 			parent.parent = 12;
-			CAGE_COMPONENT_GUI(LayoutLine, ll, e);
+			GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 			ll.vertical = true;
 		}
 
@@ -431,28 +431,28 @@ namespace
 			{
 				Entity *panel = ents->createUnique();
 				{
-					CAGE_COMPONENT_GUI(Panel, panel2, panel);
-					CAGE_COMPONENT_GUI(Parent, parent, panel);
+					GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
+					GuiParentComponent &parent = panel->value<GuiParentComponent>();
 					parent.parent = layoutName;
 					parent.order = numeric_cast<sint32>(a.index) + 1;
-					CAGE_COMPONENT_GUI(Text, txt, panel);
+					GuiTextComponent &txt = panel->value<GuiTextComponent>();
 					txt.assetName = HashString("degrid/languages/internationalized.textpack");
 					txt.textName = a->headingName;
-					CAGE_COMPONENT_GUI(TextFormat, format, panel);
+					GuiTextFormatComponent &format = panel->value<GuiTextFormatComponent>();
 					format.size = 20;
-					CAGE_COMPONENT_GUI(LayoutLine, ll, panel);
+					GuiLayoutLineComponent &ll = panel->value<GuiLayoutLineComponent>();
 					ll.vertical = true;
 				}
 
 				{ // description
 					Entity *label = ents->createUnique();
-					CAGE_COMPONENT_GUI(Parent, parent, label);
+					GuiParentComponent &parent = label->value<GuiParentComponent>();
 					parent.parent = panel->name();
-					CAGE_COMPONENT_GUI(Label, control, label);
-					CAGE_COMPONENT_GUI(Text, txt, label);
+					GuiLabelComponent &control = label->value<GuiLabelComponent>();
+					GuiTextComponent &txt = label->value<GuiTextComponent>();
 					txt.assetName = HashString("degrid/languages/internationalized.textpack");
 					txt.textName = a->descriptionName;
-					CAGE_COMPONENT_GUI(TextFormat, format, label);
+					GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 					format.size = 20;
 				}
 			}
@@ -474,35 +474,35 @@ namespace
 		{ // base stats
 			Entity *table = ents->createUnique();
 			{
-				CAGE_COMPONENT_GUI(Parent, parent, table);
+				GuiParentComponent &parent = table->value<GuiParentComponent>();
 				parent.parent = 10;
-				CAGE_COMPONENT_GUI(LayoutTable, layout, table);
-				CAGE_COMPONENT_GUI(Panel, gb, table);
+				GuiLayoutTableComponent &layout = table->value<GuiLayoutTableComponent>();
+				GuiPanelComponent &gb = table->value<GuiPanelComponent>();
 			}
 			uint32 index = 1;
 
 			{ // life label
 				Entity *label = engineGui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(Parent, parent, label);
+				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(Label, control, label);
-				CAGE_COMPONENT_GUI(Text, text, label);
+				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				GuiTextComponent &text = label->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/life");
-				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.color = vec3(1, 0, 0);
 				format.size = 20;
 			}
 
 			{ // life value
 				Entity *label = engineGui()->entities()->create(100);
-				CAGE_COMPONENT_GUI(Parent, parent, label);
+				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(Label, control, label);
-				CAGE_COMPONENT_GUI(Text, text, label);
-				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				GuiTextComponent &text = label->value<GuiTextComponent>();
+				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 				format.color = vec3(1, 0, 0);
 				format.size = 20;
@@ -510,26 +510,26 @@ namespace
 
 			{ // money label
 				Entity *label = engineGui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(Parent, parent, label);
+				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(Label, control, label);
-				CAGE_COMPONENT_GUI(Text, text, label);
+				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				GuiTextComponent &text = label->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/money");
-				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.color = vec3(1, 1, 0);
 				format.size = 20;
 			}
 
 			{ // money value
 				Entity *label = engineGui()->entities()->create(101);
-				CAGE_COMPONENT_GUI(Parent, parent, label);
+				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(Label, control, label);
-				CAGE_COMPONENT_GUI(Text, text, label);
-				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				GuiTextComponent &text = label->value<GuiTextComponent>();
+				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 				format.color = vec3(1, 1, 0);
 				format.size = 20;
@@ -537,26 +537,26 @@ namespace
 
 			{ // score label
 				Entity *label = engineGui()->entities()->createUnique();
-				CAGE_COMPONENT_GUI(Parent, parent, label);
+				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(Label, control, label);
-				CAGE_COMPONENT_GUI(Text, text, label);
+				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				GuiTextComponent &text = label->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/score");
-				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.color = vec3(0, 1, 0);
 				format.size = 20;
 			}
 
 			{ // score value
 				Entity *label = engineGui()->entities()->create(102);
-				CAGE_COMPONENT_GUI(Parent, parent, label);
+				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				CAGE_COMPONENT_GUI(Label, control, label);
-				CAGE_COMPONENT_GUI(Text, text, label);
-				CAGE_COMPONENT_GUI(TextFormat, format, label);
+				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				GuiTextComponent &text = label->value<GuiTextComponent>();
+				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 				format.color = vec3(0, 1, 0);
 				format.size = 20;
@@ -566,10 +566,10 @@ namespace
 		{ // collectible powerups
 			Entity *table = ents->createUnique();
 			{
-				CAGE_COMPONENT_GUI(Parent, parent, table);
+				GuiParentComponent &parent = table->value<GuiParentComponent>();
 				parent.parent = 14;
-				CAGE_COMPONENT_GUI(LayoutTable, layout, table);
-				CAGE_COMPONENT_GUI(Panel, gb, table);
+				GuiLayoutTableComponent &layout = table->value<GuiLayoutTableComponent>();
+				GuiPanelComponent &gb = table->value<GuiPanelComponent>();
 			}
 			uint32 index = 1;
 
@@ -579,23 +579,23 @@ namespace
 				{
 					{ // label
 						Entity *label = engineGui()->entities()->createUnique();
-						CAGE_COMPONENT_GUI(Parent, parent, label);
+						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(Label, control, label);
-						CAGE_COMPONENT_GUI(Text, text, label);
+						GuiLabelComponent &control = label->value<GuiLabelComponent>();
+						GuiTextComponent &text = label->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = TextNames[i];
 					}
 
 					{ // value
 						Entity *label = engineGui()->entities()->create(200 + i);
-						CAGE_COMPONENT_GUI(Parent, parent, label);
+						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(Label, control, label);
-						CAGE_COMPONENT_GUI(Text, text, label);
-						CAGE_COMPONENT_GUI(TextFormat, format, label);
+						GuiLabelComponent &control = label->value<GuiLabelComponent>();
+						GuiTextComponent &text = label->value<GuiTextComponent>();
+						GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 						format.align = TextAlignEnum::Right;
 					}
 				}
@@ -605,10 +605,10 @@ namespace
 		{ // timed
 			Entity *table = ents->createUnique();
 			{
-				CAGE_COMPONENT_GUI(Parent, parent, table);
+				GuiParentComponent &parent = table->value<GuiParentComponent>();
 				parent.parent = 11;
-				CAGE_COMPONENT_GUI(LayoutTable, layout, table);
-				CAGE_COMPONENT_GUI(Panel, gb, table);
+				GuiLayoutTableComponent &layout = table->value<GuiLayoutTableComponent>();
+				GuiPanelComponent &gb = table->value<GuiPanelComponent>();
 			}
 			uint32 index = 1;
 
@@ -618,23 +618,23 @@ namespace
 				{
 					{ // label
 						Entity *label = engineGui()->entities()->createUnique();
-						CAGE_COMPONENT_GUI(Parent, parent, label);
+						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(Label, control, label);
-						CAGE_COMPONENT_GUI(Text, text, label);
+						GuiLabelComponent &control = label->value<GuiLabelComponent>();
+						GuiTextComponent &text = label->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = TextNames[i];
 					}
 
 					{ // value
 						Entity *label = engineGui()->entities()->create(200 + i);
-						CAGE_COMPONENT_GUI(Parent, parent, label);
+						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						CAGE_COMPONENT_GUI(Label, control, label);
-						CAGE_COMPONENT_GUI(Text, text, label);
-						CAGE_COMPONENT_GUI(TextFormat, format, label);
+						GuiLabelComponent &control = label->value<GuiLabelComponent>();
+						GuiTextComponent &text = label->value<GuiTextComponent>();
+						GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 						format.align = TextAlignEnum::Right;
 					}
 				}
@@ -686,15 +686,15 @@ namespace
 		}
 
 		{ // life
-			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(100));
+			GuiTextComponent &txt = engineGui()->entities()->get(100)->value<GuiTextComponent>();
 			txt.value = stringizer() + numeric_cast<uint32>(max(0, game.life));
 		}
 		{ // money
-			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(101));
+			GuiTextComponent &txt = engineGui()->entities()->get(101)->value<GuiTextComponent>();
 			txt.value = stringizer() + game.money;
 		}
 		{ // score
-			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(102));
+			GuiTextComponent &txt = engineGui()->entities()->get(102)->value<GuiTextComponent>();
 			txt.value = stringizer() + game.score;
 		}
 
@@ -702,7 +702,7 @@ namespace
 		{
 			if (!engineGui()->entities()->has(200 + i))
 				continue;
-			CAGE_COMPONENT_GUI(Text, txt, engineGui()->entities()->get(200 + i));
+			GuiTextComponent &txt = engineGui()->entities()->get(200 + i)->value<GuiTextComponent>();
 			switch (PowerupMode[i])
 			{
 			case 0: // collectibles

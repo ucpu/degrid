@@ -37,7 +37,7 @@ namespace
 
 		constexpr const float distMin = 30;
 		constexpr const float distMax = 60;
-		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
+		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 		real closestMonsterToPlayer = real::Infinity();
 		spatialSearchQuery->intersection(Sphere(playerTransform.position, distMax));
 		for (uint32 otherName : spatialSearchQuery->result())
@@ -45,7 +45,7 @@ namespace
 			Entity *e = engineEntities()->get(otherName);
 			if (e->has<MonsterComponent>())
 			{
-				CAGE_COMPONENT_ENGINE(Transform, p, e);
+				TransformComponent &p = e->value<TransformComponent>();
 				real d = distance(p.position, playerTransform.position);
 				closestMonsterToPlayer = min(closestMonsterToPlayer, d);
 			}
@@ -101,7 +101,7 @@ namespace
 	Entity *initEntity(const uint32 soundName)
 	{
 		Entity *e = engineEntities()->createUnique();
-		CAGE_COMPONENT_ENGINE(Sound, s, e);
+		SoundComponent &s = e->value<SoundComponent>();
 		s.gain = 0;
 		s.name = soundName;
 		return e;
@@ -169,13 +169,13 @@ void soundEffect(uint32 soundName, const vec3 &position)
 	if (!src)
 		return;
 	Entity *e = engineEntities()->createUnique();
-	CAGE_COMPONENT_ENGINE(Transform, t, e);
+	TransformComponent &t = e->value<TransformComponent>();
 	t.position = position;
-	CAGE_COMPONENT_ENGINE(Sound, s, e);
+	SoundComponent &s = e->value<SoundComponent>();
 	s.name = soundName;
 	s.startTime = engineControlTime();
 	s.gain = (real)confVolumeEffects;
-	DEGRID_COMPONENT(Timeout, ttl, e);
+	TimeoutComponent &ttl = e->value<TimeoutComponent>();
 	ttl.ttl = numeric_cast<uint32>((src->duration() + 100000) / controlThread().updatePeriod());
 	e->add(entitiesPhysicsEvenWhenPaused);
 }
@@ -186,11 +186,11 @@ void soundSpeech(uint32 soundName)
 	if (!src)
 		return;
 	Entity* e = engineEntities()->createUnique();
-	CAGE_COMPONENT_ENGINE(Sound, s, e);
+	SoundComponent &s = e->value<SoundComponent>();
 	s.name = soundName;
 	s.startTime = engineControlTime();
 	s.gain = (real)confVolumeSpeech;
-	DEGRID_COMPONENT(Timeout, ttl, e);
+	TimeoutComponent &ttl = e->value<TimeoutComponent>();
 	ttl.ttl = numeric_cast<uint32>((src->duration() + 100000) / controlThread().updatePeriod());
 	e->add(entitiesPhysicsEvenWhenPaused);
 }

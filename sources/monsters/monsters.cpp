@@ -11,14 +11,14 @@ namespace
 		if (game.paused)
 			return;
 
-		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
+		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
 
 		for (Entity *e : engineEntities()->component<MonsterComponent>()->entities())
 		{
-			CAGE_COMPONENT_ENGINE(Transform, t, e);
-			DEGRID_COMPONENT(Velocity, v, e);
-			DEGRID_COMPONENT(Monster, m, e);
+			TransformComponent &t = e->value<TransformComponent>();
+			VelocityComponent &v = e->value<VelocityComponent>();
+			MonsterComponent &m = e->value<MonsterComponent>();
 
 			// monster dispersion
 			if (m.dispersion > 0)
@@ -31,7 +31,7 @@ namespace
 					if (otherName == myName)
 						continue;
 					Entity *e = engineEntities()->get(otherName);
-					CAGE_COMPONENT_ENGINE(Transform, ot, e);
+					TransformComponent &ot = e->value<TransformComponent>();
 					vec3 toMonster = t.position - ot.position;
 					if (e->has<MonsterComponent>())
 					{
@@ -144,7 +144,7 @@ void monsterReflectMutation(Entity *e, uint32 special)
 {
 	if (!special)
 		return;
-	CAGE_COMPONENT_ENGINE(Transform, transform, e);
+	TransformComponent &transform = e->value<TransformComponent>();
 	transform.scale *= 1.3;
 	statistics.monstersMutated++;
 	statistics.monstersMutations += special;
@@ -155,9 +155,9 @@ Entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real sca
 {
 	statistics.monstersSpawned++;
 	Entity *m = engineEntities()->createUnique();
-	CAGE_COMPONENT_ENGINE(Transform, transform, m);
-	CAGE_COMPONENT_ENGINE(Render, render, m);
-	DEGRID_COMPONENT(Monster, monster, m);
+	TransformComponent &transform = m->value<TransformComponent>();
+	RenderComponent &render = m->value<RenderComponent>();
+	MonsterComponent &monster = m->value<MonsterComponent>();
 	transform.orientation = quat(degs(), randomAngle(), degs());
 	transform.position = spawnPosition;
 	transform.position[1] = monster.groundLevel = randomChance() * 2 - 1;
@@ -176,12 +176,12 @@ bool killMonster(Entity *e, bool allowCallback)
 		return false;
 	e->add(entitiesToDestroy);
 	monsterExplosion(e);
-	DEGRID_COMPONENT(Monster, m, e);
+	MonsterComponent &m = e->value<MonsterComponent>();
 	m.life = 0;
 	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
 	if (m.defeatedSound)
 	{
-		CAGE_COMPONENT_ENGINE(Transform, t, e);
+		TransformComponent &t = e->value<TransformComponent>();
 		soundEffect(m.defeatedSound, t.position);
 		m.defeatedSound = 0;
 	}

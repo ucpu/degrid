@@ -43,8 +43,8 @@ namespace
 		p /= vec2(res[0], res[1]);
 		p = p * 2 - 1;
 		real px = p[0], py = -p[1];
-		CAGE_COMPONENT_ENGINE(Transform, ts, getPrimaryCameraEntity());
-		CAGE_COMPONENT_ENGINE(Camera, cs, getPrimaryCameraEntity());
+		TransformComponent &ts = getPrimaryCameraEntity()->value<TransformComponent>();
+		CameraComponent &cs = getPrimaryCameraEntity()->value<CameraComponent>();
 		mat4 view = inverse(mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)));
 		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res[0]) / real(res[1]), cs.near, cs.far);
 		mat4 inv = inverse(proj * view);
@@ -58,12 +58,12 @@ namespace
 		{
 			// debug visualization of the mouse position
 			Entity *e = engineEntities()->createAnonymous();
-			CAGE_COMPONENT_ENGINE(Transform, t, e);
+			TransformComponent &t = e->value<TransformComponent>();
 			t.position = mouseCurrentPosition;
 			t.scale = 3;
-			CAGE_COMPONENT_ENGINE(Render, r, e);
+			RenderComponent &r = e->value<RenderComponent>();
 			r.object = HashString("cage/mesh/sphere.obj");
-			DEGRID_COMPONENT(Timeout, tt, e);
+			TimeoutComponent &tt = e->value<TimeoutComponent>();
 			tt.ttl = 1;
 		}
 	}
@@ -195,8 +195,8 @@ namespace
 				{
 					if (cnt-- == 0)
 					{
-						CAGE_COMPONENT_ENGINE(Transform, p, game.playerEntity);
-						CAGE_COMPONENT_ENGINE(Transform, t, e);
+						TransformComponent &p = game.playerEntity->value<TransformComponent>();
+						TransformComponent &t = e->value<TransformComponent>();
 						game.fireDirection = t.position - p.position;
 						break;
 					}
@@ -229,7 +229,7 @@ namespace
 		}
 
 		constexpr real MouseMultiplier = 0.05;
-		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
+		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 
 		switch (confControlMovement)
 		{

@@ -175,7 +175,7 @@ void setScreenAchievements()
 	EntityManager *ents = engineGui()->entities();
 
 	{
-		CAGE_COMPONENT_GUI(LayoutLine, layout, ents->get(12));
+		GuiLayoutLineComponent &layout = ents->get(12)->value<GuiLayoutLineComponent>();
 		layout.vertical = true;
 	}
 
@@ -186,37 +186,37 @@ void setScreenAchievements()
 		{ // panel
 			Entity *e = ents->createUnique();
 			panelName = e->name();
-			CAGE_COMPONENT_GUI(Parent, parent, e);
+			GuiParentComponent &parent = e->value<GuiParentComponent>();
 			parent.parent = 12;
 			parent.order = index++;
-			CAGE_COMPONENT_GUI(Panel, panel, e);
-			CAGE_COMPONENT_GUI(Text, txt, e);
+			GuiPanelComponent &panel = e->value<GuiPanelComponent>();
+			GuiTextComponent &txt = e->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString((string() + "achievement/" + it.first).c_str());
-			CAGE_COMPONENT_GUI(LayoutLine, layout, e);
+			GuiLayoutLineComponent &layout = e->value<GuiLayoutLineComponent>();
 			layout.vertical = true;
 		}
 
 		{ // description
 			Entity *e = ents->createUnique();
-			CAGE_COMPONENT_GUI(Parent, parent, e);
+			GuiParentComponent &parent = e->value<GuiParentComponent>();
 			parent.parent = panelName;
 			parent.order = 1;
-			CAGE_COMPONENT_GUI(Label, label, e);
-			CAGE_COMPONENT_GUI(Text, txt, e);
+			GuiLabelComponent &label = e->value<GuiLabelComponent>();
+			GuiTextComponent &txt = e->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString((string() + "achievement-desc/" + it.first).c_str());
 		}
 
 		{ // date
 			Entity *e = ents->createUnique();
-			CAGE_COMPONENT_GUI(Parent, parent, e);
+			GuiParentComponent &parent = e->value<GuiParentComponent>();
 			parent.parent = panelName;
 			parent.order = 2;
-			CAGE_COMPONENT_GUI(Label, label, e);
-			CAGE_COMPONENT_GUI(Text, txt, e);
+			GuiLabelComponent &label = e->value<GuiLabelComponent>();
+			GuiTextComponent &txt = e->value<GuiTextComponent>();
 			txt.value = it.second.date;
-			CAGE_COMPONENT_GUI(TextFormat, format, e);
+			GuiTextFormatComponent &format = e->value<GuiTextFormatComponent>();
 			format.align = TextAlignEnum::Right;
 		}
 	}

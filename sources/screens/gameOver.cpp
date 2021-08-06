@@ -79,23 +79,23 @@ void setScreenGameover()
 
 	Entity *panel = ents->createUnique();
 	{
-		CAGE_COMPONENT_GUI(Panel, panel2, panel);
-		CAGE_COMPONENT_GUI(Parent, parent, panel);
+		GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
+		GuiParentComponent &parent = panel->value<GuiParentComponent>();
 		parent.parent = 12;
-		CAGE_COMPONENT_GUI(LayoutLine, layout, panel);
+		GuiLayoutLineComponent &layout = panel->value<GuiLayoutLineComponent>();
 		layout.vertical = true;
 	}
 
 	{
 		Entity *empOver = ents->createUnique();
-		CAGE_COMPONENT_GUI(Parent, parent, empOver);
+		GuiParentComponent &parent = empOver->value<GuiParentComponent>();
 		parent.parent = panel->name();
 		parent.order = 1;
-		CAGE_COMPONENT_GUI(Label, control, empOver);
-		CAGE_COMPONENT_GUI(Text, txt, empOver);
+		GuiLabelComponent &control = empOver->value<GuiLabelComponent>();
+		GuiTextComponent &txt = empOver->value<GuiTextComponent>();
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = HashString("gui/gameover/over");
-		CAGE_COMPONENT_GUI(TextFormat, format, empOver);
+		GuiTextFormatComponent &format = empOver->value<GuiTextFormatComponent>();
 		format.align = TextAlignEnum::Center;
 		format.color = vec3(1, 0, 0);
 		format.size = 30;
@@ -103,13 +103,13 @@ void setScreenGameover()
 
 	{
 		Entity *empScore = ents->createUnique();
-		CAGE_COMPONENT_GUI(Parent, parent, empScore);
+		GuiParentComponent &parent = empScore->value<GuiParentComponent>();
 		parent.parent = panel->name();
 		parent.order = 2;
-		CAGE_COMPONENT_GUI(Label, control, empScore);
-		CAGE_COMPONENT_GUI(Text, txt, empScore);
+		GuiLabelComponent &control = empScore->value<GuiLabelComponent>();
+		GuiTextComponent &txt = empScore->value<GuiTextComponent>();
 		txt.value = stringizer() + game.score;
-		CAGE_COMPONENT_GUI(TextFormat, format, empScore);
+		GuiTextFormatComponent &format = empScore->value<GuiTextFormatComponent>();
 		format.align = TextAlignEnum::Center;
 		format.color = vec3(0, 1, 0);
 		format.size = 50;
@@ -117,11 +117,11 @@ void setScreenGameover()
 
 	{
 		Entity *butSave = ents->create(100);
-		CAGE_COMPONENT_GUI(Button, control, butSave);
-		CAGE_COMPONENT_GUI(Text, txt, butSave);
+		GuiButtonComponent &control = butSave->value<GuiButtonComponent>();
+		GuiTextComponent &txt = butSave->value<GuiTextComponent>();
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = HashString("gui/gameover/continue");
-		CAGE_COMPONENT_GUI(Parent, parent, butSave);
+		GuiParentComponent &parent = butSave->value<GuiParentComponent>();
 		parent.parent = 15;
 	}
 }

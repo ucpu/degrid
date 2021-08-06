@@ -223,6 +223,3 @@ struct MonsterComponent
 
 struct BossComponent
 {};
-
-// deprecated
-#define DEGRID_COMPONENT(T, C, E) ::T##Component &C = E->value<::T##Component>();

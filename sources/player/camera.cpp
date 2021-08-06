@@ -27,22 +27,22 @@ namespace
 		cameraFovShakeAmplitude = interpolate(cameraFovShakeAmplitude, (real)engineEntities()->component<BossComponent>()->count(), 0.003);
 		rads fov = degs(40 + 0.5 * cage::sin(degs(engineControlTime() * 2.5e-4)) * saturate(cameraFovShakeAmplitude));
 		{
-			CAGE_COMPONENT_ENGINE(Camera, pc, primaryCameraEntity);
+			CameraComponent &pc = primaryCameraEntity->value<CameraComponent>();
 			pc.camera.perspectiveFov = fov;
-			CAGE_COMPONENT_ENGINE(Camera, sc, skyboxPrimaryCameraEntity);
+			CameraComponent &sc = skyboxPrimaryCameraEntity->value<CameraComponent>();
 			sc.camera.perspectiveFov = fov;
 		}
 
 		{ // camera
-			CAGE_COMPONENT_ENGINE(Transform, p, game.playerEntity);
+			TransformComponent &p = game.playerEntity->value<TransformComponent>();
 			playerPosSmoother.add(p.position);
-			CAGE_COMPONENT_ENGINE(Transform, c, primaryCameraEntity);
+			TransformComponent &c = primaryCameraEntity->value<TransformComponent>();
 			quat rot = quat(degs(game.cinematic ? -40 : -90), {}, {});
 			vec3 ct = playerPosSmoother.smooth() + rot * vec3(0, 0, CameraDistance);
 			cameraPosSmoother.add(ct);
 			c.position = cameraPosSmoother.smooth();
 			c.orientation = quat(playerPosSmoother.smooth() - c.position, vec3(0, 0, -1));
-			CAGE_COMPONENT_ENGINE(Transform, s, skyboxPrimaryCameraEntity);
+			TransformComponent &s = skyboxPrimaryCameraEntity->value<TransformComponent>();
 			s.orientation = c.orientation;
 		}
 	}
@@ -51,7 +51,7 @@ namespace
 	{
 		{
 			skyboxPrimaryCameraEntity = engineEntities()->createUnique();
-			CAGE_COMPONENT_ENGINE(Camera, c, skyboxPrimaryCameraEntity);
+			CameraComponent &c = skyboxPrimaryCameraEntity->value<CameraComponent>();
 			c.cameraOrder = 1;
 			c.sceneMask = 2;
 			c.near = 0.5;
@@ -61,7 +61,7 @@ namespace
 
 		{
 			primaryCameraEntity = engineEntities()->createUnique();
-			CAGE_COMPONENT_ENGINE(Camera, c, primaryCameraEntity);
+			CameraComponent &c = primaryCameraEntity->value<CameraComponent>();
 			c.cameraOrder = 2;
 			c.sceneMask = 1;
 			c.near = 150;
@@ -72,7 +72,7 @@ namespace
 			c.ambientDirectionalIntensity = DirectionalLight;
 			c.clear = CameraClearFlags::None;
 			c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
-			CAGE_COMPONENT_ENGINE(Listener, ls, primaryCameraEntity);
+			ListenerComponent &ls = primaryCameraEntity->value<ListenerComponent>();
 			ls.rolloffFactor = 0.5 / CameraDistance;
 		}
 	}

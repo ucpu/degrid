@@ -57,32 +57,32 @@ namespace
 
 		Entity *panel = ents->createUnique();
 		{
-			CAGE_COMPONENT_GUI(Panel, panel2, panel);
-			CAGE_COMPONENT_GUI(Parent, parent, panel);
+			GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
+			GuiParentComponent &parent = panel->value<GuiParentComponent>();
 			parent.parent = 12;
-			CAGE_COMPONENT_GUI(LayoutTable, layout, panel);
+			GuiLayoutTableComponent &layout = panel->value<GuiLayoutTableComponent>();
 			layout.sections = 2;
 		}
 
 		{ // header
 			{
 				Entity *butScore = ents->create(51);
-				CAGE_COMPONENT_GUI(Parent, parent, butScore);
+				GuiParentComponent &parent = butScore->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = 1;
-				CAGE_COMPONENT_GUI(Button, control, butScore);
-				CAGE_COMPONENT_GUI(Text, txt, butScore);
+				GuiButtonComponent &control = butScore->value<GuiButtonComponent>();
+				GuiTextComponent &txt = butScore->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/scores/date");
 			}
 
 			{
 				Entity *butDate = ents->create(52);
-				CAGE_COMPONENT_GUI(Parent, parent, butDate);
+				GuiParentComponent &parent = butDate->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = 2;
-				CAGE_COMPONENT_GUI(Button, control, butDate);
-				CAGE_COMPONENT_GUI(Text, txt, butDate);
+				GuiButtonComponent &control = butDate->value<GuiButtonComponent>();
+				GuiTextComponent &txt = butDate->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/scores/score");
 			}
@@ -93,25 +93,25 @@ namespace
 		{
 			{
 				Entity *txtScore = ents->createUnique();
-				CAGE_COMPONENT_GUI(Parent, parent, txtScore);
+				GuiParentComponent &parent = txtScore->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.index) * 2 + 100;
-				CAGE_COMPONENT_GUI(Label, control, txtScore);
-				CAGE_COMPONENT_GUI(Text, txt, txtScore);
+				GuiLabelComponent &control = txtScore->value<GuiLabelComponent>();
+				GuiTextComponent &txt = txtScore->value<GuiTextComponent>();
 				txt.value = it->date;
-				CAGE_COMPONENT_GUI(TextFormat, format, txtScore);
+				GuiTextFormatComponent &format = txtScore->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Center;
 			}
 
 			{
 				Entity *txtDate = ents->createUnique();
-				CAGE_COMPONENT_GUI(Parent, parent, txtDate);
+				GuiParentComponent &parent = txtDate->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.index * 2 + 101);
-				CAGE_COMPONENT_GUI(Label, control, txtDate);
-				CAGE_COMPONENT_GUI(Text, txt, txtDate);
+				GuiLabelComponent &control = txtDate->value<GuiLabelComponent>();
+				GuiTextComponent &txt = txtDate->value<GuiTextComponent>();
 				txt.value = stringizer() + it->score;
-				CAGE_COMPONENT_GUI(TextFormat, format, txtDate);
+				GuiTextFormatComponent &format = txtDate->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 			}
 		}

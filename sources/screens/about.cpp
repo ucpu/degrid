@@ -10,10 +10,10 @@ void setScreenAbout()
 
 	Entity *panel = ents->createUnique();
 	{
-		CAGE_COMPONENT_GUI(Panel, panel2, panel);
-		CAGE_COMPONENT_GUI(Parent, parent, panel);
+		GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
+		GuiParentComponent &parent = panel->value<GuiParentComponent>();
 		parent.parent = 12;
-		CAGE_COMPONENT_GUI(LayoutLine, layout, panel);
+		GuiLayoutLineComponent &layout = panel->value<GuiLayoutLineComponent>();
 		layout.vertical = true;
 	}
 
@@ -27,11 +27,11 @@ void setScreenAbout()
 	for (auto it : enumerate(TextNames))
 	{
 		Entity *label = engineGui()->entities()->createUnique();
-		CAGE_COMPONENT_GUI(Parent, parent, label);
+		GuiParentComponent &parent = label->value<GuiParentComponent>();
 		parent.parent = panel->name();
 		parent.order = numeric_cast<sint32>(it.index);
-		CAGE_COMPONENT_GUI(Label, lab, label);
-		CAGE_COMPONENT_GUI(Text, txt, label);
+		GuiLabelComponent &lab = label->value<GuiLabelComponent>();
+		GuiTextComponent &txt = label->value<GuiTextComponent>();
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = *it;
 	}

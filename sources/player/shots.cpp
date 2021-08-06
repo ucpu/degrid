@@ -25,31 +25,31 @@ namespace
 
 		game.shootingCooldown += real(4) * pow(1.3, game.powerups[(uint32)PowerupTypeEnum::Multishot]) * pow(0.7, game.powerups[(uint32)PowerupTypeEnum::FiringSpeed]);
 
-		CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
-		DEGRID_COMPONENT(Velocity, playerVelocity, game.playerEntity);
+		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
 
 		for (real i = game.powerups[(uint32)PowerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)PowerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 		{
 			statistics.shotsFired++;
 			Entity *shot = engineEntities()->createUnique();
-			CAGE_COMPONENT_ENGINE(Transform, transform, shot);
+			TransformComponent &transform = shot->value<TransformComponent>();
 			rads dir = atan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += degs(i * 10);
 			vec3 dirv = vec3(-sin(dir), 0, -cos(dir));
 			transform.position = playerTransform.position + dirv * 2;
 			transform.orientation = quat(degs(), dir, degs());
-			CAGE_COMPONENT_ENGINE(Render, render, shot);
+			RenderComponent &render = shot->value<RenderComponent>();
 			render.object = HashString("degrid/player/shot.object");
 			if (game.powerups[(uint32)PowerupTypeEnum::SuperDamage] > 0)
 				render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
 			else
 				render.color = game.shotsColor;
-			DEGRID_COMPONENT(Velocity, vel, shot);
+			VelocityComponent &vel = shot->value<VelocityComponent>();
 			vel.velocity = dirv * (game.powerups[(uint32)PowerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
-			DEGRID_COMPONENT(Shot, sh, shot);
+			ShotComponent &sh = shot->value<ShotComponent>();
 			sh.damage = game.powerups[(uint32)PowerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)PowerupTypeEnum::SuperDamage] ? 4 : 1);
 			sh.homing = game.powerups[(uint32)PowerupTypeEnum::HomingShots] > 0;
-			DEGRID_COMPONENT(Timeout, ttl, shot);
+			TimeoutComponent &ttl = shot->value<TimeoutComponent>();
 			ttl.ttl = ShotsTtl;
 		}
 	}
@@ -58,16 +58,16 @@ namespace
 	{
 		for (Entity *e : engineEntities()->component<ShotComponent>()->entities())
 		{
-			CAGE_COMPONENT_ENGINE(Transform, tr, e);
-			CAGE_COMPONENT_ENGINE(Transform, playerTransform, game.playerEntity);
+			TransformComponent &tr = e->value<TransformComponent>();
+			TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 
 			uint32 closestMonster = 0;
 			uint32 homingMonster = 0;
 			real closestDistance = real::Infinity();
 			real homingDistance = real::Infinity();
 			uint32 myName = e->name();
-			DEGRID_COMPONENT(Shot, sh, e);
-			DEGRID_COMPONENT(Velocity, vl, e);
+			ShotComponent &sh = e->value<ShotComponent>();
+			VelocityComponent &vl = e->value<VelocityComponent>();
 
 			spatialSearchQuery->intersection(Sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
 			for (uint32 otherName : spatialSearchQuery->result())
@@ -76,23 +76,23 @@ namespace
 					continue;
 
 				Entity *e = engineEntities()->get(otherName);
-				CAGE_COMPONENT_ENGINE(Transform, ot, e);
+				TransformComponent &ot = e->value<TransformComponent>();
 				vec3 toOther = ot.position - tr.position;
 				if (e->has<GridComponent>())
 				{
-					DEGRID_COMPONENT(Velocity, og, e);
+					VelocityComponent &og = e->value<VelocityComponent>();
 					og.velocity += normalize(vl.velocity) * (0.2f / max(1, length(toOther)));
 					continue;
 				}
 				if (!e->has<MonsterComponent>())
 					continue;
-				DEGRID_COMPONENT(Monster, om, e);
+				MonsterComponent &om = e->value<MonsterComponent>();
 				if (om.life <= 0)
 					continue;
 				real dist = length(toOther);
 				if (dist < closestDistance)
 				{
-					DEGRID_COMPONENT(Velocity, ov, e);
+					VelocityComponent &ov = e->value<VelocityComponent>();
 					if (collisionTest(tr.position, tr.scale, vl.velocity, ot.position, ot.scale, ov.velocity))
 					{
 						closestMonster = otherName;
@@ -110,7 +110,7 @@ namespace
 			{
 				statistics.shotsHit++;
 				Entity *m = engineEntities()->get(closestMonster);
-				DEGRID_COMPONENT(Monster, om, m);
+				MonsterComponent &om = m->value<MonsterComponent>();
 				real dmg = sh.damage;
 				sh.damage -= om.life;
 				om.life -= dmg;
@@ -123,7 +123,7 @@ namespace
 						if (r < game.powerupSpawnChance)
 						{
 							game.powerupSpawnChance -= 1;
-							CAGE_COMPONENT_ENGINE(Transform, mtr, m);
+							TransformComponent &mtr = m->value<TransformComponent>();
 							powerupSpawn(mtr.position);
 						}
 						game.powerupSpawnChance += 0.01;
@@ -143,7 +143,7 @@ namespace
 				if (homingMonster)
 				{
 					Entity *m = engineEntities()->get(homingMonster);
-					CAGE_COMPONENT_ENGINE(Transform, mtr, m);
+					TransformComponent &mtr = m->value<TransformComponent>();
 					vec3 toOther = normalize(mtr.position - tr.position);
 					real spd = length(vl.velocity);
 					vl.velocity = toOther * spd;

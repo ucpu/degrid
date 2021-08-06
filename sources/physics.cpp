@@ -25,13 +25,13 @@ namespace
 		{ // gravity
 			for (Entity *e : engineEntities()->component<GravityComponent>()->entities())
 			{
-				CAGE_COMPONENT_ENGINE(Transform, t, e);
-				DEGRID_COMPONENT(Gravity, g, e);
+				TransformComponent &t = e->value<TransformComponent>();
+				GravityComponent &g = e->value<GravityComponent>();
 				for (Entity *oe : engineEntities()->component<VelocityComponent>()->entities())
 				{
 					if (oe->has<GravityComponent>())
 						continue;
-					CAGE_COMPONENT_ENGINE(Transform, ot, oe);
+					TransformComponent &ot = oe->value<TransformComponent>();
 					vec3 d = t.position - ot.position;
 					if (lengthSquared(d) < 1e-3)
 						continue;
@@ -45,8 +45,8 @@ namespace
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				CAGE_COMPONENT_ENGINE(Transform, t, e);
-				DEGRID_COMPONENT(Velocity, v, e);
+				TransformComponent &t = e->value<TransformComponent>();
+				VelocityComponent &v = e->value<VelocityComponent>();
 				t.position += v.velocity;
 			}
 		}
@@ -56,8 +56,8 @@ namespace
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				CAGE_COMPONENT_ENGINE(Transform, t, e);
-				DEGRID_COMPONENT(Rotation, r, e);
+				TransformComponent &t = e->value<TransformComponent>();
+				RotationComponent &r = e->value<RotationComponent>();
 				t.orientation = r.rotation * t.orientation;
 			}
 		}
@@ -67,7 +67,7 @@ namespace
 			{
 				if (game.paused && !e->has(entitiesPhysicsEvenWhenPaused))
 					continue;
-				DEGRID_COMPONENT(Timeout, t, e);
+				TimeoutComponent &t = e->value<TimeoutComponent>();
 				if (t.ttl == 0)
 					e->add(entitiesToDestroy);
 				else
@@ -86,7 +86,7 @@ namespace
 				uint32 n = e->name();
 				if (n)
 				{
-					CAGE_COMPONENT_ENGINE(Transform, tr, e);
+					TransformComponent &tr = e->value<TransformComponent>();
 					spatialSearchData->update(n, Sphere(tr.position, tr.scale));
 				}
 			}

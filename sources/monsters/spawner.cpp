@@ -28,16 +28,16 @@ namespace
 
 		for (Entity *e : SpawnerComponent::component->entities())
 		{
-			DEGRID_COMPONENT(Spawner, s, e);
+			SpawnerComponent &s = e->value<SpawnerComponent>();
 			if (s.count == 0)
 			{
-				DEGRID_COMPONENT(Monster, m, e);
+				MonsterComponent &m = e->value<MonsterComponent>();
 				killMonster(e, false);
 			}
 			else if ((statistics.updateIteration % s.period) == 0)
 			{
-				CAGE_COMPONENT_ENGINE(Transform, t, e);
-				CAGE_COMPONENT_ENGINE(Render, r, e);
+				TransformComponent &t = e->value<TransformComponent>();
+				RenderComponent &r = e->value<RenderComponent>();
 				spawnGeneral(s.type, t.position, r.color);
 				s.count--;
 			}
@@ -90,16 +90,16 @@ void spawnSpawner(const vec3 &spawnPosition, const vec3 &color)
 {
 	uint32 special = 0;
 	Entity *spawner = initializeMonster(spawnPosition, color, 6, HashString("degrid/monster/spawner.object"), HashString("degrid/monster/bum-spawner.ogg"), 10, 20 + 5 * monsterMutation(special));
-	CAGE_COMPONENT_ENGINE(Transform, transform, spawner);
+	TransformComponent &transform = spawner->value<TransformComponent>();
 	transform.orientation = randomDirectionQuat();
-	CAGE_COMPONENT_ENGINE(SkeletalAnimation, sa, spawner);
+	SkeletalAnimationComponent &sa = spawner->value<SkeletalAnimationComponent>();
 	sa.startTime = applicationTime();
-	DEGRID_COMPONENT(Monster, m, spawner);
-	DEGRID_COMPONENT(Spawner, s, spawner);
+	MonsterComponent &m = spawner->value<MonsterComponent>();
+	SpawnerComponent &s = spawner->value<SpawnerComponent>();
 	s.type = pickOne(Types[game.defeatedBosses]);
 	s.count = 60 + 15 * monsterMutation(special);
 	s.period = numeric_cast<uint32>(25.0 / (3 + monsterMutation(special))) + 1;
-	DEGRID_COMPONENT(Rotation, rotation, spawner);
+	RotationComponent &rotation = spawner->value<RotationComponent>();
 	rotation.rotation = interpolate(quat(), randomDirectionQuat(), 0.003);
 	monsterReflectMutation(spawner, special);
 }

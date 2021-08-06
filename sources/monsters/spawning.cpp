@@ -88,7 +88,7 @@ namespace
 	void SpawnDefinition::spawn()
 	{
 		{ // update player position
-			CAGE_COMPONENT_ENGINE(Transform, p, game.playerEntity);
+			TransformComponent &p = game.playerEntity->value<TransformComponent>();
 			playerPosition = p.position;
 		}
 
