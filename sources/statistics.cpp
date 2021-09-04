@@ -50,7 +50,7 @@ namespace
 
 	void gameStop()
 	{
-		static const string PowerupName[(uint32)PowerupTypeEnum::Total] = {
+		static const String PowerupName[(uint32)PowerupTypeEnum::Total] = {
 			"Bomb",
 			"Turret",
 			"Decoy",
@@ -69,9 +69,9 @@ namespace
 		};
 		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 			if (game.powerups[i] > 0)
-				CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "powerup '" + PowerupName[i] + "': " + game.powerups[i]);
+				CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "powerup '" + PowerupName[i] + "': " + game.powerups[i]);
 
-#define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + CAGE_STRINGIZE(N) ": " + statistics.N);
+#define GCHL_GENERATE(N) if (statistics.N != 0) CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + CAGE_STRINGIZE(N) ": " + statistics.N);
 		CAGE_EVAL_SMALL(CAGE_EXPAND_ARGS(GCHL_GENERATE, \
 			shotsFired, shotsTurret, shotsHit, shotsKill, shotsCurrent, shotsMax, \
 			monstersSpawned, monstersMutated, monstersMutations, monstersSucceded, monstersCurrent, monstersMax, monstersCurrentSpawningPriority, monstersFirstHit, \
@@ -92,9 +92,9 @@ namespace
 #undef GCHL_GENERATE
 
 		const uint64 duration = applicationTime() - statistics.timeStart;
-		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "duration: " + (duration / 1e6) + " s");
-		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
-		CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
+		CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "duration: " + (duration / 1e6) + " s");
+		CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
+		CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
 	}
 
 	class Callbacks

@@ -146,7 +146,7 @@ namespace
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/story");
 				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-				sc.alignment = vec2(0.5, 0.5);
+				sc.alignment = Vec2(0.5, 0.5);
 				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 				ll.vertical = true;
 			}
@@ -187,7 +187,7 @@ namespace
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/bosses");
 				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-				sc.alignment = vec2(0.5, 0.5);
+				sc.alignment = Vec2(0.5, 0.5);
 				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 				ll.vertical = false;
 			}
@@ -204,7 +204,7 @@ namespace
 					parent.order = i;
 					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
-					text.textName = i < achievements.bosses ? HashString(string(stringizer() + "achievement/boss-" + i)) : HashString("achievement/boss-unknown");
+					text.textName = i < achievements.bosses ? HashString(String(Stringizer() + "achievement/boss-" + i)) : HashString("achievement/boss-unknown");
 				}
 				{
 					Entity *e = ents->createUnique();
@@ -213,7 +213,7 @@ namespace
 					parent.parent = pn;
 					parent.order = 1;
 					GuiImageComponent &img = e->value<GuiImageComponent>();
-					img.textureName = i < achievements.bosses ? HashString(string(stringizer() + "degrid/boss/icon/" + i + ".png")) : HashString("degrid/boss/icon/unknown.png");
+					img.textureName = i < achievements.bosses ? HashString(String(Stringizer() + "degrid/boss/icon/" + i + ".png")) : HashString("degrid/boss/icon/unknown.png");
 				}
 				if (game.defeatedBosses > i)
 				{
@@ -243,7 +243,7 @@ namespace
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/market");
 				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-				sc.alignment = vec2(0.5, 0.5);
+				sc.alignment = Vec2(0.5, 0.5);
 				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
 				ll.vertical = true;
 			}
@@ -256,7 +256,7 @@ namespace
 				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/permanentLimit");
-				text.value = stringizer() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
+				text.value = Stringizer() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
 				GuiLabelComponent &but = e->value<GuiLabelComponent>();
 				GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
 				tf.align = TextAlignEnum::Center;
@@ -328,7 +328,7 @@ namespace
 					parent.parent = panelName;
 					parent.order = 1002;
 					GuiTextComponent &text = e->value<GuiTextComponent>();
-					text.value = stringizer() + (PowerupBuyPriceBase * game.buyPriceMultiplier);
+					text.value = Stringizer() + (PowerupBuyPriceBase * game.buyPriceMultiplier);
 					GuiLabelComponent &but = e->value<GuiLabelComponent>();
 					GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
 					tf.align = TextAlignEnum::Center;
@@ -339,7 +339,7 @@ namespace
 					parent.parent = panelName;
 					parent.order = 1003;
 					GuiTextComponent &text = e->value<GuiTextComponent>();
-					text.value = stringizer() + (PowerupSellPriceBase * (game.defeatedBosses + 1));
+					text.value = Stringizer() + (PowerupSellPriceBase * (game.defeatedBosses + 1));
 					GuiLabelComponent &but = e->value<GuiLabelComponent>();
 					GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
 					tf.align = TextAlignEnum::Center;
@@ -367,7 +367,7 @@ namespace
 						parent.parent = panelName;
 						parent.order = i * 4 + 1;
 						GuiTextComponent &text = e->value<GuiTextComponent>();
-						text.value = stringizer() + game.powerups[i];
+						text.value = Stringizer() + game.powerups[i];
 						GuiLabelComponent &but = e->value<GuiLabelComponent>();
 						GuiTextFormatComponent &format = e->value<GuiTextFormatComponent>();
 						format.align = TextAlignEnum::Center;
@@ -413,7 +413,7 @@ namespace
 
 		{
 			GuiScrollbarsComponent &sc = ents->get(12)->value<GuiScrollbarsComponent>();
-			sc.alignment = vec2(0.5, 0);
+			sc.alignment = Vec2(0.5, 0);
 		}
 
 		uint32 layoutName;
@@ -491,7 +491,7 @@ namespace
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/life");
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
-				format.color = vec3(1, 0, 0);
+				format.color = Vec3(1, 0, 0);
 				format.size = 20;
 			}
 
@@ -504,7 +504,7 @@ namespace
 				GuiTextComponent &text = label->value<GuiTextComponent>();
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
-				format.color = vec3(1, 0, 0);
+				format.color = Vec3(1, 0, 0);
 				format.size = 20;
 			}
 
@@ -518,7 +518,7 @@ namespace
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/money");
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
-				format.color = vec3(1, 1, 0);
+				format.color = Vec3(1, 1, 0);
 				format.size = 20;
 			}
 
@@ -531,7 +531,7 @@ namespace
 				GuiTextComponent &text = label->value<GuiTextComponent>();
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
-				format.color = vec3(1, 1, 0);
+				format.color = Vec3(1, 1, 0);
 				format.size = 20;
 			}
 
@@ -545,7 +545,7 @@ namespace
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/score");
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
-				format.color = vec3(0, 1, 0);
+				format.color = Vec3(0, 1, 0);
 				format.size = 20;
 			}
 
@@ -558,7 +558,7 @@ namespace
 				GuiTextComponent &text = label->value<GuiTextComponent>();
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
-				format.color = vec3(0, 1, 0);
+				format.color = Vec3(0, 1, 0);
 				format.size = 20;
 			}
 		}
@@ -687,15 +687,15 @@ namespace
 
 		{ // life
 			GuiTextComponent &txt = engineGui()->entities()->get(100)->value<GuiTextComponent>();
-			txt.value = stringizer() + numeric_cast<uint32>(max(0, game.life));
+			txt.value = Stringizer() + numeric_cast<uint32>(max(0, game.life));
 		}
 		{ // money
 			GuiTextComponent &txt = engineGui()->entities()->get(101)->value<GuiTextComponent>();
-			txt.value = stringizer() + game.money;
+			txt.value = Stringizer() + game.money;
 		}
 		{ // score
 			GuiTextComponent &txt = engineGui()->entities()->get(102)->value<GuiTextComponent>();
-			txt.value = stringizer() + game.score;
+			txt.value = Stringizer() + game.score;
 		}
 
 		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
@@ -706,13 +706,13 @@ namespace
 			switch (PowerupMode[i])
 			{
 			case 0: // collectibles
-				txt.value = stringizer() + game.powerups[i];
+				txt.value = Stringizer() + game.powerups[i];
 				break;
 			case 1: // timed
-				txt.value = stringizer() + game.powerups[i] / 30;
+				txt.value = Stringizer() + game.powerups[i] / 30;
 				break;
 			case 2: // permanent
-				txt.value = stringizer() + game.powerups[i];
+				txt.value = Stringizer() + game.powerups[i];
 				break;
 			}
 		}

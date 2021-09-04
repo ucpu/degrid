@@ -14,10 +14,10 @@ extern ConfigFloat confVolumeSpeech;
 
 namespace
 {
-	real suspense;
-	real suspenseVolume;
-	real actionVolume;
-	real endVolume;
+	Real suspense;
+	Real suspenseVolume;
+	Real actionVolume;
+	Real endVolume;
 	Entity *suspenseEnt;
 	Entity *actionEnt;
 	Entity *endEnt;
@@ -38,7 +38,7 @@ namespace
 		constexpr const float distMin = 30;
 		constexpr const float distMax = 60;
 		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-		real closestMonsterToPlayer = real::Infinity();
+		Real closestMonsterToPlayer = Real::Infinity();
 		spatialSearchQuery->intersection(Sphere(playerTransform.position, distMax));
 		for (uint32 otherName : spatialSearchQuery->result())
 		{
@@ -46,7 +46,7 @@ namespace
 			if (e->has<MonsterComponent>())
 			{
 				TransformComponent &p = e->value<TransformComponent>();
-				real d = distance(p.position, playerTransform.position);
+				Real d = distance(p.position, playerTransform.position);
 				closestMonsterToPlayer = min(closestMonsterToPlayer, d);
 			}
 		}
@@ -57,9 +57,9 @@ namespace
 			suspense = 1;
 	}
 
-	void alterVolume(real& current, real target)
+	void alterVolume(Real& current, Real target)
 	{
-		real change = 0.7f / (1000000 / controlThread().updatePeriod());
+		Real change = 0.7f / (1000000 / controlThread().updatePeriod());
 		if (current > target + change)
 		{
 			current -= change;
@@ -93,9 +93,9 @@ namespace
 		determineSuspense();
 		determineVolumes();
 
-		suspenseEnt->value<SoundComponent>().gain = suspenseVolume * (real)confVolumeMusic;
-		actionEnt->value<SoundComponent>().gain = actionVolume * (real)confVolumeMusic;
-		endEnt->value<SoundComponent>().gain = endVolume * (real)confVolumeMusic;
+		suspenseEnt->value<SoundComponent>().gain = suspenseVolume * (Real)confVolumeMusic;
+		actionEnt->value<SoundComponent>().gain = actionVolume * (Real)confVolumeMusic;
+		endEnt->value<SoundComponent>().gain = endVolume * (Real)confVolumeMusic;
 	}
 
 	Entity *initEntity(const uint32 soundName)
@@ -163,7 +163,7 @@ namespace
 	} callbacksInstance;
 }
 
-void soundEffect(uint32 soundName, const vec3 &position)
+void soundEffect(uint32 soundName, const Vec3 &position)
 {
 	Holder<Sound> src = engineAssets()->get<AssetSchemeIndexSound, Sound>(soundName);
 	if (!src)
@@ -174,7 +174,7 @@ void soundEffect(uint32 soundName, const vec3 &position)
 	SoundComponent &s = e->value<SoundComponent>();
 	s.name = soundName;
 	s.startTime = engineControlTime();
-	s.gain = (real)confVolumeEffects;
+	s.gain = (Real)confVolumeEffects;
 	TimeoutComponent &ttl = e->value<TimeoutComponent>();
 	ttl.ttl = numeric_cast<uint32>((src->duration() + 100000) / controlThread().updatePeriod());
 	e->add(entitiesPhysicsEvenWhenPaused);
@@ -189,7 +189,7 @@ void soundSpeech(uint32 soundName)
 	SoundComponent &s = e->value<SoundComponent>();
 	s.name = soundName;
 	s.startTime = engineControlTime();
-	s.gain = (real)confVolumeSpeech;
+	s.gain = (Real)confVolumeSpeech;
 	TimeoutComponent &ttl = e->value<TimeoutComponent>();
 	ttl.ttl = numeric_cast<uint32>((src->duration() + 100000) / controlThread().updatePeriod());
 	e->add(entitiesPhysicsEvenWhenPaused);

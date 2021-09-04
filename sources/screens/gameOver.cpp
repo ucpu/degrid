@@ -57,12 +57,12 @@ void setScreenGameover()
 			const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 			char buffer[50];
 			std::strftime(buffer, 50, "%Y-%m-%d %H:%M:%S", std::localtime(&now));
-			f->writeLine(stringizer() + "date = " + buffer);
+			f->writeLine(Stringizer() + "date = " + buffer);
 		}
-		f->writeLine(stringizer() + "bosses = " + game.defeatedBosses + " / " + achievements.bosses);
-		f->writeLine(stringizer() + "achievements = " + achievements.acquired);
-		f->writeLine(stringizer() + "duration = " + statistics.updateIteration);
-		f->writeLine(stringizer() + "score = " + game.score);
+		f->writeLine(Stringizer() + "bosses = " + game.defeatedBosses + " / " + achievements.bosses);
+		f->writeLine(Stringizer() + "achievements = " + achievements.acquired);
+		f->writeLine(Stringizer() + "duration = " + statistics.updateIteration);
+		f->writeLine(Stringizer() + "score = " + game.score);
 #endif
 	}
 
@@ -97,7 +97,7 @@ void setScreenGameover()
 		txt.textName = HashString("gui/gameover/over");
 		GuiTextFormatComponent &format = empOver->value<GuiTextFormatComponent>();
 		format.align = TextAlignEnum::Center;
-		format.color = vec3(1, 0, 0);
+		format.color = Vec3(1, 0, 0);
 		format.size = 30;
 	}
 
@@ -108,10 +108,10 @@ void setScreenGameover()
 		parent.order = 2;
 		GuiLabelComponent &control = empScore->value<GuiLabelComponent>();
 		GuiTextComponent &txt = empScore->value<GuiTextComponent>();
-		txt.value = stringizer() + game.score;
+		txt.value = Stringizer() + game.score;
 		GuiTextFormatComponent &format = empScore->value<GuiTextFormatComponent>();
 		format.align = TextAlignEnum::Center;
-		format.color = vec3(0, 1, 0);
+		format.color = Vec3(0, 1, 0);
 		format.size = 50;
 	}
 

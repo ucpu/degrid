@@ -30,27 +30,27 @@ namespace cage
 	GCHL_ENUM_BITS(MonsterTypeFlags);
 }
 
-void spawnGeneral(MonsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color);
-void spawnSimple(MonsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color);
-void spawnSnake(const vec3 &spawnPosition, const vec3 &color);
-void spawnShielder(const vec3 &spawnPosition, const vec3 &color);
-void spawnShocker(const vec3 &spawnPosition, const vec3 &color);
-void spawnWormhole(const vec3 &spawnPosition, const vec3 &color);
-void spawnRocket(const vec3 &spawnPosition, const vec3 &color);
-void spawnSpawner(const vec3 &spawnPosition, const vec3 &color);
-void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color);
-void spawnBossCannoneer(const vec3 &spawnPosition, const vec3 &color);
+void spawnGeneral(MonsterTypeFlags type, const Vec3 &spawnPosition, const Vec3 &color);
+void spawnSimple(MonsterTypeFlags type, const Vec3 &spawnPosition, const Vec3 &color);
+void spawnSnake(const Vec3 &spawnPosition, const Vec3 &color);
+void spawnShielder(const Vec3 &spawnPosition, const Vec3 &color);
+void spawnShocker(const Vec3 &spawnPosition, const Vec3 &color);
+void spawnWormhole(const Vec3 &spawnPosition, const Vec3 &color);
+void spawnRocket(const Vec3 &spawnPosition, const Vec3 &color);
+void spawnSpawner(const Vec3 &spawnPosition, const Vec3 &color);
+void spawnBossEgg(const Vec3 &spawnPosition, const Vec3 &color);
+void spawnBossCannoneer(const Vec3 &spawnPosition, const Vec3 &color);
 
-Entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life);
-Entity *initializeSimple(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life, real maxSpeed, real accelerationFraction, real avoidance, real dispersion, real circling, real spiraling, const quat &animation);
+Entity *initializeMonster(const Vec3 &spawnPosition, const Vec3 &color, Real scale, uint32 objectName, uint32 deadSound, Real damage, Real life);
+Entity *initializeSimple(const Vec3 &spawnPosition, const Vec3 &color, Real scale, uint32 objectName, uint32 deadSound, Real damage, Real life, Real maxSpeed, Real accelerationFraction, Real avoidance, Real dispersion, Real circling, Real spiraling, const Quat &animation);
 uint32 monsterMutation(uint32 &special);
 void monsterReflectMutation(Entity *e, uint32 special);
 
 struct SimpleMonsterComponent
 {
-	real maxSpeed;
-	real acceleration;
-	real avoidance;
-	real circling;
-	real spiraling;
+	Real maxSpeed;
+	Real acceleration;
+	Real avoidance;
+	Real circling;
+	Real spiraling;
 };

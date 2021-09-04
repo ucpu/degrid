@@ -14,18 +14,18 @@
 
 Achievements achievements;
 
-EventDispatcher<bool(const string&)> &achievementAcquiredEvent()
+EventDispatcher<bool(const String&)> &achievementAcquiredEvent()
 {
-	static EventDispatcher<bool(const string&)> inst;
+	static EventDispatcher<bool(const String&)> inst;
 	return inst;
 }
 
 namespace std
 {
 	template <>
-	struct hash<cage::string>
+	struct hash<cage::String>
 	{
-		std::size_t operator()(const cage::string &k) const
+		std::size_t operator()(const cage::String &k) const
 		{
 			return std::hash<std::string>()(std::string(k.c_str()));
 		}
@@ -36,19 +36,19 @@ namespace
 {
 	struct Achievement
 	{
-		string date;
+		String date;
 		bool boss = false;
 	};
 
-	std::unordered_map<string, Achievement> data;
+	std::unordered_map<String, Achievement> data;
 }
 
-bool achievementFullfilled(const string &name, bool bossKill)
+bool achievementFullfilled(const String &name, bool bossKill)
 {
 	if (game.cinematic)
 		return false;
 
-	CAGE_LOG_DEBUG(SeverityEnum::Info, "achievements", stringizer() + "fulfilled achievement: '" + name + "', boss: " + bossKill);
+	CAGE_LOG_DEBUG(SeverityEnum::Info, "achievements", Stringizer() + "fulfilled achievement: '" + name + "', boss: " + bossKill);
 
 	{
 		auto it = data.find(name);
@@ -72,11 +72,11 @@ bool achievementFullfilled(const string &name, bool bossKill)
 		achievements.bosses++;
 	achievements.acquired++;
 
-	CAGE_LOG(SeverityEnum::Info, "achievements", string() + "acquired achievement: '" + name + "'");
+	CAGE_LOG(SeverityEnum::Info, "achievements", String() + "acquired achievement: '" + name + "'");
 
 	makeAnnouncement(
-		HashString((string() + "achievement/" + name).c_str()),
-		HashString((string() + "achievement-desc/" + name).c_str())
+		HashString((String() + "achievement/" + name).c_str()),
+		HashString((String() + "achievement-desc/" + name).c_str())
 	);
 
 	return true;
@@ -103,7 +103,7 @@ namespace
 				detail::OverrideBreakpoint ob;
 				ini->importFile("achievements.ini");
 			}
-			for (const string &section : ini->sections())
+			for (const String &section : ini->sections())
 			{
 				Achievement &a = data[section];
 				a.date = ini->getString(section, "date");
@@ -116,9 +116,9 @@ namespace
 			data.clear();
 		}
 		summaries(achievements.acquired, achievements.bosses);
-		CAGE_LOG(SeverityEnum::Info, "achievements", stringizer() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
+		CAGE_LOG(SeverityEnum::Info, "achievements", Stringizer() + "acquired achievements: " + achievements.acquired + ", bosses: " + achievements.bosses);
 		for (const auto &a : data)
-			CAGE_LOG_CONTINUE(SeverityEnum::Note, "achievements", stringizer() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
+			CAGE_LOG_CONTINUE(SeverityEnum::Note, "achievements", Stringizer() + a.first + ": " + a.second.date + " (" + a.second.boss + ")");
 		if (achievements.bosses > BossesTotalCount)
 		{
 			CAGE_LOG(SeverityEnum::Warning, "achievements", "are you cheating? there is not that many bosses in the game");
@@ -192,7 +192,7 @@ void setScreenAchievements()
 			GuiPanelComponent &panel = e->value<GuiPanelComponent>();
 			GuiTextComponent &txt = e->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
-			txt.textName = HashString((string() + "achievement/" + it.first).c_str());
+			txt.textName = HashString((String() + "achievement/" + it.first).c_str());
 			GuiLayoutLineComponent &layout = e->value<GuiLayoutLineComponent>();
 			layout.vertical = true;
 		}
@@ -205,7 +205,7 @@ void setScreenAchievements()
 			GuiLabelComponent &label = e->value<GuiLabelComponent>();
 			GuiTextComponent &txt = e->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
-			txt.textName = HashString((string() + "achievement-desc/" + it.first).c_str());
+			txt.textName = HashString((String() + "achievement-desc/" + it.first).c_str());
 		}
 
 		{ // date

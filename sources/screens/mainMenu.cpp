@@ -68,7 +68,7 @@ void setScreenMainmenu()
 		{
 			Entity *e = ents->get(15);
 			GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-			sc.alignment = vec2(0.8, 0.7);
+			sc.alignment = Vec2(0.8, 0.7);
 		}
 
 		Entity *panel = ents->createUnique();
@@ -177,7 +177,7 @@ void setScreenMainmenu()
 			GuiImageComponent &img = but->value<GuiImageComponent>();
 			img.textureName = Flags[i];
 			GuiExplicitSizeComponent &size = but->value<GuiExplicitSizeComponent>();
-			size.size = vec2(80, 40);
+			size.size = Vec2(80, 40);
 		}
 	}
 }

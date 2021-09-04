@@ -83,8 +83,8 @@ namespace
 		{
 			TransformComponent &tr = e->value<TransformComponent>();
 			VelocityComponent &mv = e->value<VelocityComponent>();
-			vec3 v = game.monstersTarget - tr.position;
-			real l = length(v);
+			Vec3 v = game.monstersTarget - tr.position;
+			Real l = length(v);
 			mv.velocity = normalize(v) * pow(max(l - 70, 0) * 0.03, 1.5);
 		}
 	}
@@ -119,17 +119,17 @@ namespace
 	} callbacksInstance;
 }
 
-void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
+void spawnBossEgg(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	CAGE_ASSERT(engineEntities()->component<BossComponent>()->count() == 0);
 	if (game.defeatedBosses >= BossesTotalCount)
 		return;
-	Entity *e = initializeMonster(spawnPosition, color, 10, HashString("degrid/boss/egg.object"), 0, real::Infinity(), real::Infinity());
+	Entity *e = initializeMonster(spawnPosition, color, 10, HashString("degrid/boss/egg.object"), 0, Real::Infinity(), Real::Infinity());
 	BossEggComponent &eggc = e->value<BossEggComponent>();
 	{
 		BossComponent &boss = e->value<BossComponent>();
 		RotationComponent &rot = e->value<RotationComponent>();
-		rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.03);
+		rot.rotation = interpolate(Quat(), randomDirectionQuat(), 0.03);
 		GravityComponent &grav = e->value<GravityComponent>();
 		grav.strength = -10;
 	}
@@ -146,7 +146,7 @@ void spawnBossEgg(const vec3 &spawnPosition, const vec3 &color)
 		};
 		r.object = portalNames[game.defeatedBosses + 1];
 		RotationComponent &rotp = p->value<RotationComponent>();
-		rotp.rotation = interpolate(quat(), randomDirectionQuat(), 0.003);
+		rotp.rotation = interpolate(Quat(), randomDirectionQuat(), 0.003);
 		TransformComponent &t = p->value<TransformComponent>();
 		t.orientation = randomDirectionQuat();
 	}

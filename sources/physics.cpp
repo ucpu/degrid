@@ -32,7 +32,7 @@ namespace
 					if (oe->has<GravityComponent>())
 						continue;
 					TransformComponent &ot = oe->value<TransformComponent>();
-					vec3 d = t.position - ot.position;
+					Vec3 d = t.position - ot.position;
 					if (lengthSquared(d) < 1e-3)
 						continue;
 					ot.position += normalize(d) * (g.strength / max(length(d) - t.scale, 1));
@@ -109,9 +109,9 @@ namespace
 	} callbacksInstance;
 }
 
-bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, const vec3 &positionB, real radiusB, const vec3 &velocityB)
+bool collisionTest(const Vec3 &positionA, Real radiusA, const Vec3 &velocityA, const Vec3 &positionB, Real radiusB, const Vec3 &velocityB)
 {
-	vec3 m = velocityB - velocityA;
+	Vec3 m = velocityB - velocityA;
 	if (lengthSquared(m) > 1e-7)
 		return intersects(makeSegment(positionB, positionB + m), Sphere(positionA, radiusA + radiusB));
 	return intersects(positionB, Sphere(positionA, radiusA + radiusB));

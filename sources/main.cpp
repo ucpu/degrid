@@ -79,7 +79,7 @@ int main(int argc, const char *args[])
 			Holder<FullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
 			Holder<EngineStatistics> engineStatistics = newEngineStatistics();
 			engineStatistics->statisticsScope = EngineStatisticsScopeEnum::None;
-			engineStatistics->screenPosition = vec2(0.5);
+			engineStatistics->screenPosition = Vec2(0.5);
 
 			engineStart();
 		}

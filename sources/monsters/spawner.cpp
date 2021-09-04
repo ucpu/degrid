@@ -86,12 +86,12 @@ namespace
 	}
 }
 
-void spawnSpawner(const vec3 &spawnPosition, const vec3 &color)
+void spawnSpawner(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	uint32 special = 0;
 	Entity *spawner = initializeMonster(spawnPosition, color, 6, HashString("degrid/monster/spawner.object"), HashString("degrid/monster/bum-spawner.ogg"), 10, 20 + 5 * monsterMutation(special));
-	TransformComponent &transform = spawner->value<TransformComponent>();
-	transform.orientation = randomDirectionQuat();
+	TransformComponent &Transform = spawner->value<TransformComponent>();
+	Transform.orientation = randomDirectionQuat();
 	SkeletalAnimationComponent &sa = spawner->value<SkeletalAnimationComponent>();
 	sa.startTime = applicationTime();
 	MonsterComponent &m = spawner->value<MonsterComponent>();
@@ -100,7 +100,7 @@ void spawnSpawner(const vec3 &spawnPosition, const vec3 &color)
 	s.count = 60 + 15 * monsterMutation(special);
 	s.period = numeric_cast<uint32>(25.0 / (3 + monsterMutation(special))) + 1;
 	RotationComponent &rotation = spawner->value<RotationComponent>();
-	rotation.rotation = interpolate(quat(), randomDirectionQuat(), 0.003);
+	rotation.rotation = interpolate(Quat(), randomDirectionQuat(), 0.003);
 	monsterReflectMutation(spawner, special);
 }
 

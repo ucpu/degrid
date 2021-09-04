@@ -14,9 +14,9 @@ namespace
 	constexpr float DirectionalLight = 0;
 	constexpr float CameraDistance = 220;
 
-	VariableSmoothingBuffer<vec3, 16> playerPosSmoother;
-	VariableSmoothingBuffer<vec3, 16> cameraPosSmoother;
-	real cameraFovShakeAmplitude;
+	VariableSmoothingBuffer<Vec3, 16> playerPosSmoother;
+	VariableSmoothingBuffer<Vec3, 16> cameraPosSmoother;
+	Real cameraFovShakeAmplitude;
 
 	void engineUpdate()
 	{
@@ -24,8 +24,8 @@ namespace
 			return;
 
 		// fov (breathing effect)
-		cameraFovShakeAmplitude = interpolate(cameraFovShakeAmplitude, (real)engineEntities()->component<BossComponent>()->count(), 0.003);
-		rads fov = degs(40 + 0.5 * cage::sin(degs(engineControlTime() * 2.5e-4)) * saturate(cameraFovShakeAmplitude));
+		cameraFovShakeAmplitude = interpolate(cameraFovShakeAmplitude, (Real)engineEntities()->component<BossComponent>()->count(), 0.003);
+		Rads fov = Degs(40 + 0.5 * cage::sin(Degs(engineControlTime() * 2.5e-4)) * saturate(cameraFovShakeAmplitude));
 		{
 			CameraComponent &pc = primaryCameraEntity->value<CameraComponent>();
 			pc.camera.perspectiveFov = fov;
@@ -37,11 +37,11 @@ namespace
 			TransformComponent &p = game.playerEntity->value<TransformComponent>();
 			playerPosSmoother.add(p.position);
 			TransformComponent &c = primaryCameraEntity->value<TransformComponent>();
-			quat rot = quat(degs(game.cinematic ? -40 : -90), {}, {});
-			vec3 ct = playerPosSmoother.smooth() + rot * vec3(0, 0, CameraDistance);
+			Quat rot = Quat(Degs(game.cinematic ? -40 : -90), {}, {});
+			Vec3 ct = playerPosSmoother.smooth() + rot * Vec3(0, 0, CameraDistance);
 			cameraPosSmoother.add(ct);
 			c.position = cameraPosSmoother.smooth();
-			c.orientation = quat(playerPosSmoother.smooth() - c.position, vec3(0, 0, -1));
+			c.orientation = Quat(playerPosSmoother.smooth() - c.position, Vec3(0, 0, -1));
 			TransformComponent &s = skyboxPrimaryCameraEntity->value<TransformComponent>();
 			s.orientation = c.orientation;
 		}
@@ -56,7 +56,7 @@ namespace
 			c.sceneMask = 2;
 			c.near = 0.5;
 			c.far = 3;
-			c.camera.perspectiveFov = degs(40);
+			c.camera.perspectiveFov = Degs(40);
 		}
 
 		{
@@ -66,8 +66,8 @@ namespace
 			c.sceneMask = 1;
 			c.near = 150;
 			c.far = 1000;
-			c.camera.perspectiveFov = degs(40);
-			c.ambientColor = c.ambientDirectionalColor = vec3(1);
+			c.camera.perspectiveFov = Degs(40);
+			c.ambientColor = c.ambientDirectionalColor = Vec3(1);
 			c.ambientIntensity = AmbientLight;
 			c.ambientDirectionalIntensity = DirectionalLight;
 			c.clear = CameraClearFlags::None;

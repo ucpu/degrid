@@ -38,14 +38,14 @@ namespace
 			{
 				statistics.shotsTurret++;
 				Entity *shot = engineEntities()->createUnique();
-				TransformComponent &transform = shot->value<TransformComponent>();
-				transform.orientation = quat(degs(), degs(i * 60), degs()) * tr.orientation;
-				transform.position = tr.position + transform.orientation * vec3(0, 0, -1) * 2;
+				TransformComponent &Transform = shot->value<TransformComponent>();
+				Transform.orientation = Quat(Degs(), Degs(i * 60), Degs()) * tr.orientation;
+				Transform.position = tr.position + Transform.orientation * Vec3(0, 0, -1) * 2;
 				RenderComponent &render = shot->value<RenderComponent>();
 				render.object = HashString("degrid/player/shot.object");
 				render.color = game.shotsColor;
 				VelocityComponent &vel = shot->value<VelocityComponent>();
-				vel.velocity = transform.orientation * vec3(0, 0, -1) * 2.5;
+				vel.velocity = Transform.orientation * Vec3(0, 0, -1) * 2.5;
 				ShotComponent &sh = shot->value<ShotComponent>();
 				sh.damage = 1;
 				TimeoutComponent &ttl = shot->value<TimeoutComponent>();
@@ -83,10 +83,10 @@ namespace
 			CAGE_ASSERT(p.type < PowerupTypeEnum::Total);
 
 			TransformComponent &tr = e->value<TransformComponent>();
-			if (!collisionTest(playerTransform.position, PlayerScale, playerVelocity.velocity, tr.position, tr.scale, vec3()))
+			if (!collisionTest(playerTransform.position, PlayerScale, playerVelocity.velocity, tr.position, tr.scale, Vec3()))
 			{
-				vec3 toPlayer = playerTransform.position - tr.position;
-				real dist = max(length(toPlayer) - PlayerScale - tr.scale, 1);
+				Vec3 toPlayer = playerTransform.position - tr.position;
+				Real dist = max(length(toPlayer) - PlayerScale - tr.scale, 1);
 				tr.position += normalize(toPlayer) * (2 / dist);
 				continue;
 			}
@@ -210,7 +210,7 @@ namespace
 
 	PowerupTypeEnum powerupSpawnType()
 	{
-		real p = randomChance();
+		Real p = randomChance();
 		uint32 c = 0;
 		while (true)
 		{
@@ -223,7 +223,7 @@ namespace
 	}
 }
 
-void powerupSpawn(const vec3 &position)
+void powerupSpawn(const Vec3 &position)
 {
 	if (game.cinematic)
 		return;
@@ -241,16 +241,16 @@ void powerupSpawn(const vec3 &position)
 		statistics.powerupsSpawned++;
 
 	Entity *e = engineEntities()->createUnique();
-	TransformComponent &transform = e->value<TransformComponent>();
-	transform.position = position * vec3(1, 0, 1);
-	transform.orientation = randomDirectionQuat();
-	transform.scale = coin ? 2.0 : 2.5;
+	TransformComponent &Transform = e->value<TransformComponent>();
+	Transform.position = position * Vec3(1, 0, 1);
+	Transform.orientation = randomDirectionQuat();
+	Transform.scale = coin ? 2.0 : 2.5;
 	TimeoutComponent &ttl = e->value<TimeoutComponent>();
 	ttl.ttl = 120 * 30;
 	PowerupComponent &p = e->value<PowerupComponent>();
 	p.type = type;
 	RotationComponent &rot = e->value<RotationComponent>();
-	rot.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
+	rot.rotation = interpolate(Quat(), randomDirectionQuat(), 0.01);
 	VelocityComponent &velocity = e->value<VelocityComponent>();
 	RenderComponent &render = e->value<RenderComponent>();
 	constexpr const uint32 ObjectName[4] = {
@@ -260,8 +260,8 @@ void powerupSpawn(const vec3 &position)
 		HashString("degrid/player/coin.object")
 	};
 	render.object = ObjectName[PowerupMode[(uint32)p.type]];
-	render.color = colorHsvToRgb(vec3(randomChance(), 1, 1));
-	soundEffect(coin ? HashString("degrid/player/coin.ogg") : HashString("degrid/player/powerup.ogg"), transform.position);
+	render.color = colorHsvToRgb(Vec3(randomChance(), 1, 1));
+	soundEffect(coin ? HashString("degrid/player/coin.ogg") : HashString("degrid/player/powerup.ogg"), Transform.position);
 }
 
 void eventBomb()
@@ -294,7 +294,7 @@ void eventBomb()
 		for (Entity *e : engineEntities()->component<GridComponent>()->entities())
 		{
 			TransformComponent &t = e->value<TransformComponent>();
-			t.position = playerTransform.position + randomDirection3() * vec3(100, 1, 100);
+			t.position = playerTransform.position + randomDirection3() * Vec3(100, 1, 100);
 		}
 	}
 
@@ -320,12 +320,12 @@ void eventTurret()
 	statistics.turretsPlaced++;
 	Entity *turret = engineEntities()->createUnique();
 	TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-	TransformComponent &transform = turret->value<TransformComponent>();
+	TransformComponent &Transform = turret->value<TransformComponent>();
 	VelocityComponent &vel = turret->value<VelocityComponent>();
-	transform.position = playerTransform.position;
-	transform.position[1] = 0;
-	transform.orientation = quat(degs(), randomAngle(), degs());
-	transform.scale = 3;
+	Transform.position = playerTransform.position;
+	Transform.position[1] = 0;
+	Transform.orientation = Quat(Degs(), randomAngle(), Degs());
+	Transform.scale = 3;
 	RenderComponent &render = turret->value<RenderComponent>();
 	render.object = HashString("degrid/player/turret.object");
 	TurretComponent &tr = turret->value<TurretComponent>();
@@ -333,7 +333,7 @@ void eventTurret()
 	TimeoutComponent &ttl = turret->value<TimeoutComponent>();
 	ttl.ttl = 60 * 30;
 	RotationComponent &rot = turret->value<RotationComponent>();
-	rot.rotation = quat(degs(), degs(1), degs());
+	rot.rotation = Quat(Degs(), Degs(1), Degs());
 
 	constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/engaging-a-turret.wav"),
@@ -353,9 +353,9 @@ void eventDecoy()
 	statistics.decoysUsed++;
 	Entity *decoy = engineEntities()->createUnique();
 	TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-	TransformComponent &transform = decoy->value<TransformComponent>();
-	transform = playerTransform;
-	transform.scale *= 2;
+	TransformComponent &Transform = decoy->value<TransformComponent>();
+	Transform = playerTransform;
+	Transform.scale *= 2;
 	RenderComponent &render = decoy->value<RenderComponent>();
 	render.object = HashString("degrid/player/player.object");
 	VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
@@ -365,7 +365,7 @@ void eventDecoy()
 	ttl.ttl = 60 * 30;
 	DecoyComponent &dec = decoy->value<DecoyComponent>();
 	RotationComponent &rot = decoy->value<RotationComponent>();
-	rot.rotation = interpolate(quat(), quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
+	rot.rotation = interpolate(Quat(), Quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
 	constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/decoy-launched.wav"),

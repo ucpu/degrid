@@ -12,7 +12,7 @@ namespace
 	struct Score
 	{
 		uint32 score;
-		string date;
+		String date;
 	};
 
 	struct ScoreComparator
@@ -110,7 +110,7 @@ namespace
 				parent.order = numeric_cast<sint32>(it.index * 2 + 101);
 				GuiLabelComponent &control = txtDate->value<GuiLabelComponent>();
 				GuiTextComponent &txt = txtDate->value<GuiTextComponent>();
-				txt.value = stringizer() + it->score;
+				txt.value = Stringizer() + it->score;
 				GuiTextFormatComponent &format = txtDate->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 			}
@@ -130,8 +130,8 @@ void setScreenScores()
 		for (uint32 i = 0, e = ini->sectionsCount(); i < e; i++)
 		{
 			Score s;
-			s.score = ini->getUint32(stringizer() + i, "score");
-			s.date = ini->getString(stringizer() + i, "date");
+			s.score = ini->getUint32(Stringizer() + i, "score");
+			s.date = ini->getString(Stringizer() + i, "date");
 			scores.push_back(s);
 		}
 	}

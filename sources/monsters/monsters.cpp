@@ -24,7 +24,7 @@ namespace
 			if (m.dispersion > 0)
 			{
 				uint32 myName = e->name();
-				vec3 dispersion;
+				Vec3 dispersion;
 				spatialSearchQuery->intersection(Sphere(t.position, t.scale + 1));
 				for (uint32 otherName : spatialSearchQuery->result())
 				{
@@ -32,27 +32,27 @@ namespace
 						continue;
 					Entity *e = engineEntities()->get(otherName);
 					TransformComponent &ot = e->value<TransformComponent>();
-					vec3 toMonster = t.position - ot.position;
+					Vec3 toMonster = t.position - ot.position;
 					if (e->has<MonsterComponent>())
 					{
-						real d = ot.scale + t.scale;
+						Real d = ot.scale + t.scale;
 						if (lengthSquared(toMonster) < d*d)
 							dispersion += normalize(toMonster) / length(toMonster);
 					}
 				}
-				if (dispersion != vec3())
+				if (dispersion != Vec3())
 					v.velocity += normalize(dispersion) * m.dispersion;
 			}
 
 			// collision with player
 			if (collisionTest(playerTransform.position, PlayerScale, playerVelocity.velocity, t.position, t.scale, v.velocity))
 			{
-				vec3 enemyDir = normalize(t.position - playerTransform.position);
-				if (game.powerups[(uint32)PowerupTypeEnum::Shield] > 0 && m.damage < real::Infinity())
+				Vec3 enemyDir = normalize(t.position - playerTransform.position);
+				if (game.powerups[(uint32)PowerupTypeEnum::Shield] > 0 && m.damage < Real::Infinity())
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
-					environmentExplosion(playerTransform.position + enemyDir * (PlayerScale * 1.1), playerVelocity.velocity + enemyDir * 0.5, vec3(1), 1); // shield sparks
+					environmentExplosion(playerTransform.position + enemyDir * (PlayerScale * 1.1), playerVelocity.velocity + enemyDir * 0.5, Vec3(1), 1); 
 				}
 				else
 				{
@@ -82,7 +82,7 @@ namespace
 						soundSpeech(Sounds);
 					}
 				}
-				if (m.life < real::Infinity())
+				if (m.life < Real::Infinity())
 					killMonster(e, false);
 			}
 
@@ -98,7 +98,7 @@ namespace
 			if (wasBoss && !hasBoss)
 			{
 				CAGE_ASSERT(game.defeatedBosses < BossesTotalCount);
-				achievementFullfilled(stringizer() + "boss-" + game.defeatedBosses, true);
+				achievementFullfilled(Stringizer() + "boss-" + game.defeatedBosses, true);
 				game.defeatedBosses++;
 				const uint32 li = min(numeric_cast<uint32>(game.life), 100u);
 				game.money += li * game.defeatedBosses / 2;
@@ -121,7 +121,7 @@ namespace
 	} callbacksInstance;
 }
 
-real lifeDamage(real damage)
+Real lifeDamage(Real damage)
 {
 	const uint32 armor = game.powerups[(uint32)PowerupTypeEnum::Armor];
 	return damage / (armor * 0.5 + 1);
@@ -133,7 +133,7 @@ uint32 monsterMutation(uint32 &special)
 		return 0;
 	constexpr const float probabilities[] = { 0, 0, 1e-4f, 1e-3f, 0.1f, 0.5f };
 	uint32 res = 0;
-	real probability = probabilities[min(game.defeatedBosses, numeric_cast<uint32>(sizeof(probabilities) / sizeof(probabilities[0]) - 1))];
+	Real probability = probabilities[min(game.defeatedBosses, numeric_cast<uint32>(sizeof(probabilities) / sizeof(probabilities[0]) - 1))];
 	while (randomChance() < probability)
 		res++;
 	special += res ? 1 : 0;
@@ -144,24 +144,24 @@ void monsterReflectMutation(Entity *e, uint32 special)
 {
 	if (!special)
 		return;
-	TransformComponent &transform = e->value<TransformComponent>();
-	transform.scale *= 1.3;
+	TransformComponent &Transform = e->value<TransformComponent>();
+	Transform.scale *= 1.3;
 	statistics.monstersMutated++;
 	statistics.monstersMutations += special;
 	achievementFullfilled("mutated");
 }
 
-Entity *initializeMonster(const vec3 &spawnPosition, const vec3 &color, real scale, uint32 objectName, uint32 deadSound, real damage, real life)
+Entity *initializeMonster(const Vec3 &spawnPosition, const Vec3 &color, Real scale, uint32 objectName, uint32 deadSound, Real damage, Real life)
 {
 	statistics.monstersSpawned++;
 	Entity *m = engineEntities()->createUnique();
-	TransformComponent &transform = m->value<TransformComponent>();
+	TransformComponent &Transform = m->value<TransformComponent>();
 	RenderComponent &render = m->value<RenderComponent>();
 	MonsterComponent &monster = m->value<MonsterComponent>();
-	transform.orientation = quat(degs(), randomAngle(), degs());
-	transform.position = spawnPosition;
-	transform.position[1] = monster.groundLevel = randomChance() * 2 - 1;
-	transform.scale = scale;
+	Transform.orientation = Quat(Degs(), randomAngle(), Degs());
+	Transform.position = spawnPosition;
+	Transform.position[1] = monster.groundLevel = randomChance() * 2 - 1;
+	Transform.scale = scale;
 	render.object = objectName;
 	render.color = colorVariation(color);
 	monster.damage = damage;

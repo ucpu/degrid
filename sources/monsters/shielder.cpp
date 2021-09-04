@@ -9,7 +9,7 @@ namespace
 		uint32 chargingSteps = 0;
 		uint32 turningSteps = 0;
 		uint32 stepsLeft = 0;
-		real movementSpeed;
+		Real movementSpeed;
 	};
 
 	struct ShieldComponent
@@ -23,7 +23,7 @@ namespace
 
 	void updateShields()
 	{
-		// update shields transformations
+		
 		for (Entity *e : ShielderComponent::component->entities())
 		{
 			TransformComponent &et = e->value<TransformComponent>();
@@ -70,9 +70,9 @@ namespace
 			{ // charging
 				if (sh.stepsLeft)
 				{
-					vec3 t = normalize(game.monstersTarget - tr.position);
-					tr.orientation = interpolate(tr.orientation, quat(t, vec3(0, 1, 0)), 0.02);
-					vec3 f = tr.orientation * vec3(0, 0, -1);
+					Vec3 t = normalize(game.monstersTarget - tr.position);
+					tr.orientation = interpolate(tr.orientation, Quat(t, Vec3(0, 1, 0)), 0.02);
+					Vec3 f = tr.orientation * Vec3(0, 0, -1);
 					mv.velocity = f * sh.movementSpeed;
 				}
 				else
@@ -83,11 +83,11 @@ namespace
 			}
 			else
 			{ // turning
-				mv.velocity = vec3();
+				mv.velocity = Vec3();
 				if (sh.stepsLeft)
 				{
-					vec3 t = normalize(game.monstersTarget - tr.position);
-					tr.orientation = interpolate(tr.orientation, quat(t, vec3(0, 1, 0)), 0.95 / sh.stepsLeft);
+					Vec3 t = normalize(game.monstersTarget - tr.position);
+					tr.orientation = interpolate(tr.orientation, Quat(t, Vec3(0, 1, 0)), 0.95 / sh.stepsLeft);
 				}
 				else
 				{
@@ -112,7 +112,7 @@ namespace
 			}
 
 			// destroy shots
-			vec3 forward = tr.orientation * vec3(0, 0, -1);
+			Vec3 forward = tr.orientation * Vec3(0, 0, -1);
 			spatialSearchQuery->intersection(Sphere(tr.position + forward * (tr.scale + 1), 5));
 			for (uint32 otherName : spatialSearchQuery->result())
 			{
@@ -120,9 +120,9 @@ namespace
 				if (!e->has<ShotComponent>())
 					continue;
 				TransformComponent &ot = e->value<TransformComponent>();
-				vec3 toShot = ot.position - tr.position;
-				vec3 dirShot = normalize(toShot);
-				if (dot(dirShot, forward) < cos(degs(45)))
+				Vec3 toShot = ot.position - tr.position;
+				Vec3 dirShot = normalize(toShot);
+				if (dot(dirShot, forward) < cos(Degs(45)))
 					continue;
 				e->add(entitiesToDestroy);
 				statistics.shielderStoppedShots++;
@@ -149,7 +149,7 @@ namespace
 	} callbacksInstance;
 }
 
-void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
+void spawnShielder(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	uint32 special = 0;
 	Entity *shielder = initializeMonster(spawnPosition, color, 3, HashString("degrid/monster/shielder.object"), HashString("degrid/monster/bum-shielder.ogg"), 5, 3 + monsterMutation(special));
@@ -167,8 +167,8 @@ void spawnShielder(const vec3 &spawnPosition, const vec3 &color)
 	}
 	{
 		TransformComponent &transformShielder = shielder->value<TransformComponent>();
-		TransformComponent &transform = shield->value<TransformComponent>();
-		transform = transformShielder;
+		TransformComponent &Transform = shield->value<TransformComponent>();
+		Transform = transformShielder;
 		ShieldComponent &sh = shield->value<ShieldComponent>();
 		sh.active = false;
 	}

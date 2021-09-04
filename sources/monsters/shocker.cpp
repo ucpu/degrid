@@ -5,8 +5,8 @@ namespace
 	struct ShockerComponent
 	{
 		static EntityComponent *component;
-		real radius;
-		real speedFactor;
+		Real radius;
+		Real speedFactor;
 	};
 
 	EntityComponent *ShockerComponent::component;
@@ -16,14 +16,14 @@ namespace
 		ShockerComponent::component = engineEntities()->defineComponent(ShockerComponent());
 	}
 
-	void lightning(const vec3 &a, const vec3 &b, const vec3 &color)
+	void lightning(const Vec3 &a, const Vec3 &b, const Vec3 &color)
 	{
-		real d = distance(a, b);
-		vec3 v = normalize(b - a);
-		vec3 c = (a + b) * 0.5;
+		Real d = distance(a, b);
+		Vec3 v = normalize(b - a);
+		Vec3 c = (a + b) * 0.5;
 		if (d > 25)
 		{
-			vec3 side = normalize(cross(v, vec3(0, 1, 0)));
+			Vec3 side = normalize(cross(v, Vec3(0, 1, 0)));
 			c += side * (d * randomRange(-0.2, 0.2));
 			lightning(a, c, color);
 			lightning(c, b, color);
@@ -32,7 +32,7 @@ namespace
 		Entity *e = engineEntities()->createUnique();
 		TransformComponent &t = e->value<TransformComponent>();
 		t.position = c;
-		t.orientation = quat(v, vec3(0, 1, 0), true);
+		t.orientation = Quat(v, Vec3(0, 1, 0), true);
 		RenderComponent &r = e->value<RenderComponent>();
 		r.object = HashString("degrid/monster/shocker/lightning.object");
 		r.color = color;
@@ -45,7 +45,7 @@ namespace
 		light.color = colorVariation(color);
 		light.intensity = 10;
 		light.lightType = LightTypeEnum::Point;
-		light.attenuation = vec3(0, 0, 0.01);
+		light.attenuation = Vec3(0, 0, 0.01);
 	}
 
 	void engineUpdate()
@@ -64,8 +64,8 @@ namespace
 		{
 			TransformComponent &tr = e->value<TransformComponent>();
 			ShockerComponent &sh = e->value<ShockerComponent>();
-			vec3 v = tr.position - playerTransform.position;
-			real d = length(v);
+			Vec3 v = tr.position - playerTransform.position;
+			Real d = length(v);
 
 			// stay away from the player
 			if (d < sh.radius * 0.8 && d > 1e-7)
@@ -110,10 +110,10 @@ namespace
 	} callbacksInstance;
 }
 
-void spawnShocker(const vec3 &spawnPosition, const vec3 &color)
+void spawnShocker(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	uint32 special = 0;
-	Entity *shocker = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/shocker/shocker.object"), HashString("degrid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(quat(), randomDirectionQuat(), 0.01));
+	Entity *shocker = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/shocker/shocker.object"), HashString("degrid/monster/shocker/bum-shocker.ogg"), 5, 3 + monsterMutation(special), 0.3, 1, 0.7, 0.05, 0.7, 0, interpolate(Quat(), randomDirectionQuat(), 0.01));
 	ShockerComponent &sh = shocker->value<ShockerComponent>();
 	sh.radius = randomRange(70, 80) + 10 * monsterMutation(special);
 	sh.speedFactor = 3.2 / (monsterMutation(special) + 4);

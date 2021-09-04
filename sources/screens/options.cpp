@@ -114,7 +114,7 @@ namespace
 			parent.parent = ctr;
 			parent.order = Letters[i];
 			GuiTextComponent &txt = opt->value<GuiTextComponent>();
-			txt.value = string(Letters[i]);
+			txt.value = String(Letters[i]);
 		}
 	}
 
@@ -358,7 +358,7 @@ void setScreenOptions()
 				parent.parent = panel->name();
 				parent.order = index++;
 				GuiSliderBarComponent &control = ctr->value<GuiSliderBarComponent>();
-				control.value = real(confVolumeMusic);
+				control.value = Real(confVolumeMusic);
 			}
 		}
 
@@ -380,7 +380,7 @@ void setScreenOptions()
 				parent.parent = panel->name();
 				parent.order = index++;
 				GuiSliderBarComponent &control = ctr->value<GuiSliderBarComponent>();
-				control.value = real(confVolumeEffects);
+				control.value = Real(confVolumeEffects);
 			}
 		}
 
@@ -402,7 +402,7 @@ void setScreenOptions()
 				parent.parent = panel->name();
 				parent.order = index++;
 				GuiSliderBarComponent &control = ctr->value<GuiSliderBarComponent>();
-				control.value = real(confVolumeSpeech);
+				control.value = Real(confVolumeSpeech);
 			}
 		}
 	}

@@ -7,12 +7,12 @@
 
 namespace
 {
-	vec3 playerPosition;
+	Vec3 playerPosition;
 
-	vec3 aroundPosition(real index, real radius, vec3 center)
+	Vec3 aroundPosition(Real index, Real radius, Vec3 center)
 	{
-		rads angle = index * rads::Full();
-		vec3 dir = vec3(cos(angle), 0, sin(angle));
+		Rads angle = index * Rads::Full();
+		Vec3 dir = Vec3(cos(angle), 0, sin(angle));
 		return center + dir * radius;
 	}
 
@@ -28,22 +28,22 @@ namespace
 	{
 		// spawned monsters
 		uint32 spawnCountMin = 1, spawnCountMax = 1;
-		real distanceMin = 200, distanceMax = 250;
+		Real distanceMin = 200, distanceMax = 250;
 		MonsterTypeFlags spawnTypes = MonsterTypeFlags::None;
 		PlacingPolicyEnum placingPolicy = PlacingPolicyEnum::Random;
 
 		// priority
-		real priorityCurrent; // lowest priority goes first
-		real priorityChange;
-		real priorityAdditive;
-		real priorityMultiplier = 1;
+		Real priorityCurrent; 
+		Real priorityChange;
+		Real priorityAdditive;
+		Real priorityMultiplier = 1;
 
 		// statistics
 		uint32 iteration = 0;
 		uint32 spawned = 0;
-		string name;
+		String name;
 
-		explicit SpawnDefinition(const string &name);
+		explicit SpawnDefinition(const String &name);
 		bool operator < (const SpawnDefinition &other) const { return priorityCurrent < other.priorityCurrent; }
 		void perform();
 		void performSimulation();
@@ -51,7 +51,7 @@ namespace
 		void spawn();
 	};
 
-	SpawnDefinition::SpawnDefinition(const string &name) : name(name)
+	SpawnDefinition::SpawnDefinition(const String &name) : name(name)
 	{}
 
 	uint32 monstersLimit()
@@ -109,7 +109,7 @@ namespace
 		CAGE_ASSERT(alSiz > 0);
 		uint32 spawnCount = randomRange(spawnCountMin, spawnCountMax + 1);
 		spawned += spawnCount;
-		vec3 color = colorHsvToRgb(vec3(randomChance(), sqrt(randomChance()) * 0.5 + 0.5, sqrt(randomChance()) * 0.5 + 0.5));
+		Vec3 color = colorHsvToRgb(Vec3(randomChance(), sqrt(randomChance()) * 0.5 + 0.5, sqrt(randomChance()) * 0.5 + 0.5));
 		switch (placingPolicy)
 		{
 		case PlacingPolicyEnum::Random:
@@ -119,22 +119,22 @@ namespace
 		} break;
 		case PlacingPolicyEnum::Around:
 		{
-			real angularOffset = randomChance();
-			real radius = randomRange(distanceMin, distanceMax);
+			Real angularOffset = randomChance();
+			Real radius = randomRange(distanceMin, distanceMax);
 			for (uint32 i = 0; i < spawnCount; i++)
-				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition(angularOffset + (randomChance() * 0.3 + i) / (real)spawnCount, radius, playerPosition), color);
+				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition(angularOffset + (randomChance() * 0.3 + i) / (Real)spawnCount, radius, playerPosition), color);
 		} break;
 		case PlacingPolicyEnum::Grouped:
 		{
-			real radius = (distanceMax - distanceMin) * 0.5;
-			vec3 center = aroundPosition(randomChance(), distanceMin + radius, playerPosition);
+			Real radius = (distanceMax - distanceMin) * 0.5;
+			Vec3 center = aroundPosition(randomChance(), distanceMin + radius, playerPosition);
 			for (uint32 i = 0; i < spawnCount; i++)
-				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition((real)i / (real)spawnCount, radius, center), color);
+				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition((Real)i / (Real)spawnCount, radius, center), color);
 		} break;
 		case PlacingPolicyEnum::Line:
 		{
-			vec3 origin = aroundPosition(randomChance(), randomRange(distanceMin, distanceMax), playerPosition);
-			vec3 span = cross(normalize(origin - playerPosition), vec3(0, 1, 0)) * 10;
+			Vec3 origin = aroundPosition(randomChance(), randomRange(distanceMin, distanceMax), playerPosition);
+			Vec3 span = cross(normalize(origin - playerPosition), Vec3(0, 1, 0)) * 10;
 			origin -= span * spawnCount * 0.5;
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], origin + i * span, color);
@@ -152,7 +152,7 @@ namespace
 			return;
 
 		uint32 limit = monstersLimit();
-		real probability = 1.f - (real)statistics.monstersCurrent / (real)limit;
+		Real probability = 1.f - (Real)statistics.monstersCurrent / (Real)limit;
 		if (probability <= 0)
 			return;
 
@@ -509,7 +509,7 @@ namespace
 		for (auto &d : definitions)
 		{
 			if (d.iteration > 0)
-				CAGE_LOG(SeverityEnum::Info, "statistics", stringizer() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
+				CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "spawn '" + d.name + "', iteration: " + d.iteration + ", spawned: " + d.spawned + ", priority: " + d.priorityCurrent + ", change: " + d.priorityChange);
 		}
 #endif // DEGRID_TESTING
 
@@ -534,7 +534,7 @@ namespace
 	} callbacksInstance;
 }
 
-void spawnGeneral(MonsterTypeFlags type, const vec3 &spawnPosition, const vec3 &color)
+void spawnGeneral(MonsterTypeFlags type, const Vec3 &spawnPosition, const Vec3 &color)
 {
 	switch (type)
 	{

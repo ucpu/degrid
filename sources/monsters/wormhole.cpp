@@ -9,16 +9,16 @@ namespace
 	struct WormholeComponent
 	{
 		static EntityComponent *component;
-		real maxSpeed;
-		real acceleration;
+		Real maxSpeed;
+		Real acceleration;
 	};
 
 	struct MonsterFlickeringComponent
 	{
 		static EntityComponent *component;
-		vec3 baseColorHsv;
-		real flickeringFrequency;
-		real flickeringOffset;
+		Vec3 baseColorHsv;
+		Real flickeringFrequency;
+		Real flickeringOffset;
 	};
 
 	EntityComponent *WormholeComponent::component;
@@ -106,9 +106,9 @@ namespace
 			{
 				RenderComponent &r = e->value<RenderComponent>();
 				MonsterFlickeringComponent &m = e->value<MonsterFlickeringComponent>();
-				real l = (real)engineControlTime() * m.flickeringFrequency + m.flickeringOffset;
-				real s = sin(rads::Full() * l) * 0.5 + 0.5;
-				r.color = colorHsvToRgb(vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
+				Real l = (Real)engineControlTime() * m.flickeringFrequency + m.flickeringOffset;
+				Real s = sin(Rads::Full() * l) * 0.5 + 0.5;
+				r.color = colorHsvToRgb(Vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
 			}
 		}
 
@@ -179,8 +179,8 @@ namespace
 					if (teleport)
 					{
 						TransformComponent &ot = oe->value<TransformComponent>();
-						rads angle = randomAngle();
-						vec3 dir = vec3(cos(angle), 0, sin(angle));
+						Rads angle = randomAngle();
+						Vec3 dir = Vec3(cos(angle), 0, sin(angle));
 						Entity *target = pickWormhole(-1);
 						if (target)
 						{
@@ -224,15 +224,15 @@ namespace
 	} callbacksInstance;
 }
 
-void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
+void spawnWormhole(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	uint32 positive, negative;
 	countWormholes(positive, negative);
 	statistics.wormholesSpawned++;
 	uint32 special = 0;
 	Entity *wormhole = initializeMonster(spawnPosition, color, 5, HashString("degrid/monster/wormhole.object"), HashString("degrid/monster/bum-wormhole.ogg"), 200, randomRange(200, 300) + 100 * monsterMutation(special));
-	TransformComponent &transform = wormhole->value<TransformComponent>();
-	transform.orientation = randomDirectionQuat();
+	TransformComponent &Transform = wormhole->value<TransformComponent>();
+	Transform.orientation = randomDirectionQuat();
 	MonsterComponent &m = wormhole->value<MonsterComponent>();
 	m.dispersion = 0.001;
 	m.defeatedCallback.bind<&wormholeKilled>();
@@ -244,11 +244,11 @@ void spawnWormhole(const vec3 &spawnPosition, const vec3 &color)
 	if (positive > 0 && (negative == 0 || randomChance() < 0.5))
 		g.strength *= -1;
 	RenderComponent &render = wormhole->value<RenderComponent>();
-	render.color = vec3(g.strength < 0 ? 1 : 0);
+	render.color = Vec3(g.strength < 0 ? 1 : 0);
 	TextureAnimationComponent &at = wormhole->value<TextureAnimationComponent>();
 	at.speed *= (randomChance() + 0.5) * 0.05 * sign(g.strength);
 	RotationComponent &rotation = wormhole->value<RotationComponent>();
-	rotation.rotation = interpolate(quat(), randomDirectionQuat(), 0.01);
+	rotation.rotation = interpolate(Quat(), randomDirectionQuat(), 0.01);
 	monsterReflectMutation(wormhole, special);
 	soundEffect(HashString("degrid/monster/wormhole.ogg"), spawnPosition);
 }

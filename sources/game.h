@@ -7,24 +7,24 @@
 
 using namespace cage;
 
-bool collisionTest(const vec3 &positionA, real radiusA, const vec3 &velocityA, const vec3 &positionB, real radiusB, const vec3 &velocityB);
-void powerupSpawn(const vec3 &position);
+bool collisionTest(const Vec3 &positionA, Real radiusA, const Vec3 &velocityA, const Vec3 &positionB, Real radiusB, const Vec3 &velocityB);
+void powerupSpawn(const Vec3 &position);
 void monstersSpawnInitial();
-real lifeDamage(real damage); // how much life is taken by the damage (based on players armor)
-void environmentExplosion(const vec3 &position, const vec3 &velocity, const vec3 &color, real size);
+Real lifeDamage(Real damage); 
+void environmentExplosion(const Vec3 &position, const Vec3 &velocity, const Vec3 &color, Real size);
 void monsterExplosion(Entity *e);
 void shotExplosion(Entity *e);
 bool killMonster(Entity *e, bool allowCallback);
-void soundEffect(uint32 sound, const vec3 &position);
+void soundEffect(uint32 sound, const Vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(const uint32 sounds[]);
 void setSkybox(uint32 objectName);
-bool achievementFullfilled(const string &name, bool bossKill = false); // returns if this is the first time the achievement is fulfilled
+bool achievementFullfilled(const String &name, bool bossKill = false); 
 void makeAnnouncement(uint32 headline, uint32 description, uint32 duration = 30 * 30);
 uint32 permanentPowerupLimit();
 uint32 currentPermanentPowerups();
 bool canAddPermanentPowerup();
-vec3 colorVariation(const vec3 &color);
+Vec3 colorVariation(const Vec3 &color);
 EventDispatcher<bool()> &gameStartEvent();
 EventDispatcher<bool()> &gameStopEvent();
 
@@ -68,11 +68,11 @@ constexpr const float PowerupChances[(uint32)PowerupTypeEnum::Total] = {
 constexpr const char Letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 constexpr float PlayerScale = 3;
 constexpr float MapNoPullRadius = 250;
-const vec3 PlayerDeathColor = vec3(0.68, 0.578, 0.252);
+const Vec3 PlayerDeathColor = Vec3(0.68, 0.578, 0.252);
 constexpr uint32 ShotsTtl = 300;
 constexpr uint32 BossesTotalCount = 5;
-const vec3 RedPillColor = vec3(229, 101, 84) / 255;
-const vec3 BluePillColor = vec3(123, 198, 242) / 255;
+const Vec3 RedPillColor = Vec3(229, 101, 84) / 255;
+const Vec3 BluePillColor = Vec3(123, 198, 242) / 255;
 constexpr uint32 PowerupSellPriceBase = 5;
 constexpr uint32 PowerupBuyPriceBase = 10;
 
@@ -104,18 +104,18 @@ struct GlobalGame
 	Entity *shieldEntity = nullptr;
 
 	// player
-	real life;
-	real shootingCooldown;
-	vec3 shotsColor;
+	Real life;
+	Real shootingCooldown;
+	Vec3 shotsColor;
 	uint64 score = 0;
 	uint32 powerups[(uint32)PowerupTypeEnum::Total] = {};
 	uint32 money = 0;
-	real powerupSpawnChance;
-	vec3 monstersTarget;
+	Real powerupSpawnChance;
+	Vec3 monstersTarget;
 
 	// ship controls (options dependent)
-	vec3 moveDirection;
-	vec3 fireDirection;
+	Vec3 moveDirection;
+	Vec3 fireDirection;
 };
 extern GlobalGame game;
 
@@ -137,7 +137,7 @@ struct GlobalStatistics
 	uint32 monstersSucceded; // monsters that hit the player
 	uint32 monstersCurrent;
 	uint32 monstersMax; // maximum number of monsters at any single moment
-	real monstersCurrentSpawningPriority; // current value of variable, that controls monsters spawning
+	Real monstersCurrentSpawningPriority; 
 	uint32 monstersFirstHit; // the time (in relation to updateIteration) in which the player was first hit by a monster
 	uint32 monstersLastHit;
 	uint32 shielderStoppedShots; // the number of shots eliminated by shielder
@@ -153,7 +153,7 @@ struct GlobalStatistics
 	uint32 bombsHitMax; // number of monsters hit by the most hitting bomb
 	uint32 bombsKillMax; // number of monsters killed by the most killing bomb
 	uint32 shieldStoppedMonsters; // number of monsters blocked by player's shield
-	real shieldAbsorbedDamage; // total amount of damage absorbed from the blocked monsters
+	Real shieldAbsorbedDamage; 
 	uint32 turretsPlaced;
 	uint32 decoysUsed;
 	uint32 entitiesCurrent;
@@ -176,17 +176,17 @@ extern GlobalStatistics statistics;
 
 struct GravityComponent
 {
-	real strength; // positive -> pull closer, negative -> push away
+	Real strength; 
 };
 
 struct VelocityComponent
 {
-	vec3 velocity;
+	Vec3 velocity;
 };
 
 struct RotationComponent
 {
-	quat rotation;
+	Quat rotation;
 };
 
 struct TimeoutComponent
@@ -196,13 +196,13 @@ struct TimeoutComponent
 
 struct GridComponent
 {
-	vec3 place;
-	vec3 originalColor;
+	Vec3 place;
+	Vec3 originalColor;
 };
 
 struct ShotComponent
 {
-	real damage;
+	Real damage;
 	bool homing = false;
 };
 
@@ -213,10 +213,10 @@ struct PowerupComponent
 
 struct MonsterComponent
 {
-	real life;
-	real damage;
-	real groundLevel;
-	real dispersion;
+	Real life;
+	Real damage;
+	Real groundLevel;
+	Real dispersion;
 	uint32 defeatedSound = 0;
 	Delegate<void(uint32)> defeatedCallback;
 };

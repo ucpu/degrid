@@ -132,7 +132,7 @@ namespace
 			p.parent = splits[3];
 			p.order = 1;
 			GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-			sc.alignment = vec2(0, 0);
+			sc.alignment = Vec2(0, 0);
 		}
 		{ // panel 11
 			Entity *e = ents->create(11);
@@ -140,7 +140,7 @@ namespace
 			p.parent = splits[3];
 			p.order = 2;
 			GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-			sc.alignment = vec2(0, 1);
+			sc.alignment = Vec2(0, 1);
 		}
 		{ // panel 12
 			Entity *e = ents->create(12);
@@ -148,7 +148,7 @@ namespace
 			p.parent = splits[2];
 			p.order = 2;
 			GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-			sc.alignment = vec2(0.5, 0.5);
+			sc.alignment = Vec2(0.5, 0.5);
 		}
 		{ // panel 14
 			Entity *e = ents->create(14);
@@ -156,7 +156,7 @@ namespace
 			p.parent = splits[1];
 			p.order = 1;
 			GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-			sc.alignment = vec2(1, 0);
+			sc.alignment = Vec2(1, 0);
 		}
 		{ // panel 15
 			Entity *e = ents->create(15);
@@ -164,7 +164,7 @@ namespace
 			p.parent = splits[1];
 			p.order = 2;
 			GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-			sc.alignment = vec2(1, 1);
+			sc.alignment = Vec2(1, 1);
 		}
 	}
 

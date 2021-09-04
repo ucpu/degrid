@@ -27,32 +27,32 @@ namespace
 	WindowEventListeners windowListeners;
 
 	// input (options independent)
-	vec3 arrowsDirection;
-	vec3 mouseCurrentPosition;
-	vec3 mouseLeftPosition;
-	vec3 mouseRightPosition;
+	Vec3 arrowsDirection;
+	Vec3 mouseCurrentPosition;
+	Vec3 mouseLeftPosition;
+	Vec3 mouseRightPosition;
 
 	void setMousePosition()
 	{
 		if (!engineWindow()->isFocused())
 			return;
 
-		ivec2 point = engineWindow()->mousePosition();
-		ivec2 res = engineWindow()->resolution();
-		vec2 p = vec2(point[0], point[1]);
-		p /= vec2(res[0], res[1]);
+		Vec2i point = engineWindow()->mousePosition();
+		Vec2i res = engineWindow()->resolution();
+		Vec2 p = Vec2(point[0], point[1]);
+		p /= Vec2(res[0], res[1]);
 		p = p * 2 - 1;
-		real px = p[0], py = -p[1];
+		Real px = p[0], py = -p[1];
 		TransformComponent &ts = getPrimaryCameraEntity()->value<TransformComponent>();
 		CameraComponent &cs = getPrimaryCameraEntity()->value<CameraComponent>();
-		mat4 view = inverse(mat4(ts.position, ts.orientation, vec3(ts.scale, ts.scale, ts.scale)));
-		mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, real(res[0]) / real(res[1]), cs.near, cs.far);
-		mat4 inv = inverse(proj * view);
-		vec4 pn = inv * vec4(px, py, -1, 1);
-		vec4 pf = inv * vec4(px, py, 1, 1);
-		vec3 near = vec3(pn) / pn[3];
-		vec3 far = vec3(pf) / pf[3];
-		mouseCurrentPosition = intersection(makeLine(near, far), Plane(vec3(), vec3(0, 1, 0)));
+		Mat4 view = inverse(Mat4(ts.position, ts.orientation, Vec3(ts.scale, ts.scale, ts.scale)));
+		Mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, Real(res[0]) / Real(res[1]), cs.near, cs.far);
+		Mat4 inv = inverse(proj * view);
+		Vec4 pn = inv * Vec4(px, py, -1, 1);
+		Vec4 pf = inv * Vec4(px, py, 1, 1);
+		Vec3 near = Vec3(pn) / pn[3];
+		Vec3 far = Vec3(pf) / pf[3];
+		mouseCurrentPosition = intersection(makeLine(near, far), Plane(Vec3(), Vec3(0, 1, 0)));
 
 		if (false)
 		{
@@ -85,7 +85,7 @@ namespace
 				eventAction(o + 4);
 	}
 
-	bool mousePress(MouseButtonsFlags buttons, ModifiersFlags modifiers, const ivec2 &point)
+	bool mousePress(MouseButtonsFlags buttons, ModifiersFlags modifiers, const Vec2i &point)
 	{
 		if (game.paused)
 			return false;
@@ -96,7 +96,7 @@ namespace
 		return false;
 	}
 
-	bool mouseRelease(MouseButtonsFlags buttons, ModifiersFlags modifiers, const ivec2 &point)
+	bool mouseRelease(MouseButtonsFlags buttons, ModifiersFlags modifiers, const Vec2i &point)
 	{
 		buttonMap &= ~buttons;
 
@@ -165,7 +165,7 @@ namespace
 		windowListeners.keyRelease.attach(engineWindow()->events.keyRelease, -1);
 
 #ifdef DEGRID_TESTING
-		CAGE_LOG(SeverityEnum::Info, "degrid", string() + "TESTING GAME BUILD");
+		CAGE_LOG(SeverityEnum::Info, "degrid", String() + "TESTING GAME BUILD");
 #endif // DEGRID_TESTING
 
 		game.cinematic = true;
@@ -179,9 +179,9 @@ namespace
 		if (game.paused)
 			return;
 
-		arrowsDirection = vec3();
-		game.moveDirection = vec3();
-		game.fireDirection = vec3();
+		arrowsDirection = Vec3();
+		game.moveDirection = Vec3();
+		game.fireDirection = Vec3();
 
 		if (game.cinematic)
 		{
@@ -217,18 +217,18 @@ namespace
 
 		{
 			if (keyMap[87] || keyMap[265]) // w, up
-				arrowsDirection += vec3(0, 0, -1);
+				arrowsDirection += Vec3(0, 0, -1);
 			if (keyMap[83] || keyMap[264]) // s, down
-				arrowsDirection += vec3(0, 0, 1);
+				arrowsDirection += Vec3(0, 0, 1);
 			if (keyMap[65] || keyMap[263]) // a, left
-				arrowsDirection += vec3(-1, 0, 0);
+				arrowsDirection += Vec3(-1, 0, 0);
 			if (keyMap[68] || keyMap[262]) // d, right
-				arrowsDirection += vec3(1, 0, 0);
-			if (arrowsDirection != vec3())
+				arrowsDirection += Vec3(1, 0, 0);
+			if (arrowsDirection != Vec3())
 				arrowsDirection = normalize(arrowsDirection);
 		}
 
-		constexpr real MouseMultiplier = 0.05;
+		constexpr Real MouseMultiplier = 0.05;
 		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 
 		switch (confControlMovement)
@@ -253,7 +253,7 @@ namespace
 		if (lengthSquared(game.moveDirection) > sqr(0.9))
 			game.moveDirection = normalize(game.moveDirection);
 		else
-			game.moveDirection = vec3();
+			game.moveDirection = Vec3();
 
 		switch (confControlFiring)
 		{
@@ -277,12 +277,12 @@ namespace
 		if (lengthSquared(game.fireDirection) > sqr(0.9))
 			game.fireDirection = normalize(game.fireDirection);
 		else
-			game.fireDirection = vec3();
+			game.fireDirection = Vec3();
 	}
 
 	void gameStart()
 	{
-		CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "new game, cinematic: " + game.cinematic);
+		CAGE_LOG(SeverityEnum::Info, "degrid", Stringizer() + "new game, cinematic: " + game.cinematic);
 
 		for (uint32 i = 0; i < sizeof(keyMap); i++)
 			keyMap[i] = false;
@@ -322,9 +322,9 @@ namespace
 	{
 		if (!game.cinematic)
 		{
-			CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "game over");
-			CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "score: " + game.score);
-			CAGE_LOG(SeverityEnum::Info, "degrid", stringizer() + "money: " + game.money);
+			CAGE_LOG(SeverityEnum::Info, "degrid", Stringizer() + "game over");
+			CAGE_LOG(SeverityEnum::Info, "degrid", Stringizer() + "score: " + game.score);
+			CAGE_LOG(SeverityEnum::Info, "degrid", Stringizer() + "money: " + game.money);
 		}
 		game.paused = game.gameOver = true;
 		setScreenGameover();

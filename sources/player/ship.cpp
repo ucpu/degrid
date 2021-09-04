@@ -21,13 +21,13 @@ namespace
 		TransformComponent &tr = game.playerEntity->value<TransformComponent>();
 		VelocityComponent &vl = game.playerEntity->value<VelocityComponent>();
 
-		if (game.moveDirection != vec3())
+		if (game.moveDirection != Vec3())
 		{
 			CAGE_ASSERT(abs(lengthSquared(game.moveDirection) - 1) < 1e-3);
-			const real maxSpeed = game.powerups[(uint32)PowerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
-			const vec3 change = game.moveDirection * (game.powerups[(uint32)PowerupTypeEnum::Acceleration] + 1) * 0.1;
-			if (confControlMovement == 1 && dot(tr.orientation * vec3(0, 0, -1), normalize(vl.velocity + change)) < 1e-5)
-				vl.velocity = vec3();
+			const Real maxSpeed = game.powerups[(uint32)PowerupTypeEnum::MaxSpeed] * 0.3 + 0.8;
+			const Vec3 change = game.moveDirection * (game.powerups[(uint32)PowerupTypeEnum::Acceleration] + 1) * 0.1;
+			if (confControlMovement == 1 && dot(tr.orientation * Vec3(0, 0, -1), normalize(vl.velocity + change)) < 1e-5)
+				vl.velocity = Vec3();
 			else
 				vl.velocity += change;
 			if (lengthSquared(vl.velocity) > sqr(maxSpeed))
@@ -35,10 +35,10 @@ namespace
 			if (lengthSquared(change) > 0.01)
 			{
 				Entity *spark = engineEntities()->createAnonymous();
-				TransformComponent &transform = spark->value<TransformComponent>();
-				transform.scale = randomChance() * 0.2 + 0.3;
-				transform.position = tr.position + tr.orientation * vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
-				transform.orientation = randomDirectionQuat();
+				TransformComponent &Transform = spark->value<TransformComponent>();
+				Transform.scale = randomChance() * 0.2 + 0.3;
+				Transform.position = tr.position + tr.orientation * Vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
+				Transform.orientation = randomDirectionQuat();
 				RenderComponent &render = spark->value<RenderComponent>();
 				render.object = HashString("degrid/environment/spark.object");
 				VelocityComponent &vel = spark->value<VelocityComponent>();
@@ -57,7 +57,7 @@ namespace
 		// pull to center
 		if (length(tr.position) > MapNoPullRadius)
 		{
-			vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - MapNoPullRadius) * 0.02, 2);
+			Vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - MapNoPullRadius) * 0.02, 2);
 			vl.velocity += pullToCenter;
 		}
 
@@ -65,7 +65,7 @@ namespace
 		tr.position[1] = 0.5;
 		game.monstersTarget = tr.position + vl.velocity * 3;
 		if (lengthSquared(vl.velocity) > 1e-5)
-			tr.orientation = quat(degs(), atan2(-vl.velocity[2], -vl.velocity[0]), degs());
+			tr.orientation = Quat(Degs(), atan2(-vl.velocity[2], -vl.velocity[0]), Degs());
 	}
 
 	void shipShield()
@@ -154,17 +154,17 @@ namespace
 
 		{ // player ship Entity
 			game.playerEntity = engineEntities()->createUnique();
-			TransformComponent &transform = game.playerEntity->value<TransformComponent>();
-			transform.scale = PlayerScale;
+			TransformComponent &Transform = game.playerEntity->value<TransformComponent>();
+			Transform.scale = PlayerScale;
 			RenderComponent &render = game.playerEntity->value<RenderComponent>();
 			render.object = HashString("degrid/player/player.object");
-			game.monstersTarget = vec3();
+			game.monstersTarget = Vec3();
 		}
 
 		{ // player shield Entity
 			game.shieldEntity = engineEntities()->createUnique();
-			TransformComponent &transform = game.shieldEntity->value<TransformComponent>();
-			(void)transform;
+			TransformComponent &Transform = game.shieldEntity->value<TransformComponent>();
+			(void)Transform;
 			TextureAnimationComponent &aniTex = game.shieldEntity->value<TextureAnimationComponent>();
 			aniTex.speed = 0.05;
 		}

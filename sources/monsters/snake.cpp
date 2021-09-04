@@ -12,7 +12,7 @@ namespace
 	struct SnakeHeadComponent
 	{
 		static EntityComponent *component;
-		real speedMin, speedMax;
+		Real speedMin, speedMax;
 	};
 
 	EntityComponent *SnakeHeadComponent::component;
@@ -24,10 +24,10 @@ namespace
 		SnakeHeadComponent::component = engineEntities()->defineComponent(SnakeHeadComponent());
 	}
 
-	void snakeSideMove(vec3 &p, const quat &forward, uint32 index, real dist)
+	void snakeSideMove(Vec3 &p, const Quat &forward, uint32 index, Real dist)
 	{
-		real phase = dist * index / -3;
-		p += forward * vec3(1, 0, 0) * sin(rads(statistics.updateIteration * 0.2f + phase)) * 0.4;
+		Real phase = dist * index / -3;
+		p += forward * Vec3(1, 0, 0) * sin(Rads(statistics.updateIteration * 0.2f + phase)) * 0.4;
 	}
 
 	void engineUpdate()
@@ -41,13 +41,13 @@ namespace
 			TransformComponent &tr = e->value<TransformComponent>();
 			VelocityComponent &v = e->value<VelocityComponent>();
 			SnakeHeadComponent &snake = e->value<SnakeHeadComponent>();
-			v.velocity += randomDirection3() * vec3(1, 0, 1) * 0.03;
-			real s = length(v.velocity);
+			v.velocity += randomDirection3() * Vec3(1, 0, 1) * 0.03;
+			Real s = length(v.velocity);
 			if (s < snake.speedMin || s > snake.speedMax)
 				v.velocity = randomDirection3() * (snake.speedMin + snake.speedMax) * 0.5;
 			v.velocity += (game.monstersTarget - tr.position) * 0.0001;
 			v.velocity[1] = 0;
-			tr.orientation = quat(v.velocity, vec3(0, 1, 0));
+			tr.orientation = Quat(v.velocity, Vec3(0, 1, 0));
 			snakeSideMove(tr.position, tr.orientation, 0, tr.scale * 2);
 		}
 
@@ -59,14 +59,14 @@ namespace
 			MonsterComponent &m = e->value<MonsterComponent>();
 			SnakeTailComponent &snake = e->value<SnakeTailComponent>();
 
-			v.velocity = vec3();
+			v.velocity = Vec3();
 			if (snake.follow && engineEntities()->has(snake.follow))
 			{
 				Entity *p = engineEntities()->get(snake.follow);
 				TransformComponent &trp = p->value<TransformComponent>();
-				vec3 toPrev = trp.position - tr.position;
-				real r = tr.scale * 2;
-				real d2 = lengthSquared(toPrev);
+				Vec3 toPrev = trp.position - tr.position;
+				Real r = tr.scale * 2;
+				Real d2 = lengthSquared(toPrev);
 				if (d2 > sqr(r) + 0.01)
 				{
 					if (d2 > sqr(r + 20))
@@ -77,7 +77,7 @@ namespace
 					else
 					{ // move
 						v.velocity = normalize(toPrev) * (length(toPrev) - r);
-						tr.orientation = quat(toPrev, vec3(0, 1, 0));
+						tr.orientation = Quat(toPrev, Vec3(0, 1, 0));
 					}
 				}
 			}
@@ -122,15 +122,15 @@ namespace
 	} callbacksInstance;
 }
 
-void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
+void spawnSnake(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	bool snakeJoke = randomRange(0u, 1000u) == 42;
 	if (snakeJoke)
 		makeAnnouncement(HashString("announcement/joke-snake"), HashString("announcement-desc/joke-snake"));
 	uint32 special = 0;
 	uint32 prev = 0;
-	real groundLevel;
-	real scale;
+	Real groundLevel;
+	Real scale;
 	{ // head
 		Entity *head = initializeMonster(spawnPosition, color, 2, HashString("degrid/monster/snakeHead.object"), HashString("degrid/monster/bum-snake-head.ogg"), 5, (snakeJoke ? 100 : 3) + monsterMutation(special));
 		SnakeHeadComponent &snake = head->value<SnakeHeadComponent>();
@@ -141,14 +141,14 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		MonsterComponent &monster = head->value<MonsterComponent>();
 		monster.dispersion = 0.2;
 		groundLevel = monster.groundLevel;
-		TransformComponent &transform = head->value<TransformComponent>();
-		scale = transform.scale;
+		TransformComponent &Transform = head->value<TransformComponent>();
+		scale = Transform.scale;
 	}
 	uint32 pieces = (snakeJoke ? randomRange(80, 100) : randomRange(10, 13)) + monsterMutation(special) * 2;
 	uint64 aniInitOff = randomRange(0, 10000000);
 	for (uint32 i = 0; i < pieces; i++)
 	{ // tail
-		Entity *tail = initializeMonster(spawnPosition + vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, HashString("degrid/monster/snakeTail.object"), HashString("degrid/monster/bum-snake-tail.ogg"), 5, real::Infinity());
+		Entity *tail = initializeMonster(spawnPosition + Vec3(randomChance() - 0.5, 0, randomChance() - 0.5), color, scale, HashString("degrid/monster/snakeTail.object"), HashString("degrid/monster/bum-snake-tail.ogg"), 5, Real::Infinity());
 		SnakeTailComponent &snake = tail->value<SnakeTailComponent>();
 		snake.index = i + 1;
 		snake.follow = prev;
@@ -157,8 +157,8 @@ void spawnSnake(const vec3 &spawnPosition, const vec3 &color)
 		aniTex.startTime = engineControlTime() + aniInitOff + i * 1000000;
 		MonsterComponent &monster = tail->value<MonsterComponent>();
 		monster.dispersion = 0.2;
-		TransformComponent &transform = tail->value<TransformComponent>();
-		transform.position[1] = monster.groundLevel = groundLevel;
-		CAGE_ASSERT(transform.scale == scale);
+		TransformComponent &Transform = tail->value<TransformComponent>();
+		Transform.position[1] = monster.groundLevel = groundLevel;
+		CAGE_ASSERT(Transform.scale == scale);
 	}
 }
