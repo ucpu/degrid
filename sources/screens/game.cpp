@@ -22,13 +22,13 @@ namespace
 	std::vector<Announcement> announcements;
 	bool needToRemakeGui;
 
-	EventListener<bool(uint32)> guiEvent;
+	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
 
 	void makeTheGui(uint32 mode = 0);
 
-	bool guiFunction(uint32 en)
+	bool guiFunction(InputGuiWidget in)
 	{
-		switch (en)
+		switch (in.widget)
 		{
 		case 500:
 			game.life = 0;
@@ -43,23 +43,23 @@ namespace
 		{
 			if (PowerupMode[i] == 2)
 			{
-				if (en == 1000 + i * 4 + 2) // buy
+				if (in.widget == 1000 + i * 4 + 2) // buy
 				{
 					CAGE_ASSERT(canAddPermanentPowerup());
 					CAGE_ASSERT(game.money >= PowerupBuyPriceBase * game.buyPriceMultiplier);
 					game.powerups[i]++;
 					game.money -= PowerupBuyPriceBase * game.buyPriceMultiplier;
 					game.buyPriceMultiplier++;
-					engineGui()->skipAllEventsUntilNextUpdate();
+					engineGuiManager()->invalidateInputs();
 					makeTheGui(3);
 					return true;
 				}
-				if (en == 1000 + i * 4 + 3) // sell
+				if (in.widget == 1000 + i * 4 + 3) // sell
 				{
 					CAGE_ASSERT(game.powerups[i] > 0);
 					game.powerups[i]--;
 					game.money += PowerupSellPriceBase * (game.defeatedBosses + 1);
-					engineGui()->skipAllEventsUntilNextUpdate();
+					engineGuiManager()->invalidateInputs();
 					makeTheGui(3);
 					return true;
 				}
@@ -88,7 +88,7 @@ namespace
 
 	void makeTheGuiPaused(uint32 openPanel)
 	{
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 
 		{
 			GuiLayoutLineComponent &ll = ents->get(15)->value<GuiLayoutLineComponent>();
@@ -160,7 +160,7 @@ namespace
 
 			for (uint32 idx = 0; idx < game.defeatedBosses + 1; idx++)
 			{
-				Entity *label = engineGui()->entities()->createUnique();
+				Entity *label = engineGuiEntities()->createUnique();
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = panelName;
 				parent.order = idx;
@@ -409,7 +409,7 @@ namespace
 
 	void makeTheGuiPlaying()
 	{
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 
 		{
 			GuiScrollbarsComponent &sc = ents->get(12)->value<GuiScrollbarsComponent>();
@@ -467,9 +467,9 @@ namespace
 			c.backButton = false;
 			regenerateGui(c);
 		}
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 		guiEvent.bind<&guiFunction>();
-		guiEvent.attach(engineGui()->widgetEvent);
+		guiEvent.attach(engineGuiManager()->widgetEvent);
 
 		{ // base stats
 			Entity *table = ents->createUnique();
@@ -482,7 +482,7 @@ namespace
 			uint32 index = 1;
 
 			{ // life label
-				Entity *label = engineGui()->entities()->createUnique();
+				Entity *label = engineGuiEntities()->createUnique();
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
@@ -496,7 +496,7 @@ namespace
 			}
 
 			{ // life value
-				Entity *label = engineGui()->entities()->create(100);
+				Entity *label = engineGuiEntities()->create(100);
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
@@ -509,7 +509,7 @@ namespace
 			}
 
 			{ // money label
-				Entity *label = engineGui()->entities()->createUnique();
+				Entity *label = engineGuiEntities()->createUnique();
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
@@ -523,7 +523,7 @@ namespace
 			}
 
 			{ // money value
-				Entity *label = engineGui()->entities()->create(101);
+				Entity *label = engineGuiEntities()->create(101);
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
@@ -536,7 +536,7 @@ namespace
 			}
 
 			{ // score label
-				Entity *label = engineGui()->entities()->createUnique();
+				Entity *label = engineGuiEntities()->createUnique();
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
@@ -550,7 +550,7 @@ namespace
 			}
 
 			{ // score value
-				Entity *label = engineGui()->entities()->create(102);
+				Entity *label = engineGuiEntities()->create(102);
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
@@ -578,7 +578,7 @@ namespace
 				if (PowerupMode[i] == 0)
 				{
 					{ // label
-						Entity *label = engineGui()->entities()->createUnique();
+						Entity *label = engineGuiEntities()->createUnique();
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
@@ -589,7 +589,7 @@ namespace
 					}
 
 					{ // value
-						Entity *label = engineGui()->entities()->create(200 + i);
+						Entity *label = engineGuiEntities()->create(200 + i);
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
@@ -617,7 +617,7 @@ namespace
 				if (PowerupMode[i] == 1)
 				{
 					{ // label
-						Entity *label = engineGui()->entities()->createUnique();
+						Entity *label = engineGuiEntities()->createUnique();
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
@@ -628,7 +628,7 @@ namespace
 					}
 
 					{ // value
-						Entity *label = engineGui()->entities()->create(200 + i);
+						Entity *label = engineGuiEntities()->create(200 + i);
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
@@ -686,23 +686,23 @@ namespace
 		}
 
 		{ // life
-			GuiTextComponent &txt = engineGui()->entities()->get(100)->value<GuiTextComponent>();
+			GuiTextComponent &txt = engineGuiEntities()->get(100)->value<GuiTextComponent>();
 			txt.value = Stringizer() + numeric_cast<uint32>(max(0, game.life));
 		}
 		{ // money
-			GuiTextComponent &txt = engineGui()->entities()->get(101)->value<GuiTextComponent>();
+			GuiTextComponent &txt = engineGuiEntities()->get(101)->value<GuiTextComponent>();
 			txt.value = Stringizer() + game.money;
 		}
 		{ // score
-			GuiTextComponent &txt = engineGui()->entities()->get(102)->value<GuiTextComponent>();
+			GuiTextComponent &txt = engineGuiEntities()->get(102)->value<GuiTextComponent>();
 			txt.value = Stringizer() + game.score;
 		}
 
 		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)
 		{
-			if (!engineGui()->entities()->has(200 + i))
+			if (!engineGuiEntities()->has(200 + i))
 				continue;
-			GuiTextComponent &txt = engineGui()->entities()->get(200 + i)->value<GuiTextComponent>();
+			GuiTextComponent &txt = engineGuiEntities()->get(200 + i)->value<GuiTextComponent>();
 			switch (PowerupMode[i])
 			{
 			case 0: // collectibles

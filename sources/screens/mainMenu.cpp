@@ -9,11 +9,11 @@ extern ConfigUint32 confLanguage;
 
 namespace
 {
-	EventListener<bool(uint32)> guiEvent;
+	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
 
-	bool guiFunction(uint32 en)
+	bool guiFunction(InputGuiWidget in)
 	{
-		switch (en)
+		switch (in.widget)
 		{
 		case 103:
 			setScreenGame();
@@ -34,9 +34,9 @@ namespace
 			engineStop();
 			return true;
 		}
-		if (en >= 200)
+		if (in.widget >= 200)
 		{
-			reloadLanguage(confLanguage = en - 200);
+			reloadLanguage(confLanguage = in.widget - 200);
 			return true;
 		}
 		return false;
@@ -50,9 +50,9 @@ void setScreenMainmenu()
 		c.backButton = false;
 		regenerateGui(c);
 	}
-	EntityManager *ents = engineGui()->entities();
+	EntityManager *ents = engineGuiEntities();
 	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(engineGui()->widgetEvent);
+	guiEvent.attach(engineGuiManager()->widgetEvent);
 
 	{ // main menu
 		{

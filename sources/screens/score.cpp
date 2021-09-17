@@ -34,15 +34,15 @@ namespace
 
 	void buildGui(int mode);
 
-	EventListener<bool(uint32)> guiEvent;
+	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
 
-	bool guiFunction(uint32 en)
+	bool guiFunction(InputGuiWidget in)
 	{
-		switch (en)
+		switch (in.widget)
 		{
 		case 51:
 		case 52:
-			buildGui(en - 51);
+			buildGui(in.widget - 51);
 			return true;
 		}
 		return false;
@@ -51,9 +51,9 @@ namespace
 	void buildGui(int mode)
 	{
 		regenerateGui(GuiConfig());
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 		guiEvent.bind<&guiFunction>();
-		guiEvent.attach(engineGui()->widgetEvent);
+		guiEvent.attach(engineGuiManager()->widgetEvent);
 
 		Entity *panel = ents->createUnique();
 		{
@@ -136,5 +136,5 @@ void setScreenScores()
 		}
 	}
 
-	guiFunction(52);
+	guiFunction(InputGuiWidget{ nullptr, 52 });
 }

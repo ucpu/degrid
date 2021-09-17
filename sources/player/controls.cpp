@@ -24,7 +24,11 @@ namespace
 {
 	bool keyMap[512];
 	MouseButtonsFlags buttonMap;
-	WindowEventListeners windowListeners;
+
+	InputListener<InputClassEnum::MousePress, InputMouse> mousePressListener;
+	InputListener<InputClassEnum::MouseRelease, InputMouse> mouseReleaseListener;
+	InputListener<InputClassEnum::KeyPress, InputKey> keyPressListener;
+	InputListener<InputClassEnum::KeyRelease, InputKey> keyReleaseListener;
 
 	// input (options independent)
 	Vec3 arrowsDirection;
@@ -85,84 +89,76 @@ namespace
 				eventAction(o + 4);
 	}
 
-	bool mousePress(MouseButtonsFlags buttons, ModifiersFlags modifiers, const Vec2i &point)
+	void mousePress(InputMouse in)
 	{
 		if (game.paused)
-			return false;
+			return;
 
 		statistics.buttonPressed++;
-		buttonMap |= buttons;
-
-		return false;
+		buttonMap |= in.buttons;
 	}
 
-	bool mouseRelease(MouseButtonsFlags buttons, ModifiersFlags modifiers, const Vec2i &point)
+	void mouseRelease(InputMouse in)
 	{
-		buttonMap &= ~buttons;
+		buttonMap &= ~in.buttons;
 
 		if (game.paused)
-			return false;
+			return;
 
-		if (any(buttons & MouseButtonsFlags::Left))
+		if (any(in.buttons & MouseButtonsFlags::Left))
 			eventAction(0);
-		if (any(buttons & MouseButtonsFlags::Right))
+		if (any(in.buttons & MouseButtonsFlags::Right))
 			eventAction(1);
-		if (any(buttons & MouseButtonsFlags::Middle))
+		if (any(in.buttons & MouseButtonsFlags::Middle))
 			eventAction(2);
-
-		return false;
 	}
 
-	bool keyPress(uint32 key, ModifiersFlags modifiers)
+	void keyPress(InputKey in)
 	{
 		if (game.paused)
-			return false;
+			return;
 
 		statistics.keyPressed++;
-		if (key < sizeof(keyMap))
-			keyMap[key] = true;
-
-		return false;
+		if (in.key < sizeof(keyMap))
+			keyMap[in.key] = true;
 	}
 
-	bool keyRelease(uint32 key, ModifiersFlags modifiers)
+	void keyRelease(InputKey in)
 	{
-		if (key < sizeof(keyMap))
-			keyMap[key] = false;
+		if (in.key < sizeof(keyMap))
+			keyMap[in.key] = false;
 
 		if (game.cinematic || game.gameOver)
-			return false;
+			return;
 
-		if (key == 256) // esc
+		if (in.key == 256) // esc
 			game.paused = !game.paused;
 
 		if (game.paused)
-			return false;
+			return;
 
-		switch (key)
+		switch (in.key)
 		{
 		case ' ':
 			eventAction(3);
 			break;
 		default:
-			eventLetter(key);
+			eventLetter(in.key);
 			break;
 		}
-
-		return false;
 	}
 
 	void engineInit()
 	{
-		windowListeners.attachAll(engineWindow());
-		windowListeners.mousePress.bind<&mousePress>();
-		windowListeners.mouseRelease.bind<&mouseRelease>();
-		windowListeners.keyPress.bind<&keyPress>();
-		windowListeners.keyRelease.bind<&keyRelease>();
-
-		// process some Events before gui
-		windowListeners.mouseRelease.attach(engineWindow()->events.mouseRelease, -1);
-		windowListeners.keyRelease.attach(engineWindow()->events.keyRelease, -1);
+		mousePressListener.attach(engineWindow()->events);
+		mousePressListener.bind<&mousePress>();
+		keyPressListener.attach(engineWindow()->events);
+		keyPressListener.bind<&keyPress>();
+		// process some events before gui
+		mouseReleaseListener.attach(engineWindow()->events, -2);
+		mouseReleaseListener.bind<&mouseRelease>();
+		keyReleaseListener.attach(engineWindow()->events, -1);
+		keyReleaseListener.bind<&keyRelease>();
 
 #ifdef DEGRID_TESTING
 		CAGE_LOG(SeverityEnum::Info, "degrid", String() + "TESTING GAME BUILD");

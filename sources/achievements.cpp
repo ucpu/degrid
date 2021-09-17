@@ -172,7 +172,7 @@ namespace
 void setScreenAchievements()
 {
 	regenerateGui(GuiConfig());
-	EntityManager *ents = engineGui()->entities();
+	EntityManager *ents = engineGuiEntities();
 
 	{
 		GuiLayoutLineComponent &layout = ents->get(12)->value<GuiLayoutLineComponent>();

@@ -9,8 +9,8 @@
 
 namespace
 {
-	EventListener<bool(uint32)> guiEvent;
-	EventListener<bool(uint32, ModifiersFlags)> keyReleaseListener;
+	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
+	InputListener<InputClassEnum::KeyRelease, InputKey, bool> keyReleaseListener;
 
 	void endScreen()
 	{
@@ -24,9 +24,9 @@ namespace
 			setScreenMainmenu();
 	}
 
-	bool keyRelease(uint32 key, ModifiersFlags modifiers)
+	bool keyRelease(InputKey in)
 	{
-		if (key == 256) // esc
+		if (in.key == 256) // esc
 		{
 			endScreen();
 			return true;
@@ -34,9 +34,9 @@ namespace
 		return false;
 	}
 
-	bool buttonContinue(uint32 en)
+	bool buttonContinue(InputGuiWidget in)
 	{
-		if (en != 100)
+		if (in.widget != 100)
 			return false;
 		endScreen();
 		return true;
@@ -71,10 +71,10 @@ void setScreenGameover()
 		c.backButton = false;
 		regenerateGui(c);
 	}
-	EntityManager *ents = engineGui()->entities();
+	EntityManager *ents = engineGuiEntities();
 	guiEvent.bind<&buttonContinue>();
-	guiEvent.attach(engineGui()->widgetEvent);
-	keyReleaseListener.attach(engineWindow()->events.keyRelease);
+	guiEvent.attach(engineGuiManager()->widgetEvent);
+	keyReleaseListener.attach(engineWindow()->events);
 	keyReleaseListener.bind<&keyRelease>();
 
 	Entity *panel = ents->createUnique();

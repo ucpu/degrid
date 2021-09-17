@@ -1,8 +1,9 @@
 #include <cage-core/config.h>
 #include <cage-core/assetManager.h>
-#include <cage-engine/engineStatistics.h>
-#include <cage-engine/fullscreenSwitcher.h>
 #include <cage-engine/highPerformanceGpuHint.h>
+#include <cage-simple/engine.h>
+#include <cage-simple/statisticsGui.h>
+#include <cage-simple/fullscreenSwitcher.h>
 
 #include "game.h"
 #include "screens/screens.h"
@@ -16,10 +17,9 @@ namespace
 	uint32 loadedLanguageHash;
 	uint32 currentLanguageHash;
 
-	bool windowClose()
+	void windowClose(InputWindow)
 	{
 		engineStop();
-		return true;
 	}
 
 	void assetsUpdate()
@@ -38,8 +38,6 @@ namespace
 	{
 		statistics.frameIteration++;
 	}
-
-	WindowEventListeners listeners;
 }
 
 void reloadLanguage(uint32 index)
@@ -62,8 +60,9 @@ int main(int argc, const char *args[])
 		engineInitialize(EngineCreateConfig());
 		controlThread().updatePeriod(1000000 / 30);
 
-		listeners.attachAll(engineWindow(), 1000);
-		listeners.windowClose.bind<&windowClose>();
+		InputListener<InputClassEnum::WindowClose, InputWindow> closeListener;
+		closeListener.attach(engineWindow()->events, 1000);
+		closeListener.bind<&windowClose>();
 		EventListener<void()> assetsUpdateListener;
 		assetsUpdateListener.bind<&assetsUpdate>();
 		assetsUpdateListener.attach(controlThread().update);
@@ -77,8 +76,8 @@ int main(int argc, const char *args[])
 
 		{
 			Holder<FullscreenSwitcher> fullscreen = newFullscreenSwitcher({});
-			Holder<EngineStatistics> engineStatistics = newEngineStatistics();
-			engineStatistics->statisticsScope = EngineStatisticsScopeEnum::None;
+			Holder<StatisticsGui> engineStatistics = newStatisticsGui();
+			engineStatistics->statisticsScope = StatisticsGuiScopeEnum::None;
 			engineStatistics->screenPosition = Vec2(0.5);
 
 			engineStart();

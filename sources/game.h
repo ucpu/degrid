@@ -3,7 +3,8 @@
 #include <cage-core/core.h>
 #include <cage-core/math.h>
 #include <cage-engine/core.h>
-#include <cage-engine/engine.h>
+#include <cage-engine/scene.h>
+#include <cage-simple/engine.h>
 
 using namespace cage;
 

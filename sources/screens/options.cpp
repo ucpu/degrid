@@ -1,4 +1,5 @@
 #include <cage-core/config.h>
+#include <cage-engine/guiManager.h>
 
 #include "screens.h"
 #include "../game.h"
@@ -20,7 +21,7 @@ namespace
 {
 	void addOptionsMovementFiring(uint32 ctr)
 	{
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 		{
 			Entity *opt = ents->createUnique();
 			GuiParentComponent &parent = opt->value<GuiParentComponent>();
@@ -70,7 +71,7 @@ namespace
 
 	void addOptionsPowers(uint32 ctr)
 	{
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 		{
 			Entity *opt = ents->createUnique();
 			GuiParentComponent &parent = opt->value<GuiParentComponent>();
@@ -118,57 +119,57 @@ namespace
 		}
 	}
 
-	EventListener<bool(uint32)> guiEvent;
+	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
 
-	bool guiFunction(uint32 en)
+	bool guiFunction(InputGuiWidget in)
 	{
-		switch (en)
+		switch (in.widget)
 		{
 		case 31:
 		{
-			GuiComboBoxComponent &control = engineGui()->entities()->get(en)->value<GuiComboBoxComponent>();
+			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
 			confControlMovement = control.selected;
 			return true;
 		}
 		case 32:
 		{
-			GuiComboBoxComponent &control = engineGui()->entities()->get(en)->value<GuiComboBoxComponent>();
+			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
 			confControlFiring = control.selected;
 			return true;
 		}
 		case 33:
 		{
-			GuiComboBoxComponent &control = engineGui()->entities()->get(en)->value<GuiComboBoxComponent>();
+			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
 			confControlBomb = control.selected;
 			return true;
 		}
 		case 34:
 		{
-			GuiComboBoxComponent &control = engineGui()->entities()->get(en)->value<GuiComboBoxComponent>();
+			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
 			confControlTurret = control.selected;
 			return true;
 		}
 		case 35:
 		{
-			GuiComboBoxComponent &control = engineGui()->entities()->get(en)->value<GuiComboBoxComponent>();
+			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
 			confControlDecoy = control.selected;
 			return true;
 		}
 		case 36:
 		{
-			GuiSliderBarComponent &control = engineGui()->entities()->get(en)->value<GuiSliderBarComponent>();
+			GuiSliderBarComponent &control = engineGuiEntities()->get(in.widget)->value<GuiSliderBarComponent>();
 			confVolumeMusic = control.value.value;
 			return true;
 		}
 		case 37:
 		{
-			GuiSliderBarComponent &control = engineGui()->entities()->get(en)->value<GuiSliderBarComponent>();
+			GuiSliderBarComponent &control = engineGuiEntities()->get(in.widget)->value<GuiSliderBarComponent>();
 			confVolumeEffects = control.value.value;
 			return true;
 		}
 		case 38:
 		{
-			GuiSliderBarComponent &control = engineGui()->entities()->get(en)->value<GuiSliderBarComponent>();
+			GuiSliderBarComponent &control = engineGuiEntities()->get(in.widget)->value<GuiSliderBarComponent>();
 			confVolumeSpeech = control.value.value;
 			return true;
 		}
@@ -180,9 +181,9 @@ namespace
 void setScreenOptions()
 {
 	regenerateGui(GuiConfig());
-	EntityManager *ents = engineGui()->entities();
+	EntityManager *ents = engineGuiEntities();
 	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(engineGui()->widgetEvent);
+	guiEvent.attach(engineGuiManager()->widgetEvent);
 
 	Entity *tabs = ents->createUnique();
 	{

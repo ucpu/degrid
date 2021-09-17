@@ -2,20 +2,20 @@
 
 namespace
 {
-	EventListener<bool(uint32)> guiListener;
-	EventListener<bool(uint32, ModifiersFlags)> keyReleaseListener;
+	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiListener;
+	InputListener<InputClassEnum::KeyRelease, InputKey, bool> keyReleaseListener;
 
-	bool buttonBack(uint32 en)
+	bool buttonBack(InputGuiWidget in)
 	{
-		if (en != 20)
+		if (in.widget != 20)
 			return false;
 		setScreenMainmenu();
 		return true;
 	}
 
-	bool keyRelease(uint32 key, ModifiersFlags modifiers)
+	bool keyRelease(InputKey in)
 	{
-		if (key == 256) // esc
+		if (in.key == 256) // esc
 		{
 			setScreenMainmenu();
 			return true;
@@ -25,8 +25,8 @@ namespace
 
 	void eraseGui()
 	{
-		Gui *guii = engineGui();
-		guii->skipAllEventsUntilNextUpdate();
+		GuiManager *guii = engineGuiManager();
+		guii->invalidateInputs();
 		guii->focus(0);
 		guii->entities()->destroy();
 		guii->widgetEvent.detach();
@@ -87,7 +87,7 @@ namespace
 		// 14 - logo
 		// 15 - back button
 
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 
 		uint32 splits[4];
 
@@ -170,7 +170,7 @@ namespace
 
 	void generateLogo()
 	{
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 		Entity *logo = ents->createUnique();
 		GuiLabelComponent &label = logo->value<GuiLabelComponent>();
 		GuiImageComponent &image = logo->value<GuiImageComponent>();
@@ -181,7 +181,7 @@ namespace
 
 	void generateButtonBack()
 	{
-		EntityManager *ents = engineGui()->entities();
+		EntityManager *ents = engineGuiEntities();
 		Entity *but = ents->create(20);
 		GuiButtonComponent &button = but->value<GuiButtonComponent>();
 		GuiTextComponent &txt = but->value<GuiTextComponent>();
@@ -189,9 +189,9 @@ namespace
 		txt.textName = HashString("gui/mainmenu/back");
 		GuiParentComponent &parent = but->value<GuiParentComponent>();
 		parent.parent = 15;
-		guiListener.attach(engineGui()->widgetEvent);
+		guiListener.attach(engineGuiManager()->widgetEvent);
 		guiListener.bind<&buttonBack>();
-		keyReleaseListener.attach(engineWindow()->events.keyRelease);
+		keyReleaseListener.attach(engineWindow()->events);
 		keyReleaseListener.bind<&keyRelease>();
 	}
 

@@ -6,7 +6,7 @@
 void setScreenAbout()
 {
 	regenerateGui(GuiConfig());
-	EntityManager *ents = engineGui()->entities();
+	EntityManager *ents = engineGuiEntities();
 
 	Entity *panel = ents->createUnique();
 	{
@@ -26,7 +26,7 @@ void setScreenAbout()
 
 	for (auto it : enumerate(TextNames))
 	{
-		Entity *label = engineGui()->entities()->createUnique();
+		Entity *label = engineGuiEntities()->createUnique();
 		GuiParentComponent &parent = label->value<GuiParentComponent>();
 		parent.parent = panel->name();
 		parent.order = numeric_cast<sint32>(it.index);

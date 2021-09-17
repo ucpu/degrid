@@ -1,11 +1,9 @@
-#include <cage-core/core.h>
-#include <cage-core/math.h>
 #include <cage-core/entities.h>
 #include <cage-core/hashString.h>
-#include <cage-engine/core.h>
-#include <cage-engine/engine.h>
 #include <cage-engine/window.h>
-#include <cage-engine/gui.h>
+#include <cage-engine/guiComponents.h>
+#include <cage-engine/guiManager.h>
+#include <cage-simple/engine.h>
 
 using namespace cage;
 

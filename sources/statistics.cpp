@@ -3,7 +3,7 @@
 #include <cage-core/hashString.h>
 #include <cage-core/macros.h>
 #include <cage-engine/window.h>
-#include <cage-engine/engineStatistics.h>
+#include <cage-simple/statisticsGui.h>
 
 #include "game.h"
 
@@ -32,7 +32,7 @@ namespace
 		statistics.monstersMax = max(statistics.monstersMax, statistics.monstersCurrent);
 		statistics.entitiesCurrent = engineEntities()->group()->count();
 		statistics.entitiesMax = max(statistics.entitiesMax, statistics.entitiesCurrent);
-		statistics.timeRenderCurrent = engineStatisticsValues(EngineStatisticsFlags::FrameTime, EngineStatisticsModeEnum::Last);
+		statistics.timeRenderCurrent = engineStatisticsValues(StatisticsGuiFlags::FrameTime, StatisticsGuiModeEnum::Last);
 		if (statistics.updateIterationIgnorePause > 1000)
 		{
 			statistics.timeRenderMin = min(statistics.timeRenderMin, statistics.timeRenderCurrent);
