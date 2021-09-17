@@ -1,6 +1,7 @@
 #include <cage-core/config.h>
 #include <cage-core/camera.h>
 #include <cage-core/geometry.h>
+#include <cage-engine/gamepad.h>
 
 #include "../game.h"
 #include "../screens/screens.h"
@@ -22,6 +23,8 @@ GlobalGame game;
 
 namespace
 {
+	Holder<Gamepad> gamepad;
+
 	bool keyMap[512];
 	MouseButtonsFlags buttonMap;
 
@@ -29,12 +32,14 @@ namespace
 	InputListener<InputClassEnum::MouseRelease, InputMouse> mouseReleaseListener;
 	InputListener<InputClassEnum::KeyPress, InputKey> keyPressListener;
 	InputListener<InputClassEnum::KeyRelease, InputKey> keyReleaseListener;
+	InputListener<InputClassEnum::GamepadRelease, InputGamepadKey> gamepadKeyListener;
 
 	// input (options independent)
 	Vec3 arrowsDirection;
 	Vec3 mouseCurrentPosition;
 	Vec3 mouseLeftPosition;
 	Vec3 mouseRightPosition;
+	Vec3 leftStick, rightStick;
 
 	void setMousePosition()
 	{
@@ -82,13 +87,6 @@ namespace
 			eventDecoy();
 	}
 
-	void eventLetter(uint32 key)
-	{
-		for (uint32 o = 0; o < sizeof(Letters); o++)
-			if (Letters[o] == key)
-				eventAction(o + 4);
-	}
-
 	void mousePress(InputMouse in)
 	{
 		if (game.paused)
@@ -107,9 +105,9 @@ namespace
 
 		if (any(in.buttons & MouseButtonsFlags::Left))
 			eventAction(0);
-		if (any(in.buttons & MouseButtonsFlags::Right))
-			eventAction(1);
 		if (any(in.buttons & MouseButtonsFlags::Middle))
+			eventAction(1);
+		if (any(in.buttons & MouseButtonsFlags::Right))
 			eventAction(2);
 	}
 
@@ -137,15 +135,17 @@ namespace
 		if (game.paused)
 			return;
 
-		switch (in.key)
-		{
-		case ' ':
+		if (in.key == ' ')
 			eventAction(3);
-			break;
-		default:
-			eventLetter(in.key);
-			break;
-		}
+		for (uint32 o = 0; o < sizeof(Letters); o++)
+			if (Letters[o] == in.key)
+				eventAction(o + 4);
+	}
+
+	void gamepadKey(InputGamepadKey in)
+	{
+		if (in.key < 4)
+			eventAction(in.key + 4 + sizeof(Letters));
 	}
 
 	void engineInit()
@@ -172,10 +172,24 @@ namespace
 	{
 		CAGE_ASSERT(!game.gameOver || game.paused);
 
+		if (!gamepad && gamepadsAvailable() > 0)
+		{
+			gamepad = newGamepad();
+			gamepadKeyListener.attach(gamepad->events);
+			gamepadKeyListener.bind<&gamepadKey>();
+		}
+		if (gamepad)
+		{
+			gamepad->processEvents();
+			if (!gamepad->connected())
+				gamepad.clear();
+		}
+
 		if (game.paused)
 			return;
 
 		arrowsDirection = Vec3();
+		leftStick = rightStick = Vec3();
 		game.moveDirection = Vec3();
 		game.fireDirection = Vec3();
 
@@ -224,6 +238,14 @@ namespace
 				arrowsDirection = normalize(arrowsDirection);
 		}
 
+		if (gamepad)
+		{
+			leftStick[0] = gamepad->axes()[0];
+			leftStick[2] = gamepad->axes()[1];
+			rightStick[0] = gamepad->axes()[2];
+			rightStick[2] = gamepad->axes()[3];
+		}
+
 		constexpr Real MouseMultiplier = 0.05;
 		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 
@@ -243,6 +265,12 @@ namespace
 			break;
 		case 4: // cursor position
 			game.moveDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultiplier;
+			break;
+		case 5: // left stick (absolute)
+			game.moveDirection = leftStick;
+			break;
+		case 6: // right stick (absolute)
+			game.moveDirection = rightStick;
 			break;
 		}
 		game.moveDirection[1] = 0;
@@ -267,6 +295,12 @@ namespace
 			break;
 		case 4: // cursor position
 			game.fireDirection = (mouseCurrentPosition - playerTransform.position) * MouseMultiplier;
+			break;
+		case 5: // left stick (absolute)
+			game.fireDirection = leftStick;
+			break;
+		case 6: // right stick (absolute)
+			game.fireDirection = rightStick;
 			break;
 		}
 		game.fireDirection[1] = 0;

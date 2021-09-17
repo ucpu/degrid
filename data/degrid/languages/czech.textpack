@@ -107,6 +107,8 @@ mmb = Prostřední tlačítko myši
 rmb = Pravé tlačítko myši
 cursor = Pozice kurzoru
 space = Mezerník
+leftStick = Levá páčka
+rightStick = Pravá páčka
 
 [gui/scores]
 score = Skóre

@@ -67,6 +67,24 @@ namespace
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/options/cursor");
 		}
+		{
+			Entity *opt = ents->createUnique();
+			GuiParentComponent &parent = opt->value<GuiParentComponent>();
+			parent.parent = ctr;
+			parent.order = 5;
+			GuiTextComponent &txt = opt->value<GuiTextComponent>();
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/leftStick");
+		}
+		{
+			Entity *opt = ents->createUnique();
+			GuiParentComponent &parent = opt->value<GuiParentComponent>();
+			parent.parent = ctr;
+			parent.order = 6;
+			GuiTextComponent &txt = opt->value<GuiTextComponent>();
+			txt.assetName = HashString("degrid/languages/internationalized.textpack");
+			txt.textName = HashString("gui/options/rightStick");
+		}
 	}
 
 	void addOptionsPowers(uint32 ctr)
@@ -116,6 +134,16 @@ namespace
 			parent.order = Letters[i];
 			GuiTextComponent &txt = opt->value<GuiTextComponent>();
 			txt.value = String(Letters[i]);
+		}
+		for (uint32 i = 0; i < 4; i++)
+		{
+			Entity *opt = ents->createUnique();
+			GuiParentComponent &parent = opt->value<GuiParentComponent>();
+			parent.parent = ctr;
+			parent.order = 1000 + i;
+			GuiTextComponent &txt = opt->value<GuiTextComponent>();
+			constexpr const char *const names[] = { "Gamepad A", "Gamepad B", "Gamepad X", "Gamepad Y" };
+			txt.value = names[i];
 		}
 	}
 

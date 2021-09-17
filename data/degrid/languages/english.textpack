@@ -107,6 +107,8 @@ mmb = Middle mouse button
 rmb = Right mouse button
 cursor = Cursor position
 space = Spacebar
+leftStick = Left stick
+rightStick = Right stick
 
 [gui/scores]
 score = Score

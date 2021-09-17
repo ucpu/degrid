@@ -1,4 +1,4 @@
-//#define DEGRID_TESTING
+#define DEGRID_TESTING
 
 #include <cage-core/core.h>
 #include <cage-core/math.h>
@@ -11,7 +11,7 @@ using namespace cage;
 bool collisionTest(const Vec3 &positionA, Real radiusA, const Vec3 &velocityA, const Vec3 &positionB, Real radiusB, const Vec3 &velocityB);
 void powerupSpawn(const Vec3 &position);
 void monstersSpawnInitial();
-Real lifeDamage(Real damage); 
+Real lifeDamage(Real damage);
 void environmentExplosion(const Vec3 &position, const Vec3 &velocity, const Vec3 &color, Real size);
 void monsterExplosion(Entity *e);
 void shotExplosion(Entity *e);
@@ -20,7 +20,7 @@ void soundEffect(uint32 sound, const Vec3 &position);
 void soundSpeech(uint32 sound);
 void soundSpeech(const uint32 sounds[]);
 void setSkybox(uint32 objectName);
-bool achievementFullfilled(const String &name, bool bossKill = false); 
+bool achievementFullfilled(const String &name, bool bossKill = false);
 void makeAnnouncement(uint32 headline, uint32 description, uint32 duration = 30 * 30);
 uint32 permanentPowerupLimit();
 uint32 currentPermanentPowerups();
