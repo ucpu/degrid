@@ -1,4 +1,4 @@
-#define DEGRID_TESTING
+//#define DEGRID_TESTING
 
 #include <cage-core/core.h>
 #include <cage-core/math.h>
