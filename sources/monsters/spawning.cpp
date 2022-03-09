@@ -522,7 +522,7 @@ namespace
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		Callbacks() : engineUpdateListener("spawning"), gameStartListener("spawning"), gameStopListener("spawning")
+		Callbacks()
 		{
 			engineUpdateListener.attach(controlThread().update);
 			engineUpdateListener.bind<&engineUpdate>();

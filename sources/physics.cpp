@@ -99,7 +99,7 @@ namespace
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 	public:
-		Callbacks() : engineInitListener("physics"), engineUpdateListener("physics")
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize, -40);
 			engineInitListener.bind<&engineInit>();

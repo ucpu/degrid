@@ -188,7 +188,7 @@ namespace
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		Callbacks() : engineUpdateListener1("ship1"), engineUpdateListener2("ship2"), gameStartListener("ship"), gameStopListener("ship")
+		Callbacks()
 		{
 			engineUpdateListener1.attach(controlThread().update, -20);
 			engineUpdateListener1.bind<&engineUpdate>();

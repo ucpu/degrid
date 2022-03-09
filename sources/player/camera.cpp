@@ -82,7 +82,7 @@ namespace
 		EventListener<void()> engineUpdateListener;
 		EventListener<void()> gameStartListener;
 	public:
-		Callbacks() : engineUpdateListener("camera"), gameStartListener("camera")
+		Callbacks()
 		{
 			engineUpdateListener.attach(controlThread().update, 50);
 			engineUpdateListener.bind<&engineUpdate>();

@@ -367,7 +367,7 @@ namespace
 		EventListener<void()> gameStartListener;
 		EventListener<void()> gameStopListener;
 	public:
-		Callbacks() : engineInitListener("controls"), engineUpdateListener("controls"), gameStartListener("controls"), gameStopListener("controls")
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize, -30);
 			engineInitListener.bind<&engineInit>();

@@ -199,7 +199,7 @@ namespace
 		EventListener<void()> engineInitListener;
 		EventListener<void()> engineUpdateListener;
 	public:
-		Callbacks() : engineInitListener("powerup"), engineUpdateListener("powerup")
+		Callbacks()
 		{
 			engineInitListener.attach(controlThread().initialize, -15);
 			engineInitListener.bind<&engineInit>();
