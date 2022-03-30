@@ -13,4 +13,3 @@ noDepthTest
 noDepthWrite
 noLighting
 noShadowCast
-noVelocityWrite

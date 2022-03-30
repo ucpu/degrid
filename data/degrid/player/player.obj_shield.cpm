@@ -12,6 +12,5 @@ albedo = shield/baked$$$$.png
 
 [flags]
 noShadowCast
-noVelocityWrite
 noDepthWrite
 translucent

@@ -11,6 +11,5 @@ albedo = lightning_$$.png
 [flags]
 noLighting
 noShadowCast
-noVelocityWrite
 noDepthWrite
 translucent

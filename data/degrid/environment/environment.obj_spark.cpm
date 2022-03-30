@@ -8,6 +8,5 @@ albedo = spark_$.png
 [flags]
 noLighting
 noShadowCast
-noVelocityWrite
 noDepthWrite
 
