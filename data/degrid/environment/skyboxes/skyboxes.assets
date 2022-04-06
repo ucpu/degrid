@@ -6,48 +6,56 @@ skyboxes.pack
 []
 scheme = model
 normals = false
+scale = 200
 material = 0.cpm
 skybox.obj;0
 
 []
 scheme = model
 normals = false
+scale = 200
 material = 1.cpm
 skybox.obj;1
 
 []
 scheme = model
 normals = false
+scale = 200
 material = 2.cpm
 skybox.obj;2
 
 []
 scheme = model
 normals = false
+scale = 200
 material = 3.cpm
 skybox.obj;3
 
 []
 scheme = model
 normals = false
+scale = 200
 material = 4.cpm
 skybox.obj;4
 
 []
 scheme = model
 normals = false
+scale = 200
 material = 5.cpm
 skybox.obj;5
 
 []
 scheme = model
 normals = false
+scale = 200
 material = hurt.cpm
 skybox.obj;hurt
 
 []
 scheme = model
 normals = false
+scale = 200
 material = menu.cpm
 skybox.obj;menu
 
@@ -95,3 +103,7 @@ flip = true
 5.png
 hurt.png
 menu.png
+
+[]
+scheme = shader
+skybox.glsl

@@ -15,16 +15,13 @@ namespace
 
 	struct SkyboxComponent
 	{
-		static EntityComponent *component;
-
 		bool dissipating = false;
+		bool hurt = false;
 	};
-
-	EntityComponent *SkyboxComponent::component;
 
 	void engineInit()
 	{
-		SkyboxComponent::component = engineEntities()->defineComponent(SkyboxComponent());
+		engineEntities()->defineComponent(SkyboxComponent());
 		skyboxOrientation = randomDirectionQuat();
 		skyboxRotation = interpolate(Quat(), randomDirectionQuat(), 5e-5);
 	}
@@ -34,11 +31,11 @@ namespace
 		{ // update skybox
 			skyboxOrientation = skyboxRotation * skyboxOrientation;
 
-			for (Entity *e : SkyboxComponent::component->entities())
+			for (Entity *e : engineEntities()->component<SkyboxComponent>()->entities())
 			{
-				TransformComponent &t = e->value<TransformComponent>();
-				t.orientation = skyboxOrientation;
 				SkyboxComponent &s = e->value<SkyboxComponent>();
+				if (!s.hurt)
+					e->value<TransformComponent>().orientation = skyboxOrientation;
 				if (s.dissipating)
 				{
 					RenderComponent &r = e->value<RenderComponent>();
@@ -53,14 +50,12 @@ namespace
 				if (statistics.updateIterationIgnorePause == statistics.monstersLastHit && !game.cinematic)
 				{
 					Entity *e = engineEntities()->createUnique();
-					TransformComponent &t = e->value<TransformComponent>();
-					t.orientation = randomDirectionQuat();
+					e->value<TransformComponent>().orientation = randomDirectionQuat();
 					RenderComponent &r = e->value<RenderComponent>();
-					r.sceneMask = 2;
 					r.object = HashString("degrid/environment/skyboxes/skybox.obj;hurt");
 					r.opacity = 1;
-					SkyboxComponent &s = e->value<SkyboxComponent>();
-					s.dissipating = true;
+					e->value<SkyboxComponent>().dissipating = true;
+					e->value<SkyboxComponent>().hurt = true;
 				}
 			}
 		}
@@ -87,7 +82,6 @@ namespace
 		for (Entity *e : engineEntities()->component<SkyboxComponent>()->entities())
 		{
 			// prevent the skyboxes to be destroyed so that they can dissipate properly
-			SkyboxComponent &s = e->value<SkyboxComponent>();
 			e->remove(entitiesToDestroy);
 		}
 
@@ -106,11 +100,11 @@ namespace
 			l.intensity = 3;
 		}
 
-		constexpr Real radius = MapNoPullRadius + PlayerScale;
+		static constexpr Real radius = MapNoPullRadius + PlayerScale;
 #ifdef CAGE_DEBUG
-		constexpr Real step = 50;
+		static constexpr Real step = 50;
 #else
-		constexpr Real step = 12;
+		static constexpr Real step = 12;
 #endif
 		for (Real y = -radius; y < radius + 1e-3; y += step)
 		{
@@ -120,37 +114,36 @@ namespace
 				if (d > radius || d < 1e-7)
 					continue;
 				Entity *e = engineEntities()->createUnique();
-				VelocityComponent &velocity = e->value<VelocityComponent>();
-				velocity.velocity = randomDirection3();
-				GridComponent &grid = e->value<GridComponent>();
-				grid.place = Vec3(x, -2, y) + Vec3(randomChance(), randomChance() * 0.1, randomChance()) * 2 - 1;
-				TransformComponent &Transform = e->value<TransformComponent>();
-				Transform.scale = 0.7;
-				Transform.position = grid.place + randomDirection3() * Vec3(10, 0.1, 10);
-				RenderComponent &render = e->value<RenderComponent>();
-				render.object = HashString("degrid/environment/grid.object");
+				e->value<VelocityComponent>().velocity = randomDirection3();
+				TransformComponent &t = e->value<TransformComponent>();
+				RenderComponent &r = e->value<RenderComponent>();
+				GridComponent &g = e->value<GridComponent>();
+				g.place = Vec3(x, -2, y) + Vec3(randomChance(), randomChance() * 0.1, randomChance()) * 2 - 1;
+				t.scale = 0.7;
+				t.position = g.place + randomDirection3() * Vec3(10, 0.1, 10);
+				r.object = HashString("degrid/environment/grid.object");
 				Real ang = Real(atan2(x, y)) / (Real::Pi() * 2) + 0.5;
 				Real dst = d / radius;
-				render.color = colorHsvToRgb(Vec3(ang, 1, interpolate(Real(0.6), Real(0.4), sqr(dst))));
-				grid.originalColor = render.color;
+				r.color = colorHsvToRgb(Vec3(ang, 1, interpolate(Real(0.6), Real(0.4), sqr(dst))));
+				g.originalColor = r.color;
 			}
 		}
 
 #ifdef CAGE_DEBUG
-		constexpr Rads angStep = Degs(9);
+		static constexpr Rads angStep = Degs(9);
 #else
-		constexpr Rads angStep = Degs(3);
+		static constexpr Rads angStep = Degs(3);
 #endif
 		for (Rads ang = Degs(0); ang < Degs(360); ang += angStep)
 		{
 			Entity *e = engineEntities()->createUnique();
-			GridComponent &grid = e->value<GridComponent>();
-			TransformComponent &Transform = e->value<TransformComponent>();
-			Transform.position = grid.place = Vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
-			Transform.scale = 0.6;
-			RenderComponent &render = e->value<RenderComponent>();
-			render.object = HashString("degrid/environment/grid.object");
-			grid.originalColor = render.color = Vec3(1);
+			TransformComponent &t = e->value<TransformComponent>();
+			RenderComponent &r = e->value<RenderComponent>();
+			GridComponent &g = e->value<GridComponent>();
+			t.position = g.place = Vec3(sin(ang), 0, cos(ang)) * (radius + step * 0.5);
+			t.scale = 0.6;
+			r.object = HashString("degrid/environment/grid.object");
+			g.originalColor = r.color = Vec3(1);
 		}
 
 		statistics.environmentGridMarkers = engineEntities()->component<GridComponent>()->count();
@@ -179,26 +172,23 @@ void setSkybox(uint32 objectName)
 	{ // initiate disappearing of old sky-boxes
 		for (Entity *e : engineEntities()->component<SkyboxComponent>()->entities())
 		{
-			TransformComponent &t = e->value<TransformComponent>();
-			t.position[2] *= 0.9; // move the sky-box closer to the camera
-			SkyboxComponent &s = e->value<SkyboxComponent>();
-			s.dissipating = true;
+			// move the sky-box closer to the camera to preserve rendering order (thanks to semitranslucent sorting)
+			e->value<TransformComponent>().position[2] += 1e-3;
+			e->value<SkyboxComponent>().dissipating = true;
 		}
 	}
 
 	{ // create new sky-box
 		Entity *e = engineEntities()->createUnique();
-		TransformComponent &t = e->value<TransformComponent>();
-		t.position[2] = -1e-5; // semitransparent objects are rendered back-to-front; this makes the sky-box the furthest
+		e->value<TransformComponent>();
 		RenderComponent &r = e->value<RenderComponent>();
-		r.sceneMask = 2;
 		r.object = objectName;
 		r.opacity = 1;
-		SkyboxComponent &s = e->value<SkyboxComponent>();
+		e->value<SkyboxComponent>();
 	}
 }
 
-void environmentExplosion(const Vec3 &position, const Vec3 &velocity, const Vec3 &color, Real size)
+void environmentExplosion(const Vec3 &position, const Vec3 &velocity, const Vec3 &color, const Real size)
 {
 	statistics.environmentExplosions++;
 
@@ -228,58 +218,53 @@ void environmentExplosion(const Vec3 &position, const Vec3 &velocity, const Vec3
 	uint32 cnt = numeric_cast<uint32>(size * size * 0.5 + 2);
 	for (uint32 i = 0; i < cnt; i++)
 	{
-		Real scale = randomChance();
+		const Real scale = randomChance();
 		Entity *e = engineEntities()->createAnonymous();
-		TimeoutComponent &timeout = e->value<TimeoutComponent>();
-		timeout.ttl = randomRange(5, 25);
-		VelocityComponent &vel = e->value<VelocityComponent>();
-		vel.velocity = velocity * 0.5 + randomDirection3() * (1.1 - scale);
-		TransformComponent &Transform = e->value<TransformComponent>();
-		Transform.scale = randomRange(1.0, 1.3) * (scale * 0.4 + 0.8);
-		Transform.position = position + randomDirection3() * (randomChance() * size);
-		Transform.orientation = randomDirectionQuat();
-		RenderComponent &render = e->value<RenderComponent>();
-		render.object = HashString("degrid/environment/explosion.object");
-		render.color = colorVariation(color);
+		e->value<TimeoutComponent>().ttl = randomRange(5, 25);
+		e->value<VelocityComponent>().velocity = velocity * 0.5 + randomDirection3() * (1.1 - scale);
+		TransformComponent &t = e->value<TransformComponent>();
+		t.scale = randomRange(1.0, 1.3) * (scale * 0.4 + 0.8);
+		t.position = position + randomDirection3() * (randomChance() * size);
+		t.orientation = randomDirectionQuat();
+		RenderComponent &r = e->value<RenderComponent>();
+		r.object = HashString("degrid/environment/explosion.object");
+		r.color = colorVariation(color);
 		e->add(entitiesPhysicsEvenWhenPaused);
 	}
 
 	// create light
 	{
 		Entity *e = engineEntities()->createAnonymous();
-		TimeoutComponent &timeout = e->value<TimeoutComponent>();
-		timeout.ttl = randomRange(5, 10);
-		VelocityComponent &vel = e->value<VelocityComponent>();
-		vel.velocity = velocity * 0.3 + randomDirection3() * 0.02;
-		TransformComponent &Transform = e->value<TransformComponent>();
-		Transform.position = position + randomDirection3() * Vec3(1, 0.1, 1) * size * randomChance();
-		Transform.position[1] = abs(Transform.position[1]); 
+		e->value<TimeoutComponent>().ttl = randomRange(5, 10);
+		e->value<VelocityComponent>().velocity = velocity * 0.3 + randomDirection3() * 0.02;
+		TransformComponent &t = e->value<TransformComponent>();
+		t.position = position + randomDirection3() * Vec3(1, 0.1, 1) * size * randomChance();
+		t.position[1] = abs(t.position[1]); 
 		e->add(entitiesPhysicsEvenWhenPaused);
-		LightComponent &light = e->value<LightComponent>();
+		LightComponent &l = e->value<LightComponent>();
 		Vec3 colorinv = colorRgbToHsv(color);
 		colorinv[0] = (colorinv[0] + 0.5) % 1;
 		colorinv = colorHsvToRgb(colorinv);
-		light.color = colorVariation(colorinv);
-		light.intensity = randomRange(0.8, 1.2);
-		light.lightType = LightTypeEnum::Point;
-		light.attenuation = Vec3(0, 0, 0.005);
+		l.color = colorVariation(colorinv);
+		l.intensity = randomRange(0.8, 1.2);
+		l.lightType = LightTypeEnum::Point;
+		l.attenuation = Vec3(0, 0, 0.005);
 	}
 }
 
 void monsterExplosion(Entity *e)
 {
-	TransformComponent &t = e->value<TransformComponent>();
-	RenderComponent &r = e->value<RenderComponent>();
-	VelocityComponent &v = e->value<VelocityComponent>();
-	MonsterComponent &m = e->value<MonsterComponent>();
+	const TransformComponent &t = e->value<TransformComponent>();
+	const VelocityComponent &v = e->value<VelocityComponent>();
+	const RenderComponent &r = e->value<RenderComponent>();
 	environmentExplosion(t.position, v.velocity, r.color, t.scale);
 }
 
 void shotExplosion(Entity *e)
 {
-	TransformComponent &t = e->value<TransformComponent>();
-	RenderComponent &r = e->value<RenderComponent>();
-	VelocityComponent &v = e->value<VelocityComponent>();
+	const TransformComponent &t = e->value<TransformComponent>();
+	const VelocityComponent &v = e->value<VelocityComponent>();
+	const RenderComponent &r = e->value<RenderComponent>();
 	environmentExplosion(t.position, v.velocity, r.color, t.scale);
 }
 
@@ -288,5 +273,5 @@ Vec3 colorVariation(const Vec3 &color)
 	Vec3 dev = randomChance3() * 0.1 - 0.05;
 	Vec3 hsv = colorRgbToHsv(color) + dev;
 	hsv[0] = (hsv[0] + 1) % 1;
-	return colorHsvToRgb(clamp(hsv, 0, 1));
+	return colorHsvToRgb(saturate(hsv));
 }

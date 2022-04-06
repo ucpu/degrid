@@ -8,8 +8,15 @@ albedo = 1.0, 0.5, 0.5
 [textures]
 albedo = hurt.png
 
+[shaders]
+depth = skybox.glsl
+color = skybox.glsl
+layer = -9999
+
 [flags]
+translucent
 noDepthTest
 noDepthWrite
 noLighting
 noShadowCast
+noCulling

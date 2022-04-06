@@ -5,8 +5,15 @@ emission = 1
 [textures]
 albedo = menu.png
 
+[shaders]
+depth = skybox.glsl
+color = skybox.glsl
+layer = -10000
+
 [flags]
+translucent
 noDepthTest
 noDepthWrite
 noLighting
 noShadowCast
+noCulling

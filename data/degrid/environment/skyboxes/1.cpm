@@ -8,8 +8,15 @@ intensity = 0.6
 [textures]
 albedo = 1.png
 
+[shaders]
+depth = skybox.glsl
+color = skybox.glsl
+layer = -10000
+
 [flags]
+translucent
 noDepthTest
 noDepthWrite
 noLighting
 noShadowCast
+noCulling
