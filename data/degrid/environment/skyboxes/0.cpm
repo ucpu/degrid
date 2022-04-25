@@ -8,9 +8,8 @@ intensity = 0.6
 [textures]
 albedo = 0.png
 
-[shaders]
-depth = skybox.glsl
-color = skybox.glsl
+[render]
+shader = skybox.glsl
 layer = -10000
 
 [flags]
