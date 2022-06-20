@@ -1,4 +1,5 @@
 #include <cage-core/enumerate.h>
+#include <cage-core/entitiesVisitor.h>
 
 #include "monsters.h"
 
@@ -6,8 +7,6 @@ namespace
 {
 	struct BodyComponent
 	{
-		static EntityComponent *component;
-
 		uint32 bulbs[24] = {};
 		uint32 shieldEntity = 0;
 		uint32 lastHit = 0;
@@ -17,23 +16,18 @@ namespace
 
 	struct CannonComponent
 	{
-		static EntityComponent *component;
-
 		uint32 bodyEntity = 0;
 		uint32 index = 0; // 0 .. 7 (inclusive)
-		Real extension; 
-		Real loading; 
+		Real extension;
+		Real loading;
 		Rads firingOffset;
 	};
-
-	EntityComponent *BodyComponent::component;
-	EntityComponent *CannonComponent::component;
 
 	void spawnCannon(Entity *body, uint32 index);
 
 	void bodyEliminated(Entity *e)
 	{
-		BodyComponent &b = e->value<BodyComponent>();
+		const BodyComponent &b = e->value<BodyComponent>();
 		if (engineEntities()->has(b.shieldEntity))
 			engineEntities()->get(b.shieldEntity)->add(entitiesToDestroy);
 		for (uint32 it : b.bulbs)
@@ -45,7 +39,7 @@ namespace
 
 	void cannonEliminated(Entity *e)
 	{
-		CannonComponent &c = e->value<CannonComponent>();
+		const CannonComponent &c = e->value<CannonComponent>();
 		if (engineEntities()->has(c.bodyEntity))
 		{
 			Entity *body = engineEntities()->get(c.bodyEntity);
@@ -80,12 +74,12 @@ namespace
 
 	void engineInit()
 	{
-		BodyComponent::component = engineEntities()->defineComponent(BodyComponent());
-		CannonComponent::component = engineEntities()->defineComponent(CannonComponent());
+		EntityComponent *b = engineEntities()->defineComponent(BodyComponent());
+		EntityComponent *c = engineEntities()->defineComponent(CannonComponent());
 		bodyEliminatedListener.bind<&bodyEliminated>();
-		bodyEliminatedListener.attach(BodyComponent::component->group()->entityRemoved);
+		bodyEliminatedListener.attach(b->group()->entityRemoved);
 		cannonEliminatedListener.bind<&cannonEliminated>();
-		cannonEliminatedListener.attach(CannonComponent::component->group()->entityRemoved);
+		cannonEliminatedListener.attach(c->group()->entityRemoved);
 	}
 
 	void engineUpdate()
@@ -95,50 +89,41 @@ namespace
 
 		EntityManager *ents = engineEntities();
 
-		for (Entity *e : BodyComponent::component->entities())
-		{
-			BodyComponent &b = e->value<BodyComponent>();
+		entitiesVisitor([&](Entity *e, BodyComponent &b, TransformComponent &bt) {
 			if (ents->has(b.shieldEntity))
 			{
-				Entity *sh = ents->get(b.shieldEntity);
-				TransformComponent &bt = e->value<TransformComponent>();
-				TransformComponent &st = sh->value<TransformComponent>();
 				Real se = clamp(statistics.updateIteration - b.lastHit, 0u, 30u) / 30.0;
 				se = sqrt(max(Real(), sin(se * Rads::Full() * 0.5)));
-				st.scale = bt.scale + interpolate(0.1, 20.0, se);
+				Entity *sh = ents->get(b.shieldEntity);
+				sh->value<TransformComponent>().scale = bt.scale + interpolate(0.1, 20.0, se);
 			}
-		}
+		}, engineEntities(), false);
 
-		for (Entity *e : CannonComponent::component->entities())
-		{
-			CannonComponent &cannon = e->value<CannonComponent>();
+		entitiesVisitor([&](Entity *e, CannonComponent &cannon) {
 			if (ents->has(cannon.bodyEntity))
 			{
 				MonsterComponent &monster = e->value<MonsterComponent>();
 				monster.life = min(monster.life + 0.002, 20);
-				Entity *body = ents->get(cannon.bodyEntity);
 				cannon.extension += 0.01;
 				if (cannon.extension >= 1)
 				{
-					BodyComponent &b = body->value<BodyComponent>();
+					Entity *body = ents->get(cannon.bodyEntity);
+					const BodyComponent &b = body->value<BodyComponent>();
 					cannon.loading += (pow(b.cannonsKilled / 20.0, 5) + 1.0) / 70.0;
 					if (cannon.loading >= 1)
 					{
 						cannon.loading -= 1;
 						TransformComponent &ct = e->value<TransformComponent>();
 						Entity *bullet = initializeMonster(ct.position + ct.orientation * Vec3(0, 0, -ct.scale - 1), Vec3(0.304, 0.067, 0.294), 2.0, HashString("degrid/boss/cannoneer.obj?ball"), 0, 5, 10);
-						TransformComponent &bt = bullet->value<TransformComponent>();
-						bt.orientation = randomDirectionQuat();
-						VelocityComponent &vel = bullet->value<VelocityComponent>();
-						vel.velocity = ct.orientation * Vec3(0, 0, -1.0);
-						TimeoutComponent &ttl = bullet->value<TimeoutComponent>();
-						ttl.ttl = ShotsTtl;
+						bullet->value<TransformComponent>().orientation = randomDirectionQuat();
+						bullet->value<VelocityComponent>().velocity = ct.orientation * Vec3(0, 0, -1.0);
+						bullet->value<TimeoutComponent>().ttl = ShotsTtl;
 					}
 				}
 			}
 			else
 				e->add(entitiesToDestroy);
-		}
+		}, engineEntities(), false);
 	}
 
 	void engineUpdateLate()
@@ -148,10 +133,7 @@ namespace
 
 		EntityManager *ents = engineEntities();
 
-		for (Entity *e : BodyComponent::component->entities())
-		{
-			BodyComponent &b = e->value<BodyComponent>();
-			TransformComponent &bt = e->value<TransformComponent>();
+		entitiesVisitor([&](const BodyComponent &b, const TransformComponent &bt) {
 			if (ents->has(b.shieldEntity))
 			{
 				Entity *sh = ents->get(b.shieldEntity);
@@ -171,16 +153,13 @@ namespace
 					t.scale = 0.2;
 				}
 			}
-		}
+		}, engineEntities(), false);
 
-		for (Entity *e : CannonComponent::component->entities())
-		{
-			CannonComponent &c = e->value<CannonComponent>();
+		entitiesVisitor([&](Entity *e, const CannonComponent &c) {
 			if (ents->has(c.bodyEntity))
 			{
-				TransformComponent &bt = ents->get(c.bodyEntity)->value<TransformComponent>();
+				const TransformComponent &bt = ents->get(c.bodyEntity)->value<TransformComponent>();
 				TransformComponent &ct = e->value<TransformComponent>();
-				MonsterComponent &m = e->value<MonsterComponent>();
 				Quat q = bt.orientation * Quat(Degs(), Degs(c.index * 45 + 22.5), Degs());
 				Vec3 tp = normalize(game.monstersTarget - ct.position);
 				Vec3 tc = q * Vec3(0, 0, -1);
@@ -194,7 +173,7 @@ namespace
 			}
 			else
 				e->add(entitiesToDestroy);
-		}
+		}, engineEntities(), false);
 	}
 
 	class Callbacks
@@ -216,27 +195,25 @@ namespace
 
 	void spawnCannon(Entity *body, uint32 index)
 	{
-		TransformComponent &bt = body->value<TransformComponent>();
+		const TransformComponent &bt = body->value<TransformComponent>();
 		Entity *cannon = initializeMonster(bt.position, Vec3(0.188, 0.08, 0.076), 5, HashString("degrid/boss/cannoneerCannon.object"), HashString("degrid/monster/boss/cannoneer-cannon-bum.ogg"), 30, Real::Infinity());
 		CannonComponent &c = cannon->value<CannonComponent>();
 		c.bodyEntity = body->name();
 		c.index = index;
 		c.loading = randomRange(-0.2, 0.2);
 		c.firingOffset = Degs(randomRange(-5.f, 5.f));
-		BodyComponent &bb = body->value<BodyComponent>();
-		bb.cannonsSpawned++;
+		body->value<BodyComponent>().cannonsSpawned++;
 	}
 }
 
 void spawnBossCannoneer(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	Entity *body = initializeMonster(spawnPosition, Vec3(0.487, 0.146, 0.05), 15, HashString("degrid/boss/cannoneerBody.object"), HashString("degrid/monster/boss/cannoneer-bum.ogg"), Real::Infinity(), Real::Infinity());
-	TransformComponent &bt = body->value<TransformComponent>();
+	const TransformComponent &bt = body->value<TransformComponent>();
 	BodyComponent &b = body->value<BodyComponent>();
 	{ // body
-		BossComponent &boss = body->value<BossComponent>();
-		RotationComponent &rotation = body->value<RotationComponent>();
-		rotation.rotation = Quat(Degs(), Degs(0.55), Degs());
+		body->value<BossComponent>();
+		body->value<RotationComponent>().rotation = Quat(Degs(), Degs(0.55), Degs());
 		SimpleMonsterComponent &simple = body->value<SimpleMonsterComponent>();
 		simple.maxSpeed = 0.25;
 		simple.acceleration = 0.2;
@@ -261,8 +238,7 @@ void spawnBossCannoneer(const Vec3 &spawnPosition, const Vec3 &color)
 	{ // shield
 		Entity *shield = initializeMonster(bt.position, color, bt.scale, HashString("degrid/boss/cannoneer.obj?shield"), 0, Real::Infinity(), Real::Infinity());
 		b.shieldEntity = shield->name();
-		TransformComponent &t = shield->value<TransformComponent>();
-		t.orientation = randomDirectionQuat();
+		shield->value<TransformComponent>().orientation = randomDirectionQuat();
 		TextureAnimationComponent &aniTex = shield->value<TextureAnimationComponent>();
 		aniTex.speed = 0.15;
 		aniTex.offset = randomChance();

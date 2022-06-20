@@ -1,17 +1,15 @@
+#include <cage-core/entitiesVisitor.h>
+
 #include "monsters.h"
 
 namespace
 {
 	struct RocketMonsterComponent
-	{
-		static EntityComponent *component;
-	};
-
-	EntityComponent *RocketMonsterComponent::component;
+	{};
 
 	void engineInit()
 	{
-		RocketMonsterComponent::component = engineEntities()->defineComponent(RocketMonsterComponent());
+		engineEntities()->defineComponent(RocketMonsterComponent());
 	}
 
 	void engineUpdate()
@@ -19,12 +17,9 @@ namespace
 		if (game.paused)
 			return;
 
-		Real disapearDistance2 = MapNoPullRadius * 2;
-		disapearDistance2 *= disapearDistance2;
-		for (Entity *e : RocketMonsterComponent::component->entities())
-		{
-			TransformComponent &tr = e->value<TransformComponent>();
-			if (lengthSquared(tr.position) > disapearDistance2)
+		entitiesVisitor([&](Entity *e, const RocketMonsterComponent &, TransformComponent &tr) {
+			static constexpr Real DisapearDistance2 = sqr(MapNoPullRadius * 2);
+			if (lengthSquared(tr.position) > DisapearDistance2)
 				e->add(entitiesToDestroy);
 			else
 			{
@@ -37,11 +32,8 @@ namespace
 					Transform.scale = randomChance() * 0.2 + 0.3;
 					Transform.position = tr.position + (tr.orientation * Vec3(0, 0, 1.2) + randomDirection3() * 0.3) * tr.scale;
 					Transform.orientation = randomDirectionQuat();
-					RenderComponent &render = spark->value<RenderComponent>();
-					render.object = HashString("degrid/environment/spark.object");
-					VelocityComponent &v = e->value<VelocityComponent>();
-					VelocityComponent &vel = spark->value<VelocityComponent>();
-					vel.velocity = (v.velocity + randomDirection3() * 0.05) * randomChance() * -0.5;
+					spark->value<RenderComponent>().object = HashString("degrid/environment/spark.object");
+					spark->value<VelocityComponent>().velocity = (e->value<VelocityComponent>().velocity + randomDirection3() * 0.05) * randomChance() * -0.5;
 					TimeoutComponent &ttl = spark->value<TimeoutComponent>();
 					ttl.ttl = randomRange(10, 15);
 					TextureAnimationComponent &at = spark->value<TextureAnimationComponent>();
@@ -50,7 +42,7 @@ namespace
 					spark->add(entitiesPhysicsEvenWhenPaused);
 				}
 			}
-		}
+		}, engineEntities(), false);
 	}
 
 	class Callbacks
@@ -72,13 +64,12 @@ void spawnRocket(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	uint32 special = 0;
 	Entity *e = initializeMonster(spawnPosition, color, 2.5, HashString("degrid/monster/rocket.object"), HashString("degrid/monster/bum-rocket.ogg"), 6, 2 + monsterMutation(special));
-	RocketMonsterComponent &r = e->value<RocketMonsterComponent>();
+	e->value<RocketMonsterComponent>();
 	VelocityComponent &v = e->value<VelocityComponent>();
 	v.velocity = game.monstersTarget - spawnPosition;
 	v.velocity[1] = 0;
 	v.velocity = normalize(v.velocity) * (1.5 + 0.3 * monsterMutation(special));
-	TransformComponent &tr = e->value<TransformComponent>();
-	tr.orientation = Quat(v.velocity, Vec3(0, 1, 0), true);
+	e->value<TransformComponent>().orientation = Quat(v.velocity, Vec3(0, 1, 0), true);
 	monsterReflectMutation(e, special);
 }
 

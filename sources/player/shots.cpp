@@ -1,6 +1,7 @@
 #include <cage-core/geometry.h>
 #include <cage-core/config.h>
 #include <cage-core/entities.h>
+#include <cage-core/entitiesVisitor.h>
 #include <cage-core/spatialStructure.h>
 #include <cage-core/color.h>
 #include <cage-core/hashString.h>
@@ -25,49 +26,41 @@ namespace
 
 		game.shootingCooldown += Real(4) * pow(1.3, game.powerups[(uint32)PowerupTypeEnum::Multishot]) * pow(0.7, game.powerups[(uint32)PowerupTypeEnum::FiringSpeed]);
 
-		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
+		const TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		const VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
 
 		for (Real i = game.powerups[(uint32)PowerupTypeEnum::Multishot] * -0.5; i < game.powerups[(uint32)PowerupTypeEnum::Multishot] * 0.5 + 1e-5; i += 1)
 		{
 			statistics.shotsFired++;
 			Entity *shot = engineEntities()->createUnique();
-			TransformComponent &Transform = shot->value<TransformComponent>();
+			TransformComponent &transform = shot->value<TransformComponent>();
 			Rads dir = atan2(-game.fireDirection[2], -game.fireDirection[0]);
 			dir += Degs(i * 10);
 			Vec3 dirv = Vec3(-sin(dir), 0, -cos(dir));
-			Transform.position = playerTransform.position + dirv * 2;
-			Transform.orientation = Quat(Degs(), dir, Degs());
+			transform.position = playerTransform.position + dirv * 2;
+			transform.orientation = Quat(Degs(), dir, Degs());
 			RenderComponent &render = shot->value<RenderComponent>();
 			render.object = HashString("degrid/player/shot.object");
 			if (game.powerups[(uint32)PowerupTypeEnum::SuperDamage] > 0)
 				render.color = colorHsvToRgb(Vec3(randomChance(), 1, 1));
 			else
 				render.color = game.shotsColor;
-			VelocityComponent &vel = shot->value<VelocityComponent>();
-			vel.velocity = dirv * (game.powerups[(uint32)PowerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
+			shot->value<VelocityComponent>().velocity = dirv * (game.powerups[(uint32)PowerupTypeEnum::ShotsSpeed] + 1.5) + playerVelocity.velocity * 0.3;
 			ShotComponent &sh = shot->value<ShotComponent>();
 			sh.damage = game.powerups[(uint32)PowerupTypeEnum::ShotsDamage] + (game.powerups[(uint32)PowerupTypeEnum::SuperDamage] ? 4 : 1);
 			sh.homing = game.powerups[(uint32)PowerupTypeEnum::HomingShots] > 0;
-			TimeoutComponent &ttl = shot->value<TimeoutComponent>();
-			ttl.ttl = ShotsTtl;
+			shot->value<TimeoutComponent>().ttl = ShotsTtl;
 		}
 	}
 
 	void shotsUpdate()
 	{
-		for (Entity *e : engineEntities()->component<ShotComponent>()->entities())
-		{
-			TransformComponent &tr = e->value<TransformComponent>();
-			TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-
+		entitiesVisitor([&](Entity *e, TransformComponent &tr, ShotComponent &sh, VelocityComponent &vl) {
+			const uint32 myName = e->name();
 			uint32 closestMonster = 0;
 			uint32 homingMonster = 0;
 			Real closestDistance = Real::Infinity();
 			Real homingDistance = Real::Infinity();
-			uint32 myName = e->name();
-			ShotComponent &sh = e->value<ShotComponent>();
-			VelocityComponent &vl = e->value<VelocityComponent>();
 
 			spatialSearchQuery->intersection(Sphere(tr.position, length(vl.velocity) + tr.scale + (sh.homing ? 20 : 10)));
 			for (uint32 otherName : spatialSearchQuery->result())
@@ -76,24 +69,19 @@ namespace
 					continue;
 
 				Entity *e = engineEntities()->get(otherName);
-				TransformComponent &ot = e->value<TransformComponent>();
-				Vec3 toOther = ot.position - tr.position;
+				const TransformComponent &ot = e->value<TransformComponent>();
+				const Vec3 toOther = ot.position - tr.position;
 				if (e->has<GridComponent>())
 				{
-					VelocityComponent &og = e->value<VelocityComponent>();
-					og.velocity += normalize(vl.velocity) * (0.2f / max(1, length(toOther)));
+					e->value<VelocityComponent>().velocity += normalize(vl.velocity) * (0.2f / max(1, length(toOther)));
 					continue;
 				}
-				if (!e->has<MonsterComponent>())
+				if (!e->has<MonsterComponent>() || e->value<MonsterComponent>().life <= 0)
 					continue;
-				MonsterComponent &om = e->value<MonsterComponent>();
-				if (om.life <= 0)
-					continue;
-				Real dist = length(toOther);
+				const Real dist = length(toOther);
 				if (dist < closestDistance)
 				{
-					VelocityComponent &ov = e->value<VelocityComponent>();
-					if (collisionTest(tr.position, tr.scale, vl.velocity, ot.position, ot.scale, ov.velocity))
+					if (collisionTest(tr.position, tr.scale, vl.velocity, ot.position, ot.scale, e->value<VelocityComponent>().velocity))
 					{
 						closestMonster = otherName;
 						closestDistance = dist;
@@ -111,7 +99,7 @@ namespace
 				statistics.shotsHit++;
 				Entity *m = engineEntities()->get(closestMonster);
 				MonsterComponent &om = m->value<MonsterComponent>();
-				Real dmg = sh.damage;
+				const Real dmg = sh.damage;
 				sh.damage -= om.life;
 				om.life -= dmg;
 				if (om.life <= 1e-5)
@@ -119,12 +107,11 @@ namespace
 					statistics.shotsKill++;
 					if (killMonster(m, true))
 					{
-						Real r = randomChance();
+						const Real r = randomChance();
 						if (r < game.powerupSpawnChance)
 						{
 							game.powerupSpawnChance -= 1;
-							TransformComponent &mtr = m->value<TransformComponent>();
-							powerupSpawn(mtr.position);
+							powerupSpawn(m->value<TransformComponent>().position);
 						}
 						game.powerupSpawnChance += 0.01;
 					}
@@ -143,9 +130,8 @@ namespace
 				if (homingMonster)
 				{
 					Entity *m = engineEntities()->get(homingMonster);
-					TransformComponent &mtr = m->value<TransformComponent>();
-					Vec3 toOther = normalize(mtr.position - tr.position);
-					Real spd = length(vl.velocity);
+					const Vec3 toOther = normalize(m->value<TransformComponent>().position - tr.position);
+					const Real spd = length(vl.velocity);
 					vl.velocity = toOther * spd;
 					tr.orientation = Quat(Degs(), atan2(-toOther[2], -toOther[0]), Degs());
 				}
@@ -158,7 +144,7 @@ namespace
 
 			vl.velocity[1] = 0;
 			tr.position[1] = 0;
-		}
+		}, engineEntities(), false);
 	}
 
 	void engineUpdate()

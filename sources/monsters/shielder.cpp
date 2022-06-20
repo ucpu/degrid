@@ -1,10 +1,11 @@
+#include <cage-core/entitiesVisitor.h>
+
 #include "monsters.h"
 
 namespace
 {
 	struct ShielderComponent
 	{
-		static EntityComponent *component;
 		uint32 shieldEntity = 0;
 		uint32 chargingSteps = 0;
 		uint32 turningSteps = 0;
@@ -14,29 +15,20 @@ namespace
 
 	struct ShieldComponent
 	{
-		static EntityComponent *component;
 		bool active = false;
 	};
 
-	EntityComponent *ShielderComponent::component;
-	EntityComponent *ShieldComponent::component;
-
 	void updateShields()
 	{
-		
-		for (Entity *e : ShielderComponent::component->entities())
-		{
-			TransformComponent &et = e->value<TransformComponent>();
-			ShielderComponent &es = e->value<ShielderComponent>();
+		entitiesVisitor([&](Entity *e, const ShielderComponent &es, const TransformComponent &et) {
 			Entity *s = engineEntities()->get(es.shieldEntity);
-			TransformComponent &st = s->value<TransformComponent>();
-			st = et;
-		}
+			s->value<TransformComponent>() = et;
+		}, engineEntities(), false);
 	}
 
 	void shielderEliminated(Entity *e)
 	{
-		ShielderComponent &sh = e->value<ShielderComponent>();
+		const ShielderComponent &sh = e->value<ShielderComponent>();
 		if (engineEntities()->has(sh.shieldEntity))
 			engineEntities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
@@ -45,10 +37,10 @@ namespace
 
 	void engineInit()
 	{
-		ShielderComponent::component = engineEntities()->defineComponent(ShielderComponent());
-		ShieldComponent::component = engineEntities()->defineComponent(ShieldComponent());
+		auto c = engineEntities()->defineComponent(ShielderComponent());
+		engineEntities()->defineComponent(ShieldComponent());
 		shielderEliminatedListener.bind<&shielderEliminated>();
-		shielderEliminatedListener.attach(ShielderComponent::component->group()->entityRemoved);
+		shielderEliminatedListener.attach(c->group()->entityRemoved);
 	}
 
 	void engineUpdate()
@@ -56,12 +48,7 @@ namespace
 		if (game.paused)
 			return;
 
-		for (Entity *e : ShielderComponent::component->entities())
-		{
-			TransformComponent &tr = e->value<TransformComponent>();
-			VelocityComponent &mv = e->value<VelocityComponent>();
-			MonsterComponent &ms = e->value<MonsterComponent>();
-			ShielderComponent &sh = e->value<ShielderComponent>();
+		entitiesVisitor([&](Entity *e, TransformComponent &tr, VelocityComponent &mv, MonsterComponent &ms, ShielderComponent &sh) {
 			Entity *se = engineEntities()->get(sh.shieldEntity);
 			ShieldComponent &sse = se->value<ShieldComponent>();
 
@@ -70,9 +57,9 @@ namespace
 			{ // charging
 				if (sh.stepsLeft)
 				{
-					Vec3 t = normalize(game.monstersTarget - tr.position);
+					const Vec3 t = normalize(game.monstersTarget - tr.position);
 					tr.orientation = interpolate(tr.orientation, Quat(t, Vec3(0, 1, 0)), 0.02);
-					Vec3 f = tr.orientation * Vec3(0, 0, -1);
+					const Vec3 f = tr.orientation * Vec3(0, 0, -1);
 					mv.velocity = f * sh.movementSpeed;
 				}
 				else
@@ -86,7 +73,7 @@ namespace
 				mv.velocity = Vec3();
 				if (sh.stepsLeft)
 				{
-					Vec3 t = normalize(game.monstersTarget - tr.position);
+					const Vec3 t = normalize(game.monstersTarget - tr.position);
 					tr.orientation = interpolate(tr.orientation, Quat(t, Vec3(0, 1, 0)), 0.95 / sh.stepsLeft);
 				}
 				else
@@ -101,34 +88,30 @@ namespace
 
 			// update shield rendering
 			if (sse.active)
-			{
-				RenderComponent &render = se->value<RenderComponent>();
-				render.object = HashString("degrid/monster/shield.object");
-			}
+				se->value<RenderComponent>().object = HashString("degrid/monster/shield.object");
 			else
 			{
 				se->remove<RenderComponent>();
-				continue;
+				return;
 			}
 
 			// destroy shots
-			Vec3 forward = tr.orientation * Vec3(0, 0, -1);
+			const Vec3 forward = tr.orientation * Vec3(0, 0, -1);
 			spatialSearchQuery->intersection(Sphere(tr.position + forward * (tr.scale + 1), 5));
 			for (uint32 otherName : spatialSearchQuery->result())
 			{
 				Entity *e = engineEntities()->get(otherName);
 				if (!e->has<ShotComponent>())
 					continue;
-				TransformComponent &ot = e->value<TransformComponent>();
-				Vec3 toShot = ot.position - tr.position;
-				Vec3 dirShot = normalize(toShot);
+				const Vec3 toShot = e->value<TransformComponent>().position - tr.position;
+				const Vec3 dirShot = normalize(toShot);
 				if (dot(dirShot, forward) < cos(Degs(45)))
 					continue;
 				e->add(entitiesToDestroy);
 				statistics.shielderStoppedShots++;
 				shotExplosion(e);
 			}
-		}
+		}, engineEntities(), false);
 	}
 
 	class Callbacks
@@ -161,15 +144,11 @@ void spawnShielder(const Vec3 &spawnPosition, const Vec3 &color)
 		sh.turningSteps = randomRange(20u, 30u);
 		sh.chargingSteps = randomRange(60u, 180u);
 		sh.stepsLeft = sh.turningSteps;
-		MonsterComponent &m = shielder->value<MonsterComponent>();
-		m.dispersion = 0.2;
+		shielder->value<MonsterComponent>().dispersion = 0.2;
 		monsterReflectMutation(shielder, special);
 	}
 	{
-		TransformComponent &transformShielder = shielder->value<TransformComponent>();
-		TransformComponent &Transform = shield->value<TransformComponent>();
-		Transform = transformShielder;
-		ShieldComponent &sh = shield->value<ShieldComponent>();
-		sh.active = false;
+		shield->value<TransformComponent>() = shielder->value<TransformComponent>();
+		shield->value<ShieldComponent>().active = false;
 	}
 }

@@ -69,11 +69,11 @@ constexpr const float PowerupChances[(uint32)PowerupTypeEnum::Total] = {
 constexpr const char Letters[] = { 'C', 'E', 'F', 'Q', 'R', 'V', 'X', 'Z' };
 constexpr float PlayerScale = 3;
 constexpr float MapNoPullRadius = 250;
-const Vec3 PlayerDeathColor = Vec3(0.68, 0.578, 0.252);
+constexpr const Vec3 PlayerDeathColor = Vec3(0.68, 0.578, 0.252);
 constexpr uint32 ShotsTtl = 300;
 constexpr uint32 BossesTotalCount = 5;
-const Vec3 RedPillColor = Vec3(229, 101, 84) / 255;
-const Vec3 BluePillColor = Vec3(123, 198, 242) / 255;
+constexpr const Vec3 RedPillColor = Vec3(229, 101, 84) / 255;
+constexpr const Vec3 BluePillColor = Vec3(123, 198, 242) / 255;
 constexpr uint32 PowerupSellPriceBase = 5;
 constexpr uint32 PowerupBuyPriceBase = 10;
 
@@ -177,7 +177,7 @@ extern GlobalStatistics statistics;
 
 struct GravityComponent
 {
-	Real strength; 
+	Real strength;
 };
 
 struct VelocityComponent

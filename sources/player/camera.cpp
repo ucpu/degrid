@@ -28,11 +28,10 @@ namespace
 		primaryCameraEntity->value<CameraComponent>().camera.perspectiveFov = fov;
 
 		{ // camera
-			TransformComponent &p = game.playerEntity->value<TransformComponent>();
-			playerPosSmoother.add(p.position);
+			playerPosSmoother.add(game.playerEntity->value<TransformComponent>().position);
 			TransformComponent &c = primaryCameraEntity->value<TransformComponent>();
-			Quat rot = Quat(Degs(game.cinematic ? -40 : -90), {}, {});
-			Vec3 ct = playerPosSmoother.smooth() + rot * Vec3(0, 0, CameraDistance);
+			const Quat rot = Quat(Degs(game.cinematic ? -40 : -90), {}, {});
+			const Vec3 ct = playerPosSmoother.smooth() + rot * Vec3(0, 0, CameraDistance);
 			cameraPosSmoother.add(ct);
 			c.position = cameraPosSmoother.smooth();
 			c.orientation = Quat(playerPosSmoother.smooth() - c.position, Vec3(0, 0, -1));
@@ -50,8 +49,7 @@ namespace
 		c.ambientIntensity = AmbientLight;
 		c.ambientDirectionalIntensity = DirectionalLight;
 		c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
-		ListenerComponent &ls = primaryCameraEntity->value<ListenerComponent>();
-		ls.rolloffFactor = 0.5 / CameraDistance;
+		primaryCameraEntity->value<ListenerComponent>().rolloffFactor = 0.5 / CameraDistance;
 	}
 
 	class Callbacks

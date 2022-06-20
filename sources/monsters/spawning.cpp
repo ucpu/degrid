@@ -7,12 +7,10 @@
 
 namespace
 {
-	Vec3 playerPosition;
-
 	Vec3 aroundPosition(Real index, Real radius, Vec3 center)
 	{
-		Rads angle = index * Rads::Full();
-		Vec3 dir = Vec3(cos(angle), 0, sin(angle));
+		const Rads angle = index * Rads::Full();
+		const Vec3 dir = Vec3(cos(angle), 0, sin(angle));
 		return center + dir * radius;
 	}
 
@@ -61,8 +59,6 @@ namespace
 		return 150 + 20 * game.defeatedBosses;
 	}
 
-	std::vector<SpawnDefinition> definitions;
-
 	void SpawnDefinition::perform()
 	{
 		spawn();
@@ -87,11 +83,6 @@ namespace
 
 	void SpawnDefinition::spawn()
 	{
-		{ // update player position
-			TransformComponent &p = game.playerEntity->value<TransformComponent>();
-			playerPosition = p.position;
-		}
-
 		CAGE_ASSERT(spawnCountMin <= spawnCountMax && spawnCountMin > 0);
 		CAGE_ASSERT(distanceMin <= distanceMax && distanceMin > 0);
 		std::vector<MonsterTypeFlags> allowed;
@@ -105,11 +96,12 @@ namespace
 				bit <<= 1;
 			}
 		}
-		uint32 alSiz = numeric_cast<uint32>(allowed.size());
+		const uint32 alSiz = numeric_cast<uint32>(allowed.size());
 		CAGE_ASSERT(alSiz > 0);
-		uint32 spawnCount = randomRange(spawnCountMin, spawnCountMax + 1);
+		const uint32 spawnCount = randomRange(spawnCountMin, spawnCountMax + 1);
 		spawned += spawnCount;
-		Vec3 color = colorHsvToRgb(Vec3(randomChance(), sqrt(randomChance()) * 0.5 + 0.5, sqrt(randomChance()) * 0.5 + 0.5));
+		const Vec3 color = colorHsvToRgb(Vec3(randomChance(), sqrt(randomChance()) * 0.5 + 0.5, sqrt(randomChance()) * 0.5 + 0.5));
+		const Vec3 playerPosition = game.playerEntity->value<TransformComponent>().position;
 		switch (placingPolicy)
 		{
 		case PlacingPolicyEnum::Random:
@@ -119,22 +111,22 @@ namespace
 		} break;
 		case PlacingPolicyEnum::Around:
 		{
-			Real angularOffset = randomChance();
-			Real radius = randomRange(distanceMin, distanceMax);
+			const Real angularOffset = randomChance();
+			const Real radius = randomRange(distanceMin, distanceMax);
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition(angularOffset + (randomChance() * 0.3 + i) / (Real)spawnCount, radius, playerPosition), color);
 		} break;
 		case PlacingPolicyEnum::Grouped:
 		{
-			Real radius = (distanceMax - distanceMin) * 0.5;
-			Vec3 center = aroundPosition(randomChance(), distanceMin + radius, playerPosition);
+			const Real radius = (distanceMax - distanceMin) * 0.5;
+			const Vec3 center = aroundPosition(randomChance(), distanceMin + radius, playerPosition);
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], aroundPosition((Real)i / (Real)spawnCount, radius, center), color);
 		} break;
 		case PlacingPolicyEnum::Line:
 		{
 			Vec3 origin = aroundPosition(randomChance(), randomRange(distanceMin, distanceMax), playerPosition);
-			Vec3 span = cross(normalize(origin - playerPosition), Vec3(0, 1, 0)) * 10;
+			const Vec3 span = cross(normalize(origin - playerPosition), Vec3(0, 1, 0)) * 10;
 			origin -= span * spawnCount * 0.5;
 			for (uint32 i = 0; i < spawnCount; i++)
 				spawnGeneral(allowed[randomRange(0u, alSiz)], origin + i * span, color);
@@ -142,6 +134,8 @@ namespace
 		default: CAGE_THROW_CRITICAL(Exception, "invalid placing policy");
 		}
 	}
+
+	std::vector<SpawnDefinition> definitions;
 
 	void engineUpdate()
 	{
@@ -151,7 +145,7 @@ namespace
 		if (engineEntities()->component<BossComponent>()->count() > 0)
 			return;
 
-		uint32 limit = monstersLimit();
+		const uint32 limit = monstersLimit();
 		Real probability = 1.f - (Real)statistics.monstersCurrent / (Real)limit;
 		if (probability <= 0)
 			return;

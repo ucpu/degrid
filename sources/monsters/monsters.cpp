@@ -1,4 +1,5 @@
 #include <cage-core/color.h>
+#include <cage-core/entitiesVisitor.h>
 
 #include "monsters.h"
 
@@ -11,15 +12,10 @@ namespace
 		if (game.paused)
 			return;
 
-		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
+		const TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		const VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
 
-		for (Entity *e : engineEntities()->component<MonsterComponent>()->entities())
-		{
-			TransformComponent &t = e->value<TransformComponent>();
-			VelocityComponent &v = e->value<VelocityComponent>();
-			MonsterComponent &m = e->value<MonsterComponent>();
-
+		entitiesVisitor([&](Entity *e, TransformComponent &t, VelocityComponent &v, const MonsterComponent &m) {
 			// monster dispersion
 			if (m.dispersion > 0)
 			{
@@ -36,7 +32,7 @@ namespace
 					if (e->has<MonsterComponent>())
 					{
 						Real d = ot.scale + t.scale;
-						if (lengthSquared(toMonster) < d*d)
+						if (lengthSquared(toMonster) < d * d)
 							dispersion += normalize(toMonster) / length(toMonster);
 					}
 				}
@@ -52,7 +48,7 @@ namespace
 				{
 					statistics.shieldStoppedMonsters++;
 					statistics.shieldAbsorbedDamage += m.damage;
-					environmentExplosion(playerTransform.position + enemyDir * (PlayerScale * 1.1), playerVelocity.velocity + enemyDir * 0.5, Vec3(1), 1); 
+					environmentExplosion(playerTransform.position + enemyDir * (PlayerScale * 1.1), playerVelocity.velocity + enemyDir * 0.5, Vec3(1), 1);
 				}
 				else
 				{
@@ -64,7 +60,7 @@ namespace
 					statistics.monstersLastHit = statistics.updateIterationIgnorePause;
 					if (game.life > 0 && !game.cinematic)
 					{
-						constexpr const uint32 Sounds[] = {
+						static constexpr const uint32 Sounds[] = {
 							HashString("degrid/speech/damage/better-to-avoid-next-time.wav"),
 							HashString("degrid/speech/damage/beware.wav"),
 							HashString("degrid/speech/damage/critical-damage.wav"),
@@ -89,7 +85,7 @@ namespace
 			// monster vertical movement
 			v.velocity[1] = 0;
 			t.position[1] = m.groundLevel;
-		}
+		}, engineEntities(), false);
 
 		const bool hasBoss = engineEntities()->component<BossComponent>()->count() > 0;
 		if (!game.cinematic)
@@ -131,7 +127,7 @@ uint32 monsterMutation(uint32 &special)
 {
 	if (game.cinematic)
 		return 0;
-	constexpr const float probabilities[] = { 0, 0, 1e-4f, 1e-3f, 0.1f, 0.5f };
+	static constexpr const float probabilities[] = { 0, 0, 1e-4f, 1e-3f, 0.1f, 0.5f };
 	uint32 res = 0;
 	Real probability = probabilities[min(game.defeatedBosses, numeric_cast<uint32>(sizeof(probabilities) / sizeof(probabilities[0]) - 1))];
 	while (randomChance() < probability)
@@ -144,8 +140,7 @@ void monsterReflectMutation(Entity *e, uint32 special)
 {
 	if (!special)
 		return;
-	TransformComponent &Transform = e->value<TransformComponent>();
-	Transform.scale *= 1.3;
+	e->value<TransformComponent>().scale *= 1.3;
 	statistics.monstersMutated++;
 	statistics.monstersMutations += special;
 	achievementFullfilled("mutated");
@@ -181,16 +176,16 @@ bool killMonster(Entity *e, bool allowCallback)
 	game.score += numeric_cast<uint32>(clamp(m.damage, 1, 200));
 	if (m.defeatedSound)
 	{
-		TransformComponent &t = e->value<TransformComponent>();
-		soundEffect(m.defeatedSound, t.position);
+		soundEffect(m.defeatedSound, e->value<TransformComponent>().position);
 		m.defeatedSound = 0;
 	}
 	if (!allowCallback)
 		return false;
 	if (m.defeatedCallback)
 	{
-		m.defeatedCallback(e->name());
+		auto clb = m.defeatedCallback;
 		m.defeatedCallback.clear();
+		clb(e->name());
 		return false;
 	}
 	return true;

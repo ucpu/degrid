@@ -1,4 +1,5 @@
 #include <cage-core/color.h>
+#include <cage-core/entitiesVisitor.h>
 
 #include "monsters.h"
 
@@ -8,44 +9,35 @@ namespace
 {
 	struct WormholeComponent
 	{
-		static EntityComponent *component;
 		Real maxSpeed;
 		Real acceleration;
 	};
 
 	struct MonsterFlickeringComponent
 	{
-		static EntityComponent *component;
 		Vec3 baseColorHsv;
 		Real flickeringFrequency;
 		Real flickeringOffset;
 	};
 
-	EntityComponent *WormholeComponent::component;
-	EntityComponent *MonsterFlickeringComponent::component;
-
 	void countWormholes(uint32 &positive, uint32 &negative)
 	{
 		positive = negative = 0;
-		for (Entity *e : WormholeComponent::component->entities())
-		{
-			GravityComponent &g = e->value<GravityComponent>();
+		entitiesVisitor([&](const WormholeComponent &, GravityComponent &g) {
 			if (g.strength > 0)
 				positive++;
 			else if (g.strength < 0)
 				negative++;
-		}
+		}, engineEntities(), false);
 	}
 
 	Entity *pickWormhole(sint32 sgn)
 	{
 		std::vector<Entity*> candidates;
-		for (Entity *e : WormholeComponent::component->entities())
-		{
-			GravityComponent &g = e->value<GravityComponent>();
+		entitiesVisitor([&](Entity *e, const WormholeComponent &, GravityComponent &g) {
 			if (sign(g.strength) == sgn)
 				candidates.push_back(e);
-		}
+		}, engineEntities(), false);
 		if (candidates.empty())
 			return nullptr;
 		return candidates[randomRange(0u, numeric_cast<uint32>(candidates.size()))];
@@ -57,13 +49,10 @@ namespace
 		if (om.damage < 100)
 		{
 			om.damage *= 2;
-			bool hadFlickering = oe->has(MonsterFlickeringComponent::component);
+			const bool hadFlickering = oe->has<MonsterFlickeringComponent>();
 			MonsterFlickeringComponent &mof = oe->value<MonsterFlickeringComponent>();
 			if (!hadFlickering)
-			{
-				RenderComponent &render = oe->value<RenderComponent>();
-				mof.baseColorHsv = colorRgbToHsv(render.color);
-			}
+				mof.baseColorHsv = colorRgbToHsv(oe->value<RenderComponent>().color);
 			mof.flickeringFrequency += 1e-6;
 			mof.flickeringOffset += randomChance();
 		}
@@ -72,8 +61,7 @@ namespace
 	void wormholeKilled(uint32 name)
 	{
 		Entity *w = engineEntities()->get(name);
-		TransformComponent &wt = w->value<TransformComponent>();
-		GravityComponent &wg = w->value<GravityComponent>();
+		const GravityComponent &wg = w->value<GravityComponent>();
 
 		// kill one pushing wormhole
 		if (wg.strength > 0)
@@ -85,56 +73,43 @@ namespace
 
 		// create temporary opposite gravity effect
 		Entity *e = engineEntities()->createUnique();
-		TransformComponent &et = e->value<TransformComponent>();
-		GravityComponent &eg = e->value<GravityComponent>();
-		et.position = wt.position;
-		eg.strength = -wg.strength * 5;
-		TimeoutComponent &ttl = e->value<TimeoutComponent>();
-		ttl.ttl = 3;
+		e->value<TransformComponent>().position = w->value<TransformComponent>().position;
+		e->value<GravityComponent>().strength = -wg.strength * 5;
+		e->value<TimeoutComponent>().ttl = 3;
 	}
 
 	void engineInit()
 	{
-		WormholeComponent::component = engineEntities()->defineComponent(WormholeComponent());
-		MonsterFlickeringComponent::component = engineEntities()->defineComponent(MonsterFlickeringComponent());
+		engineEntities()->defineComponent(WormholeComponent());
+		engineEntities()->defineComponent(MonsterFlickeringComponent());
 	}
 
 	void engineUpdate()
 	{
-		{ // flickering
-			for (Entity *e : MonsterFlickeringComponent::component->entities())
-			{
-				RenderComponent &r = e->value<RenderComponent>();
-				MonsterFlickeringComponent &m = e->value<MonsterFlickeringComponent>();
-				Real l = (Real)engineControlTime() * m.flickeringFrequency + m.flickeringOffset;
-				Real s = sin(Rads::Full() * l) * 0.5 + 0.5;
-				r.color = colorHsvToRgb(Vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
-			}
-		}
+		// flickering
+		entitiesVisitor([&](RenderComponent &r, const MonsterFlickeringComponent &m) {
+			const Real l = (Real)engineControlTime() * m.flickeringFrequency + m.flickeringOffset;
+			const Real s = sin(Rads::Full() * l) * 0.5 + 0.5;
+			r.color = colorHsvToRgb(Vec3(m.baseColorHsv[0], s, m.baseColorHsv[2]));
+		}, engineEntities(), false);
 
 		if (game.paused)
 			return;
 
 		uint32 positive, negative;
 		countWormholes(positive, negative);
+		const TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		EntityComponent *history = engineEntities()->componentsByType(detail::typeIndex<TransformComponent>())[1];
 
-		for (Entity *e : WormholeComponent::component->entities())
-		{
-			uint32 myName = e->name();
-			TransformComponent &t = e->value<TransformComponent>();
-			GravityComponent &g = e->value<GravityComponent>();
+		entitiesVisitor([&](Entity *e, TransformComponent &t, GravityComponent &g, const WormholeComponent &w, VelocityComponent &v) {
+			const uint32 myName = e->name();
 
 			// move the wormhole
-			{
-				WormholeComponent &w = e->value<WormholeComponent>();
-				VelocityComponent &v = e->value<VelocityComponent>();
-				v.velocity += normalize(game.monstersTarget - t.position) * w.acceleration;
-				v.velocity = normalize(v.velocity) * min(length(v.velocity), w.maxSpeed);
-			}
+			v.velocity += normalize(game.monstersTarget - t.position) * w.acceleration;
+			v.velocity = normalize(v.velocity) * min(length(v.velocity), w.maxSpeed);
 
 			if (g.strength > 0)
 			{ // this is sucking wormhole
-				TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 				spatialSearchQuery->intersection(Sphere(t.position, t.scale + 0.1));
 				for (uint32 otherName : spatialSearchQuery->result())
 				{
@@ -189,7 +164,7 @@ namespace
 						}
 						else
 							ot.position = playerTransform.position + dir * randomRange(200, 250);
-						//oe->remove(TransformComponent::componentHistory);
+						oe->remove(history);
 					}
 					else
 						oe->add(entitiesToDestroy);
@@ -206,7 +181,7 @@ namespace
 			// empowering the wormhole over time
 			g.strength += sign(g.strength) * 0.005;
 			t.scale += 0.0005;
-		}
+		}, engineEntities(), false);
 	}
 
 	class Callbacks
@@ -231,8 +206,7 @@ void spawnWormhole(const Vec3 &spawnPosition, const Vec3 &color)
 	statistics.wormholesSpawned++;
 	uint32 special = 0;
 	Entity *wormhole = initializeMonster(spawnPosition, color, 5, HashString("degrid/monster/wormhole.object"), HashString("degrid/monster/bum-wormhole.ogg"), 200, randomRange(200, 300) + 100 * monsterMutation(special));
-	TransformComponent &Transform = wormhole->value<TransformComponent>();
-	Transform.orientation = randomDirectionQuat();
+	wormhole->value<TransformComponent>().orientation = randomDirectionQuat();
 	MonsterComponent &m = wormhole->value<MonsterComponent>();
 	m.dispersion = 0.001;
 	m.defeatedCallback.bind<&wormholeKilled>();
@@ -243,12 +217,9 @@ void spawnWormhole(const Vec3 &spawnPosition, const Vec3 &color)
 	g.strength = 10 + 3 * monsterMutation(special);
 	if (positive > 0 && (negative == 0 || randomChance() < 0.5))
 		g.strength *= -1;
-	RenderComponent &render = wormhole->value<RenderComponent>();
-	render.color = Vec3(g.strength < 0 ? 1 : 0);
-	TextureAnimationComponent &at = wormhole->value<TextureAnimationComponent>();
-	at.speed *= (randomChance() + 0.5) * 0.05 * sign(g.strength);
-	RotationComponent &rotation = wormhole->value<RotationComponent>();
-	rotation.rotation = interpolate(Quat(), randomDirectionQuat(), 0.01);
+	wormhole->value<RenderComponent>().color = Vec3(g.strength < 0 ? 1 : 0);
+	wormhole->value<TextureAnimationComponent>().speed *= (randomChance() + 0.5) * 0.05 * sign(g.strength);
+	wormhole->value<RotationComponent>().rotation = interpolate(Quat(), randomDirectionQuat(), 0.01);
 	monsterReflectMutation(wormhole, special);
 	soundEffect(HashString("degrid/monster/wormhole.ogg"), spawnPosition);
 }

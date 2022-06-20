@@ -1,4 +1,5 @@
 #include <cage-core/entities.h>
+#include <cage-core/entitiesVisitor.h>
 #include <cage-core/config.h>
 #include <cage-core/color.h>
 #include <cage-core/hashString.h>
@@ -9,61 +10,45 @@ namespace
 {
 	struct TurretComponent
 	{
-		static EntityComponent *component;
-		uint32 shooting;
-		TurretComponent() : shooting(0) {}
+		uint32 shooting = 0;
 	};
 
 	struct DecoyComponent
-	{
-		static EntityComponent *component;
-	};
-
-	EntityComponent *TurretComponent::component;
-	EntityComponent *DecoyComponent::component;
+	{};
 
 	void turretsUpdate()
 	{
-		for (Entity *e : TurretComponent::component->entities())
-		{
-			TransformComponent &tr = e->value<TransformComponent>();
-			TurretComponent &tu = e->value<TurretComponent>();
+		entitiesVisitor([&](const TransformComponent &tr, TurretComponent &tu) {
 			if (tu.shooting > 0)
 			{
 				tu.shooting--;
-				continue;
+				return;
 			}
 			tu.shooting = 10;
 			for (uint32 i = 0; i < 6; i++)
 			{
 				statistics.shotsTurret++;
 				Entity *shot = engineEntities()->createUnique();
-				TransformComponent &Transform = shot->value<TransformComponent>();
-				Transform.orientation = Quat(Degs(), Degs(i * 60), Degs()) * tr.orientation;
-				Transform.position = tr.position + Transform.orientation * Vec3(0, 0, -1) * 2;
+				TransformComponent &transform = shot->value<TransformComponent>();
+				transform.orientation = Quat(Degs(), Degs(i * 60), Degs()) * tr.orientation;
+				transform.position = tr.position + transform.orientation * Vec3(0, 0, -1) * 2;
 				RenderComponent &render = shot->value<RenderComponent>();
 				render.object = HashString("degrid/player/shot.object");
 				render.color = game.shotsColor;
-				VelocityComponent &vel = shot->value<VelocityComponent>();
-				vel.velocity = Transform.orientation * Vec3(0, 0, -1) * 2.5;
-				ShotComponent &sh = shot->value<ShotComponent>();
-				sh.damage = 1;
-				TimeoutComponent &ttl = shot->value<TimeoutComponent>();
-				ttl.ttl = ShotsTtl;
+				shot->value<VelocityComponent>().velocity = transform.orientation * Vec3(0, 0, -1) * 2.5;
+				shot->value<ShotComponent>().damage = 1;
+				shot->value<TimeoutComponent>().ttl = ShotsTtl;
 			}
-		}
+		}, engineEntities(), false);
 	}
 
 	void decoysUpdate()
 	{
-		for (Entity *e : DecoyComponent::component->entities())
-		{
-			TransformComponent &tr = e->value<TransformComponent>();
-			VelocityComponent &vel = e->value<VelocityComponent>();
+		entitiesVisitor([&](TransformComponent &tr, VelocityComponent &vel, const DecoyComponent &) {
 			tr.position[1] = 0;
 			vel.velocity *= 0.97;
 			game.monstersTarget = tr.position;
-		}
+		}, engineEntities(), false);
 	}
 
 	void wastedPowerup()
@@ -75,20 +60,17 @@ namespace
 
 	void powerupsUpdate()
 	{
-		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
-		for (Entity *e : engineEntities()->component<PowerupComponent>()->entities())
-		{
-			PowerupComponent &p = e->value<PowerupComponent>();
+		const TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		const VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
+		entitiesVisitor([&](Entity *e, TransformComponent &tr, const PowerupComponent &p) {
 			CAGE_ASSERT(p.type < PowerupTypeEnum::Total);
 
-			TransformComponent &tr = e->value<TransformComponent>();
 			if (!collisionTest(playerTransform.position, PlayerScale, playerVelocity.velocity, tr.position, tr.scale, Vec3()))
 			{
-				Vec3 toPlayer = playerTransform.position - tr.position;
-				Real dist = max(length(toPlayer) - PlayerScale - tr.scale, 1);
+				const Vec3 toPlayer = playerTransform.position - tr.position;
+				const Real dist = max(length(toPlayer) - PlayerScale - tr.scale, 1);
 				tr.position += normalize(toPlayer) * (2 / dist);
-				continue;
+				return;
 			}
 
 			game.score += 20;
@@ -123,7 +105,7 @@ namespace
 				break;
 			case 1: // timed
 			{
-				uint32 duration = 30 * (30 + 15 * game.powerups[(uint32)PowerupTypeEnum::Duration]);
+				const uint32 duration = 30 * (30 + 15 * game.powerups[(uint32)PowerupTypeEnum::Duration]);
 				game.powerups[(uint32)p.type] += duration;
 				switch (p.type)
 				{
@@ -167,13 +149,13 @@ namespace
 			default:
 				CAGE_THROW_CRITICAL(Exception, "invalid powerup mode");
 			}
-		}
+		}, engineEntities(), false);
 	}
 
 	void engineInit()
 	{
-		TurretComponent::component = engineEntities()->defineComponent(TurretComponent());
-		DecoyComponent::component = engineEntities()->defineComponent(DecoyComponent());
+		engineEntities()->defineComponent(TurretComponent());
+		engineEntities()->defineComponent(DecoyComponent());
 	}
 
 	void engineUpdate()
@@ -241,27 +223,25 @@ void powerupSpawn(const Vec3 &position)
 		statistics.powerupsSpawned++;
 
 	Entity *e = engineEntities()->createUnique();
-	TransformComponent &Transform = e->value<TransformComponent>();
-	Transform.position = position * Vec3(1, 0, 1);
-	Transform.orientation = randomDirectionQuat();
-	Transform.scale = coin ? 2.0 : 2.5;
-	TimeoutComponent &ttl = e->value<TimeoutComponent>();
-	ttl.ttl = 120 * 30;
+	TransformComponent &transform = e->value<TransformComponent>();
+	transform.position = position * Vec3(1, 0, 1);
+	transform.orientation = randomDirectionQuat();
+	transform.scale = coin ? 2.0 : 2.5;
+	e->value<TimeoutComponent>().ttl = 120 * 30;
 	PowerupComponent &p = e->value<PowerupComponent>();
 	p.type = type;
-	RotationComponent &rot = e->value<RotationComponent>();
-	rot.rotation = interpolate(Quat(), randomDirectionQuat(), 0.01);
-	VelocityComponent &velocity = e->value<VelocityComponent>();
-	RenderComponent &render = e->value<RenderComponent>();
-	constexpr const uint32 ObjectName[4] = {
+	e->value<RotationComponent>().rotation = interpolate(Quat(), randomDirectionQuat(), 0.01);
+	e->value<VelocityComponent>();
+	static constexpr const uint32 ObjectName[4] = {
 		HashString("degrid/player/powerupCollectible.object"),
 		HashString("degrid/player/powerupOnetime.object"),
 		HashString("degrid/player/powerupPermanent.object"),
 		HashString("degrid/player/coin.object")
 	};
+	RenderComponent &render = e->value<RenderComponent>();
 	render.object = ObjectName[PowerupMode[(uint32)p.type]];
 	render.color = colorHsvToRgb(Vec3(randomChance(), 1, 1));
-	soundEffect(coin ? HashString("degrid/player/coin.ogg") : HashString("degrid/player/powerup.ogg"), Transform.position);
+	soundEffect(coin ? HashString("degrid/player/coin.ogg") : HashString("degrid/player/powerup.ogg"), transform.position);
 }
 
 void eventBomb()
@@ -270,38 +250,37 @@ void eventBomb()
 		return;
 
 	game.powerups[(uint32)PowerupTypeEnum::Bomb]--;
-	uint32 kills = 0;
-	uint32 count = engineEntities()->component<MonsterComponent>()->count();
-	for (Entity *e : engineEntities()->component<MonsterComponent>()->entities())
+	statistics.bombsUsed++;
+
 	{
-		MonsterComponent &m = e->value<MonsterComponent>();
+		const uint32 count = engineEntities()->component<MonsterComponent>()->count();
+		statistics.bombsHitTotal += count;
+		statistics.bombsHitMax = max(statistics.bombsHitMax, count);
+	}
+
+	uint32 kills = 0;
+	entitiesVisitor([&](Entity *e, MonsterComponent &m) {
 		m.life -= 10;
 		if (m.life <= 1e-5)
 		{
 			kills++;
 			killMonster(e, false);
 		}
-	}
-
-	statistics.bombsHitTotal += count;
+	}, engineEntities(), false);
 	statistics.bombsKillTotal += kills;
-	statistics.bombsHitMax = max(statistics.bombsHitMax, count);
 	statistics.bombsKillMax = max(statistics.bombsKillMax, kills);
-	statistics.bombsUsed++;
 
 	{
-		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-		for (Entity *e : engineEntities()->component<GridComponent>()->entities())
-		{
-			TransformComponent &t = e->value<TransformComponent>();
+		const TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		entitiesVisitor([&](TransformComponent &t, const GridComponent &) {
 			t.position = playerTransform.position + randomDirection3() * Vec3(100, 1, 100);
-		}
+		}, engineEntities(), false);
 	}
 
 	if (engineEntities()->component<BossComponent>()->count() == 0)
 		monstersSpawnInitial();
 
-	constexpr const uint32 Sounds[] = {
+	static constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/bomb-them-all.wav"),
 		HashString("degrid/speech/use/burn-them-all.wav"),
 		HashString("degrid/speech/use/let-them-burn.wav"),
@@ -319,29 +298,24 @@ void eventTurret()
 	game.powerups[(uint32)PowerupTypeEnum::Turret]--;
 	statistics.turretsPlaced++;
 	Entity *turret = engineEntities()->createUnique();
-	TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-	TransformComponent &Transform = turret->value<TransformComponent>();
-	VelocityComponent &vel = turret->value<VelocityComponent>();
-	Transform.position = playerTransform.position;
-	Transform.position[1] = 0;
-	Transform.orientation = Quat(Degs(), randomAngle(), Degs());
-	Transform.scale = 3;
-	RenderComponent &render = turret->value<RenderComponent>();
-	render.object = HashString("degrid/player/turret.object");
-	TurretComponent &tr = turret->value<TurretComponent>();
-	tr.shooting = 2;
-	TimeoutComponent &ttl = turret->value<TimeoutComponent>();
-	ttl.ttl = 60 * 30;
-	RotationComponent &rot = turret->value<RotationComponent>();
-	rot.rotation = Quat(Degs(), Degs(1), Degs());
+	TransformComponent &transform = turret->value<TransformComponent>();
+	transform.position = game.playerEntity->value<TransformComponent>().position;
+	transform.position[1] = 0;
+	transform.orientation = Quat(Degs(), randomAngle(), Degs());
+	transform.scale = 3;
+	turret->value<VelocityComponent>();
+	turret->value<RenderComponent>().object = HashString("degrid/player/turret.object");
+	turret->value<TurretComponent>().shooting = 2;
+	turret->value<TimeoutComponent>().ttl = 60 * 30;
+	turret->value<RotationComponent>().rotation = Quat(Degs(), Degs(1), Degs());
 
-	constexpr const uint32 Sounds[] = {
+	static constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/engaging-a-turret.wav"),
 		HashString("degrid/speech/use/turret-engaged.wav"),
 		0 };
 	soundSpeech(Sounds);
 
-	if (TurretComponent::component->group()->count() >= 4)
+	if (engineEntities()->component<TurretComponent>()->count() >= 4)
 		achievementFullfilled("turrets");
 }
 
@@ -352,22 +326,16 @@ void eventDecoy()
 	game.powerups[(uint32)PowerupTypeEnum::Decoy]--;
 	statistics.decoysUsed++;
 	Entity *decoy = engineEntities()->createUnique();
-	TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-	TransformComponent &Transform = decoy->value<TransformComponent>();
-	Transform = playerTransform;
-	Transform.scale *= 2;
-	RenderComponent &render = decoy->value<RenderComponent>();
-	render.object = HashString("degrid/player/player.object");
-	VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
-	VelocityComponent &vel = decoy->value<VelocityComponent>();
-	vel.velocity = -playerVelocity.velocity;
-	TimeoutComponent &ttl = decoy->value<TimeoutComponent>();
-	ttl.ttl = 60 * 30;
-	DecoyComponent &dec = decoy->value<DecoyComponent>();
-	RotationComponent &rot = decoy->value<RotationComponent>();
-	rot.rotation = interpolate(Quat(), Quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
+	TransformComponent &transform = decoy->value<TransformComponent>();
+	transform = game.playerEntity->value<TransformComponent>();
+	transform.scale *= 2;
+	decoy->value<RenderComponent>().object = HashString("degrid/player/player.object");
+	decoy->value<VelocityComponent>().velocity = -game.playerEntity->value<VelocityComponent>().velocity;
+	decoy->value<TimeoutComponent>().ttl = 60 * 30;
+	decoy->value<DecoyComponent>();
+	decoy->value<RotationComponent>().rotation = interpolate(Quat(), Quat(randomAngle(), randomAngle(), randomAngle()), 3e-3);
 
-	constexpr const uint32 Sounds[] = {
+	static constexpr const uint32 Sounds[] = {
 		HashString("degrid/speech/use/decoy-launched.wav"),
 		HashString("degrid/speech/use/launching-a-decoy.wav"),
 		0 };

@@ -1,29 +1,28 @@
+#include <cage-core/entitiesVisitor.h>
+
 #include "monsters.h"
 
 namespace
 {
 	struct ShockerComponent
 	{
-		static EntityComponent *component;
 		Real radius;
 		Real speedFactor;
 	};
 
-	EntityComponent *ShockerComponent::component;
-
 	void engineInit()
 	{
-		ShockerComponent::component = engineEntities()->defineComponent(ShockerComponent());
+		engineEntities()->defineComponent(ShockerComponent());
 	}
 
 	void lightning(const Vec3 &a, const Vec3 &b, const Vec3 &color)
 	{
-		Real d = distance(a, b);
-		Vec3 v = normalize(b - a);
+		const Real d = distance(a, b);
+		const Vec3 v = normalize(b - a);
 		Vec3 c = (a + b) * 0.5;
 		if (d > 25)
 		{
-			Vec3 side = normalize(cross(v, Vec3(0, 1, 0)));
+			const Vec3 side = normalize(cross(v, Vec3(0, 1, 0)));
 			c += side * (d * randomRange(-0.2, 0.2));
 			lightning(a, c, color);
 			lightning(c, b, color);
@@ -36,10 +35,8 @@ namespace
 		RenderComponent &r = e->value<RenderComponent>();
 		r.object = HashString("degrid/monster/shocker/lightning.object");
 		r.color = color;
-		TextureAnimationComponent &anim = e->value<TextureAnimationComponent>();
-		anim.offset = randomChance();
-		TimeoutComponent &ttl = e->value<TimeoutComponent>();
-		ttl.ttl = 3;
+		e->value<TextureAnimationComponent>().offset = randomChance();
+		e->value<TimeoutComponent>().ttl = 3;
 		e->add(entitiesPhysicsEvenWhenPaused);
 		LightComponent &light = e->value<LightComponent>();
 		light.color = colorVariation(color);
@@ -52,37 +49,29 @@ namespace
 	{
 		if (game.paused)
 		{
-			for (Entity *e : ShockerComponent::component->entities())
+			entitiesVisitor([&](Entity *e, const ShockerComponent &) {
 				e->remove<SoundComponent>();
+			}, engineEntities(), false);
 			return;
 		}
 
-		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		const TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
 
-		for (Entity *e : ShockerComponent::component->entities())
-		{
-			TransformComponent &tr = e->value<TransformComponent>();
-			ShockerComponent &sh = e->value<ShockerComponent>();
-			Vec3 v = tr.position - playerTransform.position;
-			Real d = length(v);
+		entitiesVisitor([&](Entity *e, TransformComponent &tr, const ShockerComponent &sh) {
+			const Vec3 v = tr.position - playerTransform.position;
+			const Real d = length(v);
 
 			// stay away from the player
 			if (d < sh.radius * 0.8 && d > 1e-7)
-			{
-				VelocityComponent &mv = e->value<VelocityComponent>();
-				mv.velocity += normalize(v) * 0.3;
-			}
+				e->value<VelocityComponent>().velocity += normalize(v) * 0.3;
 
 			// lightning
 			if (d < sh.radius)
 			{
 				playerVelocity.velocity *= sh.speedFactor;
 				if (((statistics.updateIterationIgnorePause + e->name()) % 3) == 0)
-				{
-					RenderComponent &r = e->value<RenderComponent>();
-					lightning(tr.position + randomDirection3() * tr.scale, playerTransform.position + randomDirection3() * playerTransform.scale, r.color);
-				}
+					lightning(tr.position + randomDirection3() * tr.scale, playerTransform.position + randomDirection3() * playerTransform.scale, e->value<RenderComponent>().color);
 				if (!e->has<SoundComponent>())
 				{
 					SoundComponent &v = e->value<SoundComponent>();
@@ -92,7 +81,7 @@ namespace
 			}
 			else
 				e->remove<SoundComponent>();
-		}
+		}, engineEntities(), false);
 	}
 
 	class Callbacks

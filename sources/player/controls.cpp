@@ -52,8 +52,8 @@ namespace
 		p /= Vec2(res[0], res[1]);
 		p = p * 2 - 1;
 		Real px = p[0], py = -p[1];
-		TransformComponent &ts = getPrimaryCameraEntity()->value<TransformComponent>();
-		CameraComponent &cs = getPrimaryCameraEntity()->value<CameraComponent>();
+		const TransformComponent &ts = getPrimaryCameraEntity()->value<TransformComponent>();
+		const CameraComponent &cs = getPrimaryCameraEntity()->value<CameraComponent>();
 		Mat4 view = inverse(Mat4(ts.position, ts.orientation, Vec3(ts.scale, ts.scale, ts.scale)));
 		Mat4 proj = perspectiveProjection(cs.camera.perspectiveFov, Real(res[0]) / Real(res[1]), cs.near, cs.far);
 		Mat4 inv = inverse(proj * view);
@@ -62,19 +62,6 @@ namespace
 		Vec3 near = Vec3(pn) / pn[3];
 		Vec3 far = Vec3(pf) / pf[3];
 		mouseCurrentPosition = intersection(makeLine(near, far), Plane(Vec3(), Vec3(0, 1, 0)));
-
-		if (false)
-		{
-			// debug visualization of the mouse position
-			Entity *e = engineEntities()->createAnonymous();
-			TransformComponent &t = e->value<TransformComponent>();
-			t.position = mouseCurrentPosition;
-			t.scale = 3;
-			RenderComponent &r = e->value<RenderComponent>();
-			r.object = HashString("cage/mesh/sphere.obj");
-			TimeoutComponent &tt = e->value<TimeoutComponent>();
-			tt.ttl = 1;
-		}
 	}
 
 	void eventAction(uint32 option)
@@ -246,8 +233,8 @@ namespace
 			rightStick[2] = gamepad->axes()[3];
 		}
 
-		constexpr Real MouseMultiplier = 0.05;
-		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
+		static constexpr Real MouseMultiplier = 0.05;
+		const TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 
 		switch (confControlMovement)
 		{
@@ -322,7 +309,7 @@ namespace
 			e->add(entitiesToDestroy);
 
 		{
-			bool cinematic = game.cinematic;
+			const bool cinematic = game.cinematic;
 			game = GlobalGame();
 			game.cinematic = cinematic;
 		}

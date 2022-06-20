@@ -1,3 +1,5 @@
+#include <cage-core/entitiesVisitor.h>
+
 #include "monsters.h"
 
 namespace
@@ -10,8 +12,8 @@ namespace
 	void spawnSmallCube(uint32 originalEntity)
 	{
 		Entity *e = engineEntities()->get(originalEntity);
-		TransformComponent &t = e->value<TransformComponent>();
-		RenderComponent &r = e->value<RenderComponent>();
+		const TransformComponent &t = e->value<TransformComponent>();
+		const RenderComponent &r = e->value<RenderComponent>();
 		for (uint32 i = 0; i < 2; i++)
 			spawnSimple(MonsterTypeFlags::SmallCube, t.position + Vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
@@ -19,8 +21,8 @@ namespace
 	void spawnSmallTriangle(uint32 originalEntity)
 	{
 		Entity *e = engineEntities()->get(originalEntity);
-		TransformComponent &t = e->value<TransformComponent>();
-		RenderComponent &r = e->value<RenderComponent>();
+		const TransformComponent &t = e->value<TransformComponent>();
+		const RenderComponent &r = e->value<RenderComponent>();
 		for (uint32 i = 0; i < 2; i++)
 			spawnSimple(MonsterTypeFlags::SmallTriangle, t.position + Vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
@@ -30,13 +32,8 @@ namespace
 		if (game.paused)
 			return;
 
-		for (Entity *e : engineEntities()->component<SimpleMonsterComponent>()->entities())
-		{
-			TransformComponent &tr = e->value<TransformComponent>();
-			VelocityComponent &mv = e->value<VelocityComponent>();
-			SimpleMonsterComponent &sm = e->value<SimpleMonsterComponent>();
-
-			if (lengthSquared(mv.velocity) > sm.maxSpeed * sm.maxSpeed + 1e-4)
+		entitiesVisitor([&](Entity *e, const TransformComponent &tr, VelocityComponent &mv, const SimpleMonsterComponent &sm) {
+			if (lengthSquared(mv.velocity) > sqr(sm.maxSpeed) + 1e-4)
 				mv.velocity = normalize(mv.velocity) * max(sm.maxSpeed, length(mv.velocity) - sm.acceleration);
 			else
 			{
@@ -62,7 +59,7 @@ namespace
 				uint32 closestShot = 0;
 				{
 					Real closestDistance = Real::Infinity();
-					uint32 myName = e->name();
+					const uint32 myName = e->name();
 					spatialSearchQuery->intersection(Sphere(tr.position, 15));
 					for (uint32 otherName : spatialSearchQuery->result())
 					{
@@ -74,17 +71,14 @@ namespace
 						if (!e->has<ShotComponent>())
 							continue;
 
-						TransformComponent &ot = e->value<TransformComponent>();
-						Vec3 toMonster = tr.position - ot.position;
+						const Vec3 toMonster = tr.position - e->value<TransformComponent>().position;
 
 						// test whether other is closer
 						if (lengthSquared(toMonster) >= closestDistance * closestDistance)
 							continue;
 
-						VelocityComponent &ov = e->value<VelocityComponent>();
-
 						// test its direction
-						if (dot(normalize(toMonster), normalize(ov.velocity)) < 0)
+						if (dot(normalize(toMonster), normalize(e->value<VelocityComponent>().velocity)) < 0)
 							continue;
 
 						closestShot = otherName;
@@ -96,21 +90,19 @@ namespace
 				if (closestShot)
 				{
 					Entity *s = engineEntities()->get(closestShot);
-					TransformComponent &ot = s->value<TransformComponent>();
-					VelocityComponent &ov = s->value<VelocityComponent>();
-					Vec3 a = tr.position - ot.position;
-					Vec3 b = normalize(ov.velocity);
-					Vec3 avoid = normalize(a - dot(a, b) * b);
+					const Vec3 a = tr.position - s->value<TransformComponent>().position;
+					const Vec3 b = normalize(s->value<VelocityComponent>().velocity);
+					const Vec3 avoid = normalize(a - dot(a, b) * b);
 					will = interpolate(will, avoid, sm.avoidance);
 				}
 
 				mv.velocity += will * sm.acceleration;
-				if (lengthSquared(mv.velocity) > sm.maxSpeed * sm.maxSpeed)
+				if (lengthSquared(mv.velocity) > sqr(sm.maxSpeed))
 					mv.velocity = normalize(mv.velocity) * sm.maxSpeed;
 			}
 
 			CAGE_ASSERT(mv.velocity.valid());
-		}
+		}, engineEntities(), false);
 	}
 
 	class Callbacks
@@ -132,14 +124,12 @@ Entity *initializeSimple(const Vec3 &spawnPosition, const Vec3 &color, Real scal
 {
 	Entity *e = initializeMonster(spawnPosition, color, scale, objectName, deadSound, damage, life);
 	VelocityComponent &v = e->value<VelocityComponent>();
-	MonsterComponent &m = e->value<MonsterComponent>();
 	SimpleMonsterComponent &s = e->value<SimpleMonsterComponent>();
-	RotationComponent &rot = e->value<RotationComponent>();
 	v.velocity = randomDirection3();
 	v.velocity[1] = 0;
-	m.dispersion = dispersion;
+	e->value<MonsterComponent>().dispersion = dispersion;
 	s.avoidance = avoidance;
-	rot.rotation = animation;
+	e->value<RotationComponent>().rotation = animation;
 	s.maxSpeed = maxSpeed;
 	s.circling = circling;
 	s.spiraling = spiraling;
@@ -164,17 +154,11 @@ void spawnSimple(MonsterTypeFlags type, const Vec3 &spawnPosition, const Vec3 &c
 		break;
 	case MonsterTypeFlags::LargeTriangle:
 		e = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/largeTriangle.object"), HashString("degrid/monster/bum-triangle.ogg"), 4, 1 + monsterMutation(special), 0.4 + 0.1 * monsterMutation(special), 50, 0, 0.02, 0.1, 0.4, Quat(Degs(), randomAngle() / 50, Degs()));
-		{
-			MonsterComponent &m = e->value<MonsterComponent>();
-			m.defeatedCallback.bind<&spawnSmallTriangle>();
-		}
+		e->value<MonsterComponent>().defeatedCallback.bind<&spawnSmallTriangle>();
 		break;
 	case MonsterTypeFlags::LargeCube:
 		e = initializeSimple(spawnPosition, color, 3, HashString("degrid/monster/largeCube.object"), HashString("degrid/monster/bum-cube.ogg"), 4, 1 + monsterMutation(special), 0.3 + 0.1 * monsterMutation(special), 3, 1, 0.2, 0, 0, interpolate(Quat(), randomDirectionQuat(), 0.01));
-		{
-			MonsterComponent &m = e->value<MonsterComponent>();
-			m.defeatedCallback.bind<&spawnSmallCube>();
-		}
+		e->value<MonsterComponent>().defeatedCallback.bind<&spawnSmallCube>();
 		break;
 	case MonsterTypeFlags::PinWheel:
 		e = initializeSimple(spawnPosition, color, 3.5, HashString("degrid/monster/pinWheel.object"), HashString("degrid/monster/bum-pinwheel.ogg"), 4, 1 + monsterMutation(special), 2 + 0.4 * monsterMutation(special), 50, 0, 0.005, 0, 0, Quat(Degs(), Degs(20), Degs()));

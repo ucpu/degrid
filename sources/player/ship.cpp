@@ -35,14 +35,12 @@ namespace
 			if (lengthSquared(change) > 0.01)
 			{
 				Entity *spark = engineEntities()->createAnonymous();
-				TransformComponent &Transform = spark->value<TransformComponent>();
-				Transform.scale = randomChance() * 0.2 + 0.3;
-				Transform.position = tr.position + tr.orientation * Vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
-				Transform.orientation = randomDirectionQuat();
-				RenderComponent &render = spark->value<RenderComponent>();
-				render.object = HashString("degrid/environment/spark.object");
-				VelocityComponent &vel = spark->value<VelocityComponent>();
-				vel.velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
+				TransformComponent &transform = spark->value<TransformComponent>();
+				transform.scale = randomChance() * 0.2 + 0.3;
+				transform.position = tr.position + tr.orientation * Vec3((sint32)(statistics.updateIterationIgnorePause % 2) * 1.2 - 0.6, 0, 1) * tr.scale;
+				transform.orientation = randomDirectionQuat();
+				spark->value<RenderComponent>().object = HashString("degrid/environment/spark.object");
+				spark->value<VelocityComponent>().velocity = (change + randomDirection3() * 0.05) * randomChance() * -5;
 				TimeoutComponent &ttl = spark->value<TimeoutComponent>();
 				ttl.ttl = randomRange(10, 15);
 				TextureAnimationComponent &at = spark->value<TextureAnimationComponent>();
@@ -57,7 +55,7 @@ namespace
 		// pull to center
 		if (length(tr.position) > MapNoPullRadius)
 		{
-			Vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - MapNoPullRadius) * 0.02, 2);
+			const Vec3 pullToCenter = -normalize(tr.position) * pow((length(tr.position) - MapNoPullRadius) * 0.02, 2);
 			vl.velocity += pullToCenter;
 		}
 
@@ -72,14 +70,13 @@ namespace
 	{
 		if (!game.playerEntity || !game.shieldEntity)
 			return;
-		TransformComponent &tr = game.playerEntity->value<TransformComponent>();
+		const TransformComponent &tr = game.playerEntity->value<TransformComponent>();
 		TransformComponent &trs = game.shieldEntity->value<TransformComponent>();
 		trs.position = tr.position;
 		trs.scale = tr.scale;
 		if (game.powerups[(uint32)PowerupTypeEnum::Shield] > 0)
 		{
-			RenderComponent &render = game.shieldEntity->value<RenderComponent>();
-			render.object = HashString("degrid/player/shield.object");
+			game.shieldEntity->value<RenderComponent>().object = HashString("degrid/player/shield.object");
 			SoundComponent &sound = game.shieldEntity->value<SoundComponent>();
 			sound.name = HashString("degrid/player/shield.ogg");
 			sound.startTime = -1;
@@ -112,14 +109,14 @@ namespace
 		}
 		scorePreviousAchievements = game.score;
 
-		uint64 lg = scorePreviousSound >= 20000 ? 10 : scorePreviousSound >= 2000 ? 2 : 1;
-		uint64 sg = lg * 500;
-		uint64 ld = (game.score - scorePreviousSound) / sg;
+		const uint64 lg = scorePreviousSound >= 20000 ? 10 : scorePreviousSound >= 2000 ? 2 : 1;
+		const uint64 sg = lg * 500;
+		const uint64 ld = (game.score - scorePreviousSound) / sg;
 		if (ld)
 		{
 			scorePreviousSound += ld * sg;
 
-			constexpr const uint32 Sounds[] = {
+			static constexpr const uint32 Sounds[] = {
 				HashString("degrid/speech/progress/doing-fine.wav"),
 				HashString("degrid/speech/progress/doing-well.wav"),
 				HashString("degrid/speech/progress/fantastic.wav"),
@@ -154,27 +151,21 @@ namespace
 
 		{ // player ship Entity
 			game.playerEntity = engineEntities()->createUnique();
-			TransformComponent &Transform = game.playerEntity->value<TransformComponent>();
-			Transform.scale = PlayerScale;
-			RenderComponent &render = game.playerEntity->value<RenderComponent>();
-			render.object = HashString("degrid/player/player.object");
+			game.playerEntity->value<TransformComponent>().scale = PlayerScale;
+			game.playerEntity->value<RenderComponent>().object = HashString("degrid/player/player.object");
 			game.monstersTarget = Vec3();
 		}
 
 		{ // player shield Entity
 			game.shieldEntity = engineEntities()->createUnique();
-			TransformComponent &Transform = game.shieldEntity->value<TransformComponent>();
-			(void)Transform;
-			TextureAnimationComponent &aniTex = game.shieldEntity->value<TextureAnimationComponent>();
-			aniTex.speed = 0.05;
+			game.shieldEntity->value<TransformComponent>();
+			game.shieldEntity->value<TextureAnimationComponent>().speed = 0.05;
 		}
 	}
 
 	void gameStop()
 	{
-		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
-		VelocityComponent &playerVelocity = game.playerEntity->value<VelocityComponent>();
-		environmentExplosion(playerTransform.position, playerVelocity.velocity, PlayerDeathColor, PlayerScale);
+		environmentExplosion(game.playerEntity->value<TransformComponent>().position, game.playerEntity->value<VelocityComponent>().velocity, PlayerDeathColor, PlayerScale);
 		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;
 		game.shieldEntity->add(entitiesToDestroy);

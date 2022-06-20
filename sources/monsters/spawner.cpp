@@ -1,4 +1,5 @@
 #include <cage-core/color.h>
+#include <cage-core/entitiesVisitor.h>
 
 #include "monsters.h"
 
@@ -8,17 +9,14 @@ namespace
 {
 	struct SpawnerComponent
 	{
-		static EntityComponent *component;
 		uint32 count = 0;
 		uint32 period = 0;
 		MonsterTypeFlags type = MonsterTypeFlags::None;
 	};
 
-	EntityComponent *SpawnerComponent::component;
-
 	void engineInit()
 	{
-		SpawnerComponent::component = engineEntities()->defineComponent(SpawnerComponent());
+		engineEntities()->defineComponent(SpawnerComponent());
 	}
 
 	void engineUpdate()
@@ -26,22 +24,18 @@ namespace
 		if (game.paused)
 			return;
 
-		for (Entity *e : SpawnerComponent::component->entities())
-		{
-			SpawnerComponent &s = e->value<SpawnerComponent>();
+		entitiesVisitor([&](Entity *e, SpawnerComponent &s) {
 			if (s.count == 0)
 			{
 				MonsterComponent &m = e->value<MonsterComponent>();
 				killMonster(e, false);
 			}
-			else if ((statistics.updateIteration % s.period) == 0)
+			else if ((statistics.updateIteration % s.period) == (e->name() % s.period))
 			{
-				TransformComponent &t = e->value<TransformComponent>();
-				RenderComponent &r = e->value<RenderComponent>();
-				spawnGeneral(s.type, t.position, r.color);
+				spawnGeneral(s.type, e->value<TransformComponent>().position, e->value<RenderComponent>().color);
 				s.count--;
 			}
-		}
+		}, engineEntities(), false);
 	}
 
 	class Callbacks
@@ -80,7 +74,7 @@ namespace
 				bit <<= 1;
 			}
 		}
-		uint32 alSiz = numeric_cast<uint32>(allowed.size());
+		const uint32 alSiz = numeric_cast<uint32>(allowed.size());
 		CAGE_ASSERT(alSiz > 0);
 		return allowed[randomRange(0u, alSiz)];
 	}
@@ -90,17 +84,14 @@ void spawnSpawner(const Vec3 &spawnPosition, const Vec3 &color)
 {
 	uint32 special = 0;
 	Entity *spawner = initializeMonster(spawnPosition, color, 6, HashString("degrid/monster/spawner.object"), HashString("degrid/monster/bum-spawner.ogg"), 10, 20 + 5 * monsterMutation(special));
-	TransformComponent &Transform = spawner->value<TransformComponent>();
-	Transform.orientation = randomDirectionQuat();
-	SkeletalAnimationComponent &sa = spawner->value<SkeletalAnimationComponent>();
-	sa.startTime = applicationTime();
-	MonsterComponent &m = spawner->value<MonsterComponent>();
+	spawner->value<TransformComponent>().orientation = randomDirectionQuat();
+	spawner->value<SkeletalAnimationComponent>().startTime = applicationTime();
+	spawner->value<MonsterComponent>();
 	SpawnerComponent &s = spawner->value<SpawnerComponent>();
 	s.type = pickOne(Types[game.defeatedBosses]);
 	s.count = 60 + 15 * monsterMutation(special);
 	s.period = numeric_cast<uint32>(25.0 / (3 + monsterMutation(special))) + 1;
-	RotationComponent &rotation = spawner->value<RotationComponent>();
-	rotation.rotation = interpolate(Quat(), randomDirectionQuat(), 0.003);
+	spawner->value<RotationComponent>().rotation = interpolate(Quat(), randomDirectionQuat(), 0.003);
 	monsterReflectMutation(spawner, special);
 }
 
