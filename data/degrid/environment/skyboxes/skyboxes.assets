@@ -94,7 +94,6 @@ scheme = texture
 target = cubeMap
 convert = skyboxToCube
 srgb = true
-flip = true
 0.png
 1.png
 2.png
