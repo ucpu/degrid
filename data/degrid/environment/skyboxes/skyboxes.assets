@@ -92,7 +92,7 @@ portal.obj;5
 []
 scheme = texture
 target = cubeMap
-convert = skyboxToCube
+skyboxToCube = true
 srgb = true
 0.png
 1.png
