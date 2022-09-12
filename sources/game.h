@@ -6,6 +6,14 @@
 #include <cage-engine/scene.h>
 #include <cage-simple/engine.h>
 
+namespace cage
+{
+	class Entity;
+	class EntityGroup;
+	class SpatialStructure;
+	class SpatialQuery;
+}
+
 using namespace cage;
 
 bool collisionTest(const Vec3 &positionA, Real radiusA, const Vec3 &velocityA, const Vec3 &positionB, Real radiusB, const Vec3 &velocityB);
