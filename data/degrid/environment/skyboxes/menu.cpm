@@ -10,7 +10,7 @@ shader = skybox.glsl
 layer = -10000
 
 [flags]
-translucent
+fade
 noDepthTest
 noDepthWrite
 noLighting

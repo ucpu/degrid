@@ -11,4 +11,4 @@ opacity = 0.2
 [flags]
 noShadowCast
 noDepthWrite
-translucent
+transparent

@@ -12,4 +12,4 @@ albedo = lightning_$$.png
 noLighting
 noShadowCast
 noDepthWrite
-translucent
+fade
