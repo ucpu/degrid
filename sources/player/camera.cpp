@@ -2,6 +2,7 @@
 #include <cage-core/entities.h>
 #include <cage-core/hashString.h>
 #include <cage-core/variableSmoothingBuffer.h>
+#include <cage-engine/sceneScreenSpaceEffects.h>
 
 #include "../game.h"
 
@@ -48,7 +49,7 @@ namespace
 		c.ambientColor = c.ambientDirectionalColor = Vec3(1);
 		c.ambientIntensity = AmbientLight;
 		c.ambientDirectionalIntensity = DirectionalLight;
-		c.effects = CameraEffectsFlags::Default & ~CameraEffectsFlags::AmbientOcclusion;
+		primaryCameraEntity->value<ScreenSpaceEffectsComponent>().effects = ScreenSpaceEffectsFlags::Default & ~ScreenSpaceEffectsFlags::AmbientOcclusion;
 		primaryCameraEntity->value<ListenerComponent>().rolloffFactor = 0.5 / CameraDistance;
 	}
 
