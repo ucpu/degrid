@@ -10,8 +10,6 @@ namespace
 {
 	Entity *primaryCameraEntity;
 
-	constexpr float AmbientLight = 0.3f;
-	constexpr float DirectionalLight = 0;
 	constexpr float CameraDistance = 220;
 
 	VariableSmoothingBuffer<Vec3, 16> playerPosSmoother;
@@ -46,9 +44,8 @@ namespace
 		c.near = 150;
 		c.far = 1000;
 		c.camera.perspectiveFov = Degs(40);
-		c.ambientColor = c.ambientDirectionalColor = Vec3(1);
-		c.ambientIntensity = AmbientLight;
-		c.ambientDirectionalIntensity = DirectionalLight;
+		c.ambientColor = Vec3(1);
+		c.ambientIntensity = 0.3;
 		primaryCameraEntity->value<ScreenSpaceEffectsComponent>().effects = ScreenSpaceEffectsFlags::Default & ~ScreenSpaceEffectsFlags::AmbientOcclusion;
 		primaryCameraEntity->value<ListenerComponent>().rolloffFactor = 0.5 / CameraDistance;
 	}
