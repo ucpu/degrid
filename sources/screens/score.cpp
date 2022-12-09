@@ -57,11 +57,9 @@ namespace
 
 		Entity *panel = ents->createUnique();
 		{
-			GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
-			GuiParentComponent &parent = panel->value<GuiParentComponent>();
-			parent.parent = 12;
-			GuiLayoutTableComponent &layout = panel->value<GuiLayoutTableComponent>();
-			layout.sections = 2;
+			panel->value<GuiPanelComponent>();
+			panel->value<GuiParentComponent>().parent = 12;
+			panel->value<GuiLayoutTableComponent>().sections = 2;
 		}
 
 		{ // header
@@ -70,7 +68,7 @@ namespace
 				GuiParentComponent &parent = butScore->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = 1;
-				GuiButtonComponent &control = butScore->value<GuiButtonComponent>();
+				butScore->value<GuiButtonComponent>();
 				GuiTextComponent &txt = butScore->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/scores/date");
@@ -81,7 +79,7 @@ namespace
 				GuiParentComponent &parent = butDate->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = 2;
-				GuiButtonComponent &control = butDate->value<GuiButtonComponent>();
+				butDate->value<GuiButtonComponent>();
 				GuiTextComponent &txt = butDate->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/scores/score");
@@ -96,11 +94,9 @@ namespace
 				GuiParentComponent &parent = txtScore->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.index) * 2 + 100;
-				GuiLabelComponent &control = txtScore->value<GuiLabelComponent>();
-				GuiTextComponent &txt = txtScore->value<GuiTextComponent>();
-				txt.value = it->date;
-				GuiTextFormatComponent &format = txtScore->value<GuiTextFormatComponent>();
-				format.align = TextAlignEnum::Center;
+				txtScore->value<GuiLabelComponent>();
+				txtScore->value<GuiTextComponent>().value = it->date;
+				txtScore->value<GuiTextFormatComponent>().align = TextAlignEnum::Center;
 			}
 
 			{
@@ -108,11 +104,9 @@ namespace
 				GuiParentComponent &parent = txtDate->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = numeric_cast<sint32>(it.index * 2 + 101);
-				GuiLabelComponent &control = txtDate->value<GuiLabelComponent>();
-				GuiTextComponent &txt = txtDate->value<GuiTextComponent>();
-				txt.value = Stringizer() + it->score;
-				GuiTextFormatComponent &format = txtDate->value<GuiTextFormatComponent>();
-				format.align = TextAlignEnum::Right;
+				txtDate->value<GuiLabelComponent>();
+				txtDate->value<GuiTextComponent>().value = Stringizer() + it->score;
+				txtDate->value<GuiTextFormatComponent>().align = TextAlignEnum::Right;
 			}
 		}
 	}

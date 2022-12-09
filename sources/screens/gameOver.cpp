@@ -79,11 +79,9 @@ void setScreenGameover()
 
 	Entity *panel = ents->createUnique();
 	{
-		GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
-		GuiParentComponent &parent = panel->value<GuiParentComponent>();
-		parent.parent = 12;
-		GuiLayoutLineComponent &layout = panel->value<GuiLayoutLineComponent>();
-		layout.vertical = true;
+		panel->value<GuiPanelComponent>();
+		panel->value<GuiParentComponent>().parent = 12;
+		panel->value<GuiLayoutLineComponent>().vertical = true;
 	}
 
 	{
@@ -91,7 +89,7 @@ void setScreenGameover()
 		GuiParentComponent &parent = empOver->value<GuiParentComponent>();
 		parent.parent = panel->name();
 		parent.order = 1;
-		GuiLabelComponent &control = empOver->value<GuiLabelComponent>();
+		empOver->value<GuiLabelComponent>();
 		GuiTextComponent &txt = empOver->value<GuiTextComponent>();
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = HashString("gui/gameover/over");
@@ -106,9 +104,8 @@ void setScreenGameover()
 		GuiParentComponent &parent = empScore->value<GuiParentComponent>();
 		parent.parent = panel->name();
 		parent.order = 2;
-		GuiLabelComponent &control = empScore->value<GuiLabelComponent>();
-		GuiTextComponent &txt = empScore->value<GuiTextComponent>();
-		txt.value = Stringizer() + game.score;
+		empScore->value<GuiLabelComponent>();
+		empScore->value<GuiTextComponent>().value = Stringizer() + game.score;
 		GuiTextFormatComponent &format = empScore->value<GuiTextFormatComponent>();
 		format.align = TextAlignEnum::Center;
 		format.color = Vec3(0, 1, 0);
@@ -117,11 +114,10 @@ void setScreenGameover()
 
 	{
 		Entity *butSave = ents->create(100);
-		GuiButtonComponent &control = butSave->value<GuiButtonComponent>();
+		butSave->value<GuiButtonComponent>();
 		GuiTextComponent &txt = butSave->value<GuiTextComponent>();
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = HashString("gui/gameover/continue");
-		GuiParentComponent &parent = butSave->value<GuiParentComponent>();
-		parent.parent = 15;
+		butSave->value<GuiParentComponent>().parent = 15;
 	}
 }

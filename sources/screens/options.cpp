@@ -132,8 +132,7 @@ namespace
 			GuiParentComponent &parent = opt->value<GuiParentComponent>();
 			parent.parent = ctr;
 			parent.order = Letters[i];
-			GuiTextComponent &txt = opt->value<GuiTextComponent>();
-			txt.value = String(Letters[i]);
+			opt->value<GuiTextComponent>().value = String(Letters[i]);
 		}
 		for (uint32 i = 0; i < 4; i++)
 		{
@@ -141,9 +140,8 @@ namespace
 			GuiParentComponent &parent = opt->value<GuiParentComponent>();
 			parent.parent = ctr;
 			parent.order = 1000 + i;
-			GuiTextComponent &txt = opt->value<GuiTextComponent>();
-			constexpr const char *const names[] = { "Gamepad A", "Gamepad B", "Gamepad X", "Gamepad Y" };
-			txt.value = names[i];
+			static constexpr const char *const names[] = { "Gamepad A", "Gamepad B", "Gamepad X", "Gamepad Y" };
+			opt->value<GuiTextComponent>().value = names[i];
 		}
 	}
 
@@ -215,25 +213,22 @@ void setScreenOptions()
 
 	Entity *tabs = ents->createUnique();
 	{
-		GuiParentComponent &parent = tabs->value<GuiParentComponent>();
-		parent.parent = 12;
-		GuiLayoutLineComponent &layout = tabs->value<GuiLayoutLineComponent>();
-		layout.vertical = false;
+		tabs->value<GuiParentComponent>().parent = 12;
+		tabs->value<GuiLayoutLineComponent>().vertical = false;
 	}
 
 	{ // controls
 		Entity *panel = ents->createUnique();
 		{
-			GuiPanelComponent &control = panel->value<GuiPanelComponent>();
+			panel->value<GuiPanelComponent>();
 			GuiParentComponent &parent = panel->value<GuiParentComponent>();
 			parent.parent = tabs->name();
 			parent.order = 1;
-			GuiLayoutTableComponent &layout = panel->value<GuiLayoutTableComponent>();
-			layout.sections = 2;
+			panel->value<GuiLayoutTableComponent>().sections = 2;
 			GuiTextComponent &txt = panel->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/options/controls");
-			GuiScrollbarsComponent &sc = panel->value<GuiScrollbarsComponent>();
+			panel->value<GuiScrollbarsComponent>();
 		}
 		uint32 index = 0;
 
@@ -243,7 +238,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/movement");
@@ -254,8 +249,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiComboBoxComponent &control = ctr->value<GuiComboBoxComponent>();
-				control.selected = confControlMovement;
+				ctr->value<GuiComboBoxComponent>().selected = confControlMovement;
 				addOptionsMovementFiring(ctr->name());
 			}
 		}
@@ -266,7 +260,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/firing");
@@ -277,8 +271,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiComboBoxComponent &control = ctr->value<GuiComboBoxComponent>();
-				control.selected = confControlFiring;
+				ctr->value<GuiComboBoxComponent>().selected = confControlFiring;
 				addOptionsMovementFiring(ctr->name());
 			}
 		}
@@ -289,7 +282,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/bomb");
@@ -300,8 +293,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiComboBoxComponent &control = ctr->value<GuiComboBoxComponent>();
-				control.selected = confControlBomb;
+				ctr->value<GuiComboBoxComponent>().selected = confControlBomb;
 				addOptionsPowers(ctr->name());
 			}
 		}
@@ -312,7 +304,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/turret");
@@ -323,8 +315,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiComboBoxComponent &control = ctr->value<GuiComboBoxComponent>();
-				control.selected = confControlTurret;
+				ctr->value<GuiComboBoxComponent>().selected = confControlTurret;
 				addOptionsPowers(ctr->name());
 			}
 		}
@@ -335,7 +326,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/decoy");
@@ -346,8 +337,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiComboBoxComponent &control = ctr->value<GuiComboBoxComponent>();
-				control.selected = confControlDecoy;
+				ctr->value<GuiComboBoxComponent>().selected = confControlDecoy;
 				addOptionsPowers(ctr->name());
 			}
 		}
@@ -356,16 +346,15 @@ void setScreenOptions()
 	{
 		Entity *panel = ents->createUnique();
 		{
-			GuiPanelComponent &control = panel->value<GuiPanelComponent>();
+			panel->value<GuiPanelComponent>();
 			GuiParentComponent &parent = panel->value<GuiParentComponent>();
 			parent.parent = tabs->name();
 			parent.order = 2;
-			GuiLayoutTableComponent &layout = panel->value<GuiLayoutTableComponent>();
-			layout.sections = 2;
+			panel->value<GuiLayoutTableComponent>().sections = 2;
 			GuiTextComponent &txt = panel->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/options/sounds");
-			GuiScrollbarsComponent &sc = panel->value<GuiScrollbarsComponent>();
+			panel->value<GuiScrollbarsComponent>();
 		}
 		uint32 index = 0;
 
@@ -375,7 +364,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/musicVolume");
@@ -386,8 +375,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiSliderBarComponent &control = ctr->value<GuiSliderBarComponent>();
-				control.value = Real(confVolumeMusic);
+				ctr->value<GuiSliderBarComponent>().value = Real(confVolumeMusic);
 			}
 		}
 
@@ -397,7 +385,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/effectsVolume");
@@ -408,8 +396,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiSliderBarComponent &control = ctr->value<GuiSliderBarComponent>();
-				control.value = Real(confVolumeEffects);
+				ctr->value<GuiSliderBarComponent>().value = Real(confVolumeEffects);
 			}
 		}
 
@@ -419,7 +406,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = lbl->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiLabelComponent &control = lbl->value<GuiLabelComponent>();
+				lbl->value<GuiLabelComponent>();
 				GuiTextComponent &txt = lbl->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/options/speechVolume");
@@ -430,8 +417,7 @@ void setScreenOptions()
 				GuiParentComponent &parent = ctr->value<GuiParentComponent>();
 				parent.parent = panel->name();
 				parent.order = index++;
-				GuiSliderBarComponent &control = ctr->value<GuiSliderBarComponent>();
-				control.value = Real(confVolumeSpeech);
+				ctr->value<GuiSliderBarComponent>().value = Real(confVolumeSpeech);
 			}
 		}
 	}

@@ -69,7 +69,7 @@ namespace
 		return false;
 	}
 
-	constexpr const uint32 TextNames[(uint32)PowerupTypeEnum::Total] = {
+	static constexpr const uint32 TextNames[(uint32)PowerupTypeEnum::Total] = {
 		HashString("gui/game/puBomb"),
 		HashString("gui/game/puTurret"),
 		HashString("gui/game/puDecoy"),
@@ -91,44 +91,39 @@ namespace
 		EntityManager *ents = engineGuiEntities();
 
 		{
-			GuiLayoutLineComponent &ll = ents->get(15)->value<GuiLayoutLineComponent>();
-			ll.vertical = true;
+			ents->get(15)->value<GuiLayoutLineComponent>().vertical = true;
 		}
 
 		{ // continue button
 			Entity *but = ents->create(501);
-			GuiButtonComponent &control = but->value<GuiButtonComponent>();
+			but->value<GuiButtonComponent>();
 			GuiTextComponent &txt = but->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/paused/continue");
 			GuiParentComponent &parent = but->value<GuiParentComponent>();
 			parent.parent = 15;
 			parent.order = 1;
-			GuiTextFormatComponent &format = but->value<GuiTextFormatComponent>();
-			format.color = RedPillColor;
+			but->value<GuiTextFormatComponent>().color = RedPillColor;
 		}
 
 		{ // end game button
 			Entity *but = ents->create(500);
-			GuiButtonComponent &control = but->value<GuiButtonComponent>();
+			but->value<GuiButtonComponent>();
 			GuiTextComponent &txt = but->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/paused/giveup");
 			GuiParentComponent &parent = but->value<GuiParentComponent>();
 			parent.parent = 15;
 			parent.order = 2;
-			GuiTextFormatComponent &format = but->value<GuiTextFormatComponent>();
-			format.color = BluePillColor;
+			but->value<GuiTextFormatComponent>().color = BluePillColor;
 		}
 
 		uint32 layoutName;
 		{ // layout
 			Entity *e = ents->createUnique();
 			layoutName = e->name();
-			GuiParentComponent &parent = e->value<GuiParentComponent>();
-			parent.parent = 12;
-			GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
-			ll.vertical = true;
+			e->value<GuiParentComponent>().parent = 12;
+			e->value<GuiLayoutLineComponent>().vertical = true;
 		}
 
 		{ // story
@@ -145,13 +140,11 @@ namespace
 				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/story");
-				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-				sc.alignment = Vec2(0.5, 0.5);
-				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
-				ll.vertical = true;
+				e->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0.5);
+				e->value<GuiLayoutLineComponent>().vertical = true;
 			}
 
-			constexpr const uint32 TextNames[] = {
+			static constexpr const uint32 TextNames[] = {
 				#define GCHL_GENERATE(N) HashString("gui/story/" CAGE_STRINGIZE(N)),
 						GCHL_GENERATE(0)
 						CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
@@ -164,7 +157,7 @@ namespace
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = panelName;
 				parent.order = idx;
-				GuiLabelComponent &lab = label->value<GuiLabelComponent>();
+				label->value<GuiLabelComponent>();
 				GuiTextComponent &txt = label->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = TextNames[idx];
@@ -186,10 +179,8 @@ namespace
 				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/bosses");
-				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-				sc.alignment = Vec2(0.5, 0.5);
-				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
-				ll.vertical = false;
+				e->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0.5);
+				e->value<GuiLayoutLineComponent>().vertical = false;
 			}
 
 			for (uint32 i = 0; i < BossesTotalCount; i++)
@@ -198,7 +189,7 @@ namespace
 				{
 					Entity *e = ents->createUnique();
 					pn = e->name();
-					GuiPanelComponent &panel = e->value<GuiPanelComponent>();
+					e->value<GuiPanelComponent>();
 					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = i;
@@ -208,22 +199,20 @@ namespace
 				}
 				{
 					Entity *e = ents->createUnique();
-					GuiLabelComponent &label = e->value<GuiLabelComponent>();
+					e->value<GuiLabelComponent>();
 					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = pn;
 					parent.order = 1;
-					GuiImageComponent &img = e->value<GuiImageComponent>();
-					img.textureName = i < achievements.bosses ? HashString(String(Stringizer() + "degrid/boss/icon/" + i + ".png")) : HashString("degrid/boss/icon/unknown.png");
+					e->value<GuiImageComponent>().textureName = i < achievements.bosses ? HashString(String(Stringizer() + "degrid/boss/icon/" + i + ".png")) : HashString("degrid/boss/icon/unknown.png");
 				}
 				if (game.defeatedBosses > i)
 				{
 					Entity *e = ents->createUnique();
-					GuiLabelComponent &label = e->value<GuiLabelComponent>();
+					e->value<GuiLabelComponent>();
 					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = pn;
 					parent.order = 2;
-					GuiImageComponent &img = e->value<GuiImageComponent>();
-					img.textureName = HashString("degrid/boss/icon/defeated.png");
+					e->value<GuiImageComponent>().textureName = HashString("degrid/boss/icon/defeated.png");
 				}
 			}
 		}
@@ -242,10 +231,8 @@ namespace
 				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/market");
-				GuiScrollbarsComponent &sc = e->value<GuiScrollbarsComponent>();
-				sc.alignment = Vec2(0.5, 0.5);
-				GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
-				ll.vertical = true;
+				e->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0.5);
+				e->value<GuiLayoutLineComponent>().vertical = true;
 			}
 
 			{ // permanent powerup limit
@@ -257,9 +244,8 @@ namespace
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/permanentLimit");
 				text.value = Stringizer() + currentPermanentPowerups() + "|" + permanentPowerupLimit();
-				GuiLabelComponent &but = e->value<GuiLabelComponent>();
-				GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
-				tf.align = TextAlignEnum::Center;
+				e->value<GuiLabelComponent>();
+				e->value<GuiTextFormatComponent>().align = TextAlignEnum::Center;
 			}
 
 			uint32 panelName;
@@ -270,8 +256,7 @@ namespace
 				GuiParentComponent &parent = e->value<GuiParentComponent>();
 				parent.parent = marketName;
 				parent.order = 2;
-				GuiLayoutTableComponent &lt = e->value<GuiLayoutTableComponent>();
-				lt.sections = 4;
+				e->value<GuiLayoutTableComponent>().sections = 4;
 			}
 
 			{ // header
@@ -286,7 +271,7 @@ namespace
 					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = -9;
-					GuiLabelComponent &but = e->value<GuiLabelComponent>();
+					e->value<GuiLabelComponent>();
 					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
 					text.textName = HashString("gui/paused/count");
@@ -311,7 +296,7 @@ namespace
 					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = 1000;
-					GuiLabelComponent &but = e->value<GuiLabelComponent>();
+					e->value<GuiLabelComponent>();
 					GuiTextComponent &text = e->value<GuiTextComponent>();
 					text.assetName = HashString("degrid/languages/internationalized.textpack");
 					text.textName = HashString("gui/paused/prices");
@@ -327,22 +312,18 @@ namespace
 					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = 1002;
-					GuiTextComponent &text = e->value<GuiTextComponent>();
-					text.value = Stringizer() + (PowerupBuyPriceBase * game.buyPriceMultiplier);
-					GuiLabelComponent &but = e->value<GuiLabelComponent>();
-					GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
-					tf.align = TextAlignEnum::Center;
+					e->value<GuiTextComponent>().value = Stringizer() + (PowerupBuyPriceBase * game.buyPriceMultiplier);
+					e->value<GuiLabelComponent>();
+					e->value<GuiTextFormatComponent>().align = TextAlignEnum::Center;
 				}
 				{ // sell
 					Entity *e = ents->createUnique();
 					GuiParentComponent &parent = e->value<GuiParentComponent>();
 					parent.parent = panelName;
 					parent.order = 1003;
-					GuiTextComponent &text = e->value<GuiTextComponent>();
-					text.value = Stringizer() + (PowerupSellPriceBase * (game.defeatedBosses + 1));
-					GuiLabelComponent &but = e->value<GuiLabelComponent>();
-					GuiTextFormatComponent &tf = e->value<GuiTextFormatComponent>();
-					tf.align = TextAlignEnum::Center;
+					e->value<GuiTextComponent>().value = Stringizer() + (PowerupSellPriceBase * (game.defeatedBosses + 1));
+					e->value<GuiLabelComponent>();
+					e->value<GuiTextFormatComponent>().align = TextAlignEnum::Center;
 				}
 			}
 
@@ -359,18 +340,16 @@ namespace
 						GuiTextComponent &text = e->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = TextNames[i];
-						GuiLabelComponent &but = e->value<GuiLabelComponent>();
+						e->value<GuiLabelComponent>();
 					}
 					{ // count
 						Entity *e = ents->create(1000 + i * 4 + 1);
 						GuiParentComponent &parent = e->value<GuiParentComponent>();
 						parent.parent = panelName;
 						parent.order = i * 4 + 1;
-						GuiTextComponent &text = e->value<GuiTextComponent>();
-						text.value = Stringizer() + game.powerups[i];
-						GuiLabelComponent &but = e->value<GuiLabelComponent>();
-						GuiTextFormatComponent &format = e->value<GuiTextFormatComponent>();
-						format.align = TextAlignEnum::Center;
+						e->value<GuiTextComponent>().value = Stringizer() + game.powerups[i];
+						e->value<GuiLabelComponent>();
+						e->value<GuiTextFormatComponent>().align = TextAlignEnum::Center;
 					}
 					{ // buy
 						Entity *e = ents->create(1000 + i * 4 + 2);
@@ -380,12 +359,9 @@ namespace
 						GuiTextComponent &text = e->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = HashString("gui/paused/buy");
-						GuiButtonComponent &but = e->value<GuiButtonComponent>();
+						e->value<GuiButtonComponent>();
 						if (!anyBuy || game.money < PowerupBuyPriceBase * game.buyPriceMultiplier)
-						{
-							GuiWidgetStateComponent &ws = e->value<GuiWidgetStateComponent>();
-							ws.disabled = true;
-						}
+							e->value<GuiWidgetStateComponent>().disabled = true;
 					}
 					{ // sell
 						Entity *e = ents->create(1000 + i * 4 + 3);
@@ -395,12 +371,9 @@ namespace
 						GuiTextComponent &text = e->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = HashString("gui/paused/sell");
-						GuiButtonComponent &but = e->value<GuiButtonComponent>();
+						e->value<GuiButtonComponent>();
 						if (game.powerups[i] == 0)
-						{
-							GuiWidgetStateComponent &ws = e->value<GuiWidgetStateComponent>();
-							ws.disabled = true;
-						}
+							e->value<GuiWidgetStateComponent>().disabled = true;
 					}
 				}
 			}
@@ -412,18 +385,15 @@ namespace
 		EntityManager *ents = engineGuiEntities();
 
 		{
-			GuiScrollbarsComponent &sc = ents->get(12)->value<GuiScrollbarsComponent>();
-			sc.alignment = Vec2(0.5, 0);
+			ents->get(12)->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0);
 		}
 
 		uint32 layoutName;
 		{ // layout
 			Entity *e = ents->createUnique();
 			layoutName = e->name();
-			GuiParentComponent &parent = e->value<GuiParentComponent>();
-			parent.parent = 12;
-			GuiLayoutLineComponent &ll = e->value<GuiLayoutLineComponent>();
-			ll.vertical = true;
+			e->value<GuiParentComponent>().parent = 12;
+			e->value<GuiLayoutLineComponent>().vertical = true;
 		}
 
 		{ // announcements
@@ -431,29 +401,25 @@ namespace
 			{
 				Entity *panel = ents->createUnique();
 				{
-					GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
+					panel->value<GuiPanelComponent>();
 					GuiParentComponent &parent = panel->value<GuiParentComponent>();
 					parent.parent = layoutName;
 					parent.order = numeric_cast<sint32>(a.index) + 1;
 					GuiTextComponent &txt = panel->value<GuiTextComponent>();
 					txt.assetName = HashString("degrid/languages/internationalized.textpack");
 					txt.textName = a->headingName;
-					GuiTextFormatComponent &format = panel->value<GuiTextFormatComponent>();
-					format.size = 20;
-					GuiLayoutLineComponent &ll = panel->value<GuiLayoutLineComponent>();
-					ll.vertical = true;
+					panel->value<GuiTextFormatComponent>().size = 20;
+					panel->value<GuiLayoutLineComponent>().vertical = true;
 				}
 
 				{ // description
 					Entity *label = ents->createUnique();
-					GuiParentComponent &parent = label->value<GuiParentComponent>();
-					parent.parent = panel->name();
-					GuiLabelComponent &control = label->value<GuiLabelComponent>();
+					label->value<GuiParentComponent>().parent = panel->name();
+					label->value<GuiLabelComponent>();
 					GuiTextComponent &txt = label->value<GuiTextComponent>();
 					txt.assetName = HashString("degrid/languages/internationalized.textpack");
 					txt.textName = a->descriptionName;
-					GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
-					format.size = 20;
+					label->value<GuiTextFormatComponent>().size = 20;
 				}
 			}
 		}
@@ -474,10 +440,9 @@ namespace
 		{ // base stats
 			Entity *table = ents->createUnique();
 			{
-				GuiParentComponent &parent = table->value<GuiParentComponent>();
-				parent.parent = 10;
-				GuiLayoutTableComponent &layout = table->value<GuiLayoutTableComponent>();
-				GuiPanelComponent &gb = table->value<GuiPanelComponent>();
+				table->value<GuiParentComponent>().parent = 10;
+				table->value<GuiLayoutTableComponent>();
+				table->value<GuiPanelComponent>();
 			}
 			uint32 index = 1;
 
@@ -486,7 +451,7 @@ namespace
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				label->value<GuiLabelComponent>();
 				GuiTextComponent &text = label->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/life");
@@ -500,8 +465,8 @@ namespace
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				GuiLabelComponent &control = label->value<GuiLabelComponent>();
-				GuiTextComponent &text = label->value<GuiTextComponent>();
+				label->value<GuiLabelComponent>();
+				label->value<GuiTextComponent>();
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 				format.color = Vec3(1, 0, 0);
@@ -513,7 +478,7 @@ namespace
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				label->value<GuiLabelComponent>();
 				GuiTextComponent &text = label->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/money");
@@ -527,8 +492,8 @@ namespace
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				GuiLabelComponent &control = label->value<GuiLabelComponent>();
-				GuiTextComponent &text = label->value<GuiTextComponent>();
+				label->value<GuiLabelComponent>();
+				label->value<GuiTextComponent>();
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 				format.color = Vec3(1, 1, 0);
@@ -540,7 +505,7 @@ namespace
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				GuiLabelComponent &control = label->value<GuiLabelComponent>();
+				label->value<GuiLabelComponent>();
 				GuiTextComponent &text = label->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/game/score");
@@ -554,8 +519,8 @@ namespace
 				GuiParentComponent &parent = label->value<GuiParentComponent>();
 				parent.parent = table->name();
 				parent.order = index++;
-				GuiLabelComponent &control = label->value<GuiLabelComponent>();
-				GuiTextComponent &text = label->value<GuiTextComponent>();
+				label->value<GuiLabelComponent>();
+				label->value<GuiTextComponent>();
 				GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
 				format.align = TextAlignEnum::Right;
 				format.color = Vec3(0, 1, 0);
@@ -566,10 +531,9 @@ namespace
 		{ // collectible powerups
 			Entity *table = ents->createUnique();
 			{
-				GuiParentComponent &parent = table->value<GuiParentComponent>();
-				parent.parent = 14;
-				GuiLayoutTableComponent &layout = table->value<GuiLayoutTableComponent>();
-				GuiPanelComponent &gb = table->value<GuiPanelComponent>();
+				table->value<GuiParentComponent>().parent = 14;
+				table->value<GuiLayoutTableComponent>();
+				table->value<GuiPanelComponent>();
 			}
 			uint32 index = 1;
 
@@ -582,7 +546,7 @@ namespace
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						GuiLabelComponent &control = label->value<GuiLabelComponent>();
+						label->value<GuiLabelComponent>();
 						GuiTextComponent &text = label->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = TextNames[i];
@@ -593,10 +557,9 @@ namespace
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						GuiLabelComponent &control = label->value<GuiLabelComponent>();
-						GuiTextComponent &text = label->value<GuiTextComponent>();
-						GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
-						format.align = TextAlignEnum::Right;
+						label->value<GuiLabelComponent>();
+						label->value<GuiTextComponent>();
+						label->value<GuiTextFormatComponent>().align = TextAlignEnum::Right;
 					}
 				}
 			}
@@ -605,10 +568,9 @@ namespace
 		{ // timed
 			Entity *table = ents->createUnique();
 			{
-				GuiParentComponent &parent = table->value<GuiParentComponent>();
-				parent.parent = 11;
-				GuiLayoutTableComponent &layout = table->value<GuiLayoutTableComponent>();
-				GuiPanelComponent &gb = table->value<GuiPanelComponent>();
+				table->value<GuiParentComponent>().parent = 11;
+				table->value<GuiLayoutTableComponent>();
+				table->value<GuiPanelComponent>();
 			}
 			uint32 index = 1;
 
@@ -621,7 +583,7 @@ namespace
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						GuiLabelComponent &control = label->value<GuiLabelComponent>();
+						label->value<GuiLabelComponent>();
 						GuiTextComponent &text = label->value<GuiTextComponent>();
 						text.assetName = HashString("degrid/languages/internationalized.textpack");
 						text.textName = TextNames[i];
@@ -632,10 +594,9 @@ namespace
 						GuiParentComponent &parent = label->value<GuiParentComponent>();
 						parent.parent = table->name();
 						parent.order = index++;
-						GuiLabelComponent &control = label->value<GuiLabelComponent>();
-						GuiTextComponent &text = label->value<GuiTextComponent>();
-						GuiTextFormatComponent &format = label->value<GuiTextFormatComponent>();
-						format.align = TextAlignEnum::Right;
+						label->value<GuiLabelComponent>();
+						label->value<GuiTextComponent>();
+						label->value<GuiTextFormatComponent>().align = TextAlignEnum::Right;
 					}
 				}
 			}
@@ -686,16 +647,13 @@ namespace
 		}
 
 		{ // life
-			GuiTextComponent &txt = engineGuiEntities()->get(100)->value<GuiTextComponent>();
-			txt.value = Stringizer() + numeric_cast<uint32>(max(0, game.life));
+			engineGuiEntities()->get(100)->value<GuiTextComponent>().value = Stringizer() + numeric_cast<uint32>(max(0, game.life));
 		}
 		{ // money
-			GuiTextComponent &txt = engineGuiEntities()->get(101)->value<GuiTextComponent>();
-			txt.value = Stringizer() + game.money;
+			engineGuiEntities()->get(101)->value<GuiTextComponent>().value = Stringizer() + game.money;
 		}
 		{ // score
-			GuiTextComponent &txt = engineGuiEntities()->get(102)->value<GuiTextComponent>();
-			txt.value = Stringizer() + game.score;
+			engineGuiEntities()->get(102)->value<GuiTextComponent>().value = Stringizer() + game.score;
 		}
 
 		for (uint32 i = 0; i < (uint32)PowerupTypeEnum::Total; i++)

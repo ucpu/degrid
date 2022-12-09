@@ -10,14 +10,13 @@ void setScreenAbout()
 
 	Entity *panel = ents->createUnique();
 	{
-		GuiPanelComponent &panel2 = panel->value<GuiPanelComponent>();
-		GuiParentComponent &parent = panel->value<GuiParentComponent>();
-		parent.parent = 12;
-		GuiLayoutLineComponent &layout = panel->value<GuiLayoutLineComponent>();
-		layout.vertical = true;
+		panel->value<GuiPanelComponent>();
+		panel->value<GuiParentComponent>().parent = 12;
+		panel->value<GuiLayoutLineComponent>().vertical = true;
+		panel->value<GuiWidgetStateComponent>().skinIndex = 2; // compact skin
 	}
 
-	constexpr const uint32 TextNames[] = {
+	static constexpr const uint32 TextNames[] = {
 #define GCHL_GENERATE(N) HashString("gui/credits/" CAGE_STRINGIZE(N)),
 		GCHL_GENERATE(0)
 		CAGE_EVAL_MEDIUM(CAGE_REPEAT(20, GCHL_GENERATE))
@@ -30,7 +29,7 @@ void setScreenAbout()
 		GuiParentComponent &parent = label->value<GuiParentComponent>();
 		parent.parent = panel->name();
 		parent.order = numeric_cast<sint32>(it.index);
-		GuiLabelComponent &lab = label->value<GuiLabelComponent>();
+		label->value<GuiLabelComponent>();
 		GuiTextComponent &txt = label->value<GuiTextComponent>();
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = *it;

@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os-version: [2019]
+        os-version: [2019, 2022]
         build-config: [debug, release, relwithdebinfo]
         build-arch: [Win32, x64]
         build-tool: ["", "-T ClangCL"]
@@ -50,18 +50,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os-version: [20]
-        build-config: [debug, release]
+        os-version: [22]
+        build-config: [debug, release, relwithdebinfo]
         compiler:
         - {
-            cc: gcc-11,
-            cxx: g++-11,
-            install: gcc-11 g++-11
+            cc: gcc-12,
+            cxx: g++-12,
+            install: gcc-12 g++-12
           }
         - {
-            cc: clang,
-            cxx: clang++,
-            install: clang
+            cc: clang-12,
+            cxx: clang++-12,
+            install: clang-12
+          }
+        - {
+            cc: clang-13,
+            cxx: clang++-13,
+            install: clang-13
+          }
+        - {
+            cc: clang-14,
+            cxx: clang++-14,
+            install: clang-14
           }
 
     steps:
@@ -92,3 +102,42 @@ jobs:
         cd build
         cmake --build . --config ${{ matrix.build-config }} -- -j3
 
+
+  Assets:
+    name: Assets
+    runs-on: ubuntu-22.04
+    env:
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build-config: [release]
+        compiler:
+        - {
+            cc: gcc-12,
+            cxx: g++-12,
+            install: gcc-12 g++-12
+          }
+
+    steps:
+    - name: Install packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xorg-dev nasm ${{ matrix.compiler.install }}
+
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Configure and Build
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=${{ matrix.build-config }} ..
+        cmake --build . --config ${{ matrix.build-config }} -- -j3
+
+    - name: Assets
+      run: |
+        cd build/result/${{ matrix.build-config }}
+        ./cage-asset-database
