@@ -80,7 +80,7 @@ int main(int argc, const char *args[])
 			engineStatistics->statisticsScope = StatisticsGuiScopeEnum::None;
 			engineStatistics->screenPosition = Vec2(0.5);
 
-			engineStart();
+			engineRun();
 		}
 
 		engineAssets()->remove(HashString("degrid/degrid.pack"));

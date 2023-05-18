@@ -140,7 +140,7 @@ namespace
 				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/story");
-				e->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0.5);
+				e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0.5, 0.5);
 				e->value<GuiLayoutLineComponent>().vertical = true;
 			}
 
@@ -179,7 +179,7 @@ namespace
 				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/bosses");
-				e->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0.5);
+				e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0.5, 0.5);
 				e->value<GuiLayoutLineComponent>().vertical = false;
 			}
 
@@ -231,7 +231,7 @@ namespace
 				GuiTextComponent &text = e->value<GuiTextComponent>();
 				text.assetName = HashString("degrid/languages/internationalized.textpack");
 				text.textName = HashString("gui/paused/market");
-				e->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0.5);
+				e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0.5, 0.5);
 				e->value<GuiLayoutLineComponent>().vertical = true;
 			}
 
@@ -385,7 +385,7 @@ namespace
 		EntityManager *ents = engineGuiEntities();
 
 		{
-			ents->get(12)->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0);
+			ents->get(12)->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0.5, 0);
 		}
 
 		uint32 layoutName;

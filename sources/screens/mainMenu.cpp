@@ -57,15 +57,17 @@ void setScreenMainmenu()
 	{ // main menu
 		{
 			Entity *e = ents->get(4);
-			e->value<GuiLayoutSplitterComponent>().inverse = false;
+			e->value<GuiLayoutLineComponent>().begin = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().end = LineEdgeModeEnum::Flexible;
 		}
 		{
 			Entity *e = ents->get(5);
-			e->value<GuiLayoutSplitterComponent>().inverse = false;
+			e->value<GuiLayoutLineComponent>().begin = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().end = LineEdgeModeEnum::Flexible;
 		}
 		{
 			Entity *e = ents->get(15);
-			e->value<GuiScrollbarsComponent>().alignment = Vec2(0.8, 0.7);
+			e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0.8, 0.7);
 		}
 
 		Entity *panel = ents->createUnique();

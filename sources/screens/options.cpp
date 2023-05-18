@@ -228,7 +228,7 @@ void setScreenOptions()
 			GuiTextComponent &txt = panel->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/options/controls");
-			panel->value<GuiScrollbarsComponent>();
+			panel->value<GuiLayoutScrollbarsComponent>();
 		}
 		uint32 index = 0;
 
@@ -354,7 +354,7 @@ void setScreenOptions()
 			GuiTextComponent &txt = panel->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/options/sounds");
-			panel->value<GuiScrollbarsComponent>();
+			panel->value<GuiLayoutScrollbarsComponent>();
 		}
 		uint32 index = 0;
 

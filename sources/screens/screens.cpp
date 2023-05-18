@@ -94,7 +94,8 @@ namespace
 		{ // splitter 0
 			Entity *e = ents->create(4);
 			splits[0] = e->name();
-			e->value<GuiLayoutSplitterComponent>().inverse = true;
+			e->value<GuiLayoutLineComponent>().begin = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().end = LineEdgeModeEnum::Flexible;
 		}
 		{ // splitter 1
 			Entity *e = ents->create(5);
@@ -102,9 +103,9 @@ namespace
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[0];
 			p.order = 2;
-			GuiLayoutSplitterComponent &ls = e->value<GuiLayoutSplitterComponent>();
-			ls.vertical = true;
-			ls.inverse = true;
+			e->value<GuiLayoutLineComponent>().begin = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().end = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().vertical = true;
 		}
 		{ // splitter 2
 			Entity *e = ents->create(6);
@@ -112,7 +113,8 @@ namespace
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[0];
 			p.order = 1;
-			e->value<GuiLayoutSplitterComponent>();
+			e->value<GuiLayoutLineComponent>().begin = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().end = LineEdgeModeEnum::Flexible;
 		}
 		{ // splitter 3
 			Entity *e = ents->create(7);
@@ -120,9 +122,9 @@ namespace
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[2];
 			p.order = 1;
-			GuiLayoutSplitterComponent &ls = e->value<GuiLayoutSplitterComponent>();
-			ls.vertical = true;
-			ls.inverse = true;
+			e->value<GuiLayoutLineComponent>().begin = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().end = LineEdgeModeEnum::Flexible;
+			e->value<GuiLayoutLineComponent>().vertical = true;
 		}
 
 		{ // panel 10
@@ -130,35 +132,35 @@ namespace
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[3];
 			p.order = 1;
-			e->value<GuiScrollbarsComponent>().alignment = Vec2(0, 0);
+			e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0, 0);
 		}
 		{ // panel 11
 			Entity *e = ents->create(11);
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[3];
 			p.order = 2;
-			e->value<GuiScrollbarsComponent>().alignment = Vec2(0, 1);
+			e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0, 1);
 		}
 		{ // panel 12
 			Entity *e = ents->create(12);
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[2];
 			p.order = 2;
-			e->value<GuiScrollbarsComponent>().alignment = Vec2(0.5, 0.5);
+			e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(0.5, 0.5);
 		}
 		{ // panel 14
 			Entity *e = ents->create(14);
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[1];
 			p.order = 1;
-			e->value<GuiScrollbarsComponent>().alignment = Vec2(1, 0);
+			e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(1, 0);
 		}
 		{ // panel 15
 			Entity *e = ents->create(15);
 			GuiParentComponent &p = e->value<GuiParentComponent>();
 			p.parent = splits[1];
 			p.order = 2;
-			e->value<GuiScrollbarsComponent>().alignment = Vec2(1, 1);
+			e->value<GuiLayoutAlignmentComponent>().alignment = Vec2(1, 1);
 		}
 	}
 
