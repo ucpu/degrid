@@ -7,42 +7,6 @@
 void reloadLanguage(uint32 index);
 extern ConfigUint32 confLanguage;
 
-namespace
-{
-	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
-
-	bool guiFunction(InputGuiWidget in)
-	{
-		switch (in.widget)
-		{
-		case 103:
-			setScreenGame();
-			return true;
-		case 104:
-			setScreenOptions();
-			return true;
-		case 105:
-			setScreenScores();
-			return true;
-		case 108:
-			setScreenAchievements();
-			return true;
-		case 106:
-			setScreenAbout();
-			return true;
-		case 107:
-			engineStop();
-			return true;
-		}
-		if (in.widget >= 200)
-		{
-			reloadLanguage(confLanguage = in.widget - 200);
-			return true;
-		}
-		return false;
-	}
-}
-
 void setScreenMainmenu()
 {
 	{
@@ -51,8 +15,6 @@ void setScreenMainmenu()
 		regenerateGui(c);
 	}
 	EntityManager *ents = engineGuiEntities();
-	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(engineGuiManager()->widgetEvent);
 
 	{ // main menu
 		{
@@ -88,6 +50,7 @@ void setScreenMainmenu()
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/newgame");
 			butNewGame->value<GuiTextFormatComponent>().color = RedPillColor;
+			butNewGame->value<GuiEventComponent>().event.bind([](Entity *) { setScreenGame(); return true; });
 		}
 
 		{
@@ -99,6 +62,7 @@ void setScreenMainmenu()
 			GuiTextComponent &txt = butOptions->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/options");
+			butOptions->value<GuiEventComponent>().event.bind([](Entity *) { setScreenOptions(); return true; });
 		}
 
 		if ((pathType("score.ini") & PathTypeFlags::File) == PathTypeFlags::File)
@@ -111,6 +75,7 @@ void setScreenMainmenu()
 			GuiTextComponent &txt = butScores->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/scores");
+			butScores->value<GuiEventComponent>().event.bind([](Entity *) { setScreenScores(); return true; });
 		}
 
 		if (achievements.acquired > 0)
@@ -123,6 +88,7 @@ void setScreenMainmenu()
 			GuiTextComponent &txt = butAchivs->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/achievements");
+			butAchivs->value<GuiEventComponent>().event.bind([](Entity *) { setScreenAchievements(); return true; });
 		}
 
 		{
@@ -134,6 +100,7 @@ void setScreenMainmenu()
 			GuiTextComponent &txt = butCredits->value<GuiTextComponent>();
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/credits");
+			butCredits->value<GuiEventComponent>().event.bind([](Entity *) { setScreenAbout(); return true; });
 		}
 
 		{
@@ -146,6 +113,7 @@ void setScreenMainmenu()
 			txt.assetName = HashString("degrid/languages/internationalized.textpack");
 			txt.textName = HashString("gui/mainmenu/quit");
 			butQuit->value<GuiTextFormatComponent>().color = BluePillColor;
+			butQuit->value<GuiEventComponent>().event.bind([](Entity *) { engineStop(); return true; });
 		}
 	}
 
@@ -170,20 +138,16 @@ void setScreenMainmenu()
 			but->value<GuiButtonComponent>();
 			but->value<GuiImageComponent>().textureName = Flags[i];
 			but->value<GuiExplicitSizeComponent>().size = Vec2(80, 40);
+			but->value<GuiEventComponent>().event.bind([i](Entity *) {
+				confLanguage = i;
+				reloadLanguage(i);
+				return true;
+			});
 		}
 	}
 }
 
 namespace
 {
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize, 200);
-			engineInitListener.bind<&setScreenMainmenu>();
-		}
-	} callbacksInstance;
+	const auto engineInitListener = controlThread().initialize.listen(&setScreenMainmenu, 200);
 }

@@ -9,8 +9,7 @@
 
 namespace
 {
-	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
-	InputListener<InputClassEnum::KeyRelease, InputKey, bool> keyReleaseListener;
+	EventListener<bool(const GenericInput &)> keyReleaseListener;
 
 	void endScreen()
 	{
@@ -22,24 +21,6 @@ namespace
 			setScreenScores();
 		else
 			setScreenMainmenu();
-	}
-
-	bool keyRelease(InputKey in)
-	{
-		if (in.key == 256) // esc
-		{
-			endScreen();
-			return true;
-		}
-		return false;
-	}
-
-	bool buttonContinue(InputGuiWidget in)
-	{
-		if (in.widget != 100)
-			return false;
-		endScreen();
-		return true;
 	}
 }
 
@@ -72,10 +53,15 @@ void setScreenGameover()
 		regenerateGui(c);
 	}
 	EntityManager *ents = engineGuiEntities();
-	guiEvent.bind<&buttonContinue>();
-	guiEvent.attach(engineGuiManager()->widgetEvent);
 	keyReleaseListener.attach(engineWindow()->events);
-	keyReleaseListener.bind<&keyRelease>();
+	keyReleaseListener.bind(inputListener<InputClassEnum::KeyRelease, InputKey>([](InputKey in) {
+		if (in.key == 256) // esc
+		{
+			endScreen();
+			return true;
+		}
+		return false;
+	}));
 
 	Entity *panel = ents->createUnique();
 	{
@@ -119,5 +105,6 @@ void setScreenGameover()
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = HashString("gui/gameover/continue");
 		butSave->value<GuiParentComponent>().parent = 15;
+		butSave->value<GuiEventComponent>().event.bind([](Entity *e) { endScreen(); return true; });
 	}
 }

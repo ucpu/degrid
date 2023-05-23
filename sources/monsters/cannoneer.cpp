@@ -69,21 +69,19 @@ namespace
 		}
 	}
 
-	EventListener<void(Entity*)> bodyEliminatedListener;
-	EventListener<void(Entity*)> cannonEliminatedListener;
+	EventListener<bool(Entity *)> bodyEliminatedListener;
+	EventListener<bool(Entity *)> cannonEliminatedListener;
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		EntityComponent *b = engineEntities()->defineComponent(BodyComponent());
 		EntityComponent *c = engineEntities()->defineComponent(CannonComponent());
-		bodyEliminatedListener.bind<&bodyEliminated>();
+		bodyEliminatedListener.bind(&bodyEliminated);
 		bodyEliminatedListener.attach(b->group()->entityRemoved);
-		cannonEliminatedListener.bind<&cannonEliminated>();
+		cannonEliminatedListener.bind(&cannonEliminated);
 		cannonEliminatedListener.attach(c->group()->entityRemoved);
-	}
+	});
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -124,10 +122,9 @@ namespace
 			else
 				e->add(entitiesToDestroy);
 		}, engineEntities(), false);
-	}
+	});
 
-	void engineUpdateLate()
-	{
+	const auto engineLateUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -174,24 +171,7 @@ namespace
 			else
 				e->add(entitiesToDestroy);
 		}, engineEntities(), false);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener1;
-		EventListener<void()> engineUpdateListener2;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener1.attach(controlThread().update);
-			engineUpdateListener1.bind<&engineUpdate>();
-			engineUpdateListener2.attach(controlThread().update, 43); // after physics
-			engineUpdateListener2.bind<&engineUpdateLate>();
-		}
-	} callbacksInstance;
+	}, 43); // after physics
 
 	void spawnCannon(Entity *body, uint32 index)
 	{

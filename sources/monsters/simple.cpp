@@ -4,10 +4,9 @@
 
 namespace
 {
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(SimpleMonsterComponent());
-	}
+	});
 
 	void spawnSmallCube(uint32 originalEntity)
 	{
@@ -27,8 +26,7 @@ namespace
 			spawnSimple(MonsterTypeFlags::SmallTriangle, t.position + Vec3(randomChance() - 0.5, 0, randomChance() - 0.5), r.color);
 	}
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -103,21 +101,7 @@ namespace
 
 			CAGE_ASSERT(mv.velocity.valid());
 		}, engineEntities(), false);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
-		}
-	} callbacksInstance;
+	});
 }
 
 Entity *initializeSimple(const Vec3 &spawnPosition, const Vec3 &color, Real scale, uint32 objectName, uint32 deadSound, Real damage, Real life, Real maxSpeed, Real accelerationFraction, Real avoidance, Real dispersion, Real circling, Real spiraling, const Quat &animation)

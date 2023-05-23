@@ -152,14 +152,12 @@ namespace
 		}, engineEntities(), false);
 	}
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(TurretComponent());
 		engineEntities()->defineComponent(DecoyComponent());
-	}
+	}, -15);
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -174,21 +172,7 @@ namespace
 		decoysUpdate();
 		turretsUpdate();
 		powerupsUpdate();
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize, -15);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update, -15);
-			engineUpdateListener.bind<&engineUpdate>();
-		}
-	} callbacksInstance;
+	}, -15);
 
 	PowerupTypeEnum powerupSpawnType()
 	{

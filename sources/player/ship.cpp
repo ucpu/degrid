@@ -66,8 +66,7 @@ namespace
 			tr.orientation = Quat(Degs(), atan2(-vl.velocity[2], -vl.velocity[0]), Degs());
 	}
 
-	void shipShield()
-	{
+	const auto shieldListener = controlThread().update.listen([]() {
 		if (!game.playerEntity || !game.shieldEntity)
 			return;
 		const TransformComponent &tr = game.playerEntity->value<TransformComponent>();
@@ -86,7 +85,7 @@ namespace
 			game.shieldEntity->remove<RenderComponent>();
 			game.shieldEntity->remove<SoundComponent>();
 		}
-	}
+	}, 40); // after physics
 
 	void checkScore(uint32 limit, const char *name)
 	{
@@ -131,8 +130,7 @@ namespace
 		}
 	}
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (!game.paused)
 		{
 			shipMovement();
@@ -143,10 +141,9 @@ namespace
 				gameStopEvent().dispatch();
 			}
 		}
-	}
+	}, -20);
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		scorePreviousSound = 0;
 
 		{ // player ship Entity
@@ -161,34 +158,13 @@ namespace
 			game.shieldEntity->value<TransformComponent>();
 			game.shieldEntity->value<TextureAnimationComponent>().speed = 0.05;
 		}
-	}
+	}, -20);
 
-	void gameStop()
-	{
+	const auto gameStopListener = gameStopEvent().listen([]() {
 		environmentExplosion(game.playerEntity->value<TransformComponent>().position, game.playerEntity->value<VelocityComponent>().velocity, PlayerDeathColor, PlayerScale);
 		game.playerEntity->add(entitiesToDestroy);
 		game.playerEntity = nullptr;
 		game.shieldEntity->add(entitiesToDestroy);
 		game.shieldEntity = nullptr;
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineUpdateListener1;
-		EventListener<void()> engineUpdateListener2;
-		EventListener<void()> gameStartListener;
-		EventListener<void()> gameStopListener;
-	public:
-		Callbacks()
-		{
-			engineUpdateListener1.attach(controlThread().update, -20);
-			engineUpdateListener1.bind<&engineUpdate>();
-			engineUpdateListener2.attach(controlThread().update, 40); // after physics
-			engineUpdateListener2.bind<&shipShield>();
-			gameStartListener.attach(gameStartEvent(), -20);
-			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent(), -20);
-			gameStopListener.bind<&gameStop>();
-		}
-	} callbacksInstance;
+	}, -20);
 }

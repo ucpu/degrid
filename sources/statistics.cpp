@@ -17,8 +17,7 @@ GlobalStatistics::GlobalStatistics()
 
 namespace
 {
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		statistics.updateIterationIgnorePause++;
 		if (!game.paused)
 			statistics.updateIteration++;
@@ -40,17 +39,15 @@ namespace
 		}
 		statistics.soundEffectsCurrent = engineEntities()->component<SoundComponent>()->count();
 		statistics.soundEffectsMax = max(statistics.soundEffectsMax, statistics.soundEffectsCurrent);
-	}
+	}, -60);
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		statistics = GlobalStatistics();
 		statistics.timeStart = applicationTime();
-	}
+	}, -60);
 
-	void gameStop()
-	{
-		static const String PowerupName[(uint32)PowerupTypeEnum::Total] = {
+	const auto gameStopListener = gameStopEvent().listen([]() {
+		static constexpr String PowerupName[(uint32)PowerupTypeEnum::Total] = {
 			"Bomb",
 			"Turret",
 			"Decoy",
@@ -95,22 +92,5 @@ namespace
 		CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "duration: " + (duration / 1e6) + " s");
 		CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "average UPS: " + (1e6 * statistics.updateIterationIgnorePause / duration));
 		CAGE_LOG(SeverityEnum::Info, "statistics", Stringizer() + "average FPS: " + (1e6 * statistics.frameIteration / duration));
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> gameStartListener;
-		EventListener<void()> gameStopListener;
-	public:
-		Callbacks()
-		{
-			engineUpdateListener.attach(controlThread().update, -60);
-			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent(), -60);
-			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent(), 60);
-			gameStopListener.bind<&gameStop>();
-		}
-	} callbacksInstance;
+	}, 60);
 }

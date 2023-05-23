@@ -16,8 +16,7 @@ EventDispatcher<bool()> &gameStopEvent()
 
 namespace
 {
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(GravityComponent());
 		engineEntities()->defineComponent(VelocityComponent());
 		engineEntities()->defineComponent(RotationComponent());
@@ -27,16 +26,5 @@ namespace
 		engineEntities()->defineComponent(PowerupComponent());
 		engineEntities()->defineComponent(MonsterComponent());
 		engineEntities()->defineComponent(BossComponent());
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize, -50);
-			engineInitListener.bind<&engineInit>();
-		}
-	} callbacksInstance;
+	}, -50);
 }

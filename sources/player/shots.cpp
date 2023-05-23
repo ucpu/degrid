@@ -147,31 +147,15 @@ namespace
 		}, engineEntities(), false);
 	}
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (!game.paused)
 		{
 			shipFiring();
 			shotsUpdate();
 		}
-	}
+	}, -10);
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		game.shotsColor = game.cinematic ? colorHsvToRgb(Vec3(randomChance(), 1, 1)) : Vec3((float)confPlayerShotColorR, (float)confPlayerShotColorG, (float)confPlayerShotColorB);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> gameStartListener;
-	public:
-		Callbacks()
-		{
-			engineUpdateListener.attach(controlThread().update, -10);
-			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent(), -10);
-			gameStartListener.bind<&gameStart>();
-		}
-	} callbacksInstance;
+	}, -10);
 }

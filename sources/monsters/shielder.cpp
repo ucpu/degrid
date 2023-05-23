@@ -18,13 +18,12 @@ namespace
 		bool active = false;
 	};
 
-	void updateShields()
-	{
+	const auto shieldsUpdateListener = controlThread().update.listen([]() {
 		entitiesVisitor([&](Entity *e, const ShielderComponent &es, const TransformComponent &et) {
 			Entity *s = engineEntities()->get(es.shieldEntity);
 			s->value<TransformComponent>() = et;
 		}, engineEntities(), false);
-	}
+	}, 41); // after physics
 
 	void shielderEliminated(Entity *e)
 	{
@@ -33,18 +32,16 @@ namespace
 			engineEntities()->get(sh.shieldEntity)->add(entitiesToDestroy);
 	}
 
-	EventListener<void(Entity*)> shielderEliminatedListener;
+	EventListener<bool(Entity*)> shielderEliminatedListener;
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		auto c = engineEntities()->defineComponent(ShielderComponent());
 		engineEntities()->defineComponent(ShieldComponent());
-		shielderEliminatedListener.bind<&shielderEliminated>();
+		shielderEliminatedListener.bind(&shielderEliminated);
 		shielderEliminatedListener.attach(c->group()->entityRemoved);
-	}
+	});
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -112,24 +109,7 @@ namespace
 				shotExplosion(e);
 			}
 		}, engineEntities(), false);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener1;
-		EventListener<void()> engineUpdateListener2;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener1.attach(controlThread().update);
-			engineUpdateListener1.bind<&engineUpdate>();
-			engineUpdateListener2.attach(controlThread().update, 41); // after physics
-			engineUpdateListener2.bind<&updateShields>();
-		}
-	} callbacksInstance;
+	});
 }
 
 void spawnShielder(const Vec3 &spawnPosition, const Vec3 &color)

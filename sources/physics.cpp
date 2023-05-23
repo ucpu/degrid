@@ -11,16 +11,14 @@ Holder<SpatialQuery> spatialSearchQuery;
 
 namespace
 {
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		entitiesToDestroy = engineEntities()->defineGroup();
 		entitiesPhysicsEvenWhenPaused = engineEntities()->defineGroup();
 		spatialSearchData = newSpatialStructure({});
 		spatialSearchQuery = newSpatialQuery(spatialSearchData.share());
-	}
+	}, -40);
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (!game.paused)
 		{ // gravity
 			for (Entity *e : engineEntities()->component<GravityComponent>()->entities())
@@ -92,21 +90,7 @@ namespace
 			}
 			spatialSearchData->rebuild();
 		}
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize, -40);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update, 30);
-			engineUpdateListener.bind<&engineUpdate>();
-		}
-	} callbacksInstance;
+	}, 30);
 }
 
 bool collisionTest(const Vec3 &positionA, Real radiusA, const Vec3 &velocityA, const Vec3 &positionB, Real radiusB, const Vec3 &velocityB)

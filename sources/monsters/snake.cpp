@@ -15,11 +15,10 @@ namespace
 		Real speedMin, speedMax;
 	};
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(SnakeTailComponent());
 		engineEntities()->defineComponent(SnakeHeadComponent());
-	}
+	});
 
 	void snakeSideMove(Vec3 &p, const Quat &forward, uint32 index, Real dist)
 	{
@@ -27,8 +26,7 @@ namespace
 		p += forward * Vec3(1, 0, 0) * sin(Rads(statistics.updateIteration * 0.2f + phase)) * 0.4;
 	}
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -82,31 +80,13 @@ namespace
 			}
 			snakeSideMove(tr.position, tr.orientation, snake.index, tr.scale * 2);
 		}, engineEntities(), false);
-	}
+	});
 
-	void subtractSnakeTails()
-	{
+	const auto snakeTailsListener = controlThread().update.listen([]() {
 		// snake tails should not count towards monster limit
 		const uint32 sub = engineEntities()->component<SnakeTailComponent>()->count();
 		statistics.monstersCurrent = sub < statistics.monstersCurrent ? statistics.monstersCurrent - sub : 0;
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> snakeTailsListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
-			snakeTailsListener.attach(controlThread().update, -59); // right after statistics
-			snakeTailsListener.bind<&subtractSnakeTails>();
-		}
-	} callbacksInstance;
+	}, -59); // right after statistics
 }
 
 void spawnSnake(const Vec3 &spawnPosition, const Vec3 &color)

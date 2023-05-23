@@ -144,72 +144,12 @@ namespace
 			opt->value<GuiTextComponent>().value = names[i];
 		}
 	}
-
-	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
-
-	bool guiFunction(InputGuiWidget in)
-	{
-		switch (in.widget)
-		{
-		case 31:
-		{
-			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
-			confControlMovement = control.selected;
-			return true;
-		}
-		case 32:
-		{
-			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
-			confControlFiring = control.selected;
-			return true;
-		}
-		case 33:
-		{
-			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
-			confControlBomb = control.selected;
-			return true;
-		}
-		case 34:
-		{
-			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
-			confControlTurret = control.selected;
-			return true;
-		}
-		case 35:
-		{
-			GuiComboBoxComponent &control = engineGuiEntities()->get(in.widget)->value<GuiComboBoxComponent>();
-			confControlDecoy = control.selected;
-			return true;
-		}
-		case 36:
-		{
-			GuiSliderBarComponent &control = engineGuiEntities()->get(in.widget)->value<GuiSliderBarComponent>();
-			confVolumeMusic = control.value.value;
-			return true;
-		}
-		case 37:
-		{
-			GuiSliderBarComponent &control = engineGuiEntities()->get(in.widget)->value<GuiSliderBarComponent>();
-			confVolumeEffects = control.value.value;
-			return true;
-		}
-		case 38:
-		{
-			GuiSliderBarComponent &control = engineGuiEntities()->get(in.widget)->value<GuiSliderBarComponent>();
-			confVolumeSpeech = control.value.value;
-			return true;
-		}
-		}
-		return false;
-	}
 }
 
 void setScreenOptions()
 {
 	regenerateGui(GuiConfig());
 	EntityManager *ents = engineGuiEntities();
-	guiEvent.bind<&guiFunction>();
-	guiEvent.attach(engineGuiManager()->widgetEvent);
 
 	Entity *tabs = ents->createUnique();
 	{
@@ -251,6 +191,7 @@ void setScreenOptions()
 				parent.order = index++;
 				ctr->value<GuiComboBoxComponent>().selected = confControlMovement;
 				addOptionsMovementFiring(ctr->name());
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confControlMovement = e->value<GuiComboBoxComponent>().selected; return true; });
 			}
 		}
 
@@ -273,6 +214,7 @@ void setScreenOptions()
 				parent.order = index++;
 				ctr->value<GuiComboBoxComponent>().selected = confControlFiring;
 				addOptionsMovementFiring(ctr->name());
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confControlFiring = e->value<GuiComboBoxComponent>().selected; return true; });
 			}
 		}
 
@@ -295,6 +237,7 @@ void setScreenOptions()
 				parent.order = index++;
 				ctr->value<GuiComboBoxComponent>().selected = confControlBomb;
 				addOptionsPowers(ctr->name());
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confControlBomb = e->value<GuiComboBoxComponent>().selected; return true; });
 			}
 		}
 
@@ -317,6 +260,7 @@ void setScreenOptions()
 				parent.order = index++;
 				ctr->value<GuiComboBoxComponent>().selected = confControlTurret;
 				addOptionsPowers(ctr->name());
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confControlTurret = e->value<GuiComboBoxComponent>().selected; return true; });
 			}
 		}
 
@@ -339,6 +283,7 @@ void setScreenOptions()
 				parent.order = index++;
 				ctr->value<GuiComboBoxComponent>().selected = confControlDecoy;
 				addOptionsPowers(ctr->name());
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confControlDecoy = e->value<GuiComboBoxComponent>().selected; return true; });
 			}
 		}
 	}
@@ -376,6 +321,7 @@ void setScreenOptions()
 				parent.parent = panel->name();
 				parent.order = index++;
 				ctr->value<GuiSliderBarComponent>().value = Real(confVolumeMusic);
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confVolumeMusic = e->value<GuiSliderBarComponent>().value.value; return true; });
 			}
 		}
 
@@ -397,6 +343,7 @@ void setScreenOptions()
 				parent.parent = panel->name();
 				parent.order = index++;
 				ctr->value<GuiSliderBarComponent>().value = Real(confVolumeEffects);
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confVolumeEffects = e->value<GuiSliderBarComponent>().value.value; return true; });
 			}
 		}
 
@@ -418,6 +365,7 @@ void setScreenOptions()
 				parent.parent = panel->name();
 				parent.order = index++;
 				ctr->value<GuiSliderBarComponent>().value = Real(confVolumeSpeech);
+				ctr->value<GuiEventComponent>().event.bind([](Entity *e) { confVolumeSpeech = e->value<GuiSliderBarComponent>().value.value; return true; });
 			}
 		}
 	}

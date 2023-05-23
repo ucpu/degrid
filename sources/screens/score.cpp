@@ -32,28 +32,10 @@ namespace
 
 	std::vector<Score> scores;
 
-	void buildGui(int mode);
-
-	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
-
-	bool guiFunction(InputGuiWidget in)
-	{
-		switch (in.widget)
-		{
-		case 51:
-		case 52:
-			buildGui(in.widget - 51);
-			return true;
-		}
-		return false;
-	}
-
 	void buildGui(int mode)
 	{
 		regenerateGui(GuiConfig());
 		EntityManager *ents = engineGuiEntities();
-		guiEvent.bind<&guiFunction>();
-		guiEvent.attach(engineGuiManager()->widgetEvent);
 
 		Entity *panel = ents->createUnique();
 		{
@@ -72,6 +54,7 @@ namespace
 				GuiTextComponent &txt = butScore->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/scores/date");
+				butScore->value<GuiEventComponent>().event.bind([](Entity *) { buildGui(0); return true; });
 			}
 
 			{
@@ -83,6 +66,7 @@ namespace
 				GuiTextComponent &txt = butDate->value<GuiTextComponent>();
 				txt.assetName = HashString("degrid/languages/internationalized.textpack");
 				txt.textName = HashString("gui/scores/score");
+				butDate->value<GuiEventComponent>().event.bind([](Entity *) { buildGui(1); return true; });
 			}
 		}
 
@@ -130,5 +114,5 @@ void setScreenScores()
 		}
 	}
 
-	guiFunction(InputGuiWidget{ nullptr, 52 });
+	buildGui(1);
 }

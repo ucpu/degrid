@@ -19,15 +19,13 @@ namespace
 		bool hurt = false;
 	};
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(SkyboxComponent());
 		skyboxOrientation = randomDirectionQuat();
 		skyboxRotation = interpolate(Quat(), randomDirectionQuat(), 5e-5);
-	}
+	}, -35);
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		{ // update skybox
 			skyboxOrientation = skyboxRotation * skyboxOrientation;
 
@@ -75,10 +73,9 @@ namespace
 				r.color = interpolate(r.color, g.originalColor, 0.002);
 			}
 		}
-	}
+	}, 5);
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		for (Entity *e : engineEntities()->component<SkyboxComponent>()->entities())
 		{
 			// prevent the skyboxes to be destroyed so that they can dissipate properly
@@ -147,24 +144,7 @@ namespace
 		}
 
 		statistics.environmentGridMarkers = engineEntities()->component<GridComponent>()->count();
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> gameStartListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize, -35);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update, 5);
-			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent(), -5);
-			gameStartListener.bind<&gameStart>();
-		}
-	} callbacksInstance;
+	}, -5);
 }
 
 void setSkybox(uint32 objectName)

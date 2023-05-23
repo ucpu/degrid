@@ -16,8 +16,7 @@ namespace
 	VariableSmoothingBuffer<Vec3, 16> cameraPosSmoother;
 	Real cameraFovShakeAmplitude;
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.gameOver)
 			return;
 
@@ -35,10 +34,9 @@ namespace
 			c.position = cameraPosSmoother.smooth();
 			c.orientation = Quat(playerPosSmoother.smooth() - c.position, Vec3(0, 0, -1));
 		}
-	}
+	}, 50);
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		primaryCameraEntity = engineEntities()->createUnique();
 		CameraComponent &c = primaryCameraEntity->value<CameraComponent>();
 		c.near = 150;
@@ -48,21 +46,7 @@ namespace
 		c.ambientIntensity = 0.3;
 		primaryCameraEntity->value<ScreenSpaceEffectsComponent>().effects = ScreenSpaceEffectsFlags::Default & ~ScreenSpaceEffectsFlags::AmbientOcclusion;
 		primaryCameraEntity->value<ListenerComponent>().rolloffFactor = 0.5 / CameraDistance;
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> gameStartListener;
-	public:
-		Callbacks()
-		{
-			engineUpdateListener.attach(controlThread().update, 50);
-			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent(), 50);
-			gameStartListener.bind<&gameStart>();
-		}
-	} callbacksInstance;
+	}, 50);
 }
 
 Entity *getPrimaryCameraEntity()

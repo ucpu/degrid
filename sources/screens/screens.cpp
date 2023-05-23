@@ -2,26 +2,7 @@
 
 namespace
 {
-	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiListener;
-	InputListener<InputClassEnum::KeyRelease, InputKey, bool> keyReleaseListener;
-
-	bool buttonBack(InputGuiWidget in)
-	{
-		if (in.widget != 20)
-			return false;
-		setScreenMainmenu();
-		return true;
-	}
-
-	bool keyRelease(InputKey in)
-	{
-		if (in.key == 256) // esc
-		{
-			setScreenMainmenu();
-			return true;
-		}
-		return false;
-	}
+	EventListener<bool(const GenericInput &)> keyReleaseListener;
 
 	void eraseGui()
 	{
@@ -182,12 +163,17 @@ namespace
 		txt.assetName = HashString("degrid/languages/internationalized.textpack");
 		txt.textName = HashString("gui/mainmenu/back");
 		but->value<GuiParentComponent>().parent = 15;
-		guiListener.attach(engineGuiManager()->widgetEvent);
-		guiListener.bind<&buttonBack>();
+		but->value<GuiEventComponent>().event.bind([](Entity *) { setScreenMainmenu(); return true; });
 		keyReleaseListener.attach(engineWindow()->events);
-		keyReleaseListener.bind<&keyRelease>();
+		keyReleaseListener.bind(inputListener<InputClassEnum::KeyRelease, InputKey>([](InputKey in) {
+			if (in.key == 256) // esc
+			{
+				setScreenMainmenu();
+				return true;
+			}
+			return false;
+		}));
 	}
-
 }
 
 void regenerateGui(const GuiConfig &config)

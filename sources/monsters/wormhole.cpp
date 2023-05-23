@@ -78,14 +78,12 @@ namespace
 		e->value<TimeoutComponent>().ttl = 3;
 	}
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(WormholeComponent());
 		engineEntities()->defineComponent(MonsterFlickeringComponent());
-	}
+	});
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		// flickering
 		entitiesVisitor([&](RenderComponent &r, const MonsterFlickeringComponent &m) {
 			const Real l = (Real)engineControlTime() * m.flickeringFrequency + m.flickeringOffset;
@@ -182,21 +180,7 @@ namespace
 			g.strength += sign(g.strength) * 0.005;
 			t.scale += 0.0005;
 		}, engineEntities(), false);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
-		}
-	} callbacksInstance;
+	});
 }
 
 void spawnWormhole(const Vec3 &spawnPosition, const Vec3 &color)

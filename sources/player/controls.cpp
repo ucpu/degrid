@@ -28,11 +28,11 @@ namespace
 	bool keyMap[512];
 	MouseButtonsFlags buttonMap;
 
-	InputListener<InputClassEnum::MousePress, InputMouse> mousePressListener;
-	InputListener<InputClassEnum::MouseRelease, InputMouse> mouseReleaseListener;
-	InputListener<InputClassEnum::KeyPress, InputKey> keyPressListener;
-	InputListener<InputClassEnum::KeyRelease, InputKey> keyReleaseListener;
-	InputListener<InputClassEnum::GamepadRelease, InputGamepadKey> gamepadKeyListener;
+	EventListener<bool(const GenericInput &)> mousePressListener;
+	EventListener<bool(const GenericInput &)> mouseReleaseListener;
+	EventListener<bool(const GenericInput &)> keyPressListener;
+	EventListener<bool(const GenericInput &)> keyReleaseListener;
+	EventListener<bool(const GenericInput &)> gamepadKeyListener;
 
 	// input (options independent)
 	Vec3 arrowsDirection;
@@ -134,17 +134,16 @@ namespace
 			eventAction(in.key + 4 + sizeof(Letters));
 	}
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		mousePressListener.attach(engineWindow()->events);
-		mousePressListener.bind<&mousePress>();
+		mousePressListener.bind(inputListener<InputClassEnum::MousePress, InputMouse>(&mousePress));
 		keyPressListener.attach(engineWindow()->events);
-		keyPressListener.bind<&keyPress>();
+		keyPressListener.bind(inputListener<InputClassEnum::KeyPress, InputKey>(&keyPress));
 		// process some events before gui
 		mouseReleaseListener.attach(engineWindow()->events, -2);
-		mouseReleaseListener.bind<&mouseRelease>();
+		mouseReleaseListener.bind(inputListener<InputClassEnum::MouseRelease, InputMouse>(&mouseRelease));
 		keyReleaseListener.attach(engineWindow()->events, -1);
-		keyReleaseListener.bind<&keyRelease>();
+		keyReleaseListener.bind(inputListener<InputClassEnum::KeyRelease, InputKey>(&keyRelease));
 
 #ifdef DEGRID_TESTING
 		CAGE_LOG(SeverityEnum::Info, "degrid", String() + "TESTING GAME BUILD");
@@ -152,17 +151,16 @@ namespace
 
 		game.cinematic = true;
 		gameStartEvent().dispatch();
-	}
+	}, -30);
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		CAGE_ASSERT(!game.gameOver || game.paused);
 
 		if (!gamepad && gamepadsAvailable() > 0)
 		{
 			gamepad = newGamepad();
 			gamepadKeyListener.attach(gamepad->events);
-			gamepadKeyListener.bind<&gamepadKey>();
+			gamepadKeyListener.bind(inputListener<InputClassEnum::GamepadRelease, InputGamepadKey>(&gamepadKey));
 		}
 		if (gamepad)
 		{
@@ -294,10 +292,9 @@ namespace
 			game.fireDirection = normalize(game.fireDirection);
 		else
 			game.fireDirection = Vec3();
-	}
+	}, -30);
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		CAGE_LOG(SeverityEnum::Info, "degrid", Stringizer() + "new game, cinematic: " + game.cinematic);
 
 		for (uint32 i = 0; i < sizeof(keyMap); i++)
@@ -332,10 +329,9 @@ namespace
 			}
 		}
 #endif
-	}
+	}, -30);
 
-	void gameStop()
-	{
+	const auto gameStopListener = gameStopEvent().listen([]() {
 		if (!game.cinematic)
 		{
 			CAGE_LOG(SeverityEnum::Info, "degrid", Stringizer() + "game over");
@@ -344,25 +340,5 @@ namespace
 		}
 		game.paused = game.gameOver = true;
 		setScreenGameover();
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> gameStartListener;
-		EventListener<void()> gameStopListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize, -30);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update, -30);
-			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent(), -30);
-			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent(), -30);
-			gameStopListener.bind<&gameStop>();
-		}
-	} callbacksInstance;
+	}, -30);
 }

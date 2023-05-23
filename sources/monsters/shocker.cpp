@@ -10,10 +10,9 @@ namespace
 		Real speedFactor;
 	};
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(ShockerComponent());
-	}
+	});
 
 	void lightning(const Vec3 &a, const Vec3 &b, const Vec3 &color)
 	{
@@ -45,13 +44,12 @@ namespace
 		light.attenuation = Vec3(0, 0, 0.01);
 	}
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 		{
 			entitiesVisitor([&](Entity *e, const ShockerComponent &) {
 				e->remove<SoundComponent>();
-			}, engineEntities(), false);
+				}, engineEntities(), false);
 			return;
 		}
 
@@ -82,21 +80,7 @@ namespace
 			else
 				e->remove<SoundComponent>();
 		}, engineEntities(), false);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
-		}
-	} callbacksInstance;
+	});
 }
 
 void spawnShocker(const Vec3 &spawnPosition, const Vec3 &color)

@@ -42,7 +42,7 @@ namespace
 
 void reloadLanguage(uint32 index)
 {
-	constexpr const uint32 Languages[] = {
+	static constexpr const uint32 Languages[] = {
 		HashString("degrid/languages/english.textpack"),
 		HashString("degrid/languages/czech.textpack")
 	};
@@ -60,15 +60,9 @@ int main(int argc, const char *args[])
 		engineInitialize(EngineCreateConfig());
 		controlThread().updatePeriod(1000000 / 30);
 
-		InputListener<InputClassEnum::WindowClose, InputWindow> closeListener;
-		closeListener.attach(engineWindow()->events, 1000);
-		closeListener.bind<&windowClose>();
-		EventListener<void()> assetsUpdateListener;
-		assetsUpdateListener.bind<&assetsUpdate>();
-		assetsUpdateListener.attach(controlThread().update);
-		EventListener<void()> frameCounterListener;
-		frameCounterListener.bind<&frameCounter>();
-		frameCounterListener.attach(graphicsPrepareThread().prepare);
+		const auto closeListener = engineWindow()->events.listen(inputListener<InputClassEnum::WindowClose, InputWindow>(&windowClose), 1000);
+		const auto assetsUpdateListener = controlThread().update.listen(&assetsUpdate);
+		const auto frameCounterListener = graphicsPrepareThread().prepare.listen(&frameCounter);
 
 		engineWindow()->title("Degrid");
 		reloadLanguage(confLanguage);

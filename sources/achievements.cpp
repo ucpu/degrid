@@ -93,8 +93,7 @@ namespace
 				bosses++;
 	}
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		// load achievements
 		try
 		{
@@ -123,10 +122,9 @@ namespace
 		{
 			CAGE_LOG(SeverityEnum::Warning, "achievements", "are you cheating? there is not that many bosses in the game");
 		}
-	}
+	}, -60);
 
-	void engineFinish()
-	{
+	const auto engineFinishListener = controlThread().finalize.listen([]() {
 		{ // validation
 			uint32 a, b;
 			summaries(a, b);
@@ -152,21 +150,7 @@ namespace
 			}
 #endif // !DEGRID_TESTING
 		}
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineFinishListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize, -60);
-			engineInitListener.bind<&engineInit>();
-			engineFinishListener.attach(controlThread().finalize, 60);
-			engineFinishListener.bind<&engineFinish>();
-		}
-	} callbacksInstance;
+	}, 60);
 }
 
 void setScreenAchievements()

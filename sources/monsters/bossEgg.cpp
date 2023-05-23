@@ -42,16 +42,14 @@ namespace
 			engineEntities()->get(egg.portal)->destroy();
 	}
 
-	EventListener<void(Entity *e)> eggDestroyedListener;
-	void engineInit()
-	{
+	EventListener<bool(Entity *e)> eggDestroyedListener;
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		auto c = engineEntities()->defineComponent(BossEggComponent());
 		eggDestroyedListener.attach(c->group()->entityRemoved);
-		eggDestroyedListener.bind<&eggDestroyed>();
-	}
+		eggDestroyedListener.bind(&eggDestroyed);
+	});
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -78,33 +76,15 @@ namespace
 			Real l = length(v);
 			mv.velocity = normalize(v) * pow(max(l - 70, 0) * 0.03, 1.5);
 		}, engineEntities(), false);
-	}
+	});
 
-	void lateUpdate()
-	{
+	const auto engineLateUpdateListener = controlThread().update.listen([]() {
 		entitiesVisitor([](const BossEggComponent &egg, const TransformComponent &tr) {
 			TransformComponent &portal = engineEntities()->get(egg.portal)->value<TransformComponent>();
 			portal.position = tr.position;
 			portal.scale = tr.scale * 0.88;
 		}, engineEntities(), false);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> engineLateUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
-			engineLateUpdateListener.attach(controlThread().update, 42); // after physics
-			engineLateUpdateListener.bind<&lateUpdate>();
-		}
-	} callbacksInstance;
+	}, 42); // after physics
 }
 
 void spawnBossEgg(const Vec3 &spawnPosition, const Vec3 &color)

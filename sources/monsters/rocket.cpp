@@ -7,13 +7,11 @@ namespace
 	struct RocketMonsterComponent
 	{};
 
-	void engineInit()
-	{
+	const auto engineInitListener = controlThread().initialize.listen([]() {
 		engineEntities()->defineComponent(RocketMonsterComponent());
-	}
+	});
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -42,22 +40,8 @@ namespace
 					spark->add(entitiesPhysicsEvenWhenPaused);
 				}
 			}
-		}, engineEntities(), false);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineInitListener;
-		EventListener<void()> engineUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineInitListener.attach(controlThread().initialize);
-			engineInitListener.bind<&engineInit>();
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
-		}
-	} callbacksInstance;
+			}, engineEntities(), false);
+	});
 }
 
 void spawnRocket(const Vec3 &spawnPosition, const Vec3 &color)

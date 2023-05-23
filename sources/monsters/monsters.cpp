@@ -7,8 +7,7 @@ namespace
 {
 	bool wasBoss = false;
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -103,18 +102,7 @@ namespace
 			}
 		}
 		wasBoss = hasBoss;
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineUpdateListener;
-	public:
-		Callbacks()
-		{
-			engineUpdateListener.attach(controlThread().update, 1);
-			engineUpdateListener.bind<&engineUpdate>();
-		}
-	} callbacksInstance;
+	}, 1);
 }
 
 Real lifeDamage(Real damage)

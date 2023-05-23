@@ -137,8 +137,7 @@ namespace
 
 	std::vector<SpawnDefinition> definitions;
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		if (game.paused)
 			return;
 
@@ -156,7 +155,7 @@ namespace
 
 		definitions[0].perform();
 		std::nth_element(definitions.begin(), definitions.begin(), definitions.end());
-	}
+	});
 
 	void announceJokeMap()
 	{
@@ -164,8 +163,7 @@ namespace
 		makeAnnouncement(HashString("announcement/joke-map"), HashString("announcement-desc/joke-map"), 120 * 30);
 	}
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		definitions.clear();
 		definitions.reserve(30);
 
@@ -495,10 +493,9 @@ namespace
 			std::nth_element(definitions.begin(), definitions.begin(), definitions.end());
 		}
 #endif
-	}
+	});
 
-	void gameStop()
-	{
+	const auto gameStopListener = gameStopEvent().listen([]() {
 #ifdef DEGRID_TESTING
 		for (auto &d : definitions)
 		{
@@ -508,24 +505,7 @@ namespace
 #endif // DEGRID_TESTING
 
 		definitions.clear();
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> gameStartListener;
-		EventListener<void()> gameStopListener;
-	public:
-		Callbacks()
-		{
-			engineUpdateListener.attach(controlThread().update);
-			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent());
-			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent());
-			gameStopListener.bind<&gameStop>();
-		}
-	} callbacksInstance;
+	});
 }
 
 void spawnGeneral(MonsterTypeFlags type, const Vec3 &spawnPosition, const Vec3 &color)

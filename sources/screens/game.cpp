@@ -11,18 +11,15 @@ namespace
 {
 	struct Announcement
 	{
-		uint32 headingName;
-		uint32 descriptionName;
-		uint32 duration;
-
-		Announcement() : headingName(0), descriptionName(0), duration(30 * 30)
-		{}
+		uint32 headingName = 0;
+		uint32 descriptionName = 0;
+		uint32 duration = 30 * 30;
 	};
 
 	std::vector<Announcement> announcements;
 	bool needToRemakeGui;
 
-	InputListener<InputClassEnum::GuiWidget, InputGuiWidget, bool> guiEvent;
+	EventListener<bool(const GenericInput &)> guiEvent;
 
 	void makeTheGui(uint32 mode = 0);
 
@@ -434,7 +431,7 @@ namespace
 			regenerateGui(c);
 		}
 		EntityManager *ents = engineGuiEntities();
-		guiEvent.bind<&guiFunction>();
+		guiEvent.bind(inputListener<InputClassEnum::GuiWidget, InputGuiWidget>(&guiFunction));
 		guiEvent.attach(engineGuiManager()->widgetEvent);
 
 		{ // base stats
@@ -678,12 +675,12 @@ namespace
 
 	class Callbacks
 	{
-		EventListener<void()> engineUpdateListener;
+		EventListener<bool()> engineUpdateListener;
 	public:
 		Callbacks()
 		{
 			engineUpdateListener.attach(controlThread().update, 60);
-			engineUpdateListener.bind<&engineUpdate>();
+			engineUpdateListener.bind(&engineUpdate);
 		}
 	} callbacksInstance;
 }

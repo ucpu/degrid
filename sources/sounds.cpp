@@ -35,8 +35,8 @@ namespace
 			return;
 		}
 
-		constexpr const float distMin = 30;
-		constexpr const float distMax = 60;
+		constexpr float distMin = 30;
+		constexpr float distMax = 60;
 		TransformComponent &playerTransform = game.playerEntity->value<TransformComponent>();
 		Real closestMonsterToPlayer = Real::Infinity();
 		spatialSearchQuery->intersection(Sphere(playerTransform.position, distMax));
@@ -88,15 +88,14 @@ namespace
 		alterVolume(endVolume, 0);
 	}
 
-	void engineUpdate()
-	{
+	const auto engineUpdateListener = controlThread().update.listen([]() {
 		determineSuspense();
 		determineVolumes();
 
 		suspenseEnt->value<SoundComponent>().gain = suspenseVolume * (Real)confVolumeMusic;
 		actionEnt->value<SoundComponent>().gain = actionVolume * (Real)confVolumeMusic;
 		endEnt->value<SoundComponent>().gain = endVolume * (Real)confVolumeMusic;
-	}
+	}, 55);
 
 	Entity *initEntity(const uint32 soundName)
 	{
@@ -107,15 +106,14 @@ namespace
 		return e;
 	}
 
-	void gameStart()
-	{
+	const auto gameStartListener = gameStartEvent().listen([]() {
 		suspenseEnt = initEntity(HashString("degrid/music/fear-and-horror.ogg"));
 		actionEnt = initEntity(HashString("degrid/music/chaotic-filth.ogg"));
 		endEnt = initEntity(HashString("degrid/music/sad-song.ogg"));
 
 		if (!game.cinematic)
 		{
-			constexpr const uint32 Sounds[] = {
+			static constexpr const uint32 Sounds[] = {
 				HashString("degrid/speech/starts/a-princess-needs-our-help.wav"),
 				HashString("degrid/speech/starts/enemy-is-approaching.wav"),
 				HashString("degrid/speech/starts/its-a-trap.wav"),
@@ -130,11 +128,10 @@ namespace
 			};
 			soundSpeech(Sounds);
 		}
-	}
+	}, 55);
 
-	void gameStop()
-	{
-		constexpr const uint32 Sounds[] = {
+	const auto gameStopListener = gameStopEvent().listen([]() {
+		static constexpr const uint32 Sounds[] = {
 			HashString("degrid/speech/gameover/game-over.wav"),
 			HashString("degrid/speech/gameover/lets-try-again.wav"),
 			HashString("degrid/speech/gameover/oh-no.wav"),
@@ -143,24 +140,7 @@ namespace
 			0
 		};
 		soundSpeech(Sounds);
-	}
-
-	class Callbacks
-	{
-		EventListener<void()> engineUpdateListener;
-		EventListener<void()> gameStartListener;
-		EventListener<void()> gameStopListener;
-	public:
-		Callbacks()
-		{
-			engineUpdateListener.attach(controlThread().update, 55);
-			engineUpdateListener.bind<&engineUpdate>();
-			gameStartListener.attach(gameStartEvent(), 55);
-			gameStartListener.bind<&gameStart>();
-			gameStopListener.attach(gameStopEvent(), 55);
-			gameStopListener.bind<&gameStop>();
-		}
-	} callbacksInstance;
+	}, 55);
 }
 
 void soundEffect(uint32 soundName, const Vec3 &position)
